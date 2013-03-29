@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2012-2013 Trento RISE
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+         http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either   express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="3dp"
+            android:background="@color/transparent_discovertrento"
+            android:padding="5dp"
+            android:text="@string/createevent"
+            android:textColor="@color/sc_light_gray" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="@string/create_title" 
+            android:textColor="@color/sc_light_gray"/>
+
+        <EditText
+            android:id="@+id/event_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textColorHint="@color/sc_hint"
+            android:hint="@string/create_title" />
+
+        <requestFocus />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="@string/createevent_date" 
+            android:textColor="@color/sc_light_gray"/>
+
+        <EditText
+            android:id="@+id/event_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:focusableInTouchMode="false"
+            android:hint="@string/createevent_datehint"
+            android:textColorHint="@color/sc_hint"
+            android:inputType="date" />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/createevent_timing" 
+                android:textColor="@color/sc_light_gray"/>
+          
+          <EditText
+                android:id="@+id/event_timing_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:hint="@string/createevent_timing_hint"
+                android:textColorHint="@color/sc_hint"
+                android:inputType="textMultiLine"/>
+          
+<!--              
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal" >
+
+            
+          <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/createevent_timestart" 
+                android:textColor="@color/sc_light_gray"/>
+          <EditText
+                android:id="@+id/event_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:ems="6"
+                android:focusableInTouchMode="false"
+                android:hint="@string/createevent_timestarthint"
+                android:textColorHint="@color/sc_hint"
+                android:inputType="time" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/createevent_timeend" 
+                android:textColor="@color/sc_light_gray"/>
+
+            <EditText
+                android:id="@+id/event_end"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:ems="6"
+                android:textColorHint="@color/sc_hint"
+                android:focusableInTouchMode="false"
+                android:hint="@string/createevent_timeendhint"
+                android:inputType="time" />
+        </LinearLayout>
+ -->
+     
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_place"
+                android:textColor="@color/sc_light_gray" />
+
+            <AutoCompleteTextView
+                android:id="@+id/event_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_weight="15"
+                android:ems="10"
+                android:hint="@string/create_placehint"
+                android:textColorHint="@color/sc_hint" />
+
+
+
+              <ImageButton
+                  android:id="@+id/btn_event_add_poi"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_margin="3dp"
+                  android:layout_weight="1"
+                  android:background="@android:color/transparent"
+                  android:src="@drawable/add" />
+
+
+
+            <ImageButton
+                android:id="@+id/btn_event_locate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_map" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="@string/create_tags" 
+            android:textColor="@color/sc_light_gray"/>
+
+        <EditText
+            android:id="@+id/event_tags" 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textColorHint="@color/sc_hint"
+            android:hint="@string/create_tagshint" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="@string/create_cat" 
+            android:textColor="@color/sc_light_gray"/>
+
+        <Spinner
+            android:id="@+id/event_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textColor="@color/sc_light_gray"
+            android:text="@string/create_notes" />
+
+        <EditText
+            android:id="@+id/event_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:hint="@string/create_noteshint"
+            android:textColorHint="@color/sc_hint"
+            android:inputType="textMultiLine" />
+
+    </LinearLayout>
+</ScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_createevent_cancel"
+                style="@style/Theme.discovertrento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:padding="3dp"
+                android:text="@android:string/cancel" />
+
+            <Button
+                android:id="@+id/btn_createevent_ok"
+                style="@style/Theme.discovertrento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:padding="3dp"
+                android:text="@android:string/ok" />
+        </LinearLayout>
+</LinearLayout>
+</RelativeLayout>

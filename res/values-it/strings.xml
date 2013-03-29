@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2012-2013 Trento RISE
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+         http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either   express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+
+    <!-- <string name="app_name">ViviTrento</string>-->
+    <string name="app_name">EsploraTrento</string>
+    <string name="empty" />
+    <string name="slidingmenu_home">Home</string>
+    <string name="allevents">Tutti gli eventi</string>
+    <string name="allpois">Tutti i luoghi</string>
+    <string name="createevent">Crea evento</string>
+    <string name="myevents">I miei eventi</string>
+    <string name="mystory">La mia storia</string>
+    <string name="create_title">Nome</string>
+    <string name="create_description">Descrizione</string>
+    <string name="createevent_date">Data</string>
+    <string name="createevent_timestart">Inizio</string>
+    <string name="createevent_timeend">Fine</string>
+    <string name="createevent_timing">Ora</string>
+    <string name="createevent_timing_hint">18:00 - 20:00</string>
+    <string name="createevent_timestarthint">12:00</string>
+    <string name="createevent_datehint">24/07/2012</string>
+    <string name="createevent_timeendhint">18:00</string>
+    <string name="create_place">Indirizzo</string>
+    <string name="create_placehint">Posizione </string>
+    <string name="create_tagshint">Party, fun (English only)</string> 
+    <string name="create_cat">Categoria</string>
+    <string name="create_cathint">Party, concert, movie (English only)</string>
+    <string name="create_notes">Note</string>
+    <string name="create_noteshint">Descrizione</string>
+    <string name="menu_item_addpoi_text">Aggiungi luogo</string>
+    <string name="menu_item_addstory_text">Aggiungi una storia</string>
+    <string name="menu_item_mystories_text">Le mie storie</string>
+    <string name="createpoi">Crea luogo</string>
+    <string name="createstory">Crea storia</string>
+    <string name="createpoi_ot">Orari di apertura</string>
+    <string name="createpoi_othint">12:00&#8211;18:00</string>
+    <string name="menu_item_addevent_text">Aggiungi evento</string>
+    <string name="menu_item_myevents_text">I miei eventi</string>
+    <string name="menu_item_layers_text">Categorie</string>
+    <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
+    <string name="menu_item_poicategory_text">Categorie dei luoghi</string>
+    <string name="related_poi">Luogo dell\'evento</string>
+    <string name="related_events">Eventi in programma</string>
+    <string name="getdir">Indicazioni stradali</string>
+    <string name="onmap">Mostra sulla mappa</string>
+    <string name="poi_select_address_content_description">Seleziona un indirizzo sulla mappa</string>
+    <string name="layers_title">Cosa stai cercando?</string>
+    <string name="tmp">Disponibile a breve!</string>
+    <string name="search_txt">Cerca</string>
+    <string name="join">Partecipa all\'evento</string>
+    <string name="map_view">Mostra sulla mappa</string>
+    <string name="list_view">Vedi come lista</string>
+    <string name="overflow">Altro &#8230;</string>
+    <string name="rate">Esprimi giudizio</string>
+    <string name="attend">Partecipa</string>
+    <string name="add_my_stories">Aggiungi a Le mie storie</string>
+    <string name="delete_my_stories">Rimuovi da Le mie storie</string>
+        
+    <string name="attend_not">Non partecipare</string>
+    <string name="follow">Segui</string>
+    <string name="edit">Modifica</string>
+    <string name="delete">Cancella</string>
+    <string name="attendees">Partecipanti</string>
+    <string name="attendees_num">0</string>
+    <string name="source_smartcampus">SmartCampus</string>
+    <string name="app_failure_init">Inizializzazione di ViviTrento non riuscita</string>
+    <string name="app_failure_security">Recupero delle informazioni di autenticazione non riuscito!</string>
+    <string name="app_failure_setup">Inizializzazione dell\'applicazione non riuscita</string>
+    <string name="app_failure_operation">OOPS! C\'è stato un errore. Controlla la connessione e riprova a breve.</string>
+    <string name="app_failure_cannot_delete">L\'oggetto non può essere cancellato.</string>
+    <string name="app_failure_obj_not_found">Oggetto non trovato!</string>
+    <string name="ratingtext">Giudizio degli utenti:</string>
+    <string name="attendees_extended"> persone parteciperanno all\'evento.</string>
+    <string name="attendees_story_extended"> persone stanno seguendo questa storia.</string>
+    <string name="rating_place_dialog_title">Valuta questo luogo:</string>
+    <string name="rating_event_dialog_title">Valuta questo evento:</string>
+    <string name="rating_story_dialog_title">Valuta questa storia:</string>
+    <string name="noevents">Non ci sono eventi in questa categoria! </string>
+    <string name="backstring">Indietro</string>
+    <string name="showdetails">Dettagli&#8230;</string>
+    <string name="comments">Commenti:</string>
+    <string name="menu_item_import_text">Importa file .ics</string>
+    <string name="upload_file">Scegli file:</string>
+    <string name="file_hint">Esplora&#8230;</string>
+    <string name="apply_to_all_text">Applica a tutto</string>
+    <string name="app_uid_label">SmartCampus</string>
+    
+    <string name="tags_successfully_added">Tag salvati con successo.</string>
+    
+    <string name="select_poi_title">Seleziona luogo dell\'evento</string>
+    
+    <string name="content_empty">Nessun risultato.</string>
+    
+    <string name="address_select_toast">Tieni premuto per scegliere un luogo</string>
+    
+    <string name="rating_success">La tua valutazione è stata salvata</string>
+    <string name="attend_success">Parteciperai a questo evento!</string>
+    <string name="not_attend_success">Non parteciperai a questo evento!</string>
+
+    <string name="attend_story_success">La storia è stata aggiunta a Le mie storie!</string>
+    <string name="not_attend_story_success">Storia rimossa da Le mie storie!</string>
+    <string name="event_create_success">Evento creato!</string>
+    <string name="story_create_success">Storia creata!</string>
+    <string name="poi_create_success">Luogo creato!</string>
+    <string name="update_success">Le tue modifiche sono state salvate</string>
+    <string name="add_step">Aggiungi tappa</string>
+    <string name="start_story">Visualizza</string>
+    <string name="map_poi_cancel">Annulla</string>
+    <string name="map_poi_ok">OK</string>
+    <string name="step">Tappe:</string>
+    <string name="createstep">Crea tappa</string>
+    <string name="prev_step">Precedente</string>
+    <string name="poi_erased">Luogo eliminato dall\'utente</string>
+    <string name="next_step">Successivo</string>
+
+    <string name="empty_step_title">Il luogo non può essere vuoto</string>
+    <string name="sure_delete_step">Si vuole davvero eliminare questa tappa?</string>
+
+    <string name="msg_field_required"> richiesto.</string>
+    
+    <string name="sure_change">Sovrascrivere i dati precedenti?</string>
+    <string name="add">Aggiungi</string>
+    <string name="event">evento</string>
+    <string name="story">storia</string>
+    <string name="place">luogo</string>
+    <string name="list_event_today">Oggi</string> 
+    <string name="list_event_tomorrow">Domani</string>    
+    <string name="menu_item_todayevent_text">Eventi di oggi</string> 
+    
+    <string name="tab_home">Home</string>
+    <string name="tab_places">Luoghi</string>
+    <string name="tab_events">Eventi</string>
+    <string name="tab_stories">Storie</string>
+    
+    <string name="categories_event_concert">Concerti</string>
+    <string name="categories_event_happyhour">Happy hour</string>
+    <string name="categories_event_movie">Film</string>
+    <string name="categories_event_party">Feste</string>
+    <string name="categories_event_seminar">Seminari</string>
+    <string name="categories_event_theater">Spettacolo</string>
+    <string name="categories_event_exhibition">Mostre</string>
+    <string name="categories_event_generic">Altri eventi</string>
+    
+    <string name="categories_poi_museum">Musei</string>
+    <string name="categories_poi_mobility">Mobilità</string>
+    <string name="categories_poi_parking">Parcheggi</string>
+    <string name="categories_poi_office">Servizi</string>
+    <string name="categories_poi_theater">Teatri</string>
+    <string name="categories_poi_university">Università</string>
+    <string name="categories_poi_accommodation">Alloggi</string>
+    <string name="categories_poi_library">Biblioteche</string>
+    <string name="categories_poi_food">Ristoranti</string>
+    <string name="categories_poi_drink">Bar</string>
+    <string name="categories_poi_cinema">Cinema</string>
+    <string name="categories_poi_generic">Altro</string>
+    
+    <string name="categories_story_leisure">Intrattenimento</string>
+    <string name="categories_story_offices_and_services">Enti e servizi</string>
+    <string name="categories_story_university">Università</string>
+    <string name="categories_story_culture">Cultura</string>
+    <string name="categories_story_generic">Altre storie</string>
+    
+    <string name="search_for">Cerca</string>
+    <string name="search_in_category">nella categoria</string>
+    <string name="search_today_events">Eventi di oggi</string>
+    
+    <string name="toast_is_required">richiesto.</string>
+    <string name="toast_incorrect">Dato non corretto:</string>
+
+    <string name="eventlist_at_place">Eventi a</string>
+    
+    <string name="toast_my_events_clicked">Cliccato I miei eventi</string>
+    <string name="toast_browsing_your_files">Controllo dei tuoi files&#8230;</string>
+    <string name="toast_event_saved">Evento salvato!</string>
+    <string name="toast_poi_shared">Luogo condiviso.</string>
+    <string name="toast_follow_ok">OK! Ora stai seguendo \"%s\"</string>
+    <string name="notifications_event_new">Nuovo evento \"%1$s\" per %2$s</string>
+    <string name="notifications_story_new">Nuova storia \"%1$s\" su %2$s</string>
+    <string name="notifications_event_updated">Evento \"%s\" aggiornato</string>
+    <string name="notifications_location_updated">Luogo \"%s\" aggiornato</string>
+    <string name="notifications_story_updated">Storia \"%s\" aggiornata</string>
+    
+    <string name="notifications_unread">Notifiche non lette</string>
+    <string name="notifications_list_empty">Non hai ancora ricevuto notifiche\nriguardanti gli eventi e i luoghi\nche stai seguendo.</string>
+    <string name="notifications_list_title">Notifiche</string>
+    
+</resources>
