@@ -21,11 +21,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
+import android.content.ContentProvider;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.util.Log;
@@ -43,7 +47,11 @@ import eu.trentorise.smartcampus.storage.sync.SyncStorage;
  * platform ContactOperations provider.
  */
 public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final String TAG = "DTSyncAdapter";
+
+	/** Should be set in App metadata in order to properly manage the sync */
+	public static final String DT_SYNC_AUTHORITY = "dt-sync-authority";
+
+	private static final String TAG = "DTSyncAdapter";
 
     private final Context mContext;
 
@@ -52,8 +60,13 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
         mContext = context;
 		DTHelper.init(mContext);
-        ContentResolver.setSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), "eu.trentorise.smartcampus.vivitrento", true);
-        ContentResolver.addPeriodicSync(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), "eu.trentorise.smartcampus.vivitrento", new Bundle(),Constants.SYNC_INTERVAL*60);
+		try {
+			String authority = getAuthority(mContext);
+			ContentResolver.setSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, true);
+			ContentResolver.addPeriodicSync(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, new Bundle(),Constants.SYNC_INTERVAL*60);
+		} catch (NameNotFoundException e) {
+			Log.e(TAG, "Problem initializing sync adapter: "+e.getMessage());
+		}
 
     }
 
@@ -94,4 +107,8 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
 	}
     
+	private String getAuthority(Context ctx) throws NameNotFoundException {
+		ApplicationInfo ai = ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
+		return ai.metaData.getString(DT_SYNC_AUTHORITY);
+	}
 }

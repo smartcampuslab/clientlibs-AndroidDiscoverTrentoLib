@@ -16,8 +16,8 @@
 -->
 <resources>
 
-    <!-- <string name="app_name">ViviTrento</string>-->
-    <string name="app_name">EsploraTrento</string>
+    <string name="app_name">ViviTrento</string>
+<!--     <string name="app_name">EsploraTrento</string> -->
     <string name="empty" />
     <string name="slidingmenu_home">Home</string>
     <string name="allevents">Tutti gli eventi</string>
