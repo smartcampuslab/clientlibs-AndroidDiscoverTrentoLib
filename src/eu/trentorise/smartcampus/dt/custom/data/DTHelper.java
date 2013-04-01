@@ -26,9 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
@@ -52,7 +56,6 @@ import eu.trentorise.smartcampus.dt.model.StepObject;
 import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.dt.model.UserEventObject;
 import eu.trentorise.smartcampus.dt.model.UserPOIObject;
-import eu.trentorise.smartcampus.dt.model.UserProfile;
 import eu.trentorise.smartcampus.dt.model.UserStoryObject;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
 import eu.trentorise.smartcampus.protocolcarrier.common.Constants.Method;
@@ -84,9 +87,10 @@ public class DTHelper {
 	private ProtocolCarrier mProtocolCarrier = null;
 
 	private static LocationHelper mLocationHelper;
-
-	private UserProfile userProfile = null;
 	
+	private boolean syncInProgress = false;
+	private SherlockFragmentActivity rootActivity = null;
+
 	public static void init(Context mContext) {
 		if (instance == null)
 			instance = new DTHelper(mContext);
@@ -129,10 +133,37 @@ public class DTHelper {
 		setLocationHelper(new LocationHelper(mContext));
 	}
 
-	public static void start() throws RemoteException, DataException, StorageConfigurationException, SecurityException,
-			ConnectionException, ProtocolException {
-		getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext), Constants.SYNC_SERVICE);
-		//getInstance().mSyncManager.start(getAuthToken(), Constants.APP_TOKEN, getInstance().config);
+	/**
+	 * @return true if the DB synchronization is required: first time the app started or if the 
+	 * automatic sync is disabled.
+	 * @throws DataException 
+	 * @throws NameNotFoundException 
+	 */
+	public static boolean syncRequired() throws DataException, NameNotFoundException {
+		if (getInstance().syncInProgress) return true;
+		if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
+			return true;
+		} 
+		String authority = Constants.getAuthority(getInstance().mContext);
+		return  !ContentResolver.getMasterSyncAutomatically() || !ContentResolver.getSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(getInstance().mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(getInstance().mContext)), authority);
+	}
+	
+	public static SherlockFragmentActivity start(SherlockFragmentActivity activity) throws RemoteException, DataException, StorageConfigurationException, SecurityException,
+			ConnectionException, ProtocolException, NameNotFoundException {
+		getInstance().rootActivity = activity;
+		if (getInstance().syncInProgress) return null;
+		try {
+			if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
+				Utils.writeObjectVersion(getInstance().mContext, Constants.APP_TOKEN, 1L);
+			} 
+
+			getInstance().syncInProgress = true;
+			getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext), Constants.SYNC_SERVICE);
+			
+		} finally {
+			getInstance().syncInProgress = false;
+		}
+		return getInstance().rootActivity;
 	}
 
 	public static void synchronize() throws RemoteException, DataException, StorageConfigurationException, SecurityException, ConnectionException, ProtocolException {
@@ -363,6 +394,7 @@ public class DTHelper {
 			return getInstance().storage.query(POIObject.class, where, nonNullCategories.toArray(new String[nonNullCategories.size()]),
 					position, size, "title ASC");
 		} else {
+			System.err.println("READING REMOTELY");
 			ArrayList<POIObject> result = new ArrayList<POIObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
@@ -471,6 +503,7 @@ public class DTHelper {
 			return getInstance().storage.query(EventObject.class, where, parameters.toArray(new String[parameters.size()]), position, size,
 					"fromTime ASC");
 		} else {
+			System.err.println("READING REMOTELY");
 			ArrayList<EventObject> result = new ArrayList<EventObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();

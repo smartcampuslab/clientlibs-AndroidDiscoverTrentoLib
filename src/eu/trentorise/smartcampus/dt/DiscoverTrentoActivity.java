@@ -29,6 +29,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
@@ -118,6 +119,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 	private void setUpContent(Integer pos) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setSupportProgressBarIndeterminateVisibility(false);
+
 		setContentView(R.layout.main);
 
 		ActionBar actionBar = getSupportActionBar();
@@ -182,6 +186,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
 
+		private boolean syncRequired = false;
+		private SherlockFragmentActivity currentRootActivity = null;
+		
 		public LoadDataProcessor(Activity activity) {
 			super(activity);
 		}
@@ -194,9 +201,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			Exception res = null;
 
 			try {
-				DTHelper.start();
-			} catch (SecurityException e) {
-				res = e;
+				syncRequired = DTHelper.syncRequired();
 			} catch (Exception e) {
 				res = e;
 			}
@@ -216,6 +221,29 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		@Override
 		public void handleResult(BaseDTObject result) {
+			if (syncRequired) {
+				setSupportProgressBarIndeterminateVisibility(true);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							currentRootActivity = DTHelper.start(DiscoverTrentoActivity.this);
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							if (currentRootActivity != null) {
+								currentRootActivity.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										currentRootActivity.setSupportProgressBarIndeterminateVisibility(false);
+									}
+								});
+							}
+						}
+					}
+				}).start();
+			}
+
 			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);
 			if (entityId > 0) {
 				if (result == null) {
@@ -314,5 +342,4 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
 	}
-
 }

@@ -26,16 +26,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.util.Log;
 import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.storage.DataException;
 import eu.trentorise.smartcampus.storage.sync.SyncStorage;
 
 /**
@@ -43,7 +41,8 @@ import eu.trentorise.smartcampus.storage.sync.SyncStorage;
  * platform ContactOperations provider.
  */
 public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final String TAG = "DTSyncAdapter";
+
+	private static final String TAG = "DTSyncAdapter";
 
     private final Context mContext;
 
@@ -52,8 +51,13 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
         mContext = context;
 		DTHelper.init(mContext);
-        ContentResolver.setSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), "eu.trentorise.smartcampus.vivitrento", true);
-        ContentResolver.addPeriodicSync(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), "eu.trentorise.smartcampus.vivitrento", new Bundle(),Constants.SYNC_INTERVAL*60);
+		try {
+			String authority = Constants.getAuthority(mContext);
+			ContentResolver.setSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, true);
+			ContentResolver.addPeriodicSync(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, new Bundle(),Constants.SYNC_INTERVAL*60);
+		} catch (NameNotFoundException e) {
+			Log.e(TAG, "Problem initializing sync adapter: "+e.getMessage());
+		}
 
     }
 
@@ -62,8 +66,10 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         ContentProviderClient provider, SyncResult syncResult) {
     	 try {
  			Log.e(TAG, "Trying synchronization");
+ 			System.err.println(" SYNCING ");
 			SyncStorage storage = DTHelper.getSyncStorage();
 			storage.synchronize(DTHelper.getAuthToken(), GlobalConfig.getAppUrl(mContext), eu.trentorise.smartcampus.dt.custom.data.Constants.SYNC_SERVICE);
+ 			System.err.println(" DONE SYNCING ");
 
 		}  catch (SecurityException e) {
 			handleSecurityProblem();
@@ -93,5 +99,4 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         
         mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
 	}
-    
 }
