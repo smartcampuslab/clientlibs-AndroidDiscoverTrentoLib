@@ -35,6 +35,7 @@ import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.storage.sync.SyncStorage;
+import eu.trentorise.smartcampus.storage.sync.Utils;
 
 /**
  * SyncAdapter implementation for syncing sample SyncAdapter contacts to the
@@ -62,6 +63,15 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
         ContentProviderClient provider, SyncResult syncResult) {
+
+    	System.err.println("Syncing");
+    	
+    	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, Constants.APP_TOKEN) < Constants.SYNC_INTERVAL*60*1000) {
+    		return;
+    	}
+
+    	System.err.println("Syncing required");
+
     	 try {
  			Log.e(TAG, "Trying synchronization");
 			SyncStorage storage = DTHelper.getSyncStorage();

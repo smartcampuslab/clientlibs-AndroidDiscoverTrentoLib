@@ -120,7 +120,7 @@ public class DTHelper {
 		if (Utils.getDBVersion(mContext, Constants.APP_TOKEN) != 3) {
 			Utils.writeObjectVersion(mContext, Constants.APP_TOKEN, 0);
 		}
-		this.storage = new SyncStorageWithPaging(mContext, Constants.APP_TOKEN, Constants.SYNC_DB_NAME, 3, sc);
+		this.storage = new DTSyncStorage(mContext, Constants.APP_TOKEN, Constants.SYNC_DB_NAME, 3, sc);
 		this.mProtocolCarrier = new ProtocolCarrier(mContext, Constants.APP_TOKEN);
 
 		// LocationManager locationManager = (LocationManager)
@@ -172,6 +172,7 @@ public class DTHelper {
 			if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
 				Utils.writeObjectVersion(getInstance().mContext, Constants.APP_TOKEN, 1L);
 			} 
+	    	System.err.println("FORCED");
 
 			getInstance().syncInProgress = true;
 			getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext), Constants.SYNC_SERVICE);
