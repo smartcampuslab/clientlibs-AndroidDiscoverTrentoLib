@@ -95,6 +95,12 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		super.onPause();
 	}
 
+	@Override
+	protected void onDestroy() {
+		DTHelper.destroy();
+		super.onDestroy();
+	}
+
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
 			DTHelper.init(getApplicationContext());

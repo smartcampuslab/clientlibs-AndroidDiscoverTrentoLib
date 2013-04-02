@@ -134,25 +134,29 @@ public class DTHelper {
 	}
 
 	/**
-	 * @return true if the DB synchronization is required: first time the app started or if the 
-	 * automatic sync is disabled.
+	 * @return true if the DB synchronization is required: the last synchronization
+	 * happened more than {@link Constants#SYNC_INTERVAL} minutes ago.
 	 * @throws DataException 
 	 * @throws NameNotFoundException 
 	 */
 	public static boolean syncRequired() throws DataException, NameNotFoundException {
 		if (getInstance().syncInProgress) return true;
-		if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
-			return true;
-		} 
-		String authority = Constants.getAuthority(getInstance().mContext);
-		return  !ContentResolver.getMasterSyncAutomatically() || !ContentResolver.getSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(getInstance().mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(getInstance().mContext)), authority);
+		return System.currentTimeMillis()-Utils.getLastObjectSyncTime(getInstance().mContext, Constants.APP_TOKEN) > Constants.SYNC_INTERVAL*60*1000;
 	}
 	
 	public static SherlockFragmentActivity start(SherlockFragmentActivity activity) throws RemoteException, DataException, StorageConfigurationException, SecurityException,
 			ConnectionException, ProtocolException, NameNotFoundException {
 		getInstance().rootActivity = activity;
-		if (getInstance().syncInProgress) return null;
 		try {
+			String authority = Constants.getAuthority(getInstance().mContext);
+			Account account = new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(getInstance().mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(getInstance().mContext));
+
+			ContentResolver.setIsSyncable(account, authority, 1);
+			ContentResolver.setSyncAutomatically(account, authority, true);
+			ContentResolver.addPeriodicSync(account, authority, new Bundle(),Constants.SYNC_INTERVAL*60);
+
+			if (getInstance().syncInProgress) return null;
+
 			if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
 				Utils.writeObjectVersion(getInstance().mContext, Constants.APP_TOKEN, 1L);
 			} 
@@ -171,8 +175,16 @@ public class DTHelper {
 //        ContentResolver.requestSync(new Account(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NAME, eu.trentorise.smartcampus.ac.Constants.ACCOUNT_TYPE), "eu.trentorise.smartcampus.dt", new Bundle());
 	}
 
-	public static void destroy() throws DataException {
-		//getInstance().mSyncManager.disconnect();
+	public static void destroy() {
+		try {
+			String authority = Constants.getAuthority(getInstance().mContext);
+			Account account = new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(getInstance().mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(getInstance().mContext));
+			ContentResolver.removePeriodicSync(account, authority, new Bundle());
+			ContentResolver.setSyncAutomatically(account, authority, false);
+			ContentResolver.setIsSyncable(account, authority, 0);
+		} catch (Exception e) {
+			Log.e(DTHelper.class.getName(), "Failed destroy: "+e.getMessage());
+		}
 	}
 
 	// public static Collection<POIObject> getAllPOI() throws DataException,
