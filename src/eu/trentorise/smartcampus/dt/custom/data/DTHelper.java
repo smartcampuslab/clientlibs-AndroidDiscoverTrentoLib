@@ -94,6 +94,7 @@ public class DTHelper {
 	public static void init(Context mContext) {
 		if (instance == null)
 			instance = new DTHelper(mContext);
+		activateAutoSync();
 	}
 
 	public static SCAccessProvider getAccessProvider() {
@@ -143,10 +144,13 @@ public class DTHelper {
 		if (getInstance().syncInProgress) return true;
 		return System.currentTimeMillis()-Utils.getLastObjectSyncTime(getInstance().mContext, Constants.APP_TOKEN) > Constants.SYNC_INTERVAL*60*1000;
 	}
-	
-	public static SherlockFragmentActivity start(SherlockFragmentActivity activity) throws RemoteException, DataException, StorageConfigurationException, SecurityException,
-			ConnectionException, ProtocolException, NameNotFoundException {
-		getInstance().rootActivity = activity;
+
+	/**
+	 * Enable auot sync for the activity life-cycle
+	 * @throws NameNotFoundException
+	 * @throws DataException
+	 */
+	private static void activateAutoSync() {
 		try {
 			String authority = Constants.getAuthority(getInstance().mContext);
 			Account account = new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(getInstance().mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(getInstance().mContext));
@@ -154,7 +158,15 @@ public class DTHelper {
 			ContentResolver.setIsSyncable(account, authority, 1);
 			ContentResolver.setSyncAutomatically(account, authority, true);
 			ContentResolver.addPeriodicSync(account, authority, new Bundle(),Constants.SYNC_INTERVAL*60);
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static SherlockFragmentActivity start(SherlockFragmentActivity activity) throws RemoteException, DataException, StorageConfigurationException, SecurityException,
+			ConnectionException, ProtocolException, NameNotFoundException {
+		getInstance().rootActivity = activity;
+		try {
 			if (getInstance().syncInProgress) return null;
 
 			if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
