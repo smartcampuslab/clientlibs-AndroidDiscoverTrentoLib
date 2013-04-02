@@ -53,12 +53,10 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
 		DTHelper.init(mContext);
 		try {
 			String authority = Constants.getAuthority(mContext);
-			ContentResolver.setSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, true);
-			ContentResolver.addPeriodicSync(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, new Bundle(),Constants.SYNC_INTERVAL*60);
+			ContentResolver.setIsSyncable(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, 0);
 		} catch (NameNotFoundException e) {
 			Log.e(TAG, "Problem initializing sync adapter: "+e.getMessage());
 		}
-
     }
 
     @Override
@@ -66,10 +64,8 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         ContentProviderClient provider, SyncResult syncResult) {
     	 try {
  			Log.e(TAG, "Trying synchronization");
- 			System.err.println(" SYNCING ");
 			SyncStorage storage = DTHelper.getSyncStorage();
 			storage.synchronize(DTHelper.getAuthToken(), GlobalConfig.getAppUrl(mContext), eu.trentorise.smartcampus.dt.custom.data.Constants.SYNC_SERVICE);
- 			System.err.println(" DONE SYNCING ");
 
 		}  catch (SecurityException e) {
 			handleSecurityProblem();
