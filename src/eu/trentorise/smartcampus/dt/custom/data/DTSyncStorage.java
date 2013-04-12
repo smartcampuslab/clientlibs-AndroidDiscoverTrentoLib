@@ -67,7 +67,6 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 		}
 		
 		protected void removeOld() {
-			System.err.println("REMOVING OLD");
 			SQLiteDatabase db = helper.getWritableDatabase();
 			db.beginTransaction();
 			Cursor c = null;

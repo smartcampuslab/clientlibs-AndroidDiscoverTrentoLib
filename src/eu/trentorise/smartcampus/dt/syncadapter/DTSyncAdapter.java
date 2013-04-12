@@ -64,13 +64,9 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
         ContentProviderClient provider, SyncResult syncResult) {
 
-    	System.err.println("Syncing");
-    	
     	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, Constants.APP_TOKEN) < Constants.SYNC_INTERVAL*60*1000) {
     		return;
     	}
-
-    	System.err.println("Syncing required");
 
     	 try {
  			Log.e(TAG, "Trying synchronization");

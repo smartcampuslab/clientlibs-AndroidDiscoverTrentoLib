@@ -196,5 +196,7 @@
 	<string name="notifications_event_updated">Event \"%s\" updated</string>
 	<string name="notifications_location_updated">Place \"%s\" updated</string>
 	<string name="notifications_story_updated">Story \"%s\" updated</string>
-	
+
+	<string name="initial_data_load">The initial set of app data is being loaded.</string>
+		
 </resources>

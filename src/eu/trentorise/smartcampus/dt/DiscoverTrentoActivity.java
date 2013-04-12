@@ -192,7 +192,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
 
-		private boolean syncRequired = false;
+		private int syncRequired = 0;
 		private SherlockFragmentActivity currentRootActivity = null;
 		
 		public LoadDataProcessor(Activity activity) {
@@ -227,7 +227,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		@Override
 		public void handleResult(BaseDTObject result) {
-			if (syncRequired) {
+			if (syncRequired != DTHelper.SYNC_NOT_REQUIRED) {
+				if (syncRequired == DTHelper.SYNC_REQUIRED_FIRST_TIME) {
+					Toast.makeText(DiscoverTrentoActivity.this, R.string.abs__action_bar_home_description, Toast.LENGTH_LONG).show();
+				}
 				setSupportProgressBarIndeterminateVisibility(true);
 				new Thread(new Runnable() {
 					@Override

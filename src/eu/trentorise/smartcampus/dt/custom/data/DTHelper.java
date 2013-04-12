@@ -74,6 +74,12 @@ import eu.trentorise.smartcampus.storage.sync.Utils;
 
 public class DTHelper {
 
+	public static final int SYNC_REQUIRED = 2;
+	public static final int SYNC_NOT_REQUIRED = 0;
+	public static final int SYNC_REQUIRED_FIRST_TIME = 3;
+	public static final int SYNC_ONGOING = 1;
+	
+	
 	private static DTHelper instance = null;
 
 	private static SCAccessProvider accessProvider = new AMSCAccessProvider();
@@ -135,14 +141,27 @@ public class DTHelper {
 	}
 
 	/**
-	 * @return true if the DB synchronization is required: the last synchronization
-	 * happened more than {@link Constants#SYNC_INTERVAL} minutes ago.
+	 * @return synchronization required status: 
+	 * <ul>
+	 * <li>0 if no sync needed</li>
+	 * <li>1 if sync is ongoing</li>
+	 * <li>2 if sync is required</li>
+	 * <li>3 if sync is required first time</li>
+	 * </ul>
+	 * 0 if no   
+	 * if the DB synchronization is required: the last synchronization
+	 * happened more than {@link Constants#SYNC_INTERVAL} minutes ago or is ongoing.
 	 * @throws DataException 
 	 * @throws NameNotFoundException 
 	 */
-	public static boolean syncRequired() throws DataException, NameNotFoundException {
-		if (getInstance().syncInProgress) return true;
-		return System.currentTimeMillis()-Utils.getLastObjectSyncTime(getInstance().mContext, Constants.APP_TOKEN) > Constants.SYNC_INTERVAL*60*1000;
+	public static int syncRequired() throws DataException, NameNotFoundException {
+		if (getInstance().syncInProgress) return SYNC_ONGOING;
+		long last = Utils.getLastObjectSyncTime(getInstance().mContext, Constants.APP_TOKEN);
+		if (System.currentTimeMillis()-last > Constants.SYNC_INTERVAL*60*1000) {
+			if (last > 0) return SYNC_REQUIRED;
+			return SYNC_REQUIRED_FIRST_TIME;
+		}
+		return SYNC_NOT_REQUIRED;
 	}
 
 	/**
@@ -172,7 +191,6 @@ public class DTHelper {
 			if (Utils.getObjectVersion(getInstance().mContext, Constants.APP_TOKEN) <= 0) {
 				Utils.writeObjectVersion(getInstance().mContext, Constants.APP_TOKEN, 1L);
 			} 
-	    	System.err.println("FORCED");
 
 			getInstance().syncInProgress = true;
 			getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext), Constants.SYNC_SERVICE);
@@ -419,7 +437,6 @@ public class DTHelper {
 			return getInstance().storage.query(POIObject.class, where, nonNullCategories.toArray(new String[nonNullCategories.size()]),
 					position, size, "title ASC");
 		} else {
-			System.err.println("READING REMOTELY");
 			ArrayList<POIObject> result = new ArrayList<POIObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
@@ -528,7 +545,6 @@ public class DTHelper {
 			return getInstance().storage.query(EventObject.class, where, parameters.toArray(new String[parameters.size()]), position, size,
 					"fromTime ASC");
 		} else {
-			System.err.println("READING REMOTELY");
 			ArrayList<EventObject> result = new ArrayList<EventObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
