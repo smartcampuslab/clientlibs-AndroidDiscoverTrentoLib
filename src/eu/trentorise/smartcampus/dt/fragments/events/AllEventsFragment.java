@@ -33,8 +33,10 @@ import com.actionbarsherlock.view.SubMenu;
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.EventsCategoriesAdapter;
 import eu.trentorise.smartcampus.dt.custom.SearchHelper;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
 public class AllEventsFragment extends NotificationsSherlockFragmentDT {
@@ -73,22 +75,23 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, R.string.menu_item_addevent_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_todayevent, Menu.NONE, R.string.menu_item_todayevent_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_myevents, Menu.NONE, R.string.menu_item_myevents_text);
-
-		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-			@Override
-			public void onSearch(String query) {
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-				EventsListingFragment fragment = new EventsListingFragment();
-				Bundle args = new Bundle();
-				args.putString(EventsListingFragment.ARG_QUERY, query);
-				fragment.setArguments(args);
-				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				// fragmentTransaction.detach(currentFragment);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
-				fragmentTransaction.addToBackStack(fragment.getTag());
-				fragmentTransaction.commit();
-			}
-		});
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+//
+//		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
+//			@Override
+//			public void onSearch(String query) {
+//				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//				EventsListingFragment fragment = new EventsListingFragment();
+//				Bundle args = new Bundle();
+//				args.putString(EventsListingFragment.ARG_QUERY, query);
+//				fragment.setArguments(args);
+//				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//				// fragmentTransaction.detach(currentFragment);
+//				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+//				fragmentTransaction.addToBackStack(fragment.getTag());
+//				fragmentTransaction.commit();
+//			}
+//		});
 		
 		super.onPrepareOptionsMenu(menu);
 	}
@@ -143,7 +146,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction = fragmentManager.beginTransaction();
 			fragment = new EventsListingFragment();
 			args = new Bundle();
-			args.putBoolean(EventsListingFragment.ARG_MY, true);
+			args.putBoolean(SearchFragment.ARG_MY, true);
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
@@ -152,9 +155,16 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.search) {
-			// getSherlockActivity().onSearchRequested();
-			// Toast.makeText(getSherlockActivity(), "Opening search...",
-			// Toast.LENGTH_SHORT).show();
+			fragmentTransaction = fragmentManager.beginTransaction();
+			fragment = new SearchFragment();
+			args = new Bundle();
+			args.putString(CategoryHelper.CATEGORY_TYPE_EVENTS, CategoryHelper.CATEGORY_TYPE_EVENTS);
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// fragmentTransaction.detach(this);
+			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);

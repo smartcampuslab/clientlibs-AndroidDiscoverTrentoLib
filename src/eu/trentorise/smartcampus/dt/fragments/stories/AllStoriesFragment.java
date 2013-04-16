@@ -34,8 +34,10 @@ import com.actionbarsherlock.view.SubMenu;
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.StoriesCategoriesAdapter;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
 /*
@@ -101,21 +103,23 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 				R.string.menu_item_addstory_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_mystory, Menu.NONE,
 				R.string.menu_item_mystories_text);
-		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-			@Override
-			public void onSearch(String query) {
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-				StoriesListingFragment fragment = new StoriesListingFragment();
-				Bundle args = new Bundle();
-				args.putString(StoriesListingFragment.ARG_QUERY, query);
-				fragment.setArguments(args);
-				fragmentTransaction
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment,"stories");
-				fragmentTransaction.addToBackStack(fragment.getTag());
-				fragmentTransaction.commit();
-			}
-		});
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+
+//		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
+//			@Override
+//			public void onSearch(String query) {
+//				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//				StoriesListingFragment fragment = new StoriesListingFragment();
+//				Bundle args = new Bundle();
+//				args.putString(StoriesListingFragment.ARG_QUERY, query);
+//				fragment.setArguments(args);
+//				fragmentTransaction
+//						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//				fragmentTransaction.replace(android.R.id.content, fragment,"stories");
+//				fragmentTransaction.addToBackStack(fragment.getTag());
+//				fragmentTransaction.commit();
+//			}
+//		});
 		super.onPrepareOptionsMenu(menu);
 	}
 
@@ -147,7 +151,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction = fragmentManager.beginTransaction();
 			fragment = new StoriesListingFragment();
 			Bundle args = new Bundle();
-			args.putBoolean(StoriesListingFragment.ARG_MY, true);
+			args.putBoolean(SearchFragment.ARG_MY, true);
 			fragment.setArguments(args);
 			fragmentTransaction
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -156,6 +160,16 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.search) {
+			fragmentTransaction = fragmentManager.beginTransaction();
+			fragment = new SearchFragment();
+			Bundle args = new Bundle();
+			args.putString(CategoryHelper.CATEGORY_TYPE_STORIES, CategoryHelper.CATEGORY_TYPE_STORIES);
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// fragmentTransaction.detach(this);
+			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);

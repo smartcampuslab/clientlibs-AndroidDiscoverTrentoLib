@@ -27,6 +27,7 @@ import android.widget.Button;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 
 public class PoisCategoriesAdapter extends BaseAdapter {
 	private Context context;
@@ -82,7 +83,7 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 			PoisListingFragment fragment = new PoisListingFragment();
 			Bundle args = new Bundle();
-			args.putString(PoisListingFragment.ARG_CATEGORY, cat);
+			args.putString(SearchFragment.ARG_CATEGORY, cat);
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(android.R.id.content, fragment, "pois");

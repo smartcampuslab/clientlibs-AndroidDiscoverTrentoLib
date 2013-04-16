@@ -141,6 +141,7 @@
     <string name="list_event_today">Oggi</string> 
     <string name="list_event_tomorrow">Domani</string>    
     <string name="menu_item_todayevent_text">Eventi di oggi</string> 
+	<string name="categories_event_today">Eventi di oggi</string>
     
     <string name="tab_home">Home</string>
     <string name="tab_places">Luoghi</string>
@@ -201,4 +202,24 @@
 
     <string name="initial_data_load">The initial set of app data is being loaded.</string>
     
+
+	
+	<!-- 	String for the searching fragment -->
+    <string name="search_what">Cosa: </string>
+	<string name="search_when">Quando: </string>
+	<string name="search_where">Dove: </string>
+	<string name="search_anytime">Qualsiasi momento</string>
+	<string name="search_today">Oggi</string>
+	<string name="search_tomorrow">Domani</string>
+	<string name="search_thisweek">Questa settimana</string>
+	<string name="search_intwoweeks">Nelle prossime due settimane</string>
+	<string name="search_inonemonth">Il prossimo mese</string>
+	<string name="search_anywhere">Qualsiasi luogo</string>
+	<string name="search_within100m">Entro 100m</string>
+	<string name="search_within200m">Entro 200m</string>
+	<string name="search_within500m">Entro 500m</string>
+	<string name="search_wthin1km">Entro 1km</string>
+	<string name="search_within50km">Entro 50km</string>
+	<string name="dialog_connection_search">La modalità offline supporta solo la ricerca testuale. Per utilizzare le funzionalità avanzate connettiti ad una rete.</string>
+	
 </resources>

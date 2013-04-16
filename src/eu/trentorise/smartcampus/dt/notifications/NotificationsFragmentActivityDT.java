@@ -27,6 +27,8 @@ public class NotificationsFragmentActivityDT extends FeedbackFragmentActivity {
 		// actionBar.setDisplayShowHomeEnabled(true); // home icon bar
 		actionBar.setDisplayHomeAsUpEnabled(true); // home as up
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+
 	}
 
 	@Override

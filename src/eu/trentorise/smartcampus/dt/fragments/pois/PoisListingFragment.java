@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
@@ -70,18 +72,19 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
+import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
+import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
+import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
 public class PoisListingFragment extends AbstractLstingFragment<POIObject> implements TagProvider {
-	public static final String ARG_CATEGORY = "poi_category";
-	public static final String ARG_QUERY = "poi_query";
-	public static final String ARG_CATEGORY_SEARCH = "category_search";
-	public static final String ARG_LIST = "poi_list";
+
 
 	private ListView list;
 	private Context context;
@@ -114,28 +117,29 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
-		if (getArguments() == null || !getArguments().containsKey(ARG_LIST) && !getArguments().containsKey(ARG_QUERY)) {
-			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-				@Override
-				public void onSearch(String query) {
-					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-							.beginTransaction();
-					PoisListingFragment fragment = new PoisListingFragment();
-					Bundle args = new Bundle();
-					args.putString(PoisListingFragment.ARG_QUERY, query);
-					String category = (getArguments() != null) ? getArguments().getString(ARG_CATEGORY) : null;
-					args.putString(PoisListingFragment.ARG_CATEGORY_SEARCH, category);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
-				}
-			});
+		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_LIST) && !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
+//			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
+//				@Override
+//				public void onSearch(String query) {
+//					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+//							.beginTransaction();
+//					PoisListingFragment fragment = new PoisListingFragment();
+//					Bundle args = new Bundle();
+//					args.putString(SearchFragment.ARG_QUERY, query);
+//					String category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+//					args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
+//					fragment.setArguments(args);
+//					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+//					fragmentTransaction.addToBackStack(fragment.getTag());
+//					fragmentTransaction.commit();
+//				}
+//			});
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
 		}
 		if (category == null)
-			category = (getArguments() != null) ? getArguments().getString(ARG_CATEGORY) : null;
-		if (category != null) {
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+		if (category != null){
 			String addString = getString(R.string.add)
 					+ " "
 					+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS, category).description)
@@ -145,23 +149,24 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 						+ " "
 						+ getString(R.string.place)
 						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS, category).description);
+						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS,
+								category).description);
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, addString);
 		}
-
+		
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
-
+		
 		super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
+		
 		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
-
+		
 		if (item.getItemId() == R.id.map_view) {
-			category = (getArguments() != null) ? getArguments().getString(ARG_CATEGORY) : null;
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 			if (category != null) {
 				MapManager.switchToMapView(category, this);
 			} else {
@@ -179,18 +184,36 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
-				Fragment fragment = new CreatePoiFragment();
-				Bundle args = new Bundle();
-				args.putString(ARG_CATEGORY, category);
-				fragment.setArguments(args);
-				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-				fragmentTransaction.addToBackStack(fragment.getTag());
-				fragmentTransaction.commit();
-				return true;
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			Fragment fragment = new CreatePoiFragment();
+			Bundle args = new Bundle();
+			args.putString(SearchFragment.ARG_CATEGORY, category);
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// fragmentTransaction.detach(this);
+			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			return true;
 			}
+		}else if (item.getItemId() == R.id.search) {
+			FragmentTransaction fragmentTransaction;
+			Fragment fragment;
+			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			fragment = new SearchFragment();
+			Bundle args = new Bundle();
+			args.putString(SearchFragment.ARG_CATEGORY, category);
+			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
+			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_MY) && getArguments().getBoolean(SearchFragment.ARG_MY))
+				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			/* add category to bundle */
+			return true;
+
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -198,10 +221,10 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 	private void setFollowByIntent() {
 		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
-					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
-			Bundle aBundle = ai.metaData;
-			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
+			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(getSherlockActivity().getPackageName(),
+					PackageManager.GET_META_DATA);
+			Bundle aBundle=ai.metaData;
+			mFollowByIntent=aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
 			Log.e(PoisListingFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
@@ -212,7 +235,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	@Override
 	public void onStart() {
 		Bundle bundle = this.getArguments();
-		String category = (bundle != null) ? bundle.getString(ARG_CATEGORY) : null;
+		String category = (bundle != null) ? bundle.getString(SearchFragment.ARG_CATEGORY) : null;
 		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("pois", category);
 		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
 
@@ -220,17 +243,25 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		if (categoryString != null) {
 			title.setText(categoryString);
-		} else if (bundle != null && bundle.containsKey(ARG_QUERY)) {
-			String query = bundle.getString(ARG_QUERY);
+		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_QUERY)) {
+			String query = bundle.getString(SearchFragment.ARG_QUERY);
 			title.setText(context.getResources().getString(R.string.search_for) + "'" + query + "'");
 
-			if (bundle.containsKey(ARG_CATEGORY_SEARCH)) {
-				category = bundle.getString(ARG_CATEGORY_SEARCH);
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
+				category = bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH);
 				if (category != null)
 					title.append(" " + context.getResources().getString(R.string.search_for) + " " + categoryString);
 			}
-		}
+		
 
+			
+		}
+		if (bundle.containsKey(SearchFragment.ARG_WHERE_SEARCH)) {
+			WhereForSearch where = bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH); 	
+			if (where != null)
+				title.append( " " +where.getDescription() + " " );
+		}
+		
 		list = (ListView) getSherlockActivity().findViewById(R.id.pois_list);
 
 		PoiAdapter poiAdapter = new PoiAdapter(context, R.layout.pois_row);
@@ -293,17 +324,16 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-							.beginTransaction();
-					Fragment fragment = new CreatePoiFragment();
-					Bundle args = new Bundle();
-					args.putSerializable(CreatePoiFragment.ARG_POI, poi);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					// fragmentTransaction.detach(this);
-					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				Fragment fragment = new CreatePoiFragment();
+				Bundle args = new Bundle();
+				args.putSerializable(CreatePoiFragment.ARG_POI, poi);
+				fragment.setArguments(args);
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				// fragmentTransaction.detach(this);
+				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
 				}
 			}
 		});
@@ -311,8 +341,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		// b.setOnClickListener(new OnClickListener() {
 		// @Override
 		// public void onClick(View v) {
-		// Toast.makeText(getSherlockActivity(),
-		// getString(R.string.toast_poi_shared),
+		// Toast.makeText(getSherlockActivity(), getString(R.string.toast_poi_shared),
 		// Toast.LENGTH_SHORT).show();
 		//
 		// }
@@ -326,15 +355,15 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-					TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
+				TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
 
-						@SuppressWarnings("unchecked")
-						@Override
-						public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-							new TaggingAsyncTask(poi).execute(Concept.convertSS(suggestions));
-						}
-					}, PoisListingFragment.this, Concept.convertToSS(poi.getCommunityData().getTags()));
-					taggingDialog.show();
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
+						new TaggingAsyncTask(poi).execute(Concept.convertSS(suggestions));
+					}
+				}, PoisListingFragment.this, Concept.convertToSS(poi.getCommunityData().getTags()));
+				taggingDialog.show();
 				}
 			}
 		});
@@ -345,14 +374,14 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			public void onClick(View v) {
 
 				FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(), DTConstants.ENTITY_TYPE_POI);
-				if (mFollowByIntent) {
+				if (mFollowByIntent){
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
 					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
 							new FollowAsyncTaskProcessor(getSherlockActivity()));
-					followTask.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN,
-							DTHelper.getAuthToken(), obj);
-
+					followTask
+							.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN, DTHelper.getAuthToken(), obj);
+					
 				}
 			}
 		});
@@ -388,18 +417,49 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		try {
 			Collection<POIObject> result = null;
 			Bundle bundle = getArguments();
-			if (bundle == null) {
-				return Collections.emptyList();
-			} else if (bundle.containsKey(ARG_CATEGORY)) {
-				result = DTHelper.getPOIByCategory(params[0].position, params[0].size, bundle.getString(ARG_CATEGORY));
-			} else if (bundle.containsKey(ARG_QUERY)) {
-				if (bundle.containsKey(ARG_CATEGORY_SEARCH)) {
-					result = DTHelper.searchPOIsByCategory(params[0].position, params[0].size, bundle.getString(ARG_QUERY),
-							bundle.getString(ARG_CATEGORY_SEARCH));
-				} else
-					result = DTHelper.searchPOIs(params[0].position, params[0].size, bundle.getString(ARG_QUERY));
-			} else if (bundle.containsKey(ARG_LIST)) {
-				result = (List<POIObject>) bundle.getSerializable(ARG_LIST);
+			boolean my = false;
+			if (bundle.getBoolean(SearchFragment.ARG_MY))
+				my = true;
+			String categories = bundle.getString(SearchFragment.ARG_CATEGORY);
+//			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
+//				result = DTHelper.getPOIByCategory(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_CATEGORY));
+//			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
+//				if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
+////					result = DTHelper.searchPOIsByCategory(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+////							bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH));
+//					result = DTHelper.searchInGeneral(position, lastSize, bundle.getString(SearchFragment.ARG_QUERY),
+//							(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+//							(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class, categories);
+//				} else
+//					result = DTHelper.searchPOIs(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY));
+//			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
+//				result = (List<POIObject>) bundle.getSerializable(SearchFragment.ARG_LIST);
+//			} else {
+//				return Collections.emptyList();
+//			}
+			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
+			sort.put("title", 1);
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
+
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,POIObject.class, sort, categories);
+
+			}  else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
+
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class,sort, categories);
+
+			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
+
+
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,POIObject.class, sort, categories);
+
+			}  else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
+				result = (List<POIObject>) bundle.get(SearchFragment.ARG_LIST);
 			} else {
 				return Collections.emptyList();
 			}

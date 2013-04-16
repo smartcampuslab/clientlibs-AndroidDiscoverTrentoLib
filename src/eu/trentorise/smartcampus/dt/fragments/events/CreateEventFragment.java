@@ -52,6 +52,7 @@ import eu.trentorise.smartcampus.dt.custom.DatePickerDialogFragment;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment.PoiHandler;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment;
 import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.Concept;
@@ -100,8 +101,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			eventObject = (EventObject) getArguments().getSerializable(ARG_EVENT);
 		} else {
 			eventObject = new UserEventObject();
-			if (getArguments() != null && getArguments().containsKey(EventsListingFragment.ARG_CATEGORY)) {
-				eventObject.setType(getArguments().getString(EventsListingFragment.ARG_CATEGORY));
+			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
+				eventObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
 		}
 		if (eventObject.getPoiId() != null) {

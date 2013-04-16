@@ -342,13 +342,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		} else if (item.getItemId() == R.id.follow) {
 			FollowEntityObject obj = new FollowEntityObject(getEvent().getEntityId(), getEvent().getTitle(),
 					DTConstants.ENTITY_TYPE_EVENT);
-			if (mFollowByIntent) {
+			if (mFollowByIntent){
 				FollowHelper.follow(getSherlockActivity(), obj);
 			} else {
-				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-						new FollowAsyncTaskProcessor(getSherlockActivity()));
-				followTask.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN, DTHelper.getAuthToken(),
-						obj);
+			SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+					new FollowAsyncTaskProcessor(getSherlockActivity()));
+			followTask
+					.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN, DTHelper.getAuthToken(), obj);
 			}
 			return true;
 		} else if (item.getItemId() == R.id.rate) {

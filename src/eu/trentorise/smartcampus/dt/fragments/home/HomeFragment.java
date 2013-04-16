@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -57,6 +58,7 @@ import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
@@ -66,14 +68,18 @@ public class HomeFragment extends NotificationsSherlockFragmentDT
 implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 
 	public static final String ARG_OBJECTS = "objects";
-	public static final String ARG_CATEGORY = "category";
+	public static final String ARG_POI_CATEGORY = "poi category";
+	public static final String ARG_EVENT_CATEGORY = "event category";
+
 	protected ViewGroup mapContainer;
 	protected MapView mapView;
 	DTItemizedOverlay mItemizedoverlay = null;
 	MyLocationOverlay mMyLocationOverlay = null;
 
 	private Context context;
-	private String[] categories = null;
+	private String[] poiCategories = null;
+	private String[] eventsCategories = null;
+	private String[] eventsNotTodayCategories = null;
 
 	@Override
 	public void onStart() {
@@ -158,12 +164,18 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 					}
 				}
 			}).execute();
-		} else if (getArguments() != null && getArguments().containsKey(ARG_CATEGORY)) {
-			setPOICategoriesToLoad(getArguments().getString(ARG_CATEGORY));
-		} else if (categories != null) {
-			setPOICategoriesToLoad(categories);
+		} else if (getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY)) {
+			setPOICategoriesToLoad(getArguments().getString(ARG_POI_CATEGORY));
+		} else if (getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY)) {
+			setEventCategoriesToLoad(getArguments().getString(ARG_EVENT_CATEGORY));
+		} else {
+			if (poiCategories != null) {
+			setPOICategoriesToLoad(poiCategories);
 		}
-
+			if (eventsCategories != null) {
+				setEventsCategoriesToLoad(eventsCategories);
+			}
+		}
 		return mapContainer;
 	}
 
@@ -182,29 +194,51 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_showlayers, 1, R.string.menu_item_layers_text);
-		item.setIcon(R.drawable.layers);
+		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1, R.string.menu_item__places_layers_text);
+		item.setIcon(R.drawable.places_layers);
+		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_events_layers, 1, R.string.menu_item__events_layers_text);
+		item.setIcon(R.drawable.events_layers);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menu_item_showlayers) {
-			// LayerDialogFragment dialogFragment = new
-			// LayerDialogFragment(this,
-			// categories);
-			// dialogFragment.show(getSherlockActivity()
-			// .getSupportFragmentManager(), "dialog");
-			MapLayerDialogHelper.createDialog(getActivity(), this, getString(R.string.layers_title), categories).show();
+		if (item.getItemId() == R.id.menu_item_show_places_layers) {
+			MapLayerDialogHelper.createPOIDialog(getActivity(), this, getString(R.string.layers_title), poiCategories).show();
+			return true;
+		} else 		if (item.getItemId() == R.id.menu_item_show_events_layers) {
+			Dialog eventsDialog =  MapLayerDialogHelper.createEventsDialog(getActivity(), this, getString(R.string.layers_title), eventsCategories);
+			eventsDialog.show();			
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
+	
+	public void setEventsCategoriesToLoad(final String... categories) {
+		this.eventsCategories = categories;
+		mItemizedoverlay.clearMarkers();
+
+		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(getActivity(),
+				mItemizedoverlay, mapView) {
+			@Override
+			protected Collection<? extends BaseDTObject> getObjects() {
+				try {
+					// TODO
+					return DTHelper.getEventsByCategories(0, -1, categories);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Collections.emptyList();
+				}
+			}
+		}).execute();
+	}
+	
 	public void setPOICategoriesToLoad(final String... categories) {
-		this.categories = categories;
+		this.poiCategories = categories;
 		mItemizedoverlay.clearMarkers();
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(getActivity(),
@@ -240,10 +274,10 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 		Bundle args = new Bundle();
 		if (list.get(0) instanceof EventObject) {
 			fragment = new EventsListingFragment();
-			args.putSerializable(EventsListingFragment.ARG_LIST, new ArrayList<EventObject>((List) list));
+			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList<EventObject>((List) list));
 		} else if (list.get(0) instanceof POIObject) {
 			fragment = new PoisListingFragment();
-			args.putSerializable(PoisListingFragment.ARG_LIST, new ArrayList<POIObject>((List) list));
+			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList<POIObject>((List) list));
 		}
 		if (fragment != null) {
 			fragment.setArguments(args);
@@ -253,5 +287,54 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
+	}
+
+	@Override
+	public void setEventCategoriesToLoad(final String... categories) {
+		this.eventsCategories = categories;
+		this.eventsNotTodayCategories = categories;
+
+		mItemizedoverlay.clearMarkers();
+
+		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(getActivity(),
+				mItemizedoverlay, mapView) {
+			@Override
+			protected Collection<? extends BaseDTObject> getObjects() {
+				try {
+					/*check if todays is checked and cat with searchTodayEvents*/
+					
+					if (isTodayIncluded()){
+						List<EventObject> newList = new ArrayList<EventObject>();
+						newList.addAll(DTHelper.searchTodayEvents(0, -1, ""));
+						if (categories!=null)
+							newList.addAll(DTHelper.getEventsByCategories(0, -1, eventsNotTodayCategories));
+						return newList;
+					}
+					else return DTHelper.getEventsByCategories(0, -1, categories);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Collections.emptyList();
+				}
+			}
+
+			
+		}).execute();
+	}
+	private boolean isTodayIncluded() {
+		List<String> categoriesNotToday = new ArrayList<String>();
+		boolean istodayincluded=false;
+		if (eventsNotTodayCategories.length>0)
+			for (int i=0;i<eventsNotTodayCategories.length;i++)
+			 {
+				if (eventsNotTodayCategories[i].contains("Today"))
+				{
+		
+					istodayincluded = true;
+				}
+				else categoriesNotToday.add(eventsNotTodayCategories[i]);
+
+			 }
+		eventsNotTodayCategories =  categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
+		return istodayincluded;
 	}
 }

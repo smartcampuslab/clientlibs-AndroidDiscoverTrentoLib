@@ -49,7 +49,9 @@
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Create event</string>
     <string name="menu_item_myevents_text">My events</string>
-    <string name="menu_item_layers_text">Layers</string>
+    <!-- <string name="menu_item_layers_text">Layers</string> -->
+    <string name="menu_item__places_layers_text">Places</string>
+    <string name="menu_item__events_layers_text">Events</string>
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
     <string name="menu_item_poicategory_text">Place categories</string>
     <string name="related_poi">Related place</string>
@@ -138,7 +140,8 @@
     <string name="place">place</string>
 	<string name="list_event_today">Today</string> 
 	<string name="list_event_tomorrow">Tomorrow</string>    
-	<string name="menu_item_todayevent_text">Today\'s Events</string>
+    <string name="menu_item_todayevent_text">Today\'s Events</string>
+    <string name="categories_event_today">Today\'s Events</string>
 	
 	<string name="tab_home">Home</string>
 	<string name="tab_places">Places</string>
@@ -197,6 +200,22 @@
 	<string name="notifications_location_updated">Place \"%s\" updated</string>
 	<string name="notifications_story_updated">Story \"%s\" updated</string>
 
-	<string name="initial_data_load">The initial set of app data is being loaded.</string>
-		
+    <!-- String for the searching fragment -->
+    <string name="search_what">What: </string>
+    <string name="search_when">When: </string>
+    <string name="search_where">Where: </string>
+    <string name="search_anytime">Anytime</string>
+    <string name="search_today">Today</string>
+    <string name="search_tomorrow">Tomorrow</string>
+    <string name="search_thisweek">This week</string>
+    <string name="search_intwoweeks">In two weeks</string>
+    <string name="search_inonemonth">In one month</string>
+    <string name="search_anywhere">Anywhere</string>
+    <string name="search_within100m">Within 100m</string>
+    <string name="search_within200m">Within 200m</string>
+    <string name="search_within500m">Within 500m</string>
+    <string name="search_wthin1km">Within 1km</string>
+    <string name="search_within50km">Within 50km</string>
+    <string name="dialog_connection_search">Offline mode supports only basic search. To exploit advanced search please connect to a network.</string>
 </resources>
+    
