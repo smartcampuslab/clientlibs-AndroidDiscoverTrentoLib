@@ -52,6 +52,8 @@ public class CategoryHelper {
 					R.string.categories_event_theater),
 			new CategoryDescriptor(R.drawable.marker_event_exhibition, R.drawable.ic_event_exhibition, "Exhibitions",
 					R.string.categories_event_exhibition),
+			new CategoryDescriptor(R.drawable.marker_event_family, R.drawable.ic_event_family, "Family",
+					R.string.categories_event_family),
 			new CategoryDescriptor(R.drawable.marker_event_generic, R.drawable.ic_other_event, EVENT_NONCATEGORIZED,
 					R.string.categories_event_generic), };
 

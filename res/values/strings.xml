@@ -155,6 +155,7 @@
 	<string name="categories_event_seminar">Seminars</string>
 	<string name="categories_event_theater">Performances</string>
 	<string name="categories_event_exhibition">Exhibitions</string>
+	<string name="categories_event_family">Family</string>	
 	<string name="categories_event_generic">Other</string>
 	
 	<string name="categories_poi_museum">Museums</string>
