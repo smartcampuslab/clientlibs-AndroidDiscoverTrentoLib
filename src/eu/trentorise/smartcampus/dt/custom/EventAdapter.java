@@ -21,10 +21,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
@@ -77,7 +79,9 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 			// row.findViewById(R.id.event_placeholder_descr);
 			e.location = (TextView) row
 					.findViewById(R.id.event_placeholder_loc);
-			e.date = (TextView) row.findViewById(R.id.event_placeholder_date);
+			e.hour = (TextView) row.findViewById(R.id.event_placeholder_hour);
+			e.icon = (ImageView) row.findViewById(R.id.event_placeholder_icon);
+
 			e.separator = (LinearLayout) row.findViewById(R.id.separator);
 			e.dateSeparator = (TextView) row.findViewById(R.id.separator_text);
 			row.setTag(e);
@@ -95,8 +99,8 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 		} else {
 			e.location.setText(null);
 		}
-		e.date.setText(e.event.dateTimeString());
-		
+		e.hour.setText(e.event.getTimingFormatted());
+		e.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType())));
 		//Choose if show the separator or not
 		EventObject event = getItem(position);
 		

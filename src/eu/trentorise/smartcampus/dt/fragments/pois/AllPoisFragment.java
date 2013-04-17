@@ -33,8 +33,10 @@ import com.actionbarsherlock.view.SubMenu;
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.PoisCategoriesAdapter;
 import eu.trentorise.smartcampus.dt.custom.SearchHelper;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
 public class AllPoisFragment extends NotificationsSherlockFragmentDT {
@@ -80,7 +82,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 				PoisListingFragment fragment = new PoisListingFragment();
 				Bundle args = new Bundle();
-				args.putString(PoisListingFragment.ARG_QUERY, query);
+				args.putString(SearchFragment.ARG_QUERY, query);
 				fragment.setArguments(args);
 				fragmentTransaction
 						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -114,6 +116,16 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 			return true;
 			}
 		} else if (item.getItemId() == R.id.search) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			Fragment fragment  = new SearchFragment();
+			Bundle args = new Bundle();
+			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);

@@ -24,7 +24,7 @@
     <item name="menu_item_mystory" type="id"/>
     <item name="menu_item_allevents" type="id"/>
     <item name="menu_item_allpois" type="id"/>
-    <item name="menu_item_showlayers" type="id"/>
+<!--     <item name="menu_item_showlayers" type="id"/> -->
     <item name="menu_item_notifications" type="id"/>
     <item name="add_my_stories" type="id"/>
     <item name="delete_my_stories" type="id"/>
@@ -46,6 +46,8 @@
     <item name="menu_item_import" type="id"/>
     <item type="id" name="content_empty"/>
     <item name="menu_item_todayevent" type="id"/>    
-    <item name="menu_item_notifications" type="id"/>
-    
+    <item name="menu_item_notifications" type="id"/>   
+    <item name="menu_item_show_places_layers" type="id"/>
+    <item name="menu_item_show_events_layers" type="id"/>
+        
 </resources>

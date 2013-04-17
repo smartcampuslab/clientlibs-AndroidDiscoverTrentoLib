@@ -49,6 +49,7 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.StepAdapter;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
 import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.Concept;
@@ -125,8 +126,8 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			storyObject = (StoryObject) getArguments().getSerializable(ARG_STORY);
 		} else {
 			storyObject = new UserStoryObject();
-			if (getArguments() != null && getArguments().containsKey(StoriesListingFragment.ARG_CATEGORY)) {
-				storyObject.setType(getArguments().getString(StoriesListingFragment.ARG_CATEGORY));
+			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
+				storyObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
 		}
 		if (storyObject.getCommunityData() == null)

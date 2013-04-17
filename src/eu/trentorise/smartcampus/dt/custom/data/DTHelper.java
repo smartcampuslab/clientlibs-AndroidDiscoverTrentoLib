@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.android.maps.GeoPoint;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -36,6 +38,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -48,6 +51,9 @@ import eu.trentorise.smartcampus.android.common.LocationHelper;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.SuggestionHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
+import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.ObjectFilter;
@@ -56,6 +62,7 @@ import eu.trentorise.smartcampus.dt.model.StepObject;
 import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.dt.model.UserEventObject;
 import eu.trentorise.smartcampus.dt.model.UserPOIObject;
+import eu.trentorise.smartcampus.dt.model.UserProfile;
 import eu.trentorise.smartcampus.dt.model.UserStoryObject;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
 import eu.trentorise.smartcampus.protocolcarrier.common.Constants.Method;
@@ -64,6 +71,7 @@ import eu.trentorise.smartcampus.protocolcarrier.custom.MessageResponse;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.storage.BasicObject;
 import eu.trentorise.smartcampus.storage.DataException;
 import eu.trentorise.smartcampus.storage.StorageConfigurationException;
 import eu.trentorise.smartcampus.storage.db.StorageConfiguration;
@@ -85,7 +93,8 @@ public class DTHelper {
 	private static SCAccessProvider accessProvider = new AMSCAccessProvider();
 
 	//private SyncManager mSyncManager;
-	private Context mContext;
+	private static Context mContext;
+	private StorageConfiguration config = null;
 	//private SyncStorageConfiguration config = null;
 	private SyncStorageWithPaging storage = null;
 	private static RemoteStorage remoteStorage = null;
@@ -97,6 +106,8 @@ public class DTHelper {
 	private boolean syncInProgress = false;
 	private SherlockFragmentActivity rootActivity = null;
 
+	private UserProfile userProfile = null;
+	private static String[] categories =null;
 	public static void init(Context mContext) {
 		if (instance == null)
 			instance = new DTHelper(mContext);
@@ -121,12 +132,13 @@ public class DTHelper {
 		super();
 		this.mContext = mContext;
 		//this.mSyncManager = new SyncManager(mContext, DTSyncStorageService.class);
-		StorageConfiguration sc = new DTStorageConfiguration();
+		config = new DTStorageConfiguration();
+
 		//this.config = new SyncStorageConfiguration(sc, GlobalConfig.getAppUrl(mContext), Constants.SYNC_SERVICE, Constants.SYNC_INTERVAL);
 		if (Utils.getDBVersion(mContext, Constants.APP_TOKEN) != 3) {
 			Utils.writeObjectVersion(mContext, Constants.APP_TOKEN, 0);
 		}
-		this.storage = new DTSyncStorage(mContext, Constants.APP_TOKEN, Constants.SYNC_DB_NAME, 3, sc);
+		this.storage = new DTSyncStorage(mContext, Constants.APP_TOKEN, Constants.SYNC_DB_NAME, 3, config);
 		this.mProtocolCarrier = new ProtocolCarrier(mContext, Constants.APP_TOKEN);
 
 		// LocationManager locationManager = (LocationManager)
@@ -442,7 +454,7 @@ public class DTHelper {
 				ObjectFilter filter = new ObjectFilter();
 				filter.setSkip(position);
 				filter.setLimit(size);
-				filter.setType(category);
+				filter.setTypes(Arrays.asList(categories));
 				result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, POIObject.class));
 			}
 			return result;
@@ -503,7 +515,7 @@ public class DTHelper {
 			ArrayList<POIObject> result = new ArrayList<POIObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
-				filter.setType(category);
+				filter.setTypes(Arrays.asList(categories));
 				filter.setSkip(position);
 				filter.setLimit(size);
 				result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, POIObject.class));
@@ -539,7 +551,7 @@ public class DTHelper {
 			List<String> parameters = nonNullCategories;
 
 			if (text != null) {
-				where += "AND ( events MATCH ? ) AND fromTime > " + getCurrentDateTime();
+				where += "AND ( events MATCH ? ) AND fromTime > " + getCurrentDateTimeForSearching();
 				parameters.add(text);
 			}
 			return getInstance().storage.query(EventObject.class, where, parameters.toArray(new String[parameters.size()]), position, size,
@@ -548,7 +560,7 @@ public class DTHelper {
 			ArrayList<EventObject> result = new ArrayList<EventObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
-				filter.setType(category);
+				filter.setTypes(Arrays.asList(categories));
 				filter.setSkip(position);
 				filter.setLimit(size);
 				result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, EventObject.class));
@@ -557,7 +569,7 @@ public class DTHelper {
 		}
 	}
 
-	private static long getCurrentDateTime() {
+	public static long getCurrentDateTimeForSearching() {
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR_OF_DAY, 23);
 		c.set(Calendar.MINUTE, 59);
@@ -601,7 +613,7 @@ public class DTHelper {
 			ArrayList<StoryObject> result = new ArrayList<StoryObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
-				filter.setType(category);
+				filter.setTypes(Arrays.asList(categories));
 				filter.setSkip(position);
 				filter.setLimit(size);
 				result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, StoryObject.class));
@@ -634,14 +646,14 @@ public class DTHelper {
 			if (where.length() > 0) {
 				where = "(" + where + ")";
 			}
-			where += "AND fromTime > " + getCurrentDateTime();
+			where += "AND fromTime > " + getCurrentDateTimeForSearching();
 			return getInstance().storage.query(EventObject.class, where, nonNullCategories.toArray(new String[nonNullCategories.size()]),
 					position, size, "fromTime ASC");
 		} else {
 			ArrayList<EventObject> result = new ArrayList<EventObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
-				filter.setType(category);
+				filter.setTypes(Arrays.asList(categories));
 				filter.setSkip(position);
 				filter.setLimit(size);
 				result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, EventObject.class));
@@ -650,46 +662,8 @@ public class DTHelper {
 		}
 	}
 
-	public static Collection<EventObject> searchMyEvents(int position, int size, String text) throws DataException,
-			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
-			if (text == null || text.trim().length() == 0) {
-				return getInstance().storage.getObjects(EventObject.class);
-			}
-			return getInstance().storage.query(EventObject.class, "events MATCH ? AND attending IS NOT NULL ",
-					new String[] { text }, position, size, "fromTime ASC");
-		} else {
-			ObjectFilter filter = new ObjectFilter();
-			Map<String, Object> criteria = new HashMap<String, Object>(1);
-			criteria.put("text", text);
-			filter.setCriteria(criteria);
-			filter.setSkip(position);
-			filter.setLimit(size);
-			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, EventObject.class);
-		}
-	}
-	
-	
-	
-	public static Collection<EventObject> searchEvents(int position, int size, String text) throws DataException,
-			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
-			if (text == null || text.trim().length() == 0) {
-				return getInstance().storage.getObjects(EventObject.class);
-			}
-			return getInstance().storage.query(EventObject.class, "events MATCH ? AND fromTime > " + getCurrentDateTime(),
-					new String[] { text }, position, size, "fromTime ASC");
-		} else {
-			ObjectFilter filter = new ObjectFilter();
-			Map<String, Object> criteria = new HashMap<String, Object>(1);
-			criteria.put("text", text);
-			filter.setCriteria(criteria);
-			filter.setSkip(position);
-			filter.setLimit(size);
-			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, EventObject.class);
-		}
-	}
-	
+
+
 	public static Collection<EventObject> searchTodayEvents(int position, int size, String text) throws DataException,
 	StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
 		//Date now = new Date();  
@@ -707,7 +681,7 @@ public class DTHelper {
 			return getInstance().storage.query(
 					EventObject.class,
 					" fromTime > "
-							+ getCurrentDateTime() +" AND fromTime < " + tomorrow.getTime(),
+							+ getCurrentDateTimeForSearching() +" AND fromTime < " + tomorrow.getTime(),
 					null , position, size, "fromTime ASC");
 		} else {
 			ObjectFilter filter = new ObjectFilter();
@@ -724,7 +698,7 @@ public class DTHelper {
 	public static Collection<EventObject> getEventsByPOI(int position, int size, String poiId) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
 		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
-			return getInstance().storage.query(EventObject.class, "poiId = ? AND fromTime > " + getCurrentDateTime(),
+			return getInstance().storage.query(EventObject.class, "poiId = ? AND fromTime > " + getCurrentDateTimeForSearching(),
 					new String[] { poiId }, position, size, "fromTime ASC");
 		} else {
 			ObjectFilter filter = new ObjectFilter();
@@ -737,18 +711,7 @@ public class DTHelper {
 		}
 	}
 
-	public static Collection<EventObject> getMyEvents(int position, int size) throws DataException, StorageConfigurationException,
-			ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
-			return getInstance().storage.query(EventObject.class, "attending IS NOT NULL", null, position, size, "fromTime DESC");
-		} else {
-			ObjectFilter filter = new ObjectFilter();
-			filter.setMyObjects(true);
-			filter.setSkip(position);
-			filter.setLimit(size);
-			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, EventObject.class);
-		}
-	}
+
 
 	public static List<SemanticSuggestion> getSuggestions(CharSequence suggest) throws ConnectionException, ProtocolException,
 			SecurityException, DataException {
@@ -910,7 +873,7 @@ public class DTHelper {
 			ArrayList<StoryObject> result = new ArrayList<StoryObject>();
 			for (String category : categories) {
 				ObjectFilter filter = new ObjectFilter();
-				filter.setType(category);
+				filter.setTypes(Arrays.asList(categories));
 				filter.setSkip(position);
 				filter.setLimit(size);
 				result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, StoryObject.class));
@@ -997,24 +960,7 @@ public class DTHelper {
 		}
 	}
 
-	public static Collection<StoryObject> searchMyStories(int position, int size, String text) throws DataException,
-			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
-			if (text == null || text.trim().length() == 0) {
-				return getInstance().storage.getObjects(StoryObject.class);
-			}
-			return getInstance().storage.query(StoryObject.class, "stories MATCH ? AND attending IS NOT NULL ",
-					new String[] { text }, position, size, "title ASC");
-		} else {
-			ObjectFilter filter = new ObjectFilter();
-			Map<String, Object> criteria = new HashMap<String, Object>(1);
-			criteria.put("text", text);
-			filter.setCriteria(criteria);
-			filter.setSkip(position);
-			filter.setLimit(size);
-			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, StoryObject.class);
-		}
-	}
+
 	public static LocationHelper getLocationHelper() {
 		return mLocationHelper;
 	}
@@ -1058,4 +1004,215 @@ public class DTHelper {
 		if (p != null) return p.getUserId().equals(obj.getCreatorId());
 		return false;
 	}
+
+	public static <T extends BaseDTObject> Collection<T> searchInGeneral(int position, int size, String what, WhereForSearch distance,
+			WhenForSearch when, boolean my, Class<T> cls, SortedMap<String,Integer> sort, String... inCategories) throws DataException, StorageConfigurationException, ConnectionException, ProtocolException, SecurityException{
+		/* calcola when */
+		String[] argsArray = null;
+		ArrayList<String> args = null;
+
+		if (distance != null) {
+			/* search online */
+			return getObjectsFromServer( position,  size, what,  distance, when,  my,cls, inCategories, sort);
+		} else {
+			/* search offline */
+
+			if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+
+				/* if sync create the query */
+				String where = "";
+				if (inCategories[0] != null) {
+					where = addCategoriesToWhere(where, inCategories);
+					args = new ArrayList<String>(Arrays.asList(categories));
+				}
+				if ((what != null) && (what.compareTo("") != 0)) {
+					where = addWhatToWhere(cls,where, what);
+					if (args == null)
+						args = new ArrayList<String>(Arrays.asList(what));
+					else args.add(what);
+				}
+				if (cls.getCanonicalName().compareTo(EventObject.class.getCanonicalName())==0){
+					if (when != null)
+						where = addWhenToWhere(where, when.getFrom(), when.getTo());
+					
+				/* se sono con gli eventi setto la data a oggi */
+				else
+					where = addWhenToWhere(where, getCurrentDateTimeForSearching(), 0);
+				}
+				if (my)
+					where = addMyEventToWhere(where);
+				if (args != null)
+					argsArray = args.toArray(new String[args.size()]);
+				/*
+				 * se evento metti in ordine di data ma se place metti in ordine
+				 * alfabetico
+				 */
+				if (cls.getCanonicalName().compareTo(EventObject.class.getCanonicalName())==0){
+				return getInstance().storage.query(cls, where, argsArray, position, size, "fromTime ASC");
+				} else {
+					return getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
+				}
+			} else {
+				/* if not sync... (not used anymore) */
+				ArrayList<T> result = new ArrayList<T>();
+				for (String category : inCategories) {
+					ObjectFilter filter = new ObjectFilter();
+					if (what != null) {
+						Map<String, Object> criteria = new HashMap<String, Object>(1);
+						criteria.put("text", what);
+						filter.setCriteria(criteria);
+					}
+					if (when != null) {
+						filter.setFromTime(when.getFrom());
+						filter.setToTime(when.getTo());
+					}
+					if (category != null) {
+						Arrays.asList(categories);
+						}
+					if (my)
+						filter.setMyObjects(true);
+
+					filter.setSkip(position);
+					filter.setLimit(size);
+					result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter,cls));
+				}
+				return result;
+			}
+
+		}
+		
+	}
+	
+
+
+	private static <T  extends BasicObject> Collection<T > getObjectsFromServer(int position, int size, String what, WhereForSearch distance, WhenForSearch when, boolean myevent, Class<T> cls, String[] inCategories,SortedMap<String,Integer> sort) {
+		try {
+
+			ObjectFilter filter = new ObjectFilter();
+			
+			/*get position*/
+			long currentDate = getCurrentDateTimeForSearching();
+			if (when!=null)
+				filter.setFromTime(when.getFrom());
+			if ( (when!=null)&&(when.getTo()!=0))
+				filter.setToTime(when.getTo());
+//			if (when!=null){
+//				
+//				filter.setFromTime(currentDate+when.getFrom());
+//				filter.setToTime(currentDate+when.getTo());
+//				}
+//			else filter.setFromTime(getCurrentDateTime());
+			
+			if (distance !=null){
+				GeoPoint mypos = MapManager.requestMyLocation(mContext);
+				filter.setCenter(new double[] { (double) mypos.getLatitudeE6()/1000000,(double) mypos.getLongitudeE6()/1000000} );
+				filter.setRadius(distance.getFilter());
+				}
+			if ((what!=null)&&(what.compareTo("")!=0)){
+			filter.setText(what);
+			}
+			if (inCategories[0]!=null){
+			filter.setTypes(Arrays.asList(categories));
+			}
+			filter.setSkip(position);
+			filter.setLimit(size);
+			filter.setClassName(cls.getCanonicalName());
+			if (sort!=null)
+				filter.setSort(sort);
+			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
+		} catch (Exception e) {
+//			throw new DiscoverTrentoConnectorException(e);
+			return null;
+		}
+	}
+
+
+
+	private static String addMyEventToWhere(String where) {
+		String whereReturns = new String(" attending IS NOT NULL ");
+		if (where.length() > 0) {
+			return where += " and (" + whereReturns + ")";
+		} else
+			return where += whereReturns;
+	}
+
+	private static String addWhenToWhere(String where, long whenFrom, long whenTo) {
+		String whereReturns = null;
+		if ((whenTo != 0)) {
+//			Date whenFromDate = new Date(whenFrom);
+//			Date whenToDate = new Date(whenTo);
+//			Calendar calFrom = Calendar.getInstance();
+//			calFrom.setTime(whenFromDate);
+//			Calendar calTo = Calendar.getInstance();
+//			calTo.setTime(whenToDate);
+//
+//			calFrom.add(Calendar.DATE, -1);
+//			calTo.add(Calendar.DATE, -1);
+//			calFrom.set(Calendar.HOUR_OF_DAY, 23);
+//			calTo.set(Calendar.HOUR_OF_DAY, 23);
+//			calFrom.set(Calendar.MINUTE, 59);
+//			calTo.set(Calendar.MINUTE, 59);
+//			calFrom.set(Calendar.SECOND, 59);
+//			calTo.set(Calendar.SECOND, 59);
+//			calFrom.set(Calendar.MILLISECOND, 0);
+//			calTo.set(Calendar.MILLISECOND, 0);
+//			whenFrom = calFrom.getTimeInMillis();
+//			whenTo = calTo.getTimeInMillis();
+			whereReturns = new String(" fromTime > " + whenFrom + " AND fromTime < " + whenTo);
+		} else
+			whereReturns = new String(" fromTime > " + whenFrom);
+
+		if (where.length() > 0) {
+			return where += " and (" + whereReturns + ")";
+		} else
+			return where += whereReturns;
+
+	}
+
+	private static <T extends BaseDTObject> String addWhatToWhere( Class<T> cls, String where, String what) throws StorageConfigurationException, DataException {
+		String whereReturns = "";
+
+		whereReturns=" "+getInstance().config.getTableName(cls)+" MATCH ? ";
+		if (where.length() > 0) {
+			return where += " and (" + whereReturns + ")";
+		} else
+			return where += whereReturns;
+
+	}
+
+	private static String addCategoriesToWhere(String where, String[] inCategories) {
+		String whereReturns = new String();
+		categories = CategoryHelper.getAllCategories(new HashSet<String>(Arrays.asList(inCategories)));
+
+		List<String> nonNullCategories = new ArrayList<String>();
+		for (int i = 0; i < categories.length; i++) {
+			if (whereReturns.length() > 0)
+				whereReturns += " or ";
+			if (categories[i] != null) {
+				nonNullCategories.add(categories[i]);
+				whereReturns += " type = ?";
+			} else {
+				whereReturns += " type is null";
+			}
+		}
+		if (where.length() > 0) {
+			return where += " and (" + whereReturns + ")";
+		} else
+			return where += "( "+ whereReturns+" ) ";
+
+	}
+	
+	public static boolean checkInternetConnection(Context context) {
+
+		  ConnectivityManager con_manager = (ConnectivityManager) context
+		    .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		  if (con_manager.getActiveNetworkInfo() != null
+		    && con_manager.getActiveNetworkInfo().isAvailable()
+		    && con_manager.getActiveNetworkInfo().isConnected()) {
+		   return true;
+		  } else {
+		   return false;
+		  }
+		 }
 }
