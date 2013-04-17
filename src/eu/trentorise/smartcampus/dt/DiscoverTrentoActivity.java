@@ -229,7 +229,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		public void handleResult(BaseDTObject result) {
 			if (syncRequired != DTHelper.SYNC_NOT_REQUIRED) {
 				if (syncRequired == DTHelper.SYNC_REQUIRED_FIRST_TIME) {
-					Toast.makeText(DiscoverTrentoActivity.this, R.string.abs__action_bar_home_description, Toast.LENGTH_LONG).show();
+					Toast.makeText(DiscoverTrentoActivity.this, R.string.initial_data_load, Toast.LENGTH_LONG).show();
 				}
 				setSupportProgressBarIndeterminateVisibility(true);
 				new Thread(new Runnable() {

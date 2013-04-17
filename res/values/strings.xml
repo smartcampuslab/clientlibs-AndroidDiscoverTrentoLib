@@ -200,6 +200,8 @@
 	<string name="notifications_location_updated">Place \"%s\" updated</string>
 	<string name="notifications_story_updated">Story \"%s\" updated</string>
 
+	<string name="initial_data_load">The initial set of app data is being loaded.</string>
+	
     <!-- String for the searching fragment -->
     <string name="search_what">What: </string>
     <string name="search_when">When: </string>
