@@ -88,12 +88,12 @@
                     android:paddingTop="5dp" >
 
 				       <TextView
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="0.5"
-            android:text="@string/event_date_from" 
-            android:textColor="@color/sc_light_gray"/>
+				            android:layout_width="0dip"
+				            android:layout_height="wrap_content"
+				            android:layout_margin="3dp"
+				            android:layout_weight="0.5"
+				            android:text="@string/event_date_from" 
+				            android:textColor="@color/sc_light_gray"/>
 				    
 				        <CheckBox
                         android:id="@+id/more_days_checkbox"
@@ -140,10 +140,11 @@
                     </LinearLayout>
 
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="3dp"
                 android:text="@string/createevent_timing" 
-                android:textColor="@color/sc_light_gray"/>
+                android:textColor="@color/sc_light_gray"/>  
           
           <EditText
                 android:id="@+id/event_timing_et"

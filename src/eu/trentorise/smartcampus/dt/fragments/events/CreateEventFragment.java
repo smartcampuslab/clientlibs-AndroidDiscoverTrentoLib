@@ -112,10 +112,10 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				eventObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
 		}
-		if (eventObject.getPoiId() != null) {
+		
+		if (eventObject.getPoiId() != null) 
 			poi = DTHelper.findPOIById(eventObject.getPoiId());
 
-		}
 		if (eventObject.getCommunityData() == null)
 			eventObject.setCommunityData(new CommunityData());
 	}
@@ -137,21 +137,19 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		});
 		
 		final EditText dateToEditText = (EditText) getView().findViewById(R.id.event_date_to);
-		Date tmp=null;
+		Date tmp = null;
 		try {
 			tmp = FORMAT_DATE_UI.parse(dateFromEditText.getText().toString());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(tmp);
 			cal.add(Calendar.DATE, 1);
-		//	dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
-		
+			dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
 		} catch (ParseException e) {
 			Toast.makeText(
 					getActivity(),
 					getResources().getString(R.string.toast_incorrect) + " "
 							+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
 			return;
-	
 		}
 		dateToEditText.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -162,10 +160,10 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
 			}
 		});
-		if (poi != null) {
+		
+		if (poi != null) 
 			poiField.setText(poi.getTitle());
-		}
-
+		
 	}
 
 	@Override
@@ -204,7 +202,16 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				dateToEdit.setEnabled(isChecked);
 			}
 		});
-
+		
+		EditText dateFromEdit = (EditText)view.findViewById(R.id.event_date_from);
+		if (eventObject.getFromTime() != null && eventObject.getFromTime() > 0) 
+			dateFromEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(new Date(eventObject.getFromTime())));
+		else {
+			Calendar c = Calendar.getInstance();
+			c.set(Calendar.MINUTE, 0);
+			dateFromEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(c.getTime()));
+		}
+		
 		EditText timing = (EditText) view.findViewById(R.id.event_timing_et);
 		// timing is editable only in own UserEvent
 		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
@@ -219,13 +226,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			timing.setEnabled(false);
 		}
 
-		if (eventObject.getFromTime() != null && eventObject.getFromTime() > 0) {
-			dateToEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(new Date(eventObject.getFromTime())));
-		} else {
-			Calendar c = Calendar.getInstance();
-			c.set(Calendar.MINUTE, 0);
-			dateToEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(c.getTime()));
-		}
+		
 		poiField = (AutoCompleteTextView) view.findViewById(R.id.event_place);
 		ArrayAdapter<String> poiAdapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dd_list, R.id.dd_textview,
 				DTHelper.getAllPOITitles());
@@ -423,7 +424,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			
 			CharSequence dateTostr = ((EditText)view.findViewById(R.id.event_date_to)).getText();
 			if(moreDaysCheckbox.isChecked()){
-				if(dateTostr == null || dateTostr.length()==0){
+				if (dateTostr == null || dateTostr.length()==0){
 					Toast.makeText(
 							getActivity(),
 							getActivity().getResources().getString(R.string.createevent_ending_date) + " "

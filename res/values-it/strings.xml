@@ -224,12 +224,12 @@
 	<string name="search_within50km">Entro 50km</string>
 	<string name="dialog_connection_search">La modalità offline supporta solo la ricerca testuale. Per utilizzare le funzionalità avanzate connettiti ad una rete.</string>
 	
-	<string name="event_date_from">Date</string>
+	<string name="event_date_from">Data</string>
     <string name="separator"> - </string>
-    <string name="event_date_to"> To </string>
-    <string name="more_days">More days</string>
+    <string name="event_date_to">Data fine</string>
+    <string name="more_days">Più giorni</string>
     <string name="datetime_to_before_from">Data e/o orario di fine sono precedenti a quelle di inizio!</string>
-    <string name="date_field_empty">Select event date!</string>
+    <string name="date_field_empty">Selezionare la data dell\'evento!</string>
     
     
 </resources>

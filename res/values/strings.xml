@@ -222,7 +222,7 @@
     
     <string name="event_date_from">Date</string>
     <string name="separator"> - </string>
-    <string name="event_date_to"> To </string>
+    <string name="event_date_to">Ending date</string>
     <string name="more_days">More days</string>
     <string name="to_date_before_from_date">Start date should be earlier than end date!</string>
     <string name="date_field_empty">Select event date!</string>
