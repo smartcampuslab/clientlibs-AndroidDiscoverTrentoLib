@@ -91,6 +91,12 @@ public class EventObject extends BaseDTObject {
 		return DATE_FORMAT.format(new Date(getFromTime()));
 	}
 
+	public CharSequence toDateTimeString() {
+		if (getToTime()==null||getToTime()==0)
+			return dateTimeString();	
+		return DATE_FORMAT.format(new Date(getToTime()));
+	}
+	
 	public POIObject assignedPoi() {
 		return poi;
 	}
@@ -116,7 +122,7 @@ public class EventObject extends BaseDTObject {
 		o.setFromTimeUserDefined(isFromTimeUserDefined());
 		o.setId(getId());
 		o.setLocation(getLocation());
-		o.setPoiId(o.getPoiId());
+		o.setPoiId(getPoiId());
 		o.setPoiIdUserDefined(isPoiIdUserDefined());
 		o.setSource(getSource());
 		o.setTiming(getTiming());
@@ -127,17 +133,7 @@ public class EventObject extends BaseDTObject {
 		o.setTypeUserDefined(isToTimeUserDefined());
 		o.setUpdateTime(getUpdateTime());
 		o.setVersion(getVersion());
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		o.assignPoi(assignedPoi());
 		return o;
 	}
 	

@@ -336,7 +336,9 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			EventDetailsFragment fragment = new EventDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event);
+//			args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event);
+			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event.getId());
+
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -505,9 +507,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				calToDate(cal);
 				biggerFromTime = cal.getTimeInMillis();
 			}
-			List<EventObject> returnList = postProcForRecurrentEvents(sorted, biggerFromTime);
-
-			return returnList;
+			if (sorted.size()>0){
+				List<EventObject> returnList = postProcForRecurrentEvents(sorted, biggerFromTime);
+				return returnList;
+			}
+			else return sorted;
 		} catch (Exception e) {
 			Log.e(EventsListingFragment.class.getName(), e.getMessage());
 			e.printStackTrace();
@@ -579,7 +583,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		cal.setTimeInMillis(result.get(result.size() - 1).getFromTime());
 		calToDate(cal);
 		biggerFromTime = cal.getTimeInMillis();
-		
+
 		for (EventObject event : result) {
 			/*
 			 * if an event has toTime null o equal to toTime, it is only for
@@ -587,12 +591,18 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			 */
 			if ((event.getToTime() != null) && (event.getFromTime() != null) && (event.getToTime() != event.getFromTime())) {
 				long eventFromTime = event.getFromTime();
-				long eventToTime = event.getToTime();
+				long eventToTime = 0;
+				if (event.getToTime() == 0) {
+					eventToTime = event.getFromTime();
+				} else {
+					eventToTime = event.getToTime();
+				}
 				Calendar calFromTime = Calendar.getInstance();
 				Calendar calToTime = Calendar.getInstance();
 
 				calFromTime.setTime(new Date(eventFromTime));
 				calToDate(calFromTime);
+
 				calToTime.setTime(new Date(eventToTime));
 				calToDate(calToTime);
 				long dayFromTime = calFromTime.getTimeInMillis();
@@ -610,15 +620,15 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					dayFromTime = Math.max(dayFromTime, lessFromTime);
 					dayToTime = Math.min(dayToTime, biggerFromTime);
 					long dayTmpTime = dayFromTime;
-					
+
 					while (dayTmpTime <= dayToTime) {
 						EventObject newEvent = event.copy();
 						newEvent.setFromTime(dayTmpTime);
 						newEvent.setToTime(dayTmpTime);
 						Calendar caltmp = Calendar.getInstance();
 						caltmp.setTimeInMillis(dayTmpTime);
-						caltmp.add(Calendar.DATE,1);
-						dayTmpTime=caltmp.getTimeInMillis();
+						caltmp.add(Calendar.DATE, 1);
+						dayTmpTime = caltmp.getTimeInMillis();
 						returnList.add(newEvent);
 					}
 					/* calculate how much days use the events */
@@ -637,11 +647,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 	private static class EventComparator implements Comparator<EventObject> {
 		public int compare(EventObject c1, EventObject c2) {
-			if (c1.getFromTime()==c2.getFromTime())
-					return 0;
-			if (c1.getFromTime()<c2.getFromTime())
+			if (c1.getFromTime() == c2.getFromTime())
+				return 0;
+			if (c1.getFromTime() < c2.getFromTime())
 				return -1;
-			if (c1.getFromTime()>c2.getFromTime())
+			if (c1.getFromTime() > c2.getFromTime())
 				return 1;
 			return 0;
 		}

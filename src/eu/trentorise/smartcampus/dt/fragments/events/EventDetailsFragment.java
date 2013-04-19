@@ -104,9 +104,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	private EventObject getEvent() {
 		if (mEvent == null) {
 			Bundle bundle = this.getArguments();
-			mEvent = (EventObject) bundle.getSerializable(ARG_EVENT_OBJECT);
+			String eventId = bundle.getString(ARG_EVENT_OBJECT);
+			mEvent = DTHelper.findEventById(eventId);
 			if (mEvent != null) {
 				poi = DTHelper.findPOIById(mEvent.getPoiId());
+				mEvent.assignPoi(poi);
 			}
 		}
 		return mEvent;
@@ -166,7 +168,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			// date
 			tv = (TextView) this.getView().findViewById(R.id.event_details_date);
 			if (getEvent().getFromTime() != null && getEvent().getFromTime() > 0) {
-				tv.setText(getEvent().dateTimeString());
+				CharSequence fromTime = getEvent().dateTimeString();
+				CharSequence toTime = getEvent().toDateTimeString();
+				if (fromTime.equals(toTime)) {
+					tv.setText(fromTime);
+				} else {
+					tv.setText(fromTime+" - "+toTime);
+				}
 			} else {
 				tv.setText("");
 			}
@@ -342,13 +350,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		} else if (item.getItemId() == R.id.follow) {
 			FollowEntityObject obj = new FollowEntityObject(getEvent().getEntityId(), getEvent().getTitle(),
 					DTConstants.ENTITY_TYPE_EVENT);
-			if (mFollowByIntent){
+			if (mFollowByIntent) {
 				FollowHelper.follow(getSherlockActivity(), obj);
 			} else {
-			SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-					new FollowAsyncTaskProcessor(getSherlockActivity()));
-			followTask
-					.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN, DTHelper.getAuthToken(), obj);
+				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+						new FollowAsyncTaskProcessor(getSherlockActivity()));
+				followTask.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN, DTHelper.getAuthToken(),
+						obj);
 			}
 			return true;
 		} else if (item.getItemId() == R.id.rate) {

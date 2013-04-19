@@ -27,11 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import org.codehaus.jackson.type.TypeReference;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.android.maps.GeoPoint;
-
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -45,6 +40,10 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.android.maps.GeoPoint;
+
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.ac.model.UserData;
@@ -108,7 +107,6 @@ public class DTHelper {
 	private SherlockFragmentActivity rootActivity = null;
 
 	private UserProfile userProfile = null;
-	private static String[] categories = null;
 
 	public static void init(Context mContext) {
 		if (instance == null)
@@ -1054,8 +1052,8 @@ public class DTHelper {
 			+ "4a41045d2\",\"fromTime\":1366349600000,\"toTime\":1367349600000,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null},"
 			+ "\"title\":\"Libri in bicicletta e a piedi\",\"creatorId\":null,\"entityId\":10876,\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\","
 			+ "\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4c6962726920696e2062696369636c65747461206520612070696564693b2043"
-			+ "6f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b2031372f30342f32303133\",\"version\":137600,\"updateTime\":-1,\"user\":null}," +
-			"{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\","
+			+ "6f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b2031372f30342f32303133\",\"version\":137600,\"updateTime\":-1,\"user\":null},"
+			+ "{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\","
 			+ "\"attending\":[],\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,"
 			+ "\"location\":[46.076598,11.142105],\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">Vetrina tematica &#147;Oh,"
 			+ "che bel castello!: storie di principi e principesse, cavalieri e dame. I libri saranno subito disponibili per il prestito.</font><br/>Costo: "
@@ -1103,13 +1101,13 @@ public class DTHelper {
 		} else {
 			/* search offline */
 
-			if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+//			if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
 
 				/* if sync create the query */
 				String where = "";
 				if (inCategories[0] != null) {
-					where = addCategoriesToWhere(where, inCategories);
-					args = new ArrayList<String>(Arrays.asList(categories));
+						args = new ArrayList<String>();
+					where = addCategoriesToWhere(where, inCategories, args);
 				}
 				if ((what != null) && (what.compareTo("") != 0)) {
 					where = addWhatToWhere(cls, where, what);
@@ -1139,32 +1137,32 @@ public class DTHelper {
 				} else {
 					return getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
 				}
-			} else {
-				/* if not sync... (not used anymore) */
-				ArrayList<T> result = new ArrayList<T>();
-				for (String category : inCategories) {
-					ObjectFilter filter = new ObjectFilter();
-					if (what != null) {
-						Map<String, Object> criteria = new HashMap<String, Object>(1);
-						criteria.put("text", what);
-						filter.setCriteria(criteria);
-					}
-					if (when != null) {
-						filter.setFromTime(when.getFrom());
-						filter.setToTime(when.getTo());
-					}
-					if (category != null) {
-						Arrays.asList(categories);
-					}
-					if (my)
-						filter.setMyObjects(true);
-
-					filter.setSkip(position);
-					filter.setLimit(size);
-					result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls));
-				}
-				return result;
-			}
+//			} else {
+//				/* if not sync... (not used anymore) */
+//				ArrayList<T> result = new ArrayList<T>();
+//				for (String category : inCategories) {
+//					ObjectFilter filter = new ObjectFilter();
+//					if (what != null) {
+//						Map<String, Object> criteria = new HashMap<String, Object>(1);
+//						criteria.put("text", what);
+//						filter.setCriteria(criteria);
+//					}
+//					if (when != null) {
+//						filter.setFromTime(when.getFrom());
+//						filter.setToTime(when.getTo());
+//					}
+//					if (category != null) {
+//						Arrays.asList(categories);
+//					}
+//					if (my)
+//						filter.setMyObjects(true);
+//
+//					filter.setSkip(position);
+//					filter.setLimit(size);
+//					result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls));
+//				}
+//				return result;
+//			}
 
 		}
 
@@ -1194,8 +1192,9 @@ public class DTHelper {
 				filter.setText(what);
 			}
 			if (inCategories[0] != null) {
-				filter.setTypes(Arrays.asList(categories));
-			}
+filter.setTypes(Arrays.asList(CategoryHelper
+						.getAllCategories(new HashSet<String>(Arrays
+								.asList(inCategories)))));			}
 			filter.setSkip(position);
 			filter.setLimit(size);
 			filter.setClassName(cls.getCanonicalName());
@@ -1203,9 +1202,10 @@ public class DTHelper {
 				filter.setSort(sort);
 			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
 
-//			List<T> returnevents = eu.trentorise.smartcampus.android.common.Utils.convertJSONToObjects(eventsReturn, cls);
-//			return returnevents;
-
+			// List<T> returnevents =
+			// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObjects(eventsReturn,
+			// cls);
+			// return returnevents;
 
 		} catch (Exception e) {
 			return null;
@@ -1223,14 +1223,18 @@ public class DTHelper {
 	private static String addWhenToWhere(String where, long whenFrom, long whenTo) {
 		String whereReturns = null;
 		if ((whenTo != 0)) {
-			whereReturns = new String("( fromTime > " + whenFrom + " AND fromTime < " + whenTo+" ) OR (  toTime < " + whenTo + " AND toTime > " + whenFrom+" )");
+			whereReturns = new String("( fromTime > " + whenFrom + " AND fromTime < " + whenTo + " ) OR (  toTime < " + whenTo
+					+ " AND toTime > " + whenFrom + " )");
+//			whereReturns = " (  fromTime <= " + whenTo + " AND toTime >= " + whenFrom + " )";
 		} else
-			whereReturns = new String(" ( fromTime > " + whenFrom + "  ) OR ( toTime > " + whenFrom+" )");
+			whereReturns = new String(" ( fromTime > " + whenFrom + "  ) OR ( toTime > " + whenFrom + " )");
+
+//			whereReturns = " ( toTime >= " + whenFrom + " )";
 
 		if (where.length() > 0) {
 			return where += " and (" + whereReturns + ")";
 		} else
-			return where += whereReturns;
+			return  whereReturns;
 
 	}
 
@@ -1246,11 +1250,13 @@ public class DTHelper {
 
 	}
 
-	private static String addCategoriesToWhere(String where, String[] inCategories) {
+	private static String addCategoriesToWhere(String where,
+			String[] inCategories, List<String> nonNullCategories) {
 		String whereReturns = new String();
-		categories = CategoryHelper.getAllCategories(new HashSet<String>(Arrays.asList(inCategories)));
+		String[] categories = CategoryHelper
+				.getAllCategories(new HashSet<String>(Arrays
+						.asList(inCategories)));
 
-		List<String> nonNullCategories = new ArrayList<String>();
 		for (int i = 0; i < categories.length; i++) {
 			if (whereReturns.length() > 0)
 				whereReturns += " or ";
@@ -1277,6 +1283,16 @@ public class DTHelper {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public static EventObject findEventById(String eventId) {
+		
+		try {
+			EventObject event = getInstance().storage.getObjectById(eventId, EventObject.class);
+			return event;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 }
