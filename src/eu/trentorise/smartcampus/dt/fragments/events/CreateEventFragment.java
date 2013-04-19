@@ -16,11 +16,13 @@
 package eu.trentorise.smartcampus.dt.fragments.events;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -37,6 +39,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -67,10 +72,12 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 	private POIObject poi = null;
 	private View view = null;
+	private EditText dateToEdit;
+	private CheckBox moreDaysCheckbox;
 	private CreatePoiFromEvent poiHandler = new CreatePoiFromEvent();
 	private AutoCompleteTextView poiField;
 	public static String ARG_EVENT = "event";
-
+	public static final SimpleDateFormat FORMAT_DATE_UI = new SimpleDateFormat("dd/MM/yy",Locale.ENGLISH);
 	private CategoryDescriptor[] categoryDescriptors;
 
 	private EventObject eventObject;
@@ -118,13 +125,40 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		super.onStart();
 
 		// date and time will be returned as tags
-		final EditText dateEditText = (EditText) getView().findViewById(R.id.event_date);
-		dateEditText.setOnClickListener(new View.OnClickListener() {
+		final EditText dateFromEditText = (EditText) getView().findViewById(R.id.event_date_from);
+		dateFromEditText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				DialogFragment f = DatePickerDialogFragment.newInstance((EditText) v);
-				if (dateEditText.getText() != null)
-					f.setArguments(DatePickerDialogFragment.prepareData(dateEditText.getText().toString()));
+				if (dateFromEditText.getText() != null)
+					f.setArguments(DatePickerDialogFragment.prepareData(dateFromEditText.getText().toString()));
+				f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
+			}
+		});
+		
+		final EditText dateToEditText = (EditText) getView().findViewById(R.id.event_date_to);
+		Date tmp=null;
+		try {
+			tmp = FORMAT_DATE_UI.parse(dateFromEditText.getText().toString());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(tmp);
+			cal.add(Calendar.DATE, 1);
+		//	dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
+		
+		} catch (ParseException e) {
+			Toast.makeText(
+					getActivity(),
+					getResources().getString(R.string.toast_incorrect) + " "
+							+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
+			return;
+	
+		}
+		dateToEditText.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DialogFragment f = DatePickerDialogFragment.newInstance((EditText) v);
+				if (dateToEditText.getText() != null)
+					f.setArguments(DatePickerDialogFragment.prepareData(dateToEditText.getText().toString()));
 				f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
 			}
 		});
@@ -161,7 +195,15 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		EditText title = (EditText) view.findViewById(R.id.event_title);
 		title.setText(eventObject.getTitle());
 
-		EditText dateEdit = (EditText) view.findViewById(R.id.event_date);
+		dateToEdit = (EditText) view.findViewById(R.id.event_date_to);
+		moreDaysCheckbox = (CheckBox)view.findViewById(R.id.more_days_checkbox);
+		moreDaysCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				dateToEdit.setEnabled(isChecked);
+			}
+		});
 
 		EditText timing = (EditText) view.findViewById(R.id.event_timing_et);
 		// timing is editable only in own UserEvent
@@ -178,11 +220,11 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		if (eventObject.getFromTime() != null && eventObject.getFromTime() > 0) {
-			dateEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(new Date(eventObject.getFromTime())));
+			dateToEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(new Date(eventObject.getFromTime())));
 		} else {
 			Calendar c = Calendar.getInstance();
 			c.set(Calendar.MINUTE, 0);
-			dateEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(c.getTime()));
+			dateToEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(c.getTime()));
 		}
 		poiField = (AutoCompleteTextView) view.findViewById(R.id.event_place);
 		ArrayAdapter<String> poiAdapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dd_list, R.id.dd_textview,
@@ -233,7 +275,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			// if (eventObject.getFromTime() != null &&
 			// eventObject.getFromTime() > 0 &&
 			// !eventObject.isFromTimeUserDefined()) {
-			dateEdit.setEnabled(false);
+			dateToEdit.setEnabled(false);
 			// }
 			// if (poi != null && !eventObject.isPoiIdUserDefined()) {
 			poiField.setEnabled(false);
@@ -356,9 +398,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				poi = DTHelper.findPOIByTitle(eventPlace.getText().toString());
 			}
 
-			CharSequence datestr = ((EditText) view.findViewById(R.id.event_date)).getText();
-
-			if (datestr == null || datestr.length() == 0) {
+			CharSequence dateFromstr = ((EditText) view.findViewById(R.id.event_date_from)).getText();
+			if (dateFromstr == null || dateFromstr.length() == 0) {
 				Toast.makeText(
 						getActivity(),
 						getActivity().getResources().getString(R.string.createevent_date) + " "
@@ -366,6 +407,47 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 						.show();
 				return;
 			}
+			Calendar cal = Calendar.getInstance();
+			Date fromDate;
+			try {
+				fromDate = DatePickerDialogFragment.DATEFORMAT.parse(dateFromstr.toString());
+				cal.setTime(fromDate);
+			} catch (ParseException e) {
+				Toast.makeText(
+						getActivity(),
+						getResources().getString(R.string.toast_incorrect) + " "
+								+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
+				return;
+			}
+			eventObject.setFromTime(cal.getTimeInMillis());
+			
+			CharSequence dateTostr = ((EditText)view.findViewById(R.id.event_date_to)).getText();
+			if(moreDaysCheckbox.isChecked()){
+				if(dateTostr == null || dateTostr.length()==0){
+					Toast.makeText(
+							getActivity(),
+							getActivity().getResources().getString(R.string.createevent_ending_date) + " "
+									+ getActivity().getResources().getString(R.string.msg_field_required), Toast.LENGTH_SHORT)
+							.show();
+					return;
+				} else {
+					Date toDate;
+					try {
+						toDate = FORMAT_DATE_UI.parse(dateTostr.toString());
+						if(fromDate.after(toDate)){
+							Toast.makeText(getActivity(), R.string.to_date_before_from_date, Toast.LENGTH_SHORT).show();
+							return;
+						}
+						cal.setTime(toDate);
+						eventObject.setToTime(cal.getTimeInMillis());
+					} catch (ParseException e) {
+						Toast.makeText(getActivity(), R.string.date_field_empty, Toast.LENGTH_SHORT).show();
+						return;
+					}
+					
+				}
+			}
+			
 			// if (eventObject.getTiming() == null ||
 			// eventObject.isFromTimeUserDefined() ||
 			// DTHelper.isOwnedObject(eventObject)) {
@@ -382,18 +464,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				eventObject.setTiming(timingstr.toString());
 			}
 
-			Calendar cal = Calendar.getInstance();
-			try {
-				Date d = DatePickerDialogFragment.DATEFORMAT.parse(datestr.toString());
-				cal.setTime(d);
-			} catch (ParseException e) {
-				Toast.makeText(
-						getActivity(),
-						getResources().getString(R.string.toast_incorrect) + " "
-								+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
-				return;
-			}
-			eventObject.setFromTime(cal.getTimeInMillis());
+			
 
 			eventObject.setType(cat);
 			if (poi != null) {

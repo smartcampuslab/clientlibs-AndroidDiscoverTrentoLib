@@ -26,6 +26,7 @@
     <string name="create_title">Title</string>
     <string name="create_description">Description</string>
     <string name="createevent_date">Date</string>
+    <string name="createevent_ending_date">Ending date</string>
     <string name="createevent_timestart">Start</string>
     <string name="createevent_timeend">End</string>
     <string name="createevent_timing">Time</string>
@@ -218,5 +219,14 @@
     <string name="search_wthin1km">Within 1km</string>
     <string name="search_within50km">Within 50km</string>
     <string name="dialog_connection_search">Offline mode supports only basic search. To exploit advanced search please connect to a network.</string>
+    
+    <string name="event_date_from">Date</string>
+    <string name="separator"> - </string>
+    <string name="event_date_to"> To </string>
+    <string name="more_days">More days</string>
+    <string name="to_date_before_from_date">Start date should be earlier than end date!</string>
+    <string name="date_field_empty">Select event date!</string>
+    
+    
 </resources>
     
