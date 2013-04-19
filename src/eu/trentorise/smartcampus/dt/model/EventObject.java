@@ -98,6 +98,48 @@ public class EventObject extends BaseDTObject {
 	public void assignPoi(POIObject poi) {
 		this.poi = poi;
 	}
+
+	public EventObject copy() {
+		EventObject o = new EventObject();
+		o.setAttendees(getAttendees());
+		o.setAttending(getAttending());
+		o.setCommunityData(getCommunityData());
+		o.setCommunityData(getCommunityData());
+		o.setCreatorId(getCreatorId());
+		o.setCreatorName(getCreatorName());
+		o.setCustomData(getCustomData());
+		o.setDescription(getDescription());
+		o.setDomainId(getDomainId());
+		o.setDomainType(getDomainType());
+		o.setEntityId(getEntityId());
+		o.setFromTime(getFromTime());
+		o.setFromTimeUserDefined(isFromTimeUserDefined());
+		o.setId(getId());
+		o.setLocation(getLocation());
+		o.setPoiId(o.getPoiId());
+		o.setPoiIdUserDefined(isPoiIdUserDefined());
+		o.setSource(getSource());
+		o.setTiming(getTiming());
+		o.setTitle(getTitle());
+		o.setToTime(getToTime());
+		o.setToTimeUserDefined(isToTimeUserDefined());
+		o.setType(getType());
+		o.setTypeUserDefined(isToTimeUserDefined());
+		o.setUpdateTime(getUpdateTime());
+		o.setVersion(getVersion());
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		return o;
+	}
 	
 	
 }

@@ -1028,33 +1028,67 @@ public class DTHelper {
 			+ "che bel castello!: storie di principi e principesse, cavalieri e dame. I libri saranno subito disponibili per il prestito.</font><br/>Costo: "
 			+ "<br/>Biblioteca Comunale di Trento sede dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: "
 			+ "br/>http://www.bibcom.trento.it/\",\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\","
-			+ "\"domainId\":\"5167f047975a21e4a41045b6\",\"fromTime\":1366149500000,\"toTime\":1366149700000,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,"
+			+ "\"domainId\":\"5167f047975a21e4a41045b6\",\"fromTime\":1366149500000,\"toTime\":1366249700000,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,"
 			+ "\"ratings\":null},\"title\":\"Oh, che bel castello!\",\"creatorId\":null,\"entityId\":10733,\"timing\":\"dal lunedì al giovedì ore "
 			+ "14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\",\"creatorName\":null,\"typeUserDefined\":false,"
 			+ "\"customData\":null,\"id\":\"4f682c206368652062656c2063617374656c6c6f213b20436f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b203137"
-			+ "2f30342f32303133\",\"version\":137315,\"updateTime\":-1,\"user\":null},{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\"," +
-			"\"attending\":[],\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,\"location\":[46.076598,11.142105]," +
-			"\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">Mostra bibliografica &#147;Caro diario: il diario e la narrativa epistolare nei libri" +
-					" per ragazzi&#148; (per adolescenti). I libri saranno subito disponibili per il prestito.</font><br/>Costo: <br/>Biblioteca Comunale di Trento sede " +
-					"dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: <br/>http://www.bibcom.trento.it/\"," +
-					"\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\",\"domainId\":\"5167f047975a21e" +
-					"4a4104579\",\"fromTime\":1366149600000,\"toTime\":null,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null}," +
-					"\"title\":\"Caro diario: il diario e la narrativa epistolare nei libri per ragazzi\",\"creatorId\":null,\"entityId\":10788," +
-					"\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\"," +
-					"\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4361726f2064696172696f3a20696c2064696172696f2065206c61206e617272617" +
-					"46976612065706973746f6c617265206e6569206c696272692070657220726167617a7a693b20436f676e6f6c61202d2050756e746f204c65747475726120417267656e74617269" +
-					"6f3b2031372f30342f32303133\",\"version\":137425,\"updateTime\":-1,\"user\":null}," +
-					"{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\",\"attending\":[]," +
-					"\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,\"location\":[46.076598,11.142105]," +
-					"\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">&#147;Libri in bicicletta e a piedi&#148; (per adulti)<br/>Accattivanti " +
-					"proposte di lettura per suggestive escursioni &#150; anche a misura di bambino - in montagna, collina e piste ciclabili.<br/>Verranno inoltre esposti" +
-					" testi inerenti itinerari nazionali ed europei (Via Franchigena, Cammino di Santiago di Compostela, ecc.).</font><br/>Costo: <br/>Biblioteca Comunale " +
-					"di Trento sede dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: <br/>http://www.bibcom.trento.it/\"," +
-					"\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\",\"domainId\":\"5167f047975a21e" +
-					"4a41045d2\",\"fromTime\":1366149600000,\"toTime\":1366259500000,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null}," +
-					"\"title\":\"Libri in bicicletta e a piedi\",\"creatorId\":null,\"entityId\":10876,\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\"," +
-					"\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4c6962726920696e2062696369636c65747461206520612070696564693b2043" +
-					"6f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b2031372f30342f32303133\",\"version\":137600,\"updateTime\":-1,\"user\":null}]";
+			+ "2f30342f32303133\",\"version\":137315,\"updateTime\":-1,\"user\":null},{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\","
+			+ "\"attending\":[],\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,\"location\":[46.076598,11.142105],"
+			+ "\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">Mostra bibliografica &#147;Caro diario: il diario e la narrativa epistolare nei libri"
+			+ " per ragazzi&#148; (per adolescenti). I libri saranno subito disponibili per il prestito.</font><br/>Costo: <br/>Biblioteca Comunale di Trento sede "
+			+ "dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: <br/>http://www.bibcom.trento.it/\","
+			+ "\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\",\"domainId\":\"5167f047975a21e"
+			+ "4a4104579\",\"fromTime\":1366149600000,\"toTime\":null,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null},"
+			+ "\"title\":\"Caro diario: il diario e la narrativa epistolare nei libri per ragazzi\",\"creatorId\":null,\"entityId\":10788,"
+			+ "\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\","
+			+ "\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4361726f2064696172696f3a20696c2064696172696f2065206c61206e617272617"
+			+ "46976612065706973746f6c617265206e6569206c696272692070657220726167617a7a693b20436f676e6f6c61202d2050756e746f204c65747475726120417267656e74617269"
+			+ "6f3b2031372f30342f32303133\",\"version\":137425,\"updateTime\":-1,\"user\":null},"
+			+ "{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\",\"attending\":[],"
+			+ "\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,\"location\":[46.076598,11.142105],"
+			+ "\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">&#147;Libri in bicicletta e a piedi&#148; (per adulti)<br/>Accattivanti "
+			+ "proposte di lettura per suggestive escursioni &#150; anche a misura di bambino - in montagna, collina e piste ciclabili.<br/>Verranno inoltre esposti"
+			+ " testi inerenti itinerari nazionali ed europei (Via Franchigena, Cammino di Santiago di Compostela, ecc.).</font><br/>Costo: <br/>Biblioteca Comunale "
+			+ "di Trento sede dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: <br/>http://www.bibcom.trento.it/\","
+			+ "\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\",\"domainId\":\"5167f047975a21e"
+			+ "4a41045d2\",\"fromTime\":1366349600000,\"toTime\":1367349600000,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null},"
+			+ "\"title\":\"Libri in bicicletta e a piedi\",\"creatorId\":null,\"entityId\":10876,\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\","
+			+ "\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4c6962726920696e2062696369636c65747461206520612070696564693b2043"
+			+ "6f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b2031372f30342f32303133\",\"version\":137600,\"updateTime\":-1,\"user\":null}," +
+			"{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\","
+			+ "\"attending\":[],\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,"
+			+ "\"location\":[46.076598,11.142105],\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">Vetrina tematica &#147;Oh,"
+			+ "che bel castello!: storie di principi e principesse, cavalieri e dame. I libri saranno subito disponibili per il prestito.</font><br/>Costo: "
+			+ "<br/>Biblioteca Comunale di Trento sede dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: "
+			+ "br/>http://www.bibcom.trento.it/\",\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\","
+			+ "\"domainId\":\"5167f047975a21e4a41045b6\",\"fromTime\":1376149500000,\"toTime\":1386249700000,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,"
+			+ "\"ratings\":null},\"title\":\"yabba yabba!\",\"creatorId\":null,\"entityId\":10733,\"timing\":\"dal lunedì al giovedì ore "
+			+ "14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\",\"creatorName\":null,\"typeUserDefined\":false,"
+			+ "\"customData\":null,\"id\":\"4f682c206368652062656c2063617374656c6c6f213b20436f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b203137"
+			+ "2f30342f32303133\",\"version\":137315,\"updateTime\":-1,\"user\":null},{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\","
+			+ "\"attending\":[],\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,\"location\":[46.076598,11.142105],"
+			+ "\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">Mostra bibliografica &#147;Caro diario: il diario e la narrativa epistolare nei libri"
+			+ " per ragazzi&#148; (per adolescenti). I libri saranno subito disponibili per il prestito.</font><br/>Costo: <br/>Biblioteca Comunale di Trento sede "
+			+ "dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: <br/>http://www.bibcom.trento.it/\","
+			+ "\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\",\"domainId\":\"5167f047975a21e"
+			+ "4a4104579\",\"fromTime\":1466149600000,\"1566149600000\":null,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null},"
+			+ "\"title\":\"ghiruz\",\"creatorId\":null,\"entityId\":10788,"
+			+ "\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\","
+			+ "\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4361726f2064696172696f3a20696c2064696172696f2065206c61206e617272617"
+			+ "46976612065706973746f6c617265206e6569206c696272692070657220726167617a7a693b20436f676e6f6c61202d2050756e746f204c65747475726120417267656e74617269"
+			+ "6f3b2031372f30342f32303133\",\"version\":137425,\"updateTime\":-1,\"user\":null},"
+			+ "{\"poiId\":\"Cognola - Argentario@eu.trentorise.smartcampus.services.pois.ServicesPois\",\"attending\":[],"
+			+ "\"attendees\":0,\"fromTimeUserDefined\":false,\"toTimeUserDefined\":false,\"poiIdUserDefined\":false,\"location\":[46.076598,11.142105],"
+			+ "\"type\":\"Exhibitions\",\"description\":\"<font face=\\\"verdana\\\">&#147;Libri in bicicletta e a piedi&#148; (per adulti)<br/>Accattivanti "
+			+ "proposte di lettura per suggestive escursioni &#150; anche a misura di bambino - in montagna, collina e piste ciclabili.<br/>Verranno inoltre esposti"
+			+ " testi inerenti itinerari nazionali ed europei (Via Franchigena, Cammino di Santiago di Compostela, ecc.).</font><br/>Costo: <br/>Biblioteca Comunale "
+			+ "di Trento sede dell'Argentario<br/><br/>Tel: 0461/984744<br/>E-mail: tn.argentario@biblio.infotn.it<br/>Fax: <br/>http://www.bibcom.trento.it/\","
+			+ "\"source\":\"TrentinoCultura\",\"domainType\":\"eu.trentorise.smartcampus.domain.discovertrento.ServiceEventObject\",\"domainId\":\"5167f047975a21e"
+			+ "4a41045d2\",\"fromTime\":1866149600000,\"toTime\":null,\"communityData\":{\"tags\":null,\"notes\":null,\"averageRating\":0,\"ratings\":null},"
+			+ "\"title\":\"fgtr\",\"creatorId\":null,\"entityId\":10876,\"timing\":\"dal lunedì al giovedì ore 14.30-18.30 lunedì, mercoledì giovedì, venerdì anche ore 9.00-12.00\","
+			+ "\"creatorName\":null,\"typeUserDefined\":false,\"customData\":null,\"id\":\"4c6962726920696e2062696369636c65747461206520612070696564693b2043"
+			+ "6f676e6f6c61202d2050756e746f204c65747475726120417267656e746172696f3b2031372f30342f32303133\",\"version\":137600,\"updateTime\":-1,\"user\":null}]";
+
 	public static <T extends BaseDTObject> Collection<T> searchInGeneral(int position, int size, String what,
 			WhereForSearch distance, WhenForSearch when, boolean my, Class<T> cls, SortedMap<String, Integer> sort,
 			String... inCategories) throws DataException, StorageConfigurationException, ConnectionException,
@@ -1149,12 +1183,6 @@ public class DTHelper {
 				filter.setFromTime(when.getFrom());
 			if ((when != null) && (when.getTo() != 0))
 				filter.setToTime(when.getTo());
-			// if (when!=null){
-			//
-			// filter.setFromTime(currentDate+when.getFrom());
-			// filter.setToTime(currentDate+when.getTo());
-			// }
-			// else filter.setFromTime(getCurrentDateTime());
 
 			if (distance != null) {
 				GeoPoint mypos = MapManager.requestMyLocation(mContext);
@@ -1173,13 +1201,13 @@ public class DTHelper {
 			filter.setClassName(cls.getCanonicalName());
 			if (sort != null)
 				filter.setSort(sort);
-			
-			List<T> returnevents = eu.trentorise.smartcampus.android.common.Utils.convertJSONToObjects(eventsReturn, cls);
-			return returnevents;
+			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
 
-//			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
+//			List<T> returnevents = eu.trentorise.smartcampus.android.common.Utils.convertJSONToObjects(eventsReturn, cls);
+//			return returnevents;
+
+
 		} catch (Exception e) {
-			// throw new DiscoverTrentoConnectorException(e);
 			return null;
 		}
 	}
@@ -1195,28 +1223,9 @@ public class DTHelper {
 	private static String addWhenToWhere(String where, long whenFrom, long whenTo) {
 		String whereReturns = null;
 		if ((whenTo != 0)) {
-			// Date whenFromDate = new Date(whenFrom);
-			// Date whenToDate = new Date(whenTo);
-			// Calendar calFrom = Calendar.getInstance();
-			// calFrom.setTime(whenFromDate);
-			// Calendar calTo = Calendar.getInstance();
-			// calTo.setTime(whenToDate);
-			//
-			// calFrom.add(Calendar.DATE, -1);
-			// calTo.add(Calendar.DATE, -1);
-			// calFrom.set(Calendar.HOUR_OF_DAY, 23);
-			// calTo.set(Calendar.HOUR_OF_DAY, 23);
-			// calFrom.set(Calendar.MINUTE, 59);
-			// calTo.set(Calendar.MINUTE, 59);
-			// calFrom.set(Calendar.SECOND, 59);
-			// calTo.set(Calendar.SECOND, 59);
-			// calFrom.set(Calendar.MILLISECOND, 0);
-			// calTo.set(Calendar.MILLISECOND, 0);
-			// whenFrom = calFrom.getTimeInMillis();
-			// whenTo = calTo.getTimeInMillis();
-			whereReturns = new String(" fromTime > " + whenFrom + " AND fromTime < " + whenTo);
+			whereReturns = new String("( fromTime > " + whenFrom + " AND fromTime < " + whenTo+" ) OR (  toTime < " + whenTo + " AND toTime > " + whenFrom+" )");
 		} else
-			whereReturns = new String(" fromTime > " + whenFrom);
+			whereReturns = new String(" ( fromTime > " + whenFrom + "  ) OR ( toTime > " + whenFrom+" )");
 
 		if (where.length() > 0) {
 			return where += " and (" + whereReturns + ")";
