@@ -199,7 +199,9 @@
 	<string name="notifications_event_updated">Event \"%s\" updated</string>
 	<string name="notifications_location_updated">Place \"%s\" updated</string>
 	<string name="notifications_story_updated">Story \"%s\" updated</string>
-
+    <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
+    <string name="notifications_story_at_place_update">Story \"%1$s\" about %2$s is updated</string>
+	
 	<string name="initial_data_load">Loading initial data... (it may take a while this time)</string>
 	
     <!-- String for the searching fragment -->

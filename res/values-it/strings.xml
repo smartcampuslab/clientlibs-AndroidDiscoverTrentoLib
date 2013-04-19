@@ -195,6 +195,8 @@
     <string name="notifications_event_updated">Evento \"%s\" aggiornato</string>
     <string name="notifications_location_updated">Luogo \"%s\" aggiornato</string>
     <string name="notifications_story_updated">Storia \"%s\" aggiornata</string>
+    <string name="notifications_event_at_place_updated">Evento \"%1$s\" per %2$s aggiornato</string>
+    <string name="notifications_story_at_place_update">Storia \"%1$s\" su %2$s aggiornata</string>
     
     <string name="notifications_unread">Notifiche non lette</string>
     <string name="notifications_list_empty">Non hai ancora ricevuto notifiche\nriguardanti gli eventi e i luoghi\nche stai seguendo.</string>

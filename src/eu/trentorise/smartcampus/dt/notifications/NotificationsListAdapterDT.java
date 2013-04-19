@@ -105,14 +105,16 @@ public class NotificationsListAdapterDT extends ArrayAdapter<Notification> {
 			}
 		}
 
+		boolean update = notification.getContent() != null && notification.getContent().containsKey("updated") && (Boolean)notification.getContent().get("updated");
+
 		if (notification.getEntities().size() == 2) {
 			// new
 			if (event != null && location != null) {
 				holder.desc
-						.setText(mContext.getString(R.string.notifications_event_new, event.getTitle(), location.getTitle()));
+						.setText(mContext.getString(update? R.string.notifications_event_at_place_updated : R.string.notifications_event_new, event.getTitle(), location.getTitle()));
 			} else if (location != null && story != null) {
 				holder.desc
-						.setText(mContext.getString(R.string.notifications_story_new, story.getTitle(), location.getTitle()));
+						.setText(mContext.getString(update? R.string.notifications_story_at_place_update : R.string.notifications_story_new, story.getTitle(), location.getTitle()));
 			}
 		} else {
 			if (event != null) {
