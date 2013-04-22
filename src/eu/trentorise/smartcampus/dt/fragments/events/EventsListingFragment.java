@@ -673,6 +673,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
+				/*delete every instance of the recurrent events if it is present*/
 				int i = 0;
 				while (i < list.getAdapter().getCount()) {
 					EventObject event = (EventObject) list.getAdapter().getItem(i);
