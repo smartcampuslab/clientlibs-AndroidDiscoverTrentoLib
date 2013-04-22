@@ -16,6 +16,8 @@
 package eu.trentorise.smartcampus.dt.custom.data;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -53,9 +55,24 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 
 	private static class DTSyncStorageHelper extends SyncStorageHelperWithPaging {
 
+		// sync filtering: exclude transit stops
+		private static final Map<String, Object> exclude = new HashMap<String, Object>();
+		static {
+			exclude.put("source", "smartplanner-transitstops");
+		}
+		
 		public DTSyncStorageHelper(Context context, String dbName, int version, StorageConfiguration config) {
 			super(context, dbName, version, config);
 		}
+		
+		@Override
+		public SyncData getDataToSync(long version) throws StorageConfigurationException {
+			SyncData data = super.getDataToSync(version);
+			data.setExclude(exclude);
+			return data;
+		}
+
+
 
 		@Override
 		public synchronized SyncData synchronize(Context ctx, ProtocolCarrier mProtocolCarrier, String authToken, String appToken, String host, String service)
@@ -63,20 +80,35 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 		{
 			SyncData data = super.synchronize(ctx, mProtocolCarrier, authToken, appToken, host, service);
 			removeOld();
+			// old versions: remove stored objects that should be filtered out
+			removeIrrelevant();
 			return data;
 		}
 		
-		protected void removeOld() {
+		/**
+		 * 
+		 */
+		private void removeIrrelevant() {
 			SQLiteDatabase db = helper.getWritableDatabase();
 			db.beginTransaction();
-			Cursor c = null;
+			try {
+				db.delete("pois", "source = 'smartplanner-transitstops'", null);
+				db.setTransactionSuccessful();
+			} finally {
+				db.endTransaction();
+			}
+		}
+
+		private void removeOld() {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			db.beginTransaction();
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.DATE, -1);
 			calendar.set(Calendar.HOUR_OF_DAY, 23);
 			calendar.set(Calendar.MINUTE, 59);
 			calendar.set(Calendar.SECOND, 0);
 			try {
-				c = db.rawQuery("DELETE FROM events WHERE attending IS NULL AND fromTime < "+calendar.getTimeInMillis(), null);
+				db.delete("events", "attending IS NULL AND fromTime < "+calendar.getTimeInMillis(), null);
 //				c.moveToNext();
 //				int total = c.getInt(0);
 //				if (total > num) {
@@ -91,9 +123,6 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 				db.setTransactionSuccessful();
 			} finally {
 				db.endTransaction();
-				if (c != null) {
-					c.close();
-				}
 			}
 		}
 
