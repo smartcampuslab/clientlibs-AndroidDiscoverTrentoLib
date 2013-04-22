@@ -92,7 +92,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	@Override
 	public void onSaveInstanceState(Bundle arg0) {
 		super.onSaveInstanceState(arg0);
-		arg0.putSerializable(ARG_EVENT, eventObject);
+		// arg0.putSerializable(ARG_EVENT, eventObject);
+		arg0.putString(ARG_EVENT, eventObject.getId());
 	}
 
 	private EventObject getEvent(Bundle savedInstanceState) {
@@ -107,6 +108,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 		return eventObject;
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -114,10 +116,10 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 		if (savedInstanceState != null && savedInstanceState.containsKey(ARG_EVENT)
 				&& savedInstanceState.getSerializable(ARG_EVENT) != null) {
-			eventObject = (EventObject) savedInstanceState.get(ARG_EVENT);
+			eventObject = getEvent(savedInstanceState);
 		} else if (getArguments() != null && getArguments().containsKey(ARG_EVENT)
 				&& getArguments().getSerializable(ARG_EVENT) != null) {
-			eventObject = (EventObject) getArguments().getSerializable(ARG_EVENT);
+			eventObject = getEvent(savedInstanceState);
 		} else {
 			eventObject = new UserEventObject();
 			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
@@ -153,20 +155,21 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			dateFromEditText.setEnabled(false);
 		}
 		final EditText dateToEditText = (EditText) getView().findViewById(R.id.event_date_to);
-//		Date tmp = null;
-//		try {
-//			tmp = FORMAT_DATE_UI.parse(dateFromEditText.getText().toString());
-//			Calendar cal = Calendar.getInstance();
-//			cal.setTime(tmp);
-//			cal.add(Calendar.DATE, 1);
-//			dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
-//		} catch (ParseException e) {
-//			Toast.makeText(
-//					getActivity(),
-//					getResources().getString(R.string.toast_incorrect) + " "
-//							+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
-//			return;
-//		}
+		// Date tmp = null;
+		// try {
+		// tmp = FORMAT_DATE_UI.parse(dateFromEditText.getText().toString());
+		// Calendar cal = Calendar.getInstance();
+		// cal.setTime(tmp);
+		// cal.add(Calendar.DATE, 1);
+		// dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
+		// } catch (ParseException e) {
+		// Toast.makeText(
+		// getActivity(),
+		// getResources().getString(R.string.toast_incorrect) + " "
+		// + getResources().getString(R.string.createevent_date),
+		// Toast.LENGTH_SHORT).show();
+		// return;
+		// }
 		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
 			dateToEditText.setEnabled(true);
 			dateToEditText.setOnClickListener(new View.OnClickListener() {
@@ -179,7 +182,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				}
 			});
 
-		} else{
+		} else {
 			dateToEditText.setEnabled(false);
 		}
 		if (poi != null)
@@ -225,13 +228,23 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 					dateToEdit.setEnabled(isChecked);
 				}
 			});
-		} else{
+		} else {
 			moreDaysCheckbox.setEnabled(false);
 		}
 		EditText dateFromEdit = (EditText) view.findViewById(R.id.event_date_from);
-		if (eventObject.getFromTime() != null && eventObject.getFromTime() > 0)
+		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
+			dateFromEdit.setEnabled(true);
+		}
+		if (eventObject.getFromTime() != null && eventObject.getFromTime() > 0) {
 			dateFromEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(new Date(eventObject.getFromTime())));
-		else {
+		}
+
+		dateToEdit = (EditText) view.findViewById(R.id.event_date_to);
+		if (eventObject.getToTime() != null && eventObject.getToTime() > 0) {
+			dateToEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(new Date(eventObject.getToTime())));
+
+			moreDaysCheckbox.setChecked(true);
+		} else {
 			Calendar c = Calendar.getInstance();
 			c.set(Calendar.MINUTE, 0);
 			dateFromEdit.setText(DatePickerDialogFragment.DATEFORMAT.format(c.getTime()));

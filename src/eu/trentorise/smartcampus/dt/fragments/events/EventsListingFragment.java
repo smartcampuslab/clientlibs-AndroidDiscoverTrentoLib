@@ -240,9 +240,6 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		Bundle bundle = this.getArguments();
 
 		list = (ListView) getSherlockActivity().findViewById(R.id.events_list);
-		// new SCAsyncTask<Bundle, Void, EventObject[]>(getActivity(),
-		// new EventLoader(getActivity())).execute(bundle);
-
 		eventsAdapter = new EventAdapter(context, R.layout.events_row);
 		setAdapter(eventsAdapter);
 
@@ -336,7 +333,8 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			EventDetailsFragment fragment = new EventDetailsFragment();
 
 			Bundle args = new Bundle();
-//			args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event);
+			// args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT,
+			// ((EventPlaceholder) v.getTag()).event);
 			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event.getId());
 
 			fragment.setArguments(args);
@@ -385,7 +383,9 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 							.beginTransaction();
 					Fragment fragment = new CreateEventFragment();
 					Bundle args = new Bundle();
-					args.putSerializable(CreateEventFragment.ARG_EVENT, event);
+					// args.putSerializable(CreateEventFragment.ARG_EVENT,
+					// event);
+					args.putString(CreateEventFragment.ARG_EVENT, event.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					// fragmentTransaction.detach(this);
@@ -507,11 +507,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				calToDate(cal);
 				biggerFromTime = cal.getTimeInMillis();
 			}
-			if (sorted.size()>0){
+			if (sorted.size() > 0) {
 				List<EventObject> returnList = postProcForRecurrentEvents(sorted, biggerFromTime);
 				return returnList;
-			}
-			else return sorted;
+			} else
+				return sorted;
 		} catch (Exception e) {
 			Log.e(EventsListingFragment.class.getName(), e.getMessage());
 			e.printStackTrace();
@@ -673,8 +673,19 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				((EventAdapter) list.getAdapter()).remove(object);
+				int i = 0;
+				while (i < list.getAdapter().getCount()) {
+					EventObject event = (EventObject) list.getAdapter().getItem(i);
+					if (object.getId() == event.getId()) {
+						((EventAdapter) list.getAdapter()).remove(event);
+						updateList(list == null || list.getAdapter().isEmpty());
+					} else {
+						i++;
+					}
+
+				}
 				((EventAdapter) list.getAdapter()).notifyDataSetChanged();
+
 				updateList(((EventAdapter) list.getAdapter()).isEmpty());
 			} else {
 				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)

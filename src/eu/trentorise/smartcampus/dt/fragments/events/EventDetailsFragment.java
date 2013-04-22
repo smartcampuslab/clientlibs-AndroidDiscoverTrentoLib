@@ -102,14 +102,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private EventObject getEvent() {
-		if (mEvent == null) {
 			Bundle bundle = this.getArguments();
 			String eventId = bundle.getString(ARG_EVENT_OBJECT);
 			mEvent = DTHelper.findEventById(eventId);
 			if (mEvent != null) {
 				poi = DTHelper.findPOIById(mEvent.getPoiId());
 				mEvent.assignPoi(poi);
-			}
 		}
 		return mEvent;
 	}
@@ -387,7 +385,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
-				args.putSerializable(CreateEventFragment.ARG_EVENT, getEvent());
+//				args.putSerializable(CreateEventFragment.ARG_EVENT, getEvent());
+				args.putString(CreateEventFragment.ARG_EVENT, getEvent().getId());
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
