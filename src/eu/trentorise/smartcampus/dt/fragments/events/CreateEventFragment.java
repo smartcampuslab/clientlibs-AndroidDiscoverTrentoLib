@@ -95,6 +95,18 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		arg0.putSerializable(ARG_EVENT, eventObject);
 	}
 
+	private EventObject getEvent(Bundle savedInstanceState) {
+		if (eventObject == null) {
+			Bundle bundle = this.getArguments();
+			String eventId = bundle.getString(ARG_EVENT);
+			eventObject = DTHelper.findEventById(eventId);
+			if (eventObject != null) {
+				poi = DTHelper.findPOIById(eventObject.getPoiId());
+				eventObject.assignPoi(poi);
+			}
+		}
+		return eventObject;
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

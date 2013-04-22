@@ -170,7 +170,8 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 
 			if (result instanceof EventObject) {
 				fragment = new EventDetailsFragment();
-				args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, result);
+				args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (result.getId()));
+
 			} else if (result instanceof POIObject) {
 				fragment = new PoiDetailsFragment();
 				args.putSerializable(PoiDetailsFragment.ARG_POI, result);
