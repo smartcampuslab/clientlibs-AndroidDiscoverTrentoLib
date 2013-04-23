@@ -15,6 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.model.POIObject;
@@ -24,5 +25,6 @@ public class StoryPlaceholder {
 	public StoryObject story;
 	public TextView title, descritpion, notes, location, tags, source; // description;
 	public RatingBar rating;
+	public ImageView icon;
 
 }

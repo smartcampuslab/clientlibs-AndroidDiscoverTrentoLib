@@ -28,6 +28,7 @@
     <string name="create_title">Nome</string>
     <string name="create_description">Descrizione</string>
     <string name="createevent_date">Data</string>
+    <string name="createevent_ending_date">Data fine</string>
     <string name="createevent_timestart">Inizio</string>
     <string name="createevent_timeend">Fine</string>
     <string name="createevent_timing">Ora</string>
@@ -155,6 +156,7 @@
     <string name="categories_event_seminar">Seminari</string>
     <string name="categories_event_theater">Spettacolo</string>
     <string name="categories_event_exhibition">Mostre</string>
+    <string name="categories_event_family">Famiglia</string>
     <string name="categories_event_generic">Altri eventi</string>
     
     <string name="categories_poi_museum">Musei</string>
@@ -224,4 +226,12 @@
 	<string name="search_within50km">Entro 50km</string>
 	<string name="dialog_connection_search">La modalità offline supporta solo la ricerca testuale. Per utilizzare le funzionalità avanzate connettiti ad una rete.</string>
 	
+	<string name="event_date_from">Data</string>
+    <string name="separator"> - </string>
+    <string name="event_date_to">Data fine</string>
+    <string name="more_days">Più giorni</string>
+    <string name="datetime_to_before_from">Data e/o orario di fine sono precedenti a quelle di inizio!</string>
+    <string name="date_field_empty">Selezionare la data dell\'evento!</string>
+    
+    
 </resources>

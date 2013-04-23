@@ -1164,21 +1164,17 @@ public class DTHelper {
 			return p.getUserId().equals(obj.getCreatorId());
 		return false;
 	}
-
-	public static <T extends BaseDTObject> Collection<T> searchInGeneral(
-			int position, int size, String what, WhereForSearch distance,
-			WhenForSearch when, boolean my, Class<T> cls,
-			SortedMap<String, Integer> sort, String... inCategories)
-			throws DataException, StorageConfigurationException,
-			ConnectionException, ProtocolException, SecurityException {
+	public static <T extends BaseDTObject> Collection<T> searchInGeneral(int position, int size, String what,
+			WhereForSearch distance, WhenForSearch when, boolean my, Class<T> cls, SortedMap<String, Integer> sort,
+			String... inCategories) throws DataException, StorageConfigurationException, ConnectionException,
+			ProtocolException, SecurityException {
 		/* calcola when */
 		String[] argsArray = null;
 		ArrayList<String> args = null;
 
 		if (distance != null) {
 			/* search online */
-			return getObjectsFromServer(position, size, what, distance, when,
-					my, cls, inCategories, sort);
+			return getObjectsFromServer(position, size, what, distance, when, my, cls, inCategories, sort);
 		} else {
 			/* search offline */
 
@@ -1187,7 +1183,7 @@ public class DTHelper {
 				/* if sync create the query */
 				String where = "";
 				if (inCategories[0] != null) {
-					args = new ArrayList<String>();
+						args = new ArrayList<String>();
 					where = addCategoriesToWhere(where, inCategories, args);
 				}
 				if ((what != null) && (what.compareTo("") != 0)) {
@@ -1197,16 +1193,13 @@ public class DTHelper {
 					else
 						args.add(what);
 				}
-				if (cls.getCanonicalName().compareTo(
-						EventObject.class.getCanonicalName()) == 0) {
+				if (cls.getCanonicalName().compareTo(EventObject.class.getCanonicalName()) == 0) {
 					if (when != null)
-						where = addWhenToWhere(where, when.getFrom(),
-								when.getTo());
+						where = addWhenToWhere(where, when.getFrom(), when.getTo());
 
 					/* se sono con gli eventi setto la data a oggi */
 					else
-						where = addWhenToWhere(where,
-								getCurrentDateTimeForSearching(), 0);
+						where = addWhenToWhere(where, getCurrentDateTimeForSearching(), 0);
 				}
 				if (my)
 					where = addMyEventToWhere(where);
@@ -1216,13 +1209,10 @@ public class DTHelper {
 				 * se evento metti in ordine di data ma se place metti in ordine
 				 * alfabetico
 				 */
-				if (cls.getCanonicalName().compareTo(
-						EventObject.class.getCanonicalName()) == 0) {
-					return getInstance().storage.query(cls, where, argsArray,
-							position, size, "fromTime ASC");
+				if (cls.getCanonicalName().compareTo(EventObject.class.getCanonicalName()) == 0) {
+					return getInstance().storage.query(cls, where, argsArray, position, size, "fromTime ASC");
 				} else {
-					return getInstance().storage.query(cls, where, argsArray,
-							position, size, "title ASC");
+					return getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
 				}
 //			} else {
 //				/* if not sync... (not used anymore) */
@@ -1230,8 +1220,7 @@ public class DTHelper {
 //				for (String category : inCategories) {
 //					ObjectFilter filter = new ObjectFilter();
 //					if (what != null) {
-//						Map<String, Object> criteria = new HashMap<String, Object>(
-//								1);
+//						Map<String, Object> criteria = new HashMap<String, Object>(1);
 //						criteria.put("text", what);
 //						filter.setCriteria(criteria);
 //					}
@@ -1247,8 +1236,7 @@ public class DTHelper {
 //
 //					filter.setSkip(position);
 //					filter.setLimit(size);
-//					result.addAll(getRemote(instance.mContext, getAuthToken())
-//							.searchObjects(filter, cls));
+//					result.addAll(getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls));
 //				}
 //				return result;
 //			}
@@ -1257,10 +1245,9 @@ public class DTHelper {
 
 	}
 
-	private static <T extends BasicObject> Collection<T> getObjectsFromServer(
-			int position, int size, String what, WhereForSearch distance,
-			WhenForSearch when, boolean myevent, Class<T> cls,
-			String[] inCategories, SortedMap<String, Integer> sort) {
+	private static <T extends BasicObject> Collection<T> getObjectsFromServer(int position, int size, String what,
+			WhereForSearch distance, WhenForSearch when, boolean myevent, Class<T> cls, String[] inCategories,
+			SortedMap<String, Integer> sort) {
 		try {
 
 			ObjectFilter filter = new ObjectFilter();
@@ -1271,17 +1258,10 @@ public class DTHelper {
 				filter.setFromTime(when.getFrom());
 			if ((when != null) && (when.getTo() != 0))
 				filter.setToTime(when.getTo());
-			// if (when!=null){
-			//
-			// filter.setFromTime(currentDate+when.getFrom());
-			// filter.setToTime(currentDate+when.getTo());
-			// }
-			// else filter.setFromTime(getCurrentDateTime());
 
 			if (distance != null) {
 				GeoPoint mypos = MapManager.requestMyLocation(mContext);
-				filter.setCenter(new double[] {
-						(double) mypos.getLatitudeE6() / 1000000,
+				filter.setCenter(new double[] { (double) mypos.getLatitudeE6() / 1000000,
 						(double) mypos.getLongitudeE6() / 1000000 });
 				filter.setRadius(distance.getFilter());
 			}
@@ -1289,19 +1269,22 @@ public class DTHelper {
 				filter.setText(what);
 			}
 			if (inCategories[0] != null) {
-				filter.setTypes(Arrays.asList(CategoryHelper
+filter.setTypes(Arrays.asList(CategoryHelper
 						.getAllCategories(new HashSet<String>(Arrays
-								.asList(inCategories)))));
-			}
+								.asList(inCategories)))));			}
 			filter.setSkip(position);
 			filter.setLimit(size);
 			filter.setClassName(cls.getCanonicalName());
 			if (sort != null)
 				filter.setSort(sort);
-			return getRemote(instance.mContext, getAuthToken()).searchObjects(
-					filter, cls);
+			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
+
+			// List<T> returnevents =
+			// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObjects(eventsReturn,
+			// cls);
+			// return returnevents;
+
 		} catch (Exception e) {
-			// throw new DiscoverTrentoConnectorException(e);
 			return null;
 		}
 	}
@@ -1314,48 +1297,29 @@ public class DTHelper {
 			return where += whereReturns;
 	}
 
-	private static String addWhenToWhere(String where, long whenFrom,
-			long whenTo) {
+	private static String addWhenToWhere(String where, long whenFrom, long whenTo) {
 		String whereReturns = null;
 		if ((whenTo != 0)) {
-			// Date whenFromDate = new Date(whenFrom);
-			// Date whenToDate = new Date(whenTo);
-			// Calendar calFrom = Calendar.getInstance();
-			// calFrom.setTime(whenFromDate);
-			// Calendar calTo = Calendar.getInstance();
-			// calTo.setTime(whenToDate);
-			//
-			// calFrom.add(Calendar.DATE, -1);
-			// calTo.add(Calendar.DATE, -1);
-			// calFrom.set(Calendar.HOUR_OF_DAY, 23);
-			// calTo.set(Calendar.HOUR_OF_DAY, 23);
-			// calFrom.set(Calendar.MINUTE, 59);
-			// calTo.set(Calendar.MINUTE, 59);
-			// calFrom.set(Calendar.SECOND, 59);
-			// calTo.set(Calendar.SECOND, 59);
-			// calFrom.set(Calendar.MILLISECOND, 0);
-			// calTo.set(Calendar.MILLISECOND, 0);
-			// whenFrom = calFrom.getTimeInMillis();
-			// whenTo = calTo.getTimeInMillis();
-			whereReturns = new String(" fromTime > " + whenFrom
-					+ " AND fromTime < " + whenTo);
+			whereReturns = new String("( fromTime > " + whenFrom + " AND fromTime < " + whenTo + " ) OR (  toTime < " + whenTo
+					+ " AND toTime > " + whenFrom + " )");
+//			whereReturns = " (  fromTime <= " + whenTo + " AND toTime >= " + whenFrom + " )";
 		} else
-			whereReturns = new String(" fromTime > " + whenFrom);
+			whereReturns = new String(" ( fromTime > " + whenFrom + "  ) OR ( toTime > " + whenFrom + " )");
+
+//			whereReturns = " ( toTime >= " + whenFrom + " )";
 
 		if (where.length() > 0) {
 			return where += " and (" + whereReturns + ")";
 		} else
-			return where += whereReturns;
+			return  whereReturns;
 
 	}
 
-	private static <T extends BaseDTObject> String addWhatToWhere(Class<T> cls,
-			String where, String what) throws StorageConfigurationException,
-			DataException {
+	private static <T extends BaseDTObject> String addWhatToWhere(Class<T> cls, String where, String what)
+			throws StorageConfigurationException, DataException {
 		String whereReturns = "";
 
-		whereReturns = " " + getInstance().config.getTableName(cls)
-				+ " MATCH ? ";
+		whereReturns = " " + getInstance().config.getTableName(cls) + " MATCH ? ";
 		if (where.length() > 0) {
 			return where += " and (" + whereReturns + ")";
 		} else
@@ -1389,15 +1353,23 @@ public class DTHelper {
 
 	public static boolean checkInternetConnection(Context context) {
 
-		ConnectivityManager con_manager = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager con_manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		if (con_manager.getActiveNetworkInfo() != null
-				&& con_manager.getActiveNetworkInfo().isAvailable()
+		if (con_manager.getActiveNetworkInfo() != null && con_manager.getActiveNetworkInfo().isAvailable()
 				&& con_manager.getActiveNetworkInfo().isConnected()) {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public static EventObject findEventById(String eventId) {
+		
+		try {
+			EventObject event = getInstance().storage.getObjectById(eventId, EventObject.class);
+			return event;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 }

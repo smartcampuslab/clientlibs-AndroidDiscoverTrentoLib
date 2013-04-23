@@ -91,12 +91,50 @@ public class EventObject extends BaseDTObject {
 		return DATE_FORMAT.format(new Date(getFromTime()));
 	}
 
+	public CharSequence toDateTimeString() {
+		if (getToTime()==null||getToTime()==0)
+			return dateTimeString();	
+		return DATE_FORMAT.format(new Date(getToTime()));
+	}
+	
 	public POIObject assignedPoi() {
 		return poi;
 	}
 
 	public void assignPoi(POIObject poi) {
 		this.poi = poi;
+	}
+
+	public EventObject copy() {
+		EventObject o = new EventObject();
+		o.setAttendees(getAttendees());
+		o.setAttending(getAttending());
+		o.setCommunityData(getCommunityData());
+		o.setCommunityData(getCommunityData());
+		o.setCreatorId(getCreatorId());
+		o.setCreatorName(getCreatorName());
+		o.setCustomData(getCustomData());
+		o.setDescription(getDescription());
+		o.setDomainId(getDomainId());
+		o.setDomainType(getDomainType());
+		o.setEntityId(getEntityId());
+		o.setFromTime(getFromTime());
+		o.setFromTimeUserDefined(isFromTimeUserDefined());
+		o.setId(getId());
+		o.setLocation(getLocation());
+		o.setPoiId(getPoiId());
+		o.setPoiIdUserDefined(isPoiIdUserDefined());
+		o.setSource(getSource());
+		o.setTiming(getTiming());
+		o.setTitle(getTitle());
+		o.setToTime(getToTime());
+		o.setToTimeUserDefined(isToTimeUserDefined());
+		o.setType(getType());
+		o.setTypeUserDefined(isToTimeUserDefined());
+		o.setUpdateTime(getUpdateTime());
+		o.setVersion(getVersion());
+		o.assignPoi(assignedPoi());
+		return o;
 	}
 	
 	

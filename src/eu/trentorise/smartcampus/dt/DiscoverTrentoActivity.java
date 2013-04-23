@@ -36,6 +36,7 @@ import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -269,7 +270,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					tag = "pois";
 				} else if (result instanceof EventObject) {
 					fragment = new EventDetailsFragment();
-					args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, result);
+					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (result.getId()));
 					tag = "events";
 				} else if (result instanceof StoryObject) {
 					fragment = new StoryDetailsFragment();

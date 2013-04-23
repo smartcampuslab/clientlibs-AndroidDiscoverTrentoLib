@@ -16,8 +16,11 @@
 package eu.trentorise.smartcampus.dt.fragments.events;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -101,6 +104,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	private String category;
 	private EventAdapter eventsAdapter;
 	private boolean mFollowByIntent;
+	private long biggerFromTime;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -142,11 +146,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
-		if (getArguments() == null || !getArguments().containsKey(ARG_POI) && !getArguments().containsKey(SearchFragment.ARG_LIST)
-				&& !getArguments().containsKey(ARG_QUERY_TODAY) && !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
+		if (getArguments() == null || !getArguments().containsKey(ARG_POI)
+				&& !getArguments().containsKey(SearchFragment.ARG_LIST) && !getArguments().containsKey(ARG_QUERY_TODAY)
+				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
-		
 		}
 		if (category == null)
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
@@ -328,7 +332,10 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			EventDetailsFragment fragment = new EventDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event);
+			// args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT,
+			// ((EventPlaceholder) v.getTag()).event);
+			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event.getId());
+
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -375,7 +382,9 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 							.beginTransaction();
 					Fragment fragment = new CreateEventFragment();
 					Bundle args = new Bundle();
-					args.putSerializable(CreateEventFragment.ARG_EVENT, event);
+					// args.putSerializable(CreateEventFragment.ARG_EVENT,
+					// event);
+					args.putString(CreateEventFragment.ARG_EVENT, event.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					// fragmentTransaction.detach(this);
@@ -485,20 +494,29 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					eventObject.assignPoi(DTHelper.findPOIById(eventObject.getPoiId()));
 				}
 			}
-			// Collections.sort(sorted, new Comparator<EventObject>() {
-			// @Override
-			// public int compare(EventObject lhs, EventObject rhs) {
-			// return lhs.getFromTime().compareTo(rhs.getFromTime());
-			// }
-			//
-			// });
-
-			return sorted;
+			if (params[0].position == 0) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(System.currentTimeMillis());
+				calToDate(cal);
+				biggerFromTime = cal.getTimeInMillis();
+			}
+			if (sorted.size() > 0) {
+				List<EventObject> returnList = postProcForRecurrentEvents(sorted, biggerFromTime);
+				return returnList;
+			} else
+				return sorted;
 		} catch (Exception e) {
 			Log.e(EventsListingFragment.class.getName(), e.getMessage());
 			e.printStackTrace();
 			return Collections.emptyList();
 		}
+	}
+
+	private void calToDate(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
 	}
 
 	@Override
@@ -560,6 +578,87 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		}
 	}
 
+	private List<EventObject> postProcForRecurrentEvents(List<EventObject> result, long lessFromTime) {
+		List<EventObject> returnList = new ArrayList<EventObject>();
+		EventComparator r = new EventComparator();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(result.get(result.size() - 1).getFromTime());
+		calToDate(cal);
+		biggerFromTime = cal.getTimeInMillis();
+
+		for (EventObject event : result) {
+			/*
+			 * if an event has toTime null o equal to toTime, it is only for
+			 * that day
+			 */
+			if ((event.getToTime() != null) && (event.getFromTime() != null) && (event.getToTime() != event.getFromTime())) {
+				long eventFromTime = event.getFromTime();
+				long eventToTime = 0;
+				if (event.getToTime() == 0) {
+					eventToTime = event.getFromTime();
+				} else {
+					eventToTime = event.getToTime();
+				}
+				Calendar calFromTime = Calendar.getInstance();
+				Calendar calToTime = Calendar.getInstance();
+
+				calFromTime.setTime(new Date(eventFromTime));
+				calToDate(calFromTime);
+
+				calToTime.setTime(new Date(eventToTime));
+				calToDate(calToTime);
+				long dayFromTime = calFromTime.getTimeInMillis();
+				long dayToTime = calToTime.getTimeInMillis();
+
+				if (dayFromTime == dayToTime) {
+					/* it takes the same day */
+					returnList.add(event);
+
+				} else {
+					/*
+					 * if and event takes more than one day, duplicate it (until
+					 * X)
+					 */
+					dayFromTime = Math.max(dayFromTime, lessFromTime);
+					dayToTime = Math.min(dayToTime, biggerFromTime);
+					long dayTmpTime = dayFromTime;
+
+					while (dayTmpTime <= dayToTime) {
+						EventObject newEvent = event.copy();
+						newEvent.setFromTime(dayTmpTime);
+						newEvent.setToTime(dayTmpTime);
+						Calendar caltmp = Calendar.getInstance();
+						caltmp.setTimeInMillis(dayTmpTime);
+						caltmp.add(Calendar.DATE, 1);
+						dayTmpTime = caltmp.getTimeInMillis();
+						returnList.add(newEvent);
+					}
+					/* calculate how much days use the events */
+					/* create and entry for every day */
+				}
+
+			} else {
+				/* put it in the returnList */
+				returnList.add(event);
+			}
+		}
+		Collections.sort(returnList, r);
+		return returnList;
+
+	}
+
+	private static class EventComparator implements Comparator<EventObject> {
+		public int compare(EventObject c1, EventObject c2) {
+			if (c1.getFromTime() == c2.getFromTime())
+				return 0;
+			if (c1.getFromTime() < c2.getFromTime())
+				return -1;
+			if (c1.getFromTime() > c2.getFromTime())
+				return 1;
+			return 0;
+		}
+	}
+
 	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
 		private EventObject object = null;
 
@@ -576,7 +675,18 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				((EventAdapter) list.getAdapter()).remove(object);
+				/*delete every instance of the recurrent events if it is present*/
+				int i = 0;
+				while (i < list.getAdapter().getCount()) {
+					EventObject event = (EventObject) list.getAdapter().getItem(i);
+					if (object.getId() == event.getId()) {
+						((EventAdapter) list.getAdapter()).remove(event);
+						updateList(list == null || list.getAdapter().isEmpty());
+					} else {
+						i++;
+					}
+
+				}
 				((EventAdapter) list.getAdapter()).notifyDataSetChanged();
 				updateList(((EventAdapter) list.getAdapter()).isEmpty());
 			} else {

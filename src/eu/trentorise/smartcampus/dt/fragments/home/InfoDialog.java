@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
@@ -91,10 +92,9 @@ public class InfoDialog extends SherlockDialogFragment {
 					fragmentTransaction.replace(android.R.id.content, fragment,
 							"me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
-				} else {
+				} else if (data instanceof EventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
-					args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT,
-							data);
+					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (data.getId()));
 					fragment.setArguments(args);
 					fragmentTransaction
 							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
