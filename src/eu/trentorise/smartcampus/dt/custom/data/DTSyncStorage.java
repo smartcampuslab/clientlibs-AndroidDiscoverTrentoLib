@@ -108,7 +108,7 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 			calendar.set(Calendar.MINUTE, 59);
 			calendar.set(Calendar.SECOND, 0);
 			try {
-				db.delete("events", "attending IS NULL AND fromTime < "+calendar.getTimeInMillis(), null);
+				db.delete("events", "attending IS NULL AND toTime < "+calendar.getTimeInMillis(), null);
 //				c.moveToNext();
 //				int total = c.getInt(0);
 //				if (total > num) {
