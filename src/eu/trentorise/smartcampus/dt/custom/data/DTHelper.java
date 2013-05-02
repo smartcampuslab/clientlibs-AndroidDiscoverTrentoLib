@@ -1277,8 +1277,11 @@ filter.setTypes(Arrays.asList(CategoryHelper
 			filter.setClassName(cls.getCanonicalName());
 			if (sort != null)
 				filter.setSort(sort);
-			return getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
-
+			Collection<T> result = getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
+			if (result != null) {
+				synchronize();
+			}
+			return result;
 			// List<T> returnevents =
 			// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObjects(eventsReturn,
 			// cls);
