@@ -65,6 +65,7 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.EventAdapter;
 import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.StoryAdapter;
 import eu.trentorise.smartcampus.dt.custom.StoryPlaceholder;
@@ -96,7 +97,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	private Context context;
 	private View clickedElement;
 	private boolean mFollowByIntent;
-
+	private StoryAdapter storiesAdapter;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,7 +106,17 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		setHasOptionsMenu(true);
 		setFollowByIntent();
 	}
-
+	
+	@Override
+	public void onActivityCreated(Bundle arg0) {
+	super.onActivityCreated(arg0);
+	list = (ListView) getSherlockActivity().findViewById(R.id.stories_list);
+	if (storiesAdapter == null){
+		storiesAdapter = new StoryAdapter(context, R.layout.stories_row);
+	}
+	setAdapter(storiesAdapter);
+	
+}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.stories_list, container, false);
@@ -254,9 +266,9 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("stories", category);
 		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
 
-		list = (ListView) getSherlockActivity().findViewById(R.id.stories_list);
-		StoryAdapter storyAdapter = new StoryAdapter(context, R.layout.stories_row);
-		setAdapter(storyAdapter);
+//		list = (ListView) getSherlockActivity().findViewById(R.id.stories_list);
+//		StoryAdapter storyAdapter = new StoryAdapter(context, R.layout.stories_row);
+//		setAdapter(storyAdapter);
 		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		if (category != null && categoryString != null) {

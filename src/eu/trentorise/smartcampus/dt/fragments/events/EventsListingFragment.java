@@ -107,6 +107,17 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	private long biggerFromTime;
 
 	@Override
+	public void onActivityCreated(Bundle arg0) {
+	super.onActivityCreated(arg0);
+	list = (ListView) getSherlockActivity().findViewById(R.id.events_list);
+	if (eventsAdapter == null){
+		eventsAdapter = new EventAdapter(context, R.layout.events_row);
+	}
+	setAdapter(eventsAdapter);
+	
+}
+	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.context = this.getSherlockActivity();
@@ -237,12 +248,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	public void onStart() {
 		Bundle bundle = this.getArguments();
 
-		list = (ListView) getSherlockActivity().findViewById(R.id.events_list);
 		// new SCAsyncTask<Bundle, Void, EventObject[]>(getActivity(),
 		// new EventLoader(getActivity())).execute(bundle);
 
-		eventsAdapter = new EventAdapter(context, R.layout.events_row);
-		setAdapter(eventsAdapter);
+//		eventsAdapter = new EventAdapter(context, R.layout.events_row);
+//		setAdapter(eventsAdapter);
 
 		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);

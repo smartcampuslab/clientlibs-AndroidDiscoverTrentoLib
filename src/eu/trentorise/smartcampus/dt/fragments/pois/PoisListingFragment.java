@@ -90,7 +90,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	private Context context;
 	private String category;
 	private boolean mFollowByIntent;
-
+	private PoiAdapter poiAdapter ;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,9 +99,21 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		setFollowByIntent();
 	}
 
+
+	@Override
+	public void onActivityCreated(Bundle arg0) {
+	super.onActivityCreated(arg0);
+	list = (ListView) getSherlockActivity().findViewById(R.id.pois_list);
+	if (poiAdapter == null){
+		poiAdapter = new PoiAdapter(context, R.layout.pois_row);
+	}
+	setAdapter(poiAdapter);
+	
+}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.poislist, container, false);
+			
+		return inflater.inflate(R.layout.poislist, container, false); 
 	}
 
 	@Override
@@ -261,11 +273,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			if (where != null)
 				title.append( " " +where.getDescription() + " " );
 		}
-		
-		list = (ListView) getSherlockActivity().findViewById(R.id.pois_list);
 
-		PoiAdapter poiAdapter = new PoiAdapter(context, R.layout.pois_row);
-		setAdapter(poiAdapter);
 
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
