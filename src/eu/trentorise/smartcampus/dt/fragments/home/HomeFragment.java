@@ -173,7 +173,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 			setPOICategoriesToLoad(poiCategories);
 		}
 			if (eventsCategories != null) {
-				setEventsCategoriesToLoad(eventsCategories);
+				setEventCategoriesToLoad(eventsCategories);
 			}
 		}
 		return mapContainer;
@@ -236,6 +236,8 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 			}
 		}).execute();
 	}
+	
+	
 	
 	public void setPOICategoriesToLoad(final String... categories) {
 		this.poiCategories = categories;
