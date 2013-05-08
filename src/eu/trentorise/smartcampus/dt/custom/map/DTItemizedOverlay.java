@@ -80,6 +80,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 
 
 	public void populateAll() {
+		setLastFocusedIndex(-1);
 		populate();
 	}
 	
@@ -96,6 +97,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 			overlayitem.setMarker(drawable);
 			mOverlays.add(overlayitem);
 			mObjects.add(o);
+			mMapView.invalidate();
 //			populate();
 		}
 	}
@@ -130,6 +132,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 		mOverlays.add(overlay);
 		mObjects.add(null);
 		mGeneric.add(overlay);
+		setLastFocusedIndex(-1);
 		mMapView.invalidate();
 		populate();
 

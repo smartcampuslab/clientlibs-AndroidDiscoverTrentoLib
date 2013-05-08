@@ -231,6 +231,7 @@
     <string name="to_date_before_from_date">Start date should be earlier than end date!</string>
     <string name="date_field_empty">Select event date!</string>
     
-    
+    <string name="info_dialog_title_poi">Informations Place</string>
+    <string name="info_dialog_title_event">Informations Event</string>
 </resources>
      

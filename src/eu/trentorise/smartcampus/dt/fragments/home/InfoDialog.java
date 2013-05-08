@@ -17,6 +17,7 @@ package eu.trentorise.smartcampus.dt.fragments.home;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
@@ -46,7 +48,11 @@ public class InfoDialog extends SherlockDialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		getDialog().setTitle(data.getTitle());
+		if (data instanceof POIObject){
+		getDialog().setTitle(getString(R.string.info_dialog_title_poi));
+		} else if (data instanceof EventObject){
+			getDialog().setTitle(R.string.info_dialog_title_event);
+		}
 		return inflater.inflate(R.layout.mapdialog, container, false);
 	}
 
@@ -54,16 +60,15 @@ public class InfoDialog extends SherlockDialogFragment {
 	public void onStart() {
 		super.onStart();
 		TextView msg = (TextView) getDialog().findViewById(R.id.mapdialog_msg);
-		if (data.getDescription() != null)
-			msg.setText(data.getFormattedDescription());
-		else {
-			if (data instanceof POIObject)
-				msg.setText(((POIObject) data).shortAddress());
-			else {
+
+			if (data instanceof POIObject){
+				
+				msg.setText(Html.fromHtml("<h2>"+((POIObject) data).getTitle()+"</h2><br><p>"+((POIObject) data).shortAddress()+"</p>"));
+				}
+			else if (data instanceof EventObject){
 				POIObject poi = DTHelper.findPOIById(((EventObject) data)
 						.getPoiId());
-				msg.setText(poi.shortAddress());
-			}
+				msg.setText(Html.fromHtml("<h2>"+((EventObject) data).getTitle()+"</h2><br><p>"+getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_EVENTS,((EventObject) data).getType()).description)+"<br>"+(((EventObject) data).getTiming())+"<br>"+poi.shortAddress()+"</p>"));
 		}
 		msg.setMovementMethod(new ScrollingMovementMethod());
 		Button b = (Button) getDialog().findViewById(R.id.mapdialog_cancel);
