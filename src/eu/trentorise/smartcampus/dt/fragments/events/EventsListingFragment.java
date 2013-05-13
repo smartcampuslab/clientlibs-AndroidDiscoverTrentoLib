@@ -16,11 +16,16 @@
 package eu.trentorise.smartcampus.dt.fragments.events;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
@@ -71,6 +76,9 @@ import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
+import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
+import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
@@ -96,6 +104,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	private String category;
 	private EventAdapter eventsAdapter;
 	private boolean mFollowByIntent;
+	private long biggerFromTime;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -137,48 +146,14 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
-		if (getArguments() == null || !getArguments().containsKey(ARG_POI) && !getArguments().containsKey(ARG_LIST)
-				&& !getArguments().containsKey(ARG_QUERY_TODAY) && !getArguments().containsKey(ARG_MY)
-				&& !getArguments().containsKey(ARG_QUERY)) {
-			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-				@Override
-				public void onSearch(String query) {
-					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-							.beginTransaction();
-					EventsListingFragment fragment = new EventsListingFragment();
-					Bundle args = new Bundle();
-					args.putString(EventsListingFragment.ARG_QUERY, query);
-					String category = (getArguments() != null) ? getArguments().getString(ARG_CATEGORY) : null;
-					args.putString(EventsListingFragment.ARG_CATEGORY_SEARCH, category);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "events");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
-				}
-			});
-		} else if (getArguments() == null || !getArguments().containsKey(ARG_POI) && !getArguments().containsKey(ARG_LIST)
-				&& !getArguments().containsKey(ARG_QUERY_TODAY) && !getArguments().containsKey(ARG_QUERY)
-				&& !getArguments().containsKey(ARG_MY_EVENTS_SEARCH) && !getArguments().containsKey(ARG_CATEGORY_SEARCH)) {
-			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-				@Override
-				public void onSearch(String query) {
-					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-							.beginTransaction();
-					EventsListingFragment fragment = new EventsListingFragment();
-					Bundle args = new Bundle();
-					args.putString(EventsListingFragment.ARG_QUERY, query);
-					args.putBoolean(EventsListingFragment.ARG_MY_EVENTS_SEARCH, true);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "events");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
-				}
-			});
+		if (getArguments() == null || !getArguments().containsKey(ARG_POI)
+				&& !getArguments().containsKey(SearchFragment.ARG_LIST) && !getArguments().containsKey(ARG_QUERY_TODAY)
+				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
+
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
 		}
 		if (category == null)
-			category = (getArguments() != null) ? getArguments().getString(ARG_CATEGORY) : null;
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
@@ -226,7 +201,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
-				args.putString(ARG_CATEGORY, category);
+				args.putString(SearchFragment.ARG_CATEGORY, category);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
@@ -235,6 +210,24 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				fragmentTransaction.commit();
 				return true;
 			}
+		} else if (item.getItemId() == R.id.search) {
+			FragmentTransaction fragmentTransaction;
+			Fragment fragment;
+			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			fragment = new SearchFragment();
+			Bundle args = new Bundle();
+			args.putString(SearchFragment.ARG_CATEGORY, category);
+			args.putString(CategoryHelper.CATEGORY_TYPE_EVENTS, CategoryHelper.CATEGORY_TYPE_EVENTS);
+			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_MY) && getArguments().getBoolean(SearchFragment.ARG_MY))
+				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			/* add category to bundle */
+			return true;
+
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -253,13 +246,23 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
-		String category = bundle.getString(ARG_CATEGORY);
+		String category = bundle.getString(SearchFragment.ARG_CATEGORY);
 		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("events", category);
 		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
 
-		if (bundle != null && bundle.containsKey(ARG_CATEGORY)) {
+		if (bundle != null && bundle.containsKey(SearchFragment.ARG_QUERY) && bundle.getString(SearchFragment.ARG_QUERY) != null) {
+			String query = bundle.getString(SearchFragment.ARG_QUERY);
+			title.setText(context.getResources().getString(R.string.search_for) + " ' " + query + " '");
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
+				category = bundle.getString(SearchFragment.ARG_CATEGORY); 	
+				if (category != null)
+					title.append( " " +context.getResources().getString(R.string.search_in_category) + " " + getString(catDescriptor.description));
+			}
+
+				
+		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 			title.setText(categoryString);
-		} else if (bundle != null && bundle.containsKey(ARG_MY)) {
+		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_MY) && bundle.getBoolean(SearchFragment.ARG_MY)) {
 			title.setText(R.string.myevents);
 		} else if (bundle != null && bundle.containsKey(ARG_POI_NAME)) {
 			String poiName = bundle.getString(ARG_POI_NAME);
@@ -275,7 +278,17 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		} else if (bundle != null && bundle.containsKey(ARG_QUERY_TODAY)) {
 			title.setText(context.getResources().getString(R.string.search_today_events));
 		}
-
+		if (bundle.containsKey(SearchFragment.ARG_WHERE_SEARCH)) {
+			WhereForSearch where = bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH); 	
+			if (where != null)
+				title.append( " " +where.getDescription() + " " );
+		}
+		
+		if (bundle.containsKey(SearchFragment.ARG_WHEN_SEARCH)) {
+			WhenForSearch when = bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH); 	
+			if (when != null)
+				title.append( " " +when.getDescription() + " " );
+		}
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -319,7 +332,10 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			EventDetailsFragment fragment = new EventDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event);
+			// args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT,
+			// ((EventPlaceholder) v.getTag()).event);
+			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event.getId());
+
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -366,7 +382,9 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 							.beginTransaction();
 					Fragment fragment = new CreateEventFragment();
 					Bundle args = new Bundle();
-					args.putSerializable(CreateEventFragment.ARG_EVENT, event);
+					// args.putSerializable(CreateEventFragment.ARG_EVENT,
+					// event);
+					args.putString(CreateEventFragment.ARG_EVENT, event.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					// fragmentTransaction.detach(this);
@@ -431,30 +449,41 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		try {
 			Collection<EventObject> result = null;
 			Bundle bundle = getArguments();
+			boolean my = false;
+
 			if (bundle == null) {
 				return Collections.emptyList();
-			} else if (bundle.containsKey(ARG_CATEGORY)) {
-				result = DTHelper.getEventsByCategories(params[0].position, params[0].size, bundle.getString(ARG_CATEGORY));
-			} else if (bundle.containsKey(ARG_POI)) {
+			}
+			if (bundle.getBoolean(SearchFragment.ARG_MY))
+				my = true;
+			String categories = bundle.getString(SearchFragment.ARG_CATEGORY);
+			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
+			sort.put("fromTime",1 );
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
+
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,EventObject.class, sort, categories);
+
+			} else if (bundle.containsKey(ARG_POI) && (bundle.getString(ARG_POI) != null)) {
 				result = DTHelper.getEventsByPOI(params[0].position, params[0].size, bundle.getString(ARG_POI));
-			} else if (bundle.containsKey(ARG_MY)) {
-				result = DTHelper.getMyEvents(params[0].position, params[0].size);
-			} else if (bundle.containsKey(ARG_QUERY)) {
-				if (bundle.containsKey(ARG_CATEGORY_SEARCH)) {
-					HashSet<String> set = new HashSet<String>(1);
-					set.add(bundle.getString(ARG_CATEGORY_SEARCH));
-					result = DTHelper.searchEventsByCategory(params[0].position, params[0].size, bundle.getString(ARG_QUERY),
-							bundle.getString(ARG_CATEGORY_SEARCH));
-				} else if (bundle.containsKey(ARG_MY_EVENTS_SEARCH)) {
-					HashSet<String> set = new HashSet<String>(1);
-					set.add(bundle.getString(ARG_CATEGORY_SEARCH));
-					result = DTHelper.searchMyEvents(params[0].position, params[0].size, bundle.getString(ARG_QUERY));
-				} else
-					result = DTHelper.searchEvents(params[0].position, params[0].size, bundle.getString(ARG_QUERY));
+			} else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
+
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class,sort, categories);
+
+			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
+
+
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,EventObject.class, sort, categories);
+
 			} else if (bundle.containsKey(ARG_QUERY_TODAY)) {
-				result = DTHelper.searchTodayEvents(params[0].position, params[0].size, bundle.getString(ARG_QUERY));
-			} else if (bundle.containsKey(ARG_LIST)) {
-				result = (List<EventObject>) bundle.get(ARG_LIST);
+				result = DTHelper.searchTodayEvents(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY));
+			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
+				result = (List<EventObject>) bundle.get(SearchFragment.ARG_LIST);
 			} else {
 				return Collections.emptyList();
 			}
@@ -465,20 +494,29 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					eventObject.assignPoi(DTHelper.findPOIById(eventObject.getPoiId()));
 				}
 			}
-			// Collections.sort(sorted, new Comparator<EventObject>() {
-			// @Override
-			// public int compare(EventObject lhs, EventObject rhs) {
-			// return lhs.getFromTime().compareTo(rhs.getFromTime());
-			// }
-			//
-			// });
-
-			return sorted;
+			if (params[0].position == 0) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(System.currentTimeMillis());
+				calToDate(cal);
+				biggerFromTime = cal.getTimeInMillis();
+			}
+			if (sorted.size() > 0) {
+				List<EventObject> returnList = postProcForRecurrentEvents(sorted, biggerFromTime);
+				return returnList;
+			} else
+				return sorted;
 		} catch (Exception e) {
 			Log.e(EventsListingFragment.class.getName(), e.getMessage());
 			e.printStackTrace();
 			return Collections.emptyList();
 		}
+	}
+
+	private void calToDate(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
 	}
 
 	@Override
@@ -540,6 +578,87 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		}
 	}
 
+	private List<EventObject> postProcForRecurrentEvents(List<EventObject> result, long lessFromTime) {
+		List<EventObject> returnList = new ArrayList<EventObject>();
+		EventComparator r = new EventComparator();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(result.get(result.size() - 1).getFromTime());
+		calToDate(cal);
+		biggerFromTime = cal.getTimeInMillis();
+
+		for (EventObject event : result) {
+			/*
+			 * if an event has toTime null o equal to toTime, it is only for
+			 * that day
+			 */
+			if ((event.getToTime() != null) && (event.getFromTime() != null) && (event.getToTime() != event.getFromTime())) {
+				long eventFromTime = event.getFromTime();
+				long eventToTime = 0;
+				if (event.getToTime() == 0) {
+					eventToTime = event.getFromTime();
+				} else {
+					eventToTime = event.getToTime();
+				}
+				Calendar calFromTime = Calendar.getInstance();
+				Calendar calToTime = Calendar.getInstance();
+
+				calFromTime.setTime(new Date(eventFromTime));
+				calToDate(calFromTime);
+
+				calToTime.setTime(new Date(eventToTime));
+				calToDate(calToTime);
+				long dayFromTime = calFromTime.getTimeInMillis();
+				long dayToTime = calToTime.getTimeInMillis();
+
+				if (dayFromTime == dayToTime) {
+					/* it takes the same day */
+					returnList.add(event);
+
+				} else {
+					/*
+					 * if and event takes more than one day, duplicate it (until
+					 * X)
+					 */
+					dayFromTime = Math.max(dayFromTime, lessFromTime);
+					dayToTime = Math.min(dayToTime, biggerFromTime);
+					long dayTmpTime = dayFromTime;
+
+					while (dayTmpTime <= dayToTime) {
+						EventObject newEvent = event.copy();
+						newEvent.setFromTime(dayTmpTime);
+						newEvent.setToTime(dayTmpTime);
+						Calendar caltmp = Calendar.getInstance();
+						caltmp.setTimeInMillis(dayTmpTime);
+						caltmp.add(Calendar.DATE, 1);
+						dayTmpTime = caltmp.getTimeInMillis();
+						returnList.add(newEvent);
+					}
+					/* calculate how much days use the events */
+					/* create and entry for every day */
+				}
+
+			} else {
+				/* put it in the returnList */
+				returnList.add(event);
+			}
+		}
+		Collections.sort(returnList, r);
+		return returnList;
+
+	}
+
+	private static class EventComparator implements Comparator<EventObject> {
+		public int compare(EventObject c1, EventObject c2) {
+			if (c1.getFromTime() == c2.getFromTime())
+				return 0;
+			if (c1.getFromTime() < c2.getFromTime())
+				return -1;
+			if (c1.getFromTime() > c2.getFromTime())
+				return 1;
+			return 0;
+		}
+	}
+
 	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
 		private EventObject object = null;
 
@@ -556,7 +675,18 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				((EventAdapter) list.getAdapter()).remove(object);
+				/*delete every instance of the recurrent events if it is present*/
+				int i = 0;
+				while (i < list.getAdapter().getCount()) {
+					EventObject event = (EventObject) list.getAdapter().getItem(i);
+					if (object.getId() == event.getId()) {
+						((EventAdapter) list.getAdapter()).remove(event);
+						updateList(list == null || list.getAdapter().isEmpty());
+					} else {
+						i++;
+					}
+
+				}
 				((EventAdapter) list.getAdapter()).notifyDataSetChanged();
 				updateList(((EventAdapter) list.getAdapter()).isEmpty());
 			} else {

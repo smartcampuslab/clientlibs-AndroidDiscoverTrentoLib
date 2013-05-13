@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
@@ -48,6 +49,8 @@ public class StoryAdapter extends ArrayAdapter<StoryObject> {
 			s.title = (TextView) row.findViewById(R.id.story_placeholder_title);
 			s.descritpion = (TextView) row.findViewById(R.id.story_placeholder_description);
 			s.rating=(RatingBar) row.findViewById(R.id.story_rating);
+			s.icon = (ImageView) row.findViewById(R.id.story_placeholder_icon);
+
 			row.setTag(s);
 
 		} else
@@ -57,6 +60,8 @@ public class StoryAdapter extends ArrayAdapter<StoryObject> {
 		s.title.setText(s.story.getTitle());
 		s.rating.setRating(s.story.getCommunityData().getAverageRating());
 		s.descritpion.setText(s.story.getDescription());
+		s.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(s.story.getType())));
+
 		return row;
 	}
 

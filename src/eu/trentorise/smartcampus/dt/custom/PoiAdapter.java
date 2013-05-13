@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.model.POIObject;
@@ -47,6 +48,8 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 			p = new PoiPlaceholder();
 			p.title = (TextView) row.findViewById(R.id.poi_placeholder_title);
 	//		p.description = (TextView) row.findViewById(R.id.poi_placeholder_descr);
+			p.icon = (ImageView) row.findViewById(R.id.poi_placeholder_icon);
+
 			p.location = (TextView) row.findViewById(R.id.poi_placeholder_loc);
 			row.setTag(p);
 		} else
@@ -55,6 +58,8 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		p.poi = getItem(position);// data[position];
 		p.title.setText(p.poi.getTitle());
 	//	p.description.setText(data[position].getDescription());
+		p.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType())));
+
 		p.location.setText(p.poi.shortAddress());
 		
 		return row;

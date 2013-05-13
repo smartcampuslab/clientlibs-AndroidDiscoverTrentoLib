@@ -130,7 +130,7 @@ public class MapManager {
 		FragmentTransaction fragmentTransaction = src.getActivity().getSupportFragmentManager().beginTransaction();
 		HomeFragment fragment = new HomeFragment();
 		Bundle args = new Bundle();
-		args.putString(HomeFragment.ARG_CATEGORY, category);
+		args.putString(HomeFragment.ARG_POI_CATEGORY, category);
 		fragment.setArguments(args);
 		fragmentTransaction
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

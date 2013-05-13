@@ -51,6 +51,7 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.POIData;
@@ -104,8 +105,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 			poiObject = (POIObject) getArguments().getSerializable(ARG_POI);
 		} else {
 			poiObject = new UserPOIObject();
-			if (getArguments() != null && getArguments().containsKey(PoisListingFragment.ARG_CATEGORY)) {
-				poiObject.setType(getArguments().getString(PoisListingFragment.ARG_CATEGORY));
+			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
+				poiObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
 
 		}

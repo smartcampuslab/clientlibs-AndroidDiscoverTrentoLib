@@ -34,6 +34,9 @@ public class CategoryHelper {
 	public static final String CATEGORY_TYPE_EVENTS = "events";
 	public static final String CATEGORY_TYPE_STORIES = "stories";
 
+	public static CategoryDescriptor TODAY_EVENTS = 
+			new CategoryDescriptor(R.drawable.marker_event_generic, R.drawable.ic_other_event, "Today",
+				R.string.categories_event_today) ;
 	public static CategoryDescriptor[] EVENT_CATEGORIES = new CategoryDescriptor[] {
 			new CategoryDescriptor(R.drawable.marker_event_concert, R.drawable.ic_event_concerts, "Concerts",
 					R.string.categories_event_concert),
@@ -151,6 +154,12 @@ public class CategoryHelper {
 		if (categoryMapping.containsKey(type))
 			return descriptorMap.get(categoryMapping.get(type)).map_icon;
 		return R.drawable.marker_poi_generic;
+	}
+	
+	public static int getIconByType(String type) {
+		if (categoryMapping.containsKey(type))
+			return descriptorMap.get(categoryMapping.get(type)).thumbnail;
+		return R.drawable.ic_other_event;
 	}
 
 	public static class CategoryDescriptor {

@@ -26,6 +26,7 @@
     <string name="create_title">Title</string>
     <string name="create_description">Description</string>
     <string name="createevent_date">Date</string>
+    <string name="createevent_ending_date">Ending date</string>
     <string name="createevent_timestart">Start</string>
     <string name="createevent_timeend">End</string>
     <string name="createevent_timing">Time</string>
@@ -49,7 +50,9 @@
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Create event</string>
     <string name="menu_item_myevents_text">My events</string>
-    <string name="menu_item_layers_text">Layers</string>
+    <!-- <string name="menu_item_layers_text">Layers</string> -->
+    <string name="menu_item__places_layers_text">Places</string>
+    <string name="menu_item__events_layers_text">Events</string>
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
     <string name="menu_item_poicategory_text">Place categories</string>
     <string name="related_poi">Related place</string>
@@ -138,7 +141,8 @@
     <string name="place">place</string>
 	<string name="list_event_today">Today</string> 
 	<string name="list_event_tomorrow">Tomorrow</string>    
-	<string name="menu_item_todayevent_text">Today\'s Events</string>
+    <string name="menu_item_todayevent_text">Today\'s Events</string>
+    <string name="categories_event_today">Today\'s Events</string>
 	
 	<string name="tab_home">Home</string>
 	<string name="tab_places">Places</string>
@@ -152,6 +156,7 @@
 	<string name="categories_event_seminar">Seminars</string>
 	<string name="categories_event_theater">Performances</string>
 	<string name="categories_event_exhibition">Exhibitions</string>
+	<string name="categories_event_family">Family</string>	
 	<string name="categories_event_generic">Other</string>
 	
 	<string name="categories_poi_museum">Museums</string>
@@ -196,5 +201,36 @@
 	<string name="notifications_event_updated">Event \"%s\" updated</string>
 	<string name="notifications_location_updated">Place \"%s\" updated</string>
 	<string name="notifications_story_updated">Story \"%s\" updated</string>
+    <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
+    <string name="notifications_story_at_place_update">Story \"%1$s\" about %2$s is updated</string>
 	
+	<string name="initial_data_load">Loading initial data... (it may take a while this time)</string>
+	
+    <!-- String for the searching fragment -->
+    <string name="search_what">What: </string>
+    <string name="search_when">When: </string>
+    <string name="search_where">Where: </string>
+    <string name="search_anytime">Anytime</string>
+    <string name="search_today">Today</string>
+    <string name="search_tomorrow">Tomorrow</string>
+    <string name="search_thisweek">This week</string>
+    <string name="search_intwoweeks">In two weeks</string>
+    <string name="search_inonemonth">In one month</string>
+    <string name="search_anywhere">Anywhere</string>
+    <string name="search_within100m">Within 100m</string>
+    <string name="search_within200m">Within 200m</string>
+    <string name="search_within500m">Within 500m</string>
+    <string name="search_wthin1km">Within 1km</string>
+    <string name="search_within50km">Within 50km</string>
+    <string name="dialog_connection_search">Offline mode supports only basic search. To exploit advanced search please connect to a network.</string>
+    
+    <string name="event_date_from">Date</string>
+    <string name="separator"> - </string>
+    <string name="event_date_to">Ending date</string>
+    <string name="more_days">More days</string>
+    <string name="to_date_before_from_date">Start date should be earlier than end date!</string>
+    <string name="date_field_empty">Select event date!</string>
+    
+    
 </resources>
+     

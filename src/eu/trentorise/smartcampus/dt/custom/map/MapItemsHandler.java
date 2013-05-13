@@ -23,4 +23,6 @@ import eu.trentorise.smartcampus.dt.model.StoryObject;
 public interface MapItemsHandler {
 
 	public void setPOICategoriesToLoad(final String ... categories);
+	public void setEventCategoriesToLoad(final String ... categories);
+
 }

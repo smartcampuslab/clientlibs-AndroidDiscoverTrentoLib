@@ -15,6 +15,11 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.widget.SearchViewCompat;
@@ -34,15 +39,20 @@ import com.actionbarsherlock.view.MenuItem;
 import com.devspark.collapsiblesearchmenu.CollapsibleMenuUtils;
 
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
+import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 
 public class SearchHelper {
+	private static Context context;
 
+	private static long oneDay = 1 * 24 * 60 * 60 * 1000;
+	private static WhenForSearch[] WHEN_CATEGORIES = null;
+	private static WhereForSearch[] WHERE_CATEGORIES =null;
 	public interface OnSearchListener {
 		void onSearch(String query);
 	}
 	
 	private OnSearchListener onSearchListener;
-	private Context context;
 
 	private SearchHelper(OnSearchListener onSearchListener, Context context) {
 		super();
@@ -50,10 +60,28 @@ public class SearchHelper {
 		this.context = context;
 	}
 
+	public static void initSpinners(Context context) {
+		WHEN_CATEGORIES = new WhenForSearch[] {
+			new WhenForSearch(context.getString(R.string.search_anytime),0,0),
+			new WhenForSearch(context.getString(R.string.search_today),0,oneDay),
+			new WhenForSearch(context.getString(R.string.search_tomorrow),oneDay,oneDay),
+			new WhenForSearch(context.getString(R.string.search_thisweek),0,7*oneDay),
+			new WhenForSearch(context.getString(R.string.search_intwoweeks),0,14 * oneDay),
+			new WhenForSearch(context.getString(R.string.search_inonemonth),0,30 * oneDay)};
+		WHERE_CATEGORIES = new WhereForSearch[] {
+			new WhereForSearch(context.getString(R.string.search_anywhere),0.00),
+			new WhereForSearch(context.getString(R.string.search_within100m),0.001),
+			new WhereForSearch(context.getString(R.string.search_within200m),0.002),
+			new WhereForSearch(context.getString(R.string.search_within500m),0.005),
+			new WhereForSearch(context.getString(R.string.search_wthin1km),0.01),
+			new WhereForSearch(context.getString(R.string.search_within50km),0.5)};
+	}
+
 	public static void createSearchMenu(Menu submenu, Activity activity, OnSearchListener onSearchListener) {
 		SearchHelper helper = new SearchHelper(onSearchListener, activity);
 		
 		View searchView = SearchViewCompat.newSearchView(activity);
+
 		if (searchView != null) {
 			MenuItem search = submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
 			search.setActionView(searchView);
@@ -105,4 +133,12 @@ public class SearchHelper {
 		public void afterTextChanged(Editable s) {}
 	};
 
+	
+	
+	public static List<WhenForSearch> getWhenList() {
+		return Arrays.asList(WHEN_CATEGORIES);
+	}
+	public static List<WhereForSearch> getWhereList() {
+		return Arrays.asList(WHERE_CATEGORIES);
+	}
 }

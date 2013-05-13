@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.maps.MapView;
@@ -74,7 +73,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		MapLayerDialogHelper.createDialog(this, this, getString(R.string.select_poi_title), (String[])null).show();
+		MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[])null).show();
 //		LayerDialogFragment dialogFragment = new LayerDialogFragment(this);
 //		Bundle args = new Bundle();
 //		args.putString(LayerDialogFragment.ARG_TITLE, getString(R.string.select_poi_title));
@@ -86,8 +85,8 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_showlayers,
-				1, R.string.menu_item_layers_text);
+		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers,
+				1, R.string.menu_item__places_layers_text);
 		item.setIcon(R.drawable.ic_layers);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		super.onPrepareOptionsMenu(menu);
@@ -168,8 +167,8 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menu_item_showlayers) {
-			MapLayerDialogHelper.createDialog(this, this, getString(R.string.select_poi_title), (String[])null).show();
+		if (item.getItemId() == R.id.menu_item_show_places_layers) {
+			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[])null).show();
 			//			LayerDialogFragment dialogFragment = new LayerDialogFragment(this);
 //			dialogFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
@@ -267,5 +266,12 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	@Override
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
+	}
+
+
+	@Override
+	public void setEventCategoriesToLoad(String... categories) {
+		// TODO Auto-generated method stub
+		
 	}
 }

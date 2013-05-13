@@ -15,6 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -27,7 +28,8 @@ public class EventPlaceholder {
 	public EventObject event;
 	public LinearLayout separator;
 	public TextView dateSeparator;
-	public TextView title, description, notes, location, date, tags, source, attendees;
+	public TextView title, description, notes, location, hour, tags, source, attendees;
+	public ImageView icon;
 	public RatingBar rating;
 
 }

@@ -21,35 +21,27 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
-import android.content.ContentProvider;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.util.Log;
 import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.storage.DataException;
 import eu.trentorise.smartcampus.storage.sync.SyncStorage;
+import eu.trentorise.smartcampus.storage.sync.Utils;
 
 /**
  * SyncAdapter implementation for syncing sample SyncAdapter contacts to the
  * platform ContactOperations provider.
  */
 public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
-
-	/** Should be set in App metadata in order to properly manage the sync */
-	public static final String DT_SYNC_AUTHORITY = "dt-sync-authority";
 
 	private static final String TAG = "DTSyncAdapter";
 
@@ -61,18 +53,21 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         mContext = context;
 		DTHelper.init(mContext);
 		try {
-			String authority = getAuthority(mContext);
-			ContentResolver.setSyncAutomatically(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, true);
-			ContentResolver.addPeriodicSync(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, new Bundle(),Constants.SYNC_INTERVAL*60);
+			String authority = Constants.getAuthority(mContext);
+			ContentResolver.setIsSyncable(new Account(eu.trentorise.smartcampus.ac.Constants.getAccountName(mContext), eu.trentorise.smartcampus.ac.Constants.getAccountType(mContext)), authority, 0);
 		} catch (NameNotFoundException e) {
 			Log.e(TAG, "Problem initializing sync adapter: "+e.getMessage());
 		}
-
     }
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
         ContentProviderClient provider, SyncResult syncResult) {
+
+    	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, Constants.APP_TOKEN) < Constants.SYNC_INTERVAL*60*1000) {
+    		return;
+    	}
+
     	 try {
  			Log.e(TAG, "Trying synchronization");
 			SyncStorage storage = DTHelper.getSyncStorage();
@@ -105,10 +100,5 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
         notification.setLatestEventInfo(mContext, tickerText, contentText, contentIntent);
         
         mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
-	}
-    
-	private String getAuthority(Context ctx) throws NameNotFoundException {
-		ApplicationInfo ai = ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
-		return ai.metaData.getString(DT_SYNC_AUTHORITY);
 	}
 }

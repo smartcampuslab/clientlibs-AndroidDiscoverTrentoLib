@@ -92,6 +92,10 @@
 
         <item name="android:background">@drawable/tab_indicator_ab_discovertrento</item>
     </style>
+    <style name="today_events" >
+        <item name="android:textColor">@color/dtappcolor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 	
     <style name="discovertrento_DropDownNav" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
         <item name="background">@drawable/spinner_background_ab_discovertrento</item>
@@ -130,5 +134,9 @@
     <style name="discovertrento_autoCompleteTextViewStyle" parent="@android:style/Widget.AutoCompleteTextView">
         <item name="android:background">@android:color/white</item>
     </style>
-    
+    <style name="discovertrento_search_label" parent="@android:style/Widget.TextView">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@color/sc_light_gray</item>
+        <item name="android:padding">5dp</item>
+    </style>
 </resources>

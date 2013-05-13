@@ -28,6 +28,7 @@
     <string name="create_title">Nome</string>
     <string name="create_description">Descrizione</string>
     <string name="createevent_date">Data</string>
+    <string name="createevent_ending_date">Data fine</string>
     <string name="createevent_timestart">Inizio</string>
     <string name="createevent_timeend">Fine</string>
     <string name="createevent_timing">Ora</string>
@@ -141,6 +142,7 @@
     <string name="list_event_today">Oggi</string> 
     <string name="list_event_tomorrow">Domani</string>    
     <string name="menu_item_todayevent_text">Eventi di oggi</string> 
+	<string name="categories_event_today">Eventi di oggi</string>
     
     <string name="tab_home">Home</string>
     <string name="tab_places">Luoghi</string>
@@ -154,6 +156,7 @@
     <string name="categories_event_seminar">Seminari</string>
     <string name="categories_event_theater">Spettacolo</string>
     <string name="categories_event_exhibition">Mostre</string>
+    <string name="categories_event_family">Famiglia</string>
     <string name="categories_event_generic">Altri eventi</string>
     
     <string name="categories_poi_museum">Musei</string>
@@ -194,9 +197,41 @@
     <string name="notifications_event_updated">Evento \"%s\" aggiornato</string>
     <string name="notifications_location_updated">Luogo \"%s\" aggiornato</string>
     <string name="notifications_story_updated">Storia \"%s\" aggiornata</string>
+    <string name="notifications_event_at_place_updated">Evento \"%1$s\" per %2$s aggiornato</string>
+    <string name="notifications_story_at_place_update">Storia \"%1$s\" su %2$s aggiornata</string>
     
     <string name="notifications_unread">Notifiche non lette</string>
     <string name="notifications_list_empty">Non hai ancora ricevuto notifiche\nriguardanti gli eventi e i luoghi\nche stai seguendo.</string>
     <string name="notifications_list_title">Notifiche</string>
+
+    <string name="initial_data_load">Caricamenti iniziale... (questa volta può richiedere alcuni secondi)</string>
+    
+
+	
+	<!-- 	String for the searching fragment -->
+    <string name="search_what">Cosa: </string>
+	<string name="search_when">Quando: </string>
+	<string name="search_where">Dove: </string>
+	<string name="search_anytime">Qualsiasi momento</string>
+	<string name="search_today">Oggi</string>
+	<string name="search_tomorrow">Domani</string>
+	<string name="search_thisweek">Questa settimana</string>
+	<string name="search_intwoweeks">Nelle prossime due settimane</string>
+	<string name="search_inonemonth">Il prossimo mese</string>
+	<string name="search_anywhere">Qualsiasi luogo</string>
+	<string name="search_within100m">Entro 100m</string>
+	<string name="search_within200m">Entro 200m</string>
+	<string name="search_within500m">Entro 500m</string>
+	<string name="search_wthin1km">Entro 1km</string>
+	<string name="search_within50km">Entro 50km</string>
+	<string name="dialog_connection_search">La modalità offline supporta solo la ricerca testuale. Per utilizzare le funzionalità avanzate connettiti ad una rete.</string>
+	
+	<string name="event_date_from">Data</string>
+    <string name="separator"> - </string>
+    <string name="event_date_to">Data fine</string>
+    <string name="more_days">Più giorni</string>
+    <string name="datetime_to_before_from">Data e/o orario di fine sono precedenti a quelle di inizio!</string>
+    <string name="date_field_empty">Selezionare la data dell\'evento!</string>
+    
     
 </resources>

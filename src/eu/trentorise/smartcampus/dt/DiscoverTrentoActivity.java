@@ -29,12 +29,14 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -94,6 +96,12 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		super.onPause();
 	}
 
+	@Override
+	protected void onDestroy() {
+		DTHelper.destroy();
+		super.onDestroy();
+	}
+
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
 			DTHelper.init(getApplicationContext());
@@ -118,6 +126,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 	private void setUpContent(Integer pos) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setSupportProgressBarIndeterminateVisibility(false);
+
 		setContentView(R.layout.main);
 
 		ActionBar actionBar = getSupportActionBar();
@@ -182,6 +193,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
 
+		private int syncRequired = 0;
+		private SherlockFragmentActivity currentRootActivity = null;
+		
 		public LoadDataProcessor(Activity activity) {
 			super(activity);
 		}
@@ -194,9 +208,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			Exception res = null;
 
 			try {
-				DTHelper.start();
-			} catch (SecurityException e) {
-				res = e;
+				syncRequired = DTHelper.syncRequired();
 			} catch (Exception e) {
 				res = e;
 			}
@@ -216,6 +228,32 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		@Override
 		public void handleResult(BaseDTObject result) {
+			if (syncRequired != DTHelper.SYNC_NOT_REQUIRED) {
+				if (syncRequired == DTHelper.SYNC_REQUIRED_FIRST_TIME) {
+					Toast.makeText(DiscoverTrentoActivity.this, R.string.initial_data_load, Toast.LENGTH_LONG).show();
+				}
+				setSupportProgressBarIndeterminateVisibility(true);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							currentRootActivity = DTHelper.start(DiscoverTrentoActivity.this);
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							if (currentRootActivity != null) {
+								currentRootActivity.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										currentRootActivity.setSupportProgressBarIndeterminateVisibility(false);
+									}
+								});
+							}
+						}
+					}
+				}).start();
+			}
+
 			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);
 			if (entityId > 0) {
 				if (result == null) {
@@ -232,7 +270,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					tag = "pois";
 				} else if (result instanceof EventObject) {
 					fragment = new EventDetailsFragment();
-					args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT, result);
+					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (result.getId()));
 					tag = "events";
 				} else if (result instanceof StoryObject) {
 					fragment = new StoryDetailsFragment();
@@ -314,5 +352,4 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
 	}
-
 }
