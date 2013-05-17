@@ -16,6 +16,7 @@
 package eu.trentorise.smartcampus.dt.fragments.pois;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +65,8 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.EventAdapter;
+import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.PoiAdapter;
 import eu.trentorise.smartcampus.dt.custom.PoiPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.SearchHelper;
@@ -83,14 +86,29 @@ import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
-public class PoisListingFragment extends AbstractLstingFragment<POIObject> implements TagProvider {
-
+public class PoisListingFragment extends AbstractLstingFragment<POIObject>
+		implements TagProvider {
 
 	private ListView list;
 	private Context context;
 	private String category;
 	private boolean mFollowByIntent;
-	private PoiAdapter poiAdapter ;
+	private PoiAdapter poiAdapter;
+	public static final String ARG_ID = "id_poi";
+	public static final String ARG_INDEX = "index_adapter";
+	private String idPoi = "";
+	private Integer indexAdapter;
+	private Boolean reload = false;
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(ARG_ID, idPoi);
+		if (indexAdapter != null)
+			outState.putInt(ARG_INDEX, indexAdapter);
+
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,21 +117,96 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		setFollowByIntent();
 	}
 
-
 	@Override
 	public void onActivityCreated(Bundle arg0) {
-	super.onActivityCreated(arg0);
-	list = (ListView) getSherlockActivity().findViewById(R.id.pois_list);
-	if (poiAdapter == null){
-		poiAdapter = new PoiAdapter(context, R.layout.pois_row);
+		super.onActivityCreated(arg0);
+		list = (ListView) getSherlockActivity().findViewById(R.id.pois_list);
+
+		if (arg0 != null) {
+			// Restore last state for checked position.
+			idPoi = arg0.getString(ARG_ID);
+			indexAdapter = arg0.getInt(ARG_INDEX);
+
+		}
+		if (poiAdapter == null) {
+			poiAdapter = new PoiAdapter(context, R.layout.pois_row);
+		}
+		setAdapter(poiAdapter);
+
 	}
-	setAdapter(poiAdapter);
-	
-}
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			
-		return inflater.inflate(R.layout.poislist, container, false); 
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+
+		return inflater.inflate(R.layout.poislist, container, false);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (!idPoi.equals("")) {
+			// get info of the event
+			POIObject poi = DTHelper.findPOIById(idPoi);
+
+			if (poi == null) {
+				// cancellazione
+				removePoi(poiAdapter, indexAdapter);
+
+			} else {
+				// modifica se numero della versione e' diverso
+				// if (poi.getUpdateTime() != poiAdapter.getItem(indexAdapter)
+				// .getUpdateTime()) {
+				if (poi.getUpdateTime() == 0) {
+					removePoi(poiAdapter, indexAdapter);
+					insertPOI(poi);
+				}
+			}
+			// notify
+			poiAdapter.notifyDataSetChanged();
+			idPoi = "";
+			indexAdapter = 0;
+		}
+	}
+
+	/*
+	 * insert in the same adapter the new item
+	 */
+	private void insertPOI(POIObject poi) {
+
+		// add in the right place
+		int i = 0;
+		boolean insert=false;
+		while (i < poiAdapter.getCount()) {
+			if (poiAdapter.getItem(i).getTitle() != null) {
+				if (poiAdapter.getItem(i).getTitle().toLowerCase().compareTo(poi.getTitle().toLowerCase()) <= 0)
+
+					i++;
+				else {
+					poiAdapter.insert(poi, i);
+					insert=true;
+					break;
+				}
+			}
+		}
+		if(!insert)
+		{
+			poiAdapter.insert(poi, poiAdapter.getCount());
+		}
+
+	}
+
+	/* clean the adapter from the items modified or erased */
+	private void removePoi(PoiAdapter poisAdapter, Integer indexAdapter) {
+		POIObject objectToRemove = poisAdapter.getItem(indexAdapter);
+		int i = 0;
+		while (i < poisAdapter.getCount()) {
+			if (poisAdapter.getItem(i).getEntityId() == objectToRemove
+					.getEntityId())
+				poisAdapter.remove(poisAdapter.getItem(i));
+			else
+				i++;
+		}
 	}
 
 	@Override
@@ -125,66 +218,83 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		 * item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		 */
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
+		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu,
+				menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
-		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_LIST) && !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
-//			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-//				@Override
-//				public void onSearch(String query) {
-//					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-//							.beginTransaction();
-//					PoisListingFragment fragment = new PoisListingFragment();
-//					Bundle args = new Bundle();
-//					args.putString(SearchFragment.ARG_QUERY, query);
-//					String category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
-//					args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
-//					fragment.setArguments(args);
-//					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-//					fragmentTransaction.addToBackStack(fragment.getTag());
-//					fragmentTransaction.commit();
-//				}
-//			});
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE,
+				R.string.map_view);
+		if (getArguments() == null
+				|| !getArguments().containsKey(SearchFragment.ARG_LIST)
+				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
+			// SearchHelper.createSearchMenu(submenu, getActivity(), new
+			// SearchHelper.OnSearchListener() {
+			// @Override
+			// public void onSearch(String query) {
+			// FragmentTransaction fragmentTransaction =
+			// getSherlockActivity().getSupportFragmentManager()
+			// .beginTransaction();
+			// PoisListingFragment fragment = new PoisListingFragment();
+			// Bundle args = new Bundle();
+			// args.putString(SearchFragment.ARG_QUERY, query);
+			// String category = (getArguments() != null) ?
+			// getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+			// args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
+			// fragment.setArguments(args);
+			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// fragmentTransaction.replace(android.R.id.content, fragment,
+			// "pois");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
+			// fragmentTransaction.commit();
+			// }
+			// });
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE,
+					R.string.search_txt);
 		}
 		if (category == null)
-			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
-		if (category != null){
+			category = (getArguments() != null) ? getArguments().getString(
+					SearchFragment.ARG_CATEGORY) : null;
+		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS, category).description)
+					+ getString(CategoryHelper.getCategoryDescriptorByCategory(
+							CategoryHelper.CATEGORY_TYPE_POIS, category).description)
 					+ " " + getString(R.string.place);
 			if (Locale.getDefault().equals(Locale.ITALY))
 				addString = getString(R.string.add)
 						+ " "
 						+ getString(R.string.place)
 						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS,
-								category).description);
+						+ getString(CategoryHelper
+								.getCategoryDescriptorByCategory(
+										CategoryHelper.CATEGORY_TYPE_POIS,
+										category).description);
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, addString);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE,
+					addString);
 		}
-		
+
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
-		
+
 		super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
-		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
-		
+
+		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(
+				getSherlockActivity(), item);
+
 		if (item.getItemId() == R.id.map_view) {
-			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+			category = (getArguments() != null) ? getArguments().getString(
+					SearchFragment.ARG_CATEGORY) : null;
 			if (category != null) {
 				MapManager.switchToMapView(category, this);
 			} else {
 				ArrayList<BaseDTObject> target = new ArrayList<BaseDTObject>();
 				for (int i = 0; i < list.getAdapter().getCount(); i++) {
-					BaseDTObject o = (BaseDTObject) list.getAdapter().getItem(i);
+					BaseDTObject o = (BaseDTObject) list.getAdapter()
+							.getItem(i);
 					target.add(o);
 				}
 				MapManager.switchToMapView(target, this);
@@ -196,30 +306,40 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
-			Fragment fragment = new CreatePoiFragment();
-			Bundle args = new Bundle();
-			args.putString(SearchFragment.ARG_CATEGORY, category);
-			fragment.setArguments(args);
-			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-			fragmentTransaction.addToBackStack(fragment.getTag());
-			fragmentTransaction.commit();
-			return true;
+				FragmentTransaction fragmentTransaction = getSherlockActivity()
+						.getSupportFragmentManager().beginTransaction();
+				Fragment fragment = new CreatePoiFragment();
+				Bundle args = new Bundle();
+				args.putString(SearchFragment.ARG_CATEGORY, category);
+				fragment.setArguments(args);
+				fragmentTransaction
+						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				// fragmentTransaction.detach(this);
+				fragmentTransaction.replace(android.R.id.content, fragment,
+						"pois");
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
+				reload = true;
+				return true;
 			}
-		}else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.search) {
 			FragmentTransaction fragmentTransaction;
 			Fragment fragment;
-			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			fragmentTransaction = getSherlockActivity()
+					.getSupportFragmentManager().beginTransaction();
 			fragment = new SearchFragment();
 			Bundle args = new Bundle();
 			args.putString(SearchFragment.ARG_CATEGORY, category);
-			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
-			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_MY) && getArguments().getBoolean(SearchFragment.ARG_MY))
-				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
+			args.putString(CategoryHelper.CATEGORY_TYPE_POIS,
+					CategoryHelper.CATEGORY_TYPE_POIS);
+			if (getArguments() != null
+					&& getArguments().containsKey(SearchFragment.ARG_MY)
+					&& getArguments().getBoolean(SearchFragment.ARG_MY))
+				args.putBoolean(SearchFragment.ARG_MY, getArguments()
+						.getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
-			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
@@ -233,74 +353,93 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 	private void setFollowByIntent() {
 		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(getSherlockActivity().getPackageName(),
-					PackageManager.GET_META_DATA);
-			Bundle aBundle=ai.metaData;
-			mFollowByIntent=aBundle.getBoolean("follow-by-intent");
+			ApplicationInfo ai = getSherlockActivity().getPackageManager()
+					.getApplicationInfo(getSherlockActivity().getPackageName(),
+							PackageManager.GET_META_DATA);
+			Bundle aBundle = ai.metaData;
+			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
-			Log.e(PoisListingFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
+			Log.e(PoisListingFragment.class.getName(),
+					"you should set the follow-by-intent metadata in app manifest");
 		}
 
 	}
 
 	@Override
 	public void onStart() {
+		if (reload) {
+			poiAdapter = new PoiAdapter(context, R.layout.pois_row);
+			setAdapter(poiAdapter);
+			reload = false;
+		}
 		Bundle bundle = this.getArguments();
-		String category = (bundle != null) ? bundle.getString(SearchFragment.ARG_CATEGORY) : null;
-		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("pois", category);
-		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
+		String category = (bundle != null) ? bundle
+				.getString(SearchFragment.ARG_CATEGORY) : null;
+		CategoryDescriptor catDescriptor = CategoryHelper
+				.getCategoryDescriptorByCategory("pois", category);
+		String categoryString = (catDescriptor != null) ? context
+				.getResources().getString(catDescriptor.description) : null;
 
 		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		if (categoryString != null) {
 			title.setText(categoryString);
-		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_QUERY)) {
+		} else if (bundle != null
+				&& bundle.containsKey(SearchFragment.ARG_QUERY)) {
 			String query = bundle.getString(SearchFragment.ARG_QUERY);
-			title.setText(context.getResources().getString(R.string.search_for) + "'" + query + "'");
+			title.setText(context.getResources().getString(R.string.search_for)
+					+ "'" + query + "'");
 
 			if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
 				category = bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH);
 				if (category != null)
-					title.append(" " + context.getResources().getString(R.string.search_for) + " " + categoryString);
+					title.append(" "
+							+ context.getResources().getString(
+									R.string.search_for) + " " + categoryString);
 			}
-		
 
-			
 		}
 		if (bundle.containsKey(SearchFragment.ARG_WHERE_SEARCH)) {
-			WhereForSearch where = bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH); 	
+			WhereForSearch where = bundle
+					.getParcelable(SearchFragment.ARG_WHERE_SEARCH);
 			if (where != null)
-				title.append( " " +where.getDescription() + " " );
+				title.append(" " + where.getDescription() + " ");
 		}
 
-
 		// close items menus if open
-		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				hideListItemsMenu(v);
-			}
-		});
+		((View) list.getParent())
+				.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						hideListItemsMenu(v);
+					}
+				});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				hideListItemsMenu(view);
+				setStorePoiId(view, position);
+
 			}
 		});
 
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				ViewSwitcher vs = (ViewSwitcher) view;
 				setupOptionsListeners(vs, position);
 				vs.showNext();
 				return true;
 			}
 		});
-		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
+		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(),
+				getView());
 		super.onStart();
 	}
 
-	protected void setupOptionsListeners(ViewSwitcher vs, final int position) {
+	protected void setupOptionsListeners(final ViewSwitcher vs,
+			final int position) {
 		final POIObject poi = ((PoiPlaceholder) vs.getTag()).poi;
 
 		ImageButton b = (ImageButton) vs.findViewById(R.id.poi_delete_btn);
@@ -310,12 +449,14 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			b.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+					if (new AMSCAccessProvider()
+							.isUserAnonymous(getSherlockActivity())) {
 						// show dialog box
 						UserRegistration.upgradeuser(getSherlockActivity());
 					} else {
-						new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
-								.execute(poi);
+						new SCAsyncTask<POIObject, Void, Boolean>(
+								getActivity(), new POIDeleteProcessor(
+										getActivity())).execute(poi);
 					}
 				}
 			});
@@ -328,20 +469,25 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+				if (new AMSCAccessProvider()
+						.isUserAnonymous(getSherlockActivity())) {
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
-				Fragment fragment = new CreatePoiFragment();
-				Bundle args = new Bundle();
-				args.putSerializable(CreatePoiFragment.ARG_POI, poi);
-				fragment.setArguments(args);
-				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-				fragmentTransaction.addToBackStack(fragment.getTag());
-				fragmentTransaction.commit();
+					FragmentTransaction fragmentTransaction = getSherlockActivity()
+							.getSupportFragmentManager().beginTransaction();
+					Fragment fragment = new CreatePoiFragment();
+					setStorePoiId((View) vs, position);
+					Bundle args = new Bundle();
+					args.putSerializable(CreatePoiFragment.ARG_POI, poi);
+					fragment.setArguments(args);
+					fragmentTransaction
+							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					// fragmentTransaction.detach(this);
+					fragmentTransaction.replace(android.R.id.content, fragment,
+							"pois");
+					fragmentTransaction.addToBackStack(fragment.getTag());
+					fragmentTransaction.commit();
 				}
 			}
 		});
@@ -349,7 +495,8 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		// b.setOnClickListener(new OnClickListener() {
 		// @Override
 		// public void onClick(View v) {
-		// Toast.makeText(getSherlockActivity(), getString(R.string.toast_poi_shared),
+		// Toast.makeText(getSherlockActivity(),
+		// getString(R.string.toast_poi_shared),
 		// Toast.LENGTH_SHORT).show();
 		//
 		// }
@@ -359,19 +506,26 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+				if (new AMSCAccessProvider()
+						.isUserAnonymous(getSherlockActivity())) {
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-				TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
+					TaggingDialog taggingDialog = new TaggingDialog(
+							getActivity(),
+							new TaggingDialog.OnTagsSelectedListener() {
 
-					@SuppressWarnings("unchecked")
-					@Override
-					public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-						new TaggingAsyncTask(poi).execute(Concept.convertSS(suggestions));
-					}
-				}, PoisListingFragment.this, Concept.convertToSS(poi.getCommunityData().getTags()));
-				taggingDialog.show();
+								@SuppressWarnings("unchecked")
+								@Override
+								public void onTagsSelected(
+										Collection<SemanticSuggestion> suggestions) {
+									new TaggingAsyncTask(poi).execute(Concept
+											.convertSS(suggestions));
+								}
+							}, PoisListingFragment.this, Concept
+									.convertToSS(poi.getCommunityData()
+											.getTags()));
+					taggingDialog.show();
 				}
 			}
 		});
@@ -381,15 +535,19 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			@Override
 			public void onClick(View v) {
 
-				FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(), DTConstants.ENTITY_TYPE_POI);
-				if (mFollowByIntent){
+				FollowEntityObject obj = new FollowEntityObject(poi
+						.getEntityId(), poi.getTitle(),
+						DTConstants.ENTITY_TYPE_POI);
+				if (mFollowByIntent) {
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
-					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+							getSherlockActivity(),
 							new FollowAsyncTaskProcessor(getSherlockActivity()));
-					followTask
-							.execute(getSherlockActivity().getApplicationContext(), Constants.APP_TOKEN, DTHelper.getAuthToken(), obj);
-					
+					followTask.execute(getSherlockActivity()
+							.getApplicationContext(), Constants.APP_TOKEN,
+							DTHelper.getAuthToken(), obj);
+
 				}
 			}
 		});
@@ -399,21 +557,25 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
-			if (view instanceof ViewSwitcher && ((ViewSwitcher) view).getDisplayedChild() == 1) {
+			if (view instanceof ViewSwitcher
+					&& ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null) {
 			// no items needed to be flipped, fill and open details page
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity()
+					.getSupportFragmentManager().beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(PoiDetailsFragment.ARG_POI, ((PoiPlaceholder) v.getTag()).poi);
+			args.putSerializable(PoiDetailsFragment.ARG_POI,
+					((PoiPlaceholder) v.getTag()).poi);
 			fragment.setArguments(args);
 
-			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
 			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
@@ -421,7 +583,14 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		}
 	}
 
-	private List<POIObject> getPOIs(AbstractLstingFragment.ListingRequest... params) {
+	private void setStorePoiId(View v, int position) {
+		final POIObject poi = ((PoiPlaceholder) v.getTag()).poi;
+		idPoi = poi.getId();
+		indexAdapter = position;
+	}
+
+	private List<POIObject> getPOIs(
+			AbstractLstingFragment.ListingRequest... params) {
 		try {
 			Collection<POIObject> result = null;
 			Bundle bundle = getArguments();
@@ -429,44 +598,74 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			if (bundle.getBoolean(SearchFragment.ARG_MY))
 				my = true;
 			String categories = bundle.getString(SearchFragment.ARG_CATEGORY);
-//			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
-//				result = DTHelper.getPOIByCategory(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_CATEGORY));
-//			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
-//				if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
-////					result = DTHelper.searchPOIsByCategory(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
-////							bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH));
-//					result = DTHelper.searchInGeneral(position, lastSize, bundle.getString(SearchFragment.ARG_QUERY),
-//							(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-//							(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class, categories);
-//				} else
-//					result = DTHelper.searchPOIs(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY));
-//			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-//				result = (List<POIObject>) bundle.getSerializable(SearchFragment.ARG_LIST);
-//			} else {
-//				return Collections.emptyList();
-//			}
+			// if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
+			// result = DTHelper.getPOIByCategory(params[0].position,
+			// params[0].size, bundle.getString(SearchFragment.ARG_CATEGORY));
+			// } else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
+			// if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
+			// // result = DTHelper.searchPOIsByCategory(params[0].position,
+			// params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
+			// // bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH));
+			// result = DTHelper.searchInGeneral(position, lastSize,
+			// bundle.getString(SearchFragment.ARG_QUERY),
+			// (WhereForSearch)
+			// bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+			// (WhenForSearch)
+			// bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,
+			// POIObject.class, categories);
+			// } else
+			// result = DTHelper.searchPOIs(params[0].position, params[0].size,
+			// bundle.getString(SearchFragment.ARG_QUERY));
+			// } else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
+			// result = (List<POIObject>)
+			// bundle.getSerializable(SearchFragment.ARG_LIST);
+			// } else {
+			// return Collections.emptyList();
+			// }
 			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
 			sort.put("title", 1);
-			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)
+					&& (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 
-				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
-						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,POIObject.class, sort, categories);
+				result = DTHelper
+						.searchInGeneral(
+								params[0].position,
+								params[0].size,
+								bundle.getString(SearchFragment.ARG_QUERY),
+								(WhereForSearch) bundle
+										.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+								(WhenForSearch) bundle
+										.getParcelable(SearchFragment.ARG_WHEN_SEARCH),
+								my, POIObject.class, sort, categories);
 
-			}  else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
+			} else if (bundle.containsKey(SearchFragment.ARG_MY)
+					&& (bundle.getBoolean(SearchFragment.ARG_MY))) {
 
-				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
-						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class,sort, categories);
+				result = DTHelper
+						.searchInGeneral(
+								params[0].position,
+								params[0].size,
+								bundle.getString(SearchFragment.ARG_QUERY),
+								(WhereForSearch) bundle
+										.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+								(WhenForSearch) bundle
+										.getParcelable(SearchFragment.ARG_WHEN_SEARCH),
+								my, POIObject.class, sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
 
+				result = DTHelper
+						.searchInGeneral(
+								params[0].position,
+								params[0].size,
+								bundle.getString(SearchFragment.ARG_QUERY),
+								(WhereForSearch) bundle
+										.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+								(WhenForSearch) bundle
+										.getParcelable(SearchFragment.ARG_WHEN_SEARCH),
+								my, POIObject.class, sort, categories);
 
-				result = DTHelper.searchInGeneral(params[0].position, params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
-						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,POIObject.class, sort, categories);
-
-			}  else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
+			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
 				result = (List<POIObject>) bundle.get(SearchFragment.ARG_LIST);
 			} else {
 				return Collections.emptyList();
@@ -491,15 +690,18 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		}
 	}
 
-	private class PoiLoader extends AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<POIObject>> {
+	private class PoiLoader
+			extends
+			AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<POIObject>> {
 
 		public PoiLoader(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public List<POIObject> performAction(AbstractLstingFragment.ListingRequest... params) throws SecurityException,
-				Exception {
+		public List<POIObject> performAction(
+				AbstractLstingFragment.ListingRequest... params)
+				throws SecurityException, Exception {
 			return getPOIs(params);
 		}
 
@@ -521,27 +723,34 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		}
 	}
 
-	private class TaggingAsyncTask extends SCAsyncTask<List<Concept>, Void, Void> {
+	private class TaggingAsyncTask extends
+			SCAsyncTask<List<Concept>, Void, Void> {
 
 		public TaggingAsyncTask(final POIObject p) {
-			super(getSherlockActivity(), new AbstractAsyncTaskProcessor<List<Concept>, Void>(getSherlockActivity()) {
-				@Override
-				public Void performAction(List<Concept>... params) throws SecurityException, Exception {
-					p.getCommunityData().setTags(params[0]);
-					DTHelper.savePOI(p);
-					return null;
-				}
+			super(getSherlockActivity(),
+					new AbstractAsyncTaskProcessor<List<Concept>, Void>(
+							getSherlockActivity()) {
+						@Override
+						public Void performAction(List<Concept>... params)
+								throws SecurityException, Exception {
+							p.getCommunityData().setTags(params[0]);
+							DTHelper.savePOI(p);
+							return null;
+						}
 
-				@Override
-				public void handleResult(Void result) {
-					Toast.makeText(getSherlockActivity(), getString(R.string.tags_successfully_added), Toast.LENGTH_SHORT)
-							.show();
-				}
-			});
+						@Override
+						public void handleResult(Void result) {
+							Toast.makeText(
+									getSherlockActivity(),
+									getString(R.string.tags_successfully_added),
+									Toast.LENGTH_SHORT).show();
+						}
+					});
 		}
 	}
 
-	private class POIDeleteProcessor extends AbstractAsyncTaskProcessor<POIObject, Boolean> {
+	private class POIDeleteProcessor extends
+			AbstractAsyncTaskProcessor<POIObject, Boolean> {
 		private POIObject object = null;
 
 		public POIDeleteProcessor(Activity activity) {
@@ -549,7 +758,8 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		}
 
 		@Override
-		public Boolean performAction(POIObject... params) throws SecurityException, Exception {
+		public Boolean performAction(POIObject... params)
+				throws SecurityException, Exception {
 			object = params[0];
 			return DTHelper.deletePOI(params[0]);
 		}
@@ -561,7 +771,9 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				((PoiAdapter) list.getAdapter()).notifyDataSetChanged();
 				updateList(((PoiAdapter) list.getAdapter()).isEmpty());
 			} else {
-				Toast.makeText(getSherlockActivity(), getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG).show();
+				Toast.makeText(getSherlockActivity(),
+						getString(R.string.app_failure_cannot_delete),
+						Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -578,11 +790,13 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	}
 
 	private void updateList(boolean empty) {
-		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
-				R.id.poilistcontainer));
+		eu.trentorise.smartcampus.dt.custom.ViewHelper
+				.removeEmptyListView((LinearLayout) getView().findViewById(
+						R.id.poilistcontainer));
 		if (empty) {
-			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
-					R.id.poilistcontainer));
+			eu.trentorise.smartcampus.dt.custom.ViewHelper
+					.addEmptyListView((LinearLayout) getView().findViewById(
+							R.id.poilistcontainer));
 		}
 		hideListItemsMenu(null);
 	}

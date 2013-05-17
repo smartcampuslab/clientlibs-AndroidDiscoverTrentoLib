@@ -107,10 +107,10 @@ public class AddressSelectActivity extends FeedbackFragmentActivity {
 		Toast.makeText(this, getString(R.string.address_select_toast), Toast.LENGTH_LONG).show();
 	}
 
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
+//	@Override
+//	protected boolean isRouteDisplayed() {
+//		return false;
+//	}
 
 	private Timer timer = new Timer();
 	private TimerTask task = null;

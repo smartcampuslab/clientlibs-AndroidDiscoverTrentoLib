@@ -457,9 +457,11 @@ public class DTHelper {
 				.convertToJSON(event);
 		request.setBody(json);
 
-		getInstance().mProtocolCarrier.invokeSync(request, Constants.APP_TOKEN,
+		MessageResponse msg = getInstance().mProtocolCarrier.invokeSync(request, Constants.APP_TOKEN,
 				getAuthToken());
 		// getRemote(instance.mContext, instance.token).create(poi);
+		EventObject eventreturn = eu.trentorise.smartcampus.android.common.Utils
+				.convertJSONToObject(msg.getBody(), EventObject.class);
 		synchronize();
 		return result;
 	}
@@ -1375,4 +1377,6 @@ filter.setTypes(Arrays.asList(CategoryHelper
 			return null;
 		}
 	}
+	
+	
 }

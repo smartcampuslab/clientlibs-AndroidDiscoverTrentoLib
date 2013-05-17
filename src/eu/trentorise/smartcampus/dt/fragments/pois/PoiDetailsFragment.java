@@ -79,6 +79,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	private TmpComment tmp_comments[];
 	private boolean mFollowByIntent;
 
+	
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -408,8 +409,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				getSherlockActivity().getSupportFragmentManager()
-						.popBackStack("pois", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
 				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
 						.show();

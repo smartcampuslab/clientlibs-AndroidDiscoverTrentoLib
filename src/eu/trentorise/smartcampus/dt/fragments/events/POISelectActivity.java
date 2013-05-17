@@ -123,10 +123,10 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 		listOfOverlays.add(mItemizedoverlay);
 	}
 
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
+//	@Override
+//	protected boolean isRouteDisplayed() {
+//		return false;
+//	}
 
 	@Override
 	public void onBaseDTObjectTap(final BaseDTObject o) {

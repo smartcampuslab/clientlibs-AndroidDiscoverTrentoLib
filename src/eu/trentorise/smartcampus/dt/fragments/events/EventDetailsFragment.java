@@ -75,6 +75,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	private EventObject mEvent = null;
 	private TmpComment tmp_comments[];
 	private boolean mFollowByIntent;
+	private String eventId;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -103,7 +104,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	private EventObject getEvent() {
 			Bundle bundle = this.getArguments();
-			String eventId = bundle.getString(ARG_EVENT_OBJECT);
+			if (eventId==null)
+				 eventId = bundle.getString(ARG_EVENT_OBJECT);
 			mEvent = DTHelper.findEventById(eventId);
 			if (mEvent != null) {
 				poi = DTHelper.findPOIById(mEvent.getPoiId());
@@ -115,33 +117,33 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		if (getEvent() != null) {
+		EventObject event = getEvent();
+		if (event != null) {
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.event_details_title);
-			tv.setText(getEvent().getTitle());
+			tv.setText(event.getTitle());
 
 			// timing
 			tv = (TextView) this.getView().findViewById(R.id.event_timing);
-			if (getEvent().getTiming() != null && getEvent().getTiming().length() > 0) {
-				tv.setText(getEvent().getTimingFormatted());
+			if (getEvent().getTiming() != null &&event.getTiming().length() > 0) {
+				tv.setText(event.getTimingFormatted());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// description, optional
 			tv = (TextView) this.getView().findViewById(R.id.event_details_descr);
-			if (getEvent().getDescription() != null && getEvent().getDescription().length() > 0) {
-				tv.setText(getEvent().getFormattedDescription());
+			if (event.getDescription() != null && event.getDescription().length() > 0) {
+				tv.setText(event.getFormattedDescription());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// notes
 			tv = (TextView) this.getView().findViewById(R.id.event_details_notes);
-			if (getEvent().getCommunityData() != null && getEvent().getCommunityData().getNotes() != null
-					&& getEvent().getCommunityData().getNotes().length() > 0) {
-				tv.setText(getEvent().getCommunityData().getNotes());
+			if (event.getCommunityData() != null && event.getCommunityData().getNotes() != null
+					&& event.getCommunityData().getNotes().length() > 0) {
+				tv.setText(event.getCommunityData().getNotes());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
@@ -156,18 +158,18 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// tags
 			tv = (TextView) this.getView().findViewById(R.id.event_details_tags);
-			if (getEvent().getCommunityData() != null && getEvent().getCommunityData().getTags() != null
-					&& getEvent().getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(getEvent().getCommunityData().getTags()));
+			if (event.getCommunityData() != null && event.getCommunityData().getTags() != null
+					&& event.getCommunityData().getTags().size() > 0) {
+				tv.setText(Concept.toSimpleString(event.getCommunityData().getTags()));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// date
 			tv = (TextView) this.getView().findViewById(R.id.event_details_date);
-			if (getEvent().getFromTime() != null && getEvent().getFromTime() > 0) {
-				CharSequence fromTime = getEvent().dateTimeString();
-				CharSequence toTime = getEvent().toDateTimeString();
+			if (event.getFromTime() != null && event.getFromTime() > 0) {
+				CharSequence fromTime = event.dateTimeString();
+				CharSequence toTime = event.toDateTimeString();
 				if (fromTime.equals(toTime)) {
 					tv.setText(fromTime);
 				} else {
@@ -201,9 +203,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// source
 			tv = (TextView) this.getView().findViewById(R.id.event_details_source);
-			if (getEvent().getSource() != null && getEvent().getSource().length() > 0) {
-				tv.setText(getEvent().getSource());
-			} else if (getEvent().createdByUser()) {
+			if (event.getSource() != null && event.getSource().length() > 0) {
+				tv.setText(event.getSource());
+			} else if (event.createdByUser()) {
 				tv.setText(getString(R.string.source_smartcampus));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
@@ -232,8 +234,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				}
 			});
 
-			if (getEvent().getCommunityData() != null) {
-				rating.setRating(getEvent().getCommunityData().getAverageRating());
+			if (event.getCommunityData() != null) {
+				rating.setRating(event.getCommunityData().getAverageRating());
 			}
 			updateAttending();
 
@@ -293,8 +295,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.rate, Menu.NONE, R.string.rate);
+		EventObject event = getEvent();
 
-		if (getEvent().getAttending() == null || getEvent().getAttending().isEmpty()) {
+		if (event.getAttending() == null || event.getAttending().isEmpty()) {
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.attend, Menu.NONE, R.string.attend);
 		} else {
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.attend, Menu.NONE, R.string.attend_not);
@@ -466,8 +469,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				getSherlockActivity().getSupportFragmentManager().popBackStack("events",
-						FragmentManager.POP_BACK_STACK_INCLUSIVE);
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
 				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
 						.show();
@@ -494,7 +496,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			mEvent = result;
 			updateAttending();
 			getSherlockActivity().invalidateOptionsMenu();
-			if (getEvent().getAttending() == null || getEvent().getAttending().isEmpty())
+			EventObject event = getEvent();
+			if (event.getAttending() == null || event.getAttending().isEmpty())
 				Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();
 			else
 				Toast.makeText(getSherlockActivity(), R.string.attend_success, Toast.LENGTH_SHORT).show();

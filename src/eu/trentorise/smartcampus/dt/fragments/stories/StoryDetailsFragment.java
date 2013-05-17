@@ -676,8 +676,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				getSherlockActivity().getSupportFragmentManager().popBackStack("stories",
-						FragmentManager.POP_BACK_STACK_INCLUSIVE);
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
 				Toast.makeText(getSherlockActivity(), R.string.app_failure_cannot_delete, Toast.LENGTH_LONG).show();
 			}
