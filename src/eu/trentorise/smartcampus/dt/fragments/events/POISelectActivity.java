@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
@@ -79,8 +81,14 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 //		args.putString(LayerDialogFragment.ARG_TITLE, getString(R.string.select_poi_title));
 //		dialogFragment.setArguments(args);
 //		dialogFragment.show(getSupportFragmentManager(), "dialog");
+		EasyTracker.getInstance().activityStart(this); // Add this method.
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this); // Add this method.
+	}
 
 
 	@Override
@@ -199,10 +207,11 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
-
+	@SuppressLint("ValidFragment")
 	private class ConfirmPoiDialog extends SherlockDialogFragment {
 		private BaseDTObject data;
 
+		
 		public ConfirmPoiDialog(BaseDTObject o) {
 			this.data = o;
 		}

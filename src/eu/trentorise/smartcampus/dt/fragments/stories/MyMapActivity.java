@@ -19,6 +19,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.RelativeLayout;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
@@ -34,6 +35,17 @@ public class MyMapActivity extends MapActivity {
         /*FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
         		(RelativeLayout) findViewById(R.id.mymap_relativelayout_dt));*/
     }
+    @Override
+	public void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this); // Add this method.
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this); // Add this method.
+	}
     
     @Override
     protected boolean isRouteDisplayed() {
