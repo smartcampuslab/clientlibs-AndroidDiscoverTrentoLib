@@ -66,6 +66,8 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.EventAdapter;
+import eu.trentorise.smartcampus.dt.custom.PoiAdapter;
+import eu.trentorise.smartcampus.dt.custom.PoiPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.StoryAdapter;
 import eu.trentorise.smartcampus.dt.custom.StoryPlaceholder;
@@ -79,6 +81,7 @@ import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
+import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
@@ -98,7 +101,21 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	private View clickedElement;
 	private boolean mFollowByIntent;
 	private StoryAdapter storiesAdapter;
+	public static final String ARG_ID = "id_story";
+	public static final String ARG_INDEX = "index_adapter";
+	private String idStory = "";
+	private Integer indexAdapter;
+	private Boolean reload = false;
+
 	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(ARG_ID, idStory);
+		if (indexAdapter != null)
+			outState.putInt(ARG_INDEX, indexAdapter);
+
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,12 +128,20 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	public void onActivityCreated(Bundle arg0) {
 	super.onActivityCreated(arg0);
 	list = (ListView) getSherlockActivity().findViewById(R.id.stories_list);
+	if (arg0 != null) {
+		// Restore last state for checked position.
+		idStory = arg0.getString(ARG_ID);
+		indexAdapter = arg0.getInt(ARG_INDEX);
+
+	}
 	if (storiesAdapter == null){
 		storiesAdapter = new StoryAdapter(context, R.layout.stories_row);
 	}
 	setAdapter(storiesAdapter);
 	
 }
+	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.stories_list, container, false);
@@ -135,6 +160,72 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (!idStory.equals("")) {
+			// get info of the event
+			StoryObject story = DTHelper.findStoryById(idStory);
+
+			if (story == null) {
+				// cancellazione
+				removeStory(storiesAdapter, indexAdapter);
+
+			} else {
+				// modifica se numero della versione e' diverso
+				// if (poi.getUpdateTime() != poiAdapter.getItem(indexAdapter)
+				// .getUpdateTime()) {
+				if (story.getUpdateTime() == 0) {
+					removeStory(storiesAdapter, indexAdapter);
+					insertStory(story);
+				}
+			}
+			// notify
+			storiesAdapter.notifyDataSetChanged();
+			idStory = "";
+			indexAdapter = 0;
+		}
+	}
+	
+	/*
+	 * insert in the same adapter the new item
+	 */
+	private void insertStory(StoryObject story) {
+
+		// add in the right place
+		int i = 0;
+		boolean insert=false;
+		while (i < storiesAdapter.getCount()) {
+			if (storiesAdapter.getItem(i).getTitle() != null) {
+				if (storiesAdapter.getItem(i).getTitle().toLowerCase().compareTo(story.getTitle().toLowerCase()) <= 0)
+
+					i++;
+				else {
+					storiesAdapter.insert(story, i);
+					insert=true;
+					break;
+				}
+			}
+		}
+		if(!insert)
+		{
+			storiesAdapter.insert(story, storiesAdapter.getCount());
+		}
+
+	}
+
+	/* clean the adapter from the items modified or erased */
+	private void removeStory(StoryAdapter storiesAdapter, Integer indexAdapter) {
+		StoryObject objectToRemove = storiesAdapter.getItem(indexAdapter);
+		int i = 0;
+		while (i < storiesAdapter.getCount()) {
+			if (storiesAdapter.getItem(i).getEntityId() == objectToRemove
+					.getEntityId())
+				storiesAdapter.remove(storiesAdapter.getItem(i));
+			else
+				i++;
+		}
+	}
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
@@ -229,6 +320,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
+			reload = true;
 			return true;
 			}
 
@@ -261,6 +353,11 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	 */
 	@Override
 	public void onStart() {
+		if (reload) {
+			storiesAdapter = new StoryAdapter(context, R.layout.stories_row);
+			setAdapter(storiesAdapter);
+			reload = false;
+		}
 		Bundle bundle = this.getArguments();
 		String category = (bundle != null) ? bundle.getString(SearchFragment.ARG_CATEGORY) : null;
 		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("stories", category);
@@ -295,6 +392,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				hideListItemsMenu(view);
+				setStorePoiId(view, position);
 			}
 		});
 
@@ -314,7 +412,11 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	/*
 	 * the contextual menu for every item in the list
 	 */
-
+	private void setStorePoiId(View v, int position) {
+		final StoryObject story = ((StoryPlaceholder) v.getTag()).story;
+		idStory = story.getId();
+		indexAdapter = position;
+	}
 	protected void setupOptionsListeners(ViewSwitcher vs, final int position) {
 		final StoryObject story = ((StoryPlaceholder) vs.getTag()).story;
 

@@ -1061,6 +1061,16 @@ public class DTHelper {
 			ConnectionException, ProtocolException, SecurityException {
 		return findDTObjectByEntityId(StoryObject.class, storyId);
 	}
+	
+	public static StoryObject findStoryById(String storyId) {
+		try {
+			StoryObject story = getInstance().storage.getObjectById(storyId,
+					StoryObject.class);
+			return story;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public static ArrayList<POIObject> getPOIBySteps(List<StepObject> steps)
 			throws DataException, StorageConfigurationException,
