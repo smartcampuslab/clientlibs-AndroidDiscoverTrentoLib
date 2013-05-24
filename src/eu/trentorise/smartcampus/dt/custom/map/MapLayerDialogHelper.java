@@ -39,7 +39,7 @@ public class MapLayerDialogHelper {
 			selectedSet.addAll(Arrays.asList(selected));
 		}
 
-		final CategoryDescriptor[] items = CategoryHelper.getPOICategoryDescriptors();
+		final CategoryDescriptor[] items = CategoryHelper.getPOICategoryDescriptorsFiltered();
 
 		final String[] itemsDescriptions = new String[items.length];
 		for (int i = 0; i < items.length; i++) {
@@ -150,7 +150,7 @@ public class MapLayerDialogHelper {
 	}
 
 	private static CategoryDescriptor[] getAllItems() {
-		CategoryDescriptor[] itemsNotToday = CategoryHelper.getEventCategoryDescriptors();
+		CategoryDescriptor[] itemsNotToday = CategoryHelper.getEventCategoryDescriptorsFiltered();
 		CategoryDescriptor todaysEvents = CategoryHelper.TODAY_EVENTS;
 
 		CategoryDescriptor[] copy = new CategoryDescriptor[itemsNotToday.length + 1];

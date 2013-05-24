@@ -45,7 +45,7 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = new ViewHolder();
-		CategoryDescriptor cd = CategoryHelper.POI_CATEGORIES[position];
+		CategoryDescriptor cd = CategoryHelper.getPOICategoryDescriptorsFiltered()[position];
 
 		if (convertView == null) {
 			holder.button = new Button(context);
@@ -95,7 +95,7 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return CategoryHelper.POI_CATEGORIES.length;
+		return CategoryHelper.getPOICategoryDescriptorsFiltered().length;
 	}
 
 	@Override

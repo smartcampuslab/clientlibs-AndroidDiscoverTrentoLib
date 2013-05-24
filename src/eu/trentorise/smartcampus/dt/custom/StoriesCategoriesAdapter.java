@@ -45,7 +45,7 @@ public class StoriesCategoriesAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = new ViewHolder();
-		CategoryDescriptor cd = CategoryHelper.STORY_CATEGORIES[position];
+		CategoryDescriptor cd = CategoryHelper.getStoryCategoryDescriptorsFiltered()[position];
 
 		if (convertView == null) {
 			holder.button = new Button(context);
@@ -94,7 +94,7 @@ public class StoriesCategoriesAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return CategoryHelper.STORY_CATEGORIES.length;
+		return CategoryHelper.getStoryCategoryDescriptorsFiltered().length;
 	}
 
 	@Override

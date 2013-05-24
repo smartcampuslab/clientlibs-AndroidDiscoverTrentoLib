@@ -22,21 +22,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.util.Log;
+
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.storage.DataException;
 
 public class CategoryHelper {
-
+	private final static String TAG = "CategoryHelper";
 	private static final String POI_NONCATEGORIZED = "Other place";
 	private static final String EVENT_NONCATEGORIZED = "Other event";
 	private static final String STORY_NONCATEGORIZED = "Other story";
-	
+
 	public static final String CATEGORY_TYPE_POIS = "pois";
 	public static final String CATEGORY_TYPE_EVENTS = "events";
 	public static final String CATEGORY_TYPE_STORIES = "stories";
+	/* json parameters in assets/params.json */
+	public static final String KEY_POI_CATEGORIES = "poi_categories";
+	public static final String KEY_EVENT_CATEGORIES = "events_categories";
+	public static final String KEY_STORY_CATEGORIES = "story_categories";
 
-	public static CategoryDescriptor TODAY_EVENTS = 
-			new CategoryDescriptor(R.drawable.marker_event_generic, R.drawable.ic_other_event, "Today",
-				R.string.categories_event_today) ;
+	public static CategoryDescriptor TODAY_EVENTS = new CategoryDescriptor(R.drawable.marker_event_generic,
+			R.drawable.ic_other_event, "Today", R.string.categories_event_today);
 	public static CategoryDescriptor[] EVENT_CATEGORIES = new CategoryDescriptor[] {
 			new CategoryDescriptor(R.drawable.marker_event_concert, R.drawable.ic_event_concerts, "Concerts",
 					R.string.categories_event_concert),
@@ -83,8 +91,9 @@ public class CategoryHelper {
 	public static CategoryDescriptor[] STORY_CATEGORIES = new CategoryDescriptor[] {
 			new CategoryDescriptor(R.drawable.marker_story_leisure, R.drawable.ic_story_leisure, "Leisure",
 					R.string.categories_story_leisure),
-			new CategoryDescriptor(R.drawable.marker_story_offices_and_services, R.drawable.ic_story_offices_and_services,
-					"Offices and Services", R.string.categories_story_offices_and_services),
+			new CategoryDescriptor(R.drawable.marker_story_offices_and_services,
+					R.drawable.ic_story_offices_and_services, "Offices and Services",
+					R.string.categories_story_offices_and_services),
 			new CategoryDescriptor(R.drawable.marker_story_univerisity, R.drawable.ic_story_university, "University",
 					R.string.categories_story_university),
 			new CategoryDescriptor(R.drawable.marker_story_culture, R.drawable.ic_story_culture, "Culture",
@@ -135,7 +144,8 @@ public class CategoryHelper {
 		List<String> result = new ArrayList<String>();
 		for (String key : categoryMapping.keySet()) {
 			if (set.contains(categoryMapping.get(key))) {
-				if (key.equals(EVENT_NONCATEGORIZED) || key.equals(POI_NONCATEGORIZED) || key.equals(STORY_NONCATEGORIZED)) {
+				if (key.equals(EVENT_NONCATEGORIZED) || key.equals(POI_NONCATEGORIZED)
+						|| key.equals(STORY_NONCATEGORIZED)) {
 
 					result.add(null);
 				}
@@ -149,13 +159,13 @@ public class CategoryHelper {
 	public static String getMainCategory(String category) {
 		return categoryMapping.get(category);
 	}
-	
+
 	public static int getMapIconByType(String type) {
 		if (categoryMapping.containsKey(type))
 			return descriptorMap.get(categoryMapping.get(type)).map_icon;
 		return R.drawable.marker_poi_generic;
 	}
-	
+
 	public static int getIconByType(String type) {
 		if (categoryMapping.containsKey(type))
 			return descriptorMap.get(categoryMapping.get(type)).thumbnail;
@@ -213,17 +223,79 @@ public class CategoryHelper {
 		return res;
 	}
 
-	public static CategoryDescriptor getCategoryDescriptorByCategory(String type, String cat) {
-		CategoryDescriptor[] cdarray = null;
+	// public static CategoryDescriptor getCategoryDescriptorByCategory(String
+	// type, String cat) {
+	// CategoryDescriptor[] cdarray = null;
+	//
+	// if (type.equalsIgnoreCase(CATEGORY_TYPE_POIS)) {
+	// cdarray = POI_CATEGORIES;
+	// } else if (type.equalsIgnoreCase(CATEGORY_TYPE_EVENTS)) {
+	// cdarray = EVENT_CATEGORIES;
+	// } else if (type.equalsIgnoreCase(CATEGORY_TYPE_STORIES)) {
+	// cdarray = STORY_CATEGORIES;
+	// }
+	//
+	// if (cdarray != null) {
+	// for (int i = 0; i < cdarray.length; i++) {
+	// CategoryDescriptor cd = cdarray[i];
+	// if (cd.category.equalsIgnoreCase(cat)) {
+	// return cd;
+	// }
+	// }
+	// }
+	//
+	//
+	// return null;
+	// }
 
-		if (type.equalsIgnoreCase(CATEGORY_TYPE_POIS)) {
-			cdarray = POI_CATEGORIES;
-		} else if (type.equalsIgnoreCase(CATEGORY_TYPE_EVENTS)) {
-			cdarray = EVENT_CATEGORIES;
-		} else if (type.equalsIgnoreCase(CATEGORY_TYPE_STORIES)) {
-			cdarray = STORY_CATEGORIES;
+	public static CategoryDescriptor[] getEventCategoryDescriptorsFiltered() {
+		try {
+			return DTParamsHelper.getInstance().getFilteredArrayByParams(EVENT_CATEGORIES, CATEGORY_TYPE_EVENTS);
+		} catch (DataException e) {
+			Log.e(TAG, e.getMessage());
+			return null;
+		}
+	}
+
+	public static CategoryDescriptor[] getPOICategoryDescriptorsFiltered() {
+		try {
+			return DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, CATEGORY_TYPE_POIS);
+		} catch (DataException e) {
+			Log.e(TAG, e.getMessage());
+			return null;
+
 		}
 
+	}
+
+	public static CategoryDescriptor[] getStoryCategoryDescriptorsFiltered() {
+		try {
+			return DTParamsHelper.getInstance().getFilteredArrayByParams(STORY_CATEGORIES, CATEGORY_TYPE_STORIES);
+		} catch (DataException e) {
+			Log.e(TAG, e.getMessage());
+			return null;
+
+		}
+
+	}
+
+	public static CategoryDescriptor getCategoryDescriptorByCategoryFiltered(String type, String cat) {
+		CategoryDescriptor[] cdarray = null;
+
+		try {
+			if (type.equalsIgnoreCase(CATEGORY_TYPE_POIS)) {
+
+				cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, type);
+
+			} else if (type.equalsIgnoreCase(CATEGORY_TYPE_EVENTS)) {
+				cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(EVENT_CATEGORIES, type);
+			} else if (type.equalsIgnoreCase(CATEGORY_TYPE_STORIES)) {
+				cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(STORY_CATEGORIES, type);
+			}
+		} catch (DataException e) {
+			Log.e(TAG, e.getMessage());
+			return null;
+		}
 		if (cdarray != null) {
 			for (int i = 0; i < cdarray.length; i++) {
 				CategoryDescriptor cd = cdarray[i];
@@ -232,7 +304,6 @@ public class CategoryHelper {
 				}
 			}
 		}
-
 
 		return null;
 	}

@@ -283,7 +283,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategory(
+					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
 							CategoryHelper.CATEGORY_TYPE_EVENTS, category).description)
 					+ " " + getString(R.string.event);
 			if (Locale.getDefault().equals(Locale.ITALY))
@@ -292,7 +292,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 						+ getString(R.string.event)
 						+ " su "
 						+ getString(CategoryHelper
-								.getCategoryDescriptorByCategory(
+								.getCategoryDescriptorByCategoryFiltered(
 										CategoryHelper.CATEGORY_TYPE_EVENTS,
 										category).description);
 
@@ -394,7 +394,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		String category = bundle.getString(SearchFragment.ARG_CATEGORY);
 		CategoryDescriptor catDescriptor = CategoryHelper
-				.getCategoryDescriptorByCategory("events", category);
+				.getCategoryDescriptorByCategoryFiltered("events", category);
 		String categoryString = (catDescriptor != null) ? context
 				.getResources().getString(catDescriptor.description) : null;
 

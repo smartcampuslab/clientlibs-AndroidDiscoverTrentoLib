@@ -46,8 +46,8 @@ public class EventsCategoriesAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = new ViewHolder();
-		CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
-
+//		CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
+		CategoryDescriptor cd = CategoryHelper.getEventCategoryDescriptorsFiltered()[position];
 		if (convertView == null) {
 			holder.button = new Button(context);
 			// holder.button.setText(CategoryHelper.EVENT_CATEGORIES[position].description);
@@ -94,7 +94,7 @@ public class EventsCategoriesAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return CategoryHelper.EVENT_CATEGORIES.length;
+		return CategoryHelper.getEventCategoryDescriptorsFiltered().length;
 	}
 
 	@Override

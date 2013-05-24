@@ -257,7 +257,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject>
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategory(
+					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
 							CategoryHelper.CATEGORY_TYPE_POIS, category).description)
 					+ " " + getString(R.string.place);
 			if (Locale.getDefault().equals(Locale.ITALY))
@@ -266,7 +266,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject>
 						+ getString(R.string.place)
 						+ " su "
 						+ getString(CategoryHelper
-								.getCategoryDescriptorByCategory(
+								.getCategoryDescriptorByCategoryFiltered(
 										CategoryHelper.CATEGORY_TYPE_POIS,
 										category).description);
 
@@ -377,7 +377,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject>
 		String category = (bundle != null) ? bundle
 				.getString(SearchFragment.ARG_CATEGORY) : null;
 		CategoryDescriptor catDescriptor = CategoryHelper
-				.getCategoryDescriptorByCategory("pois", category);
+				.getCategoryDescriptorByCategoryFiltered("pois", category);
 		String categoryString = (catDescriptor != null) ? context
 				.getResources().getString(catDescriptor.description) : null;
 

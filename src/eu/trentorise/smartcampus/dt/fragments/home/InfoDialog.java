@@ -41,6 +41,7 @@ import eu.trentorise.smartcampus.dt.model.POIObject;
 public class InfoDialog extends SherlockDialogFragment {
 	private BaseDTObject data;
 
+	
 	public InfoDialog(BaseDTObject o) {
 		this.data = o;
 	}
@@ -48,9 +49,9 @@ public class InfoDialog extends SherlockDialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		if (data instanceof POIObject){
-		getDialog().setTitle(getString(R.string.info_dialog_title_poi));
-		} else if (data instanceof EventObject){
+		if (data instanceof POIObject) {
+			getDialog().setTitle(getString(R.string.info_dialog_title_poi));
+		} else if (data instanceof EventObject) {
 			getDialog().setTitle(R.string.info_dialog_title_event);
 		}
 		return inflater.inflate(R.layout.mapdialog, container, false);
@@ -61,14 +62,23 @@ public class InfoDialog extends SherlockDialogFragment {
 		super.onStart();
 		TextView msg = (TextView) getDialog().findViewById(R.id.mapdialog_msg);
 
-			if (data instanceof POIObject){
-				
-				msg.setText(Html.fromHtml("<h2>"+((POIObject) data).getTitle()+"</h2><br><p>"+((POIObject) data).shortAddress()+"</p>"));
-				}
-			else if (data instanceof EventObject){
-				POIObject poi = DTHelper.findPOIById(((EventObject) data)
-						.getPoiId());
-				msg.setText(Html.fromHtml("<h2>"+((EventObject) data).getTitle()+"</h2><br><p>"+getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_EVENTS,((EventObject) data).getType()).description)+"<br>"+(((EventObject) data).getTiming())+"<br>"+poi.shortAddress()+"</p>"));
+		if (data instanceof POIObject) {
+
+			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle()
+					+ "</h2><br><p>" + ((POIObject) data).shortAddress()
+					+ "</p>"));
+		} else if (data instanceof EventObject) {
+			POIObject poi = DTHelper.findPOIById(((EventObject) data)
+					.getPoiId());
+			msg.setText(Html.fromHtml("<h2>"
+					+ ((EventObject) data).getTitle()
+					+ "</h2><br><p>"
+					+ getString(CategoryHelper
+							.getCategoryDescriptorByCategoryFiltered(
+									CategoryHelper.CATEGORY_TYPE_EVENTS,
+									((EventObject) data).getType()).description)
+					+ "<br>" + (((EventObject) data).getTiming()) + "<br>"
+					+ poi.shortAddress() + "</p>"));
 		}
 		msg.setMovementMethod(new ScrollingMovementMethod());
 		Button b = (Button) getDialog().findViewById(R.id.mapdialog_cancel);
@@ -99,7 +109,8 @@ public class InfoDialog extends SherlockDialogFragment {
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				} else if (data instanceof EventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
-					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (data.getId()));
+					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT,
+							(data.getId()));
 					fragment.setArguments(args);
 					fragmentTransaction
 							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

@@ -106,7 +106,7 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 
 		} else if (bundle != null && bundle.containsKey(ARG_CATEGORY)) {
 			selectedCategory = bundle.getString(ARG_CATEGORY);
-			CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory(type, selectedCategory);
+			CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategoryFiltered(type, selectedCategory);
 			String categoryString = (catDescriptor != null) ? getSherlockActivity().getResources().getString(
 					catDescriptor.description) : null;
 			titleSearch.setText(categoryString);
