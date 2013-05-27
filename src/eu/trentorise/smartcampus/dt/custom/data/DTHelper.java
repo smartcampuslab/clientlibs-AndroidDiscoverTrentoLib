@@ -50,6 +50,7 @@ import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.android.common.LocationHelper;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.SuggestionHelper;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
@@ -137,13 +138,13 @@ public class DTHelper {
 		// this.config = new SyncStorageConfiguration(sc,
 		// GlobalConfig.getAppUrl(mContext), Constants.SYNC_SERVICE,
 		// Constants.SYNC_INTERVAL);
-		if (Utils.getDBVersion(mContext, Constants.APP_TOKEN) != 3) {
-			Utils.writeObjectVersion(mContext, Constants.APP_TOKEN, 0);
+		if (Utils.getDBVersion(mContext, DTParamsHelper.getAppToken()) != 3) {
+			Utils.writeObjectVersion(mContext, DTParamsHelper.getAppToken(), 0);
 		}
-		this.storage = new DTSyncStorage(mContext, Constants.APP_TOKEN,
+		this.storage = new DTSyncStorage(mContext, DTParamsHelper.getAppToken(),
 				Constants.SYNC_DB_NAME, 3, config);
 		this.mProtocolCarrier = new ProtocolCarrier(mContext,
-				Constants.APP_TOKEN);
+				DTParamsHelper.getAppToken());
 
 		// LocationManager locationManager = (LocationManager)
 		// mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -175,7 +176,7 @@ public class DTHelper {
 		if (getInstance().syncInProgress)
 			return SYNC_ONGOING;
 		long last = Utils.getLastObjectSyncTime(getInstance().mContext,
-				Constants.APP_TOKEN);
+				DTParamsHelper.getAppToken());
 		if (System.currentTimeMillis() - last > Constants.SYNC_INTERVAL * 60 * 1000) {
 			if (last > 0)
 				return SYNC_REQUIRED;
@@ -218,9 +219,9 @@ public class DTHelper {
 				return null;
 
 			if (Utils.getObjectVersion(getInstance().mContext,
-					Constants.APP_TOKEN) <= 0) {
+					DTParamsHelper.getAppToken()) <= 0) {
 				Utils.writeObjectVersion(getInstance().mContext,
-						Constants.APP_TOKEN, 1L);
+						DTParamsHelper.getAppToken(), 1L);
 			}
 
 			getInstance().syncInProgress = true;
@@ -266,7 +267,7 @@ public class DTHelper {
 	// public static Collection<POIObject> getAllPOI() throws DataException,
 	// StorageConfigurationException, ConnectionException, ProtocolException,
 	// SecurityException {
-	// if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+	// if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 	// return getInstance().storage.getObjects(POIObject.class);
 	// } else {
 	// return Collections.emptyList();
@@ -404,7 +405,7 @@ public class DTHelper {
 		request.setBody(json);
 
 		MessageResponse msg = getInstance().mProtocolCarrier.invokeSync(
-				request, Constants.APP_TOKEN, getAuthToken());
+				request, DTParamsHelper.getAppToken(), getAuthToken());
 		// getRemote(instance.mContext, instance.token).create(poi);
 		poiReturn = eu.trentorise.smartcampus.android.common.Utils
 				.convertJSONToObject(msg.getBody(), POIObject.class);
@@ -457,7 +458,7 @@ public class DTHelper {
 				.convertToJSON(event);
 		request.setBody(json);
 
-		MessageResponse msg = getInstance().mProtocolCarrier.invokeSync(request, Constants.APP_TOKEN,
+		MessageResponse msg = getInstance().mProtocolCarrier.invokeSync(request, DTParamsHelper.getAppToken(),
 				getAuthToken());
 		// getRemote(instance.mContext, instance.token).create(poi);
 		EventObject eventreturn = eu.trentorise.smartcampus.android.common.Utils
@@ -469,7 +470,7 @@ public class DTHelper {
 	public static Collection<BaseDTObject> getMostPopular()
 			throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			Collection<POIObject> pois = getInstance().storage
 					.getObjects(POIObject.class);
 			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>(pois);
@@ -497,7 +498,7 @@ public class DTHelper {
 				.getAllCategories(new HashSet<String>(Arrays
 						.asList(inCategories)));
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -530,7 +531,7 @@ public class DTHelper {
 	public static Collection<POIObject> searchPOIs(int position, int size,
 			String text) throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			if (text == null || text.trim().length() == 0) {
 				return getInstance().storage.getObjects(POIObject.class);
 			}
@@ -560,7 +561,7 @@ public class DTHelper {
 				.getAllCategories(new HashSet<String>(Arrays
 						.asList(inCategories)));
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -611,7 +612,7 @@ public class DTHelper {
 				.getAllCategories(new HashSet<String>(Arrays
 						.asList(inCategories)));
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -671,7 +672,7 @@ public class DTHelper {
 				.getAllCategories(new HashSet<String>(Arrays
 						.asList(inCategories)));
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -722,7 +723,7 @@ public class DTHelper {
 				.getAllCategories(new HashSet<String>(Arrays
 						.asList(inCategories)));
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -771,7 +772,7 @@ public class DTHelper {
 		cal.add(Calendar.DAY_OF_YEAR, 1);
 		Date tomorrow = cal.getTime();
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			return getInstance().storage.query(EventObject.class,
 					" fromTime > " + getCurrentDateTimeForSearching()
 							+ " AND fromTime < " + tomorrow.getTime(), null,
@@ -792,7 +793,7 @@ public class DTHelper {
 			int size, String poiId) throws DataException,
 			StorageConfigurationException, ConnectionException,
 			ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			return getInstance().storage.query(EventObject.class,
 					"poiId = ? AND fromTime > "
 							+ getCurrentDateTimeForSearching(),
@@ -814,13 +815,13 @@ public class DTHelper {
 			DataException {
 		return SuggestionHelper.getSuggestions(suggest, getInstance().mContext,
 				GlobalConfig.getAppUrl(getInstance().mContext), getAuthToken(),
-				Constants.APP_TOKEN);
+				DTParamsHelper.getAppToken());
 	}
 
 	private static RemoteStorage getRemote(Context mContext, String token)
 			throws ProtocolException, DataException {
 		if (remoteStorage == null) {
-			remoteStorage = new RemoteStorage(mContext, Constants.APP_TOKEN);
+			remoteStorage = new RemoteStorage(mContext, DTParamsHelper.getAppToken());
 		}
 		remoteStorage.setConfig(token,
 				GlobalConfig.getAppUrl(getInstance().mContext),
@@ -873,7 +874,7 @@ public class DTHelper {
 		String query = "rating=" + rating;
 		request.setQuery(query);
 		String response = getInstance().mProtocolCarrier.invokeSync(request,
-				Constants.APP_TOKEN, getAuthToken()).getBody();
+				DTParamsHelper.getAppToken(), getAuthToken()).getBody();
 		synchronize();
 		return Integer.parseInt(response);
 	}
@@ -886,7 +887,7 @@ public class DTHelper {
 				Constants.SERVICE + "/objects/" + event.getId() + "/attend");
 		request.setMethod(Method.PUT);
 		String response = getInstance().mProtocolCarrier.invokeSync(request,
-				Constants.APP_TOKEN, getAuthToken()).getBody();
+				DTParamsHelper.getAppToken(), getAuthToken()).getBody();
 		synchronize();
 		EventObject result = eu.trentorise.smartcampus.android.common.Utils
 				.convertJSONToObject(response, EventObject.class);
@@ -901,7 +902,7 @@ public class DTHelper {
 				Constants.SERVICE + "/objects/" + event.getId() + "/notAttend");
 		request.setMethod(Method.PUT);
 		String response = getInstance().mProtocolCarrier.invokeSync(request,
-				Constants.APP_TOKEN, getAuthToken()).getBody();
+				DTParamsHelper.getAppToken(), getAuthToken()).getBody();
 		synchronize();
 		EventObject result = eu.trentorise.smartcampus.android.common.Utils
 				.convertJSONToObject(response, EventObject.class);
@@ -924,7 +925,7 @@ public class DTHelper {
 			Class<? extends BaseDTObject> cls, Long entityId)
 			throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			String where = "entityId = " + entityId;
 			Collection<? extends BaseDTObject> coll = getInstance().storage
 					.query(cls, where, null);
@@ -972,7 +973,7 @@ public class DTHelper {
 				.convertToJSON(storyObject);
 		request.setBody(json);
 
-		getInstance().mProtocolCarrier.invokeSync(request, Constants.APP_TOKEN,
+		getInstance().mProtocolCarrier.invokeSync(request, DTParamsHelper.getAppToken(),
 				getAuthToken());
 		// getRemote(instance.mContext, instance.token).create(poi);
 		synchronize();
@@ -991,7 +992,7 @@ public class DTHelper {
 				.getAllCategories(new HashSet<String>(Arrays
 						.asList(inCategories)));
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -1028,7 +1029,7 @@ public class DTHelper {
 			String text) throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
 
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			if (text == null || text.trim().length() == 0) {
 				return getInstance().storage.getObjects(StoryObject.class);
 			}
@@ -1095,7 +1096,7 @@ public class DTHelper {
 				Constants.SERVICE + "/objects/" + story.getId() + "/attend");
 		request.setMethod(Method.PUT);
 		String response = getInstance().mProtocolCarrier.invokeSync(request,
-				Constants.APP_TOKEN, getAuthToken()).getBody();
+				DTParamsHelper.getAppToken(), getAuthToken()).getBody();
 		synchronize();
 		StoryObject result = eu.trentorise.smartcampus.android.common.Utils
 				.convertJSONToObject(response, StoryObject.class);
@@ -1110,7 +1111,7 @@ public class DTHelper {
 				Constants.SERVICE + "/objects/" + story.getId() + "/notAttend");
 		request.setMethod(Method.PUT);
 		String response = getInstance().mProtocolCarrier.invokeSync(request,
-				Constants.APP_TOKEN, getAuthToken()).getBody();
+				DTParamsHelper.getAppToken(), getAuthToken()).getBody();
 		synchronize();
 		StoryObject result = eu.trentorise.smartcampus.android.common.Utils
 				.convertJSONToObject(response, StoryObject.class);
@@ -1120,7 +1121,7 @@ public class DTHelper {
 	public static Collection<StoryObject> getMyStories(int position, int size)
 			throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 			return getInstance().storage.query(StoryObject.class,
 					"attending IS NOT NULL", null, position, size, "title ASC");
 		} else {
@@ -1190,7 +1191,7 @@ public class DTHelper {
 		} else {
 			/* search offline */
 
-//			if (Utils.getObjectVersion(instance.mContext, Constants.APP_TOKEN) > 0) {
+//			if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
 
 				/* if sync create the query */
 				String where = "";

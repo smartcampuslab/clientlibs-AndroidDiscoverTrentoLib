@@ -64,6 +64,7 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
@@ -638,7 +639,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 							getSherlockActivity(),
 							new FollowAsyncTaskProcessor(getSherlockActivity()));
 					followTask.execute(getSherlockActivity()
-							.getApplicationContext(), Constants.APP_TOKEN,
+							.getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 				}
 			}

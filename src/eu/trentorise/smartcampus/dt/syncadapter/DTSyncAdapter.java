@@ -30,6 +30,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import eu.trentorise.smartcampus.android.common.GlobalConfig;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -64,7 +65,7 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
         ContentProviderClient provider, SyncResult syncResult) {
 
-    	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, Constants.APP_TOKEN) < Constants.SYNC_INTERVAL*60*1000) {
+    	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, DTParamsHelper.getAppToken()) < Constants.SYNC_INTERVAL*60*1000) {
     		return;
     	}
 

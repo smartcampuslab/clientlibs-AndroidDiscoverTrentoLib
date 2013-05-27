@@ -55,7 +55,6 @@ import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
-	private static final String FILE_NAME = "params.json";
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -105,9 +104,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
+			DTParamsHelper.init(getApplicationContext());
 			DTHelper.init(getApplicationContext());
-			DTParamsHelper.init(getApplicationContext(), FILE_NAME);
-
 			String token = DTHelper.getAccessProvider().getAuthToken(this, null);
 			if (token != null) {
 				initData(token);
@@ -348,7 +346,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	@Override
 	public String getAppToken() {
-		return Constants.APP_TOKEN;
+		return DTParamsHelper.getAppToken();
 	}
 
 	@Override

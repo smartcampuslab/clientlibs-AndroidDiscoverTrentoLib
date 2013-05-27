@@ -25,7 +25,7 @@ public class Constants {
 	/** Should be set in App metadata in order to properly manage the sync */
 	public static final String DT_SYNC_AUTHORITY = "dt-sync-authority";
 
-	public static final String APP_TOKEN = "discovertrento";
+//	public static final String APP_TOKEN = "discovertrento";
 	public static final String SERVICE = "/smartcampus.vas.discovertrento.web";
 	public static final String SYNC_SERVICE = "/smartcampus.vas.discovertrento.web/sync";
 	public static final int SYNC_INTERVAL = 5;

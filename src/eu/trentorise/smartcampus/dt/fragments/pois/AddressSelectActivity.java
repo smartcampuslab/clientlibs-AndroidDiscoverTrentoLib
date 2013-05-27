@@ -34,6 +34,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.android.common.SCGeocoder;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
@@ -153,7 +154,7 @@ public class AddressSelectActivity extends FeedbackFragmentActivity {
 
 	@Override
 	public String getAppToken() {
-		return Constants.APP_TOKEN;
+		return DTParamsHelper.getAppToken();
 	}
 
 	@Override

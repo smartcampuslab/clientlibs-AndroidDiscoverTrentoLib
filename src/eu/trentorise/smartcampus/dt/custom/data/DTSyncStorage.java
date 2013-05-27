@@ -58,9 +58,7 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 
 		// sync filtering: exclude transit stops
 		private static final Map<String, Object> exclude = new HashMap<String, Object>();
-
-//		to be done
-//		private static final Map<String, Object> include = new HashMap<String, Object>();
+		private static final Map<String, Object> include = new HashMap<String, Object>();
 
 //		static {
 //			exclude.put("source", "smartplanner-transitstops");
@@ -73,12 +71,20 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 		@Override
 		public SyncData getDataToSync(long version) throws StorageConfigurationException {
 			SyncData data = super.getDataToSync(version);
-			try {
-				exclude.putAll(DTParamsHelper.getInstance().getExcludeArray());
-			} catch (DataException e) {
-				e.printStackTrace();
-			}
-			data.setExclude(exclude);
+			Map<String, Object> excludeFromParam = null;
+			Map<String, Object> includeFromPAram = null;
+
+				excludeFromParam = DTParamsHelper.getExcludeArray();
+				if (excludeFromParam !=null)
+					exclude.putAll(excludeFromParam);
+				data.setExclude(exclude);
+				
+				includeFromPAram = DTParamsHelper.getIncludeArray();
+				if (includeFromPAram !=null)
+					include.putAll(includeFromPAram);
+				data.setInclude(include);
+
+
 			return data;
 		}
 

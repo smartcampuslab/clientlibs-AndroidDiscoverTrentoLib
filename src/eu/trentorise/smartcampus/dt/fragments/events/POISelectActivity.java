@@ -40,6 +40,7 @@ import com.google.android.maps.Overlay;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -259,7 +260,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 
 	@Override
 	public String getAppToken() {
-		return Constants.APP_TOKEN;
+		return DTParamsHelper.getAppToken();
 	}
 
 

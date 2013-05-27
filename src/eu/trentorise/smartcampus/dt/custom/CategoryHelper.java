@@ -246,40 +246,22 @@ public class CategoryHelper {
 	// }
 
 	public static CategoryDescriptor[] getEventCategoryDescriptorsFiltered() {
-		try {
 			return DTParamsHelper.getInstance().getFilteredArrayByParams(EVENT_CATEGORIES, CATEGORY_TYPE_EVENTS);
-		} catch (DataException e) {
-			Log.e(TAG, e.getMessage());
-			return null;
-		}
 	}
 
 	public static CategoryDescriptor[] getPOICategoryDescriptorsFiltered() {
-		try {
 			return DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, CATEGORY_TYPE_POIS);
-		} catch (DataException e) {
-			Log.e(TAG, e.getMessage());
-			return null;
-
-		}
 
 	}
 
 	public static CategoryDescriptor[] getStoryCategoryDescriptorsFiltered() {
-		try {
 			return DTParamsHelper.getInstance().getFilteredArrayByParams(STORY_CATEGORIES, CATEGORY_TYPE_STORIES);
-		} catch (DataException e) {
-			Log.e(TAG, e.getMessage());
-			return null;
-
-		}
 
 	}
 
 	public static CategoryDescriptor getCategoryDescriptorByCategoryFiltered(String type, String cat) {
 		CategoryDescriptor[] cdarray = null;
 
-		try {
 			if (type.equalsIgnoreCase(CATEGORY_TYPE_POIS)) {
 
 				cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, type);
@@ -289,10 +271,6 @@ public class CategoryHelper {
 			} else if (type.equalsIgnoreCase(CATEGORY_TYPE_STORIES)) {
 				cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(STORY_CATEGORIES, type);
 			}
-		} catch (DataException e) {
-			Log.e(TAG, e.getMessage());
-			return null;
-		}
 		if (cdarray != null) {
 			for (int i = 0; i < cdarray.length; i++) {
 				CategoryDescriptor cd = cdarray[i];
