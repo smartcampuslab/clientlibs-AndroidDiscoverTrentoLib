@@ -102,7 +102,6 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 		boolean initialized = mapView != null;
 		mapContainer = new RelativeLayout(getActivity());
 		mapView = MapManager.getMapView();
-
 		final ViewGroup parent = (ViewGroup) mapView.getParent();
 		if (parent != null) {
 			parent.removeView(mapView);
@@ -115,6 +114,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 		mItemizedoverlay = new DTItemizedOverlay(getActivity(), mapView);
 		mItemizedoverlay.setMapItemTapListener(this);
 		listOfOverlays.add(mItemizedoverlay);
+		setEventCategoriesToLoad("Family");
 
 		mMyLocationOverlay = new MyLocationOverlay(getSherlockActivity(), mapView) {
 			@Override

@@ -47,7 +47,6 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 		ViewHolder holder = new ViewHolder();
 		CategoryDescriptor cd = CategoryHelper.getPOICategoryDescriptorsFiltered()[position];
 
-		if (convertView == null) {
 			holder.button = new Button(context);
 			holder.button.setTag(cd);
 			holder.button.setText(context.getResources().getString(cd.description));
@@ -57,16 +56,7 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
 					null);
 			holder.button.setOnClickListener(new PoisCategoriesOnClickListener());
-		} else {
-			holder.button = (Button) convertView;
-			holder.button.setText(((Button) convertView).getText());
-			holder.button.setTextSize(11);
-			holder.button.setTextColor(context.getResources().getColor(R.color.sc_light_gray));
-			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
-					null);
-			holder.button.setOnClickListener(new PoisCategoriesOnClickListener());
-		}
+
 
 		return holder.button;
 	}

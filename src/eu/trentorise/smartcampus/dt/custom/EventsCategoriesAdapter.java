@@ -48,7 +48,6 @@ public class EventsCategoriesAdapter extends BaseAdapter {
 		ViewHolder holder = new ViewHolder();
 //		CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
 		CategoryDescriptor cd = CategoryHelper.getEventCategoryDescriptorsFiltered()[position];
-		if (convertView == null) {
 			holder.button = new Button(context);
 			// holder.button.setText(CategoryHelper.EVENT_CATEGORIES[position].description);
 			holder.button.setTag(cd);
@@ -58,17 +57,7 @@ public class EventsCategoriesAdapter extends BaseAdapter {
 			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
 			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
 					null);
-			holder.button.setOnClickListener(new EventsCategoriesOnClickListener());
-		} else {
-			holder.button = (Button) convertView;
-			holder.button.setText(((Button) convertView).getText());
-			holder.button.setTextSize(11);
-			holder.button.setTextColor(context.getResources().getColor(R.color.sc_light_gray));
-			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-			holder.button.setCompoundDrawablesWithIntrinsicBounds(null,
-					context.getResources().getDrawable(CategoryHelper.EVENT_CATEGORIES[position].thumbnail), null, null);
-			holder.button.setOnClickListener(new EventsCategoriesOnClickListener());
-		}
+
 		return holder.button;
 	}
 

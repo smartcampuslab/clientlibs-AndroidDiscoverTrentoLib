@@ -35,7 +35,8 @@ import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 
 public class MapManager {
 
-	public static final int ZOOM_DEFAULT = 15;
+//	public static final int ZOOM_DEFAULT = 15;
+	public static final int ZOOM_DEFAULT = 11;
 	private static MapView mapView;
 	
 	private static GeoPoint trento = new GeoPoint((int) (46.0696727540531 * 1E6),

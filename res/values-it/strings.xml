@@ -170,6 +170,7 @@
     <string name="categories_poi_food">Ristoranti</string>
     <string name="categories_poi_drink">Bar</string>
     <string name="categories_poi_cinema">Cinema</string>
+    <string name="categories_poi_family">Famiglia</string>
     <string name="categories_poi_generic">Altro</string>
     
     <string name="categories_story_leisure">Intrattenimento</string>
