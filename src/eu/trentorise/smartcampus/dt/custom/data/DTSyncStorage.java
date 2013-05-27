@@ -22,6 +22,7 @@ import java.util.Map;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
@@ -57,9 +58,13 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 
 		// sync filtering: exclude transit stops
 		private static final Map<String, Object> exclude = new HashMap<String, Object>();
-		static {
-			exclude.put("source", "smartplanner-transitstops");
-		}
+
+//		to be done
+//		private static final Map<String, Object> include = new HashMap<String, Object>();
+
+//		static {
+//			exclude.put("source", "smartplanner-transitstops");
+//		}
 		
 		public DTSyncStorageHelper(Context context, String dbName, int version, StorageConfiguration config) {
 			super(context, dbName, version, config);
@@ -68,6 +73,11 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 		@Override
 		public SyncData getDataToSync(long version) throws StorageConfigurationException {
 			SyncData data = super.getDataToSync(version);
+			try {
+				exclude.putAll(DTParamsHelper.getInstance().getExcludeArray());
+			} catch (DataException e) {
+				e.printStackTrace();
+			}
 			data.setExclude(exclude);
 			return data;
 		}

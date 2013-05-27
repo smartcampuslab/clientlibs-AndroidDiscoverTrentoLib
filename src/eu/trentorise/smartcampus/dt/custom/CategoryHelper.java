@@ -38,10 +38,7 @@ public class CategoryHelper {
 	public static final String CATEGORY_TYPE_POIS = "pois";
 	public static final String CATEGORY_TYPE_EVENTS = "events";
 	public static final String CATEGORY_TYPE_STORIES = "stories";
-	/* json parameters in assets/params.json */
-	public static final String KEY_POI_CATEGORIES = "poi_categories";
-	public static final String KEY_EVENT_CATEGORIES = "events_categories";
-	public static final String KEY_STORY_CATEGORIES = "story_categories";
+
 
 	public static CategoryDescriptor TODAY_EVENTS = new CategoryDescriptor(R.drawable.marker_event_generic,
 			R.drawable.ic_other_event, "Today", R.string.categories_event_today);
