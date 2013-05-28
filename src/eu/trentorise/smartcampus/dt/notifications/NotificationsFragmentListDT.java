@@ -56,6 +56,17 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 		setListAdapter(adapter);
 		adapter.clear();
 
+		// instantiate again NotificationsHelper if needed
+		String appToken = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_APP_TOKEN);
+		String syncDbName = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_SYNC_DB_NAME);
+		String syncService = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_SYNC_SERVICE);
+		String authority = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_AUTHORITY);
+
+		if (!NotificationsHelper.isInstantiated() && appToken != null && syncDbName != null && syncService != null
+				&& authority != null) {
+			NotificationsHelper.init(getSherlockActivity(), appToken, syncDbName, syncService, authority);
+		}
+
 		List<Notification> notificationsList = NotificationsHelper.getNotifications(getNotificationFilter(), 0, -1, 0);
 
 		TextView listEmptyTextView = (TextView) getView().findViewById(R.id.list_text_empty);
