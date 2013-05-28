@@ -30,7 +30,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
+import eu.trentorise.smartcampus.dt.model.POIObject;
 
 
 // in EventsListingFragment
@@ -100,7 +102,12 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 			e.location.setText(null);
 		}
 		e.hour.setText(e.event.getTimingFormatted());
-		e.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType())));
+		Drawable drawable;
+		if (e.event.getType().compareTo("Family")==0)
+			drawable=eventCertified(e.event);
+		else drawable = context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType()));
+		e.icon.setImageDrawable(drawable);
+//		e.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType())));
 		//Choose if show the separator or not
 		EventObject event = getItem(position);
 		
@@ -125,6 +132,18 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 
 		return row;
 	}
+	
+	private Drawable eventCertified(EventObject o) {
+		if (((Boolean) o.getCustomData().get("certified")))
+		{
+			/*se ceretificato e evento*/
+
+				return context.getResources().getDrawable(R.drawable.ic_event_family_certified);
+		}	
+		
+		return context.getResources().getDrawable(CategoryHelper.getIconByType(o.getType()));
+	}
+
 	private String setDateString(EventPlaceholder e){
 		String newdateformatted = new String("");
 

@@ -114,7 +114,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 		mItemizedoverlay = new DTItemizedOverlay(getActivity(), mapView);
 		mItemizedoverlay.setMapItemTapListener(this);
 		listOfOverlays.add(mItemizedoverlay);
-		setEventCategoriesToLoad("Family");
+//		setEventCategoriesToLoad("Family");
 
 		mMyLocationOverlay = new MyLocationOverlay(getSherlockActivity(), mapView) {
 			@Override

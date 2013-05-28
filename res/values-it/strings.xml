@@ -235,5 +235,7 @@
     <string name="date_field_empty">Selezionare la data dell\'evento!</string>
     <string name="info_dialog_title_poi">Informazioni luogo</string>
     <string name="info_dialog_title_event">Informazioni evento</string>   
+    <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.
+</string>
     
 </resources>

@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -33,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TableRow;
@@ -120,6 +123,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		super.onStart();
 		EventObject event = getEvent();
 		if (event != null) {
+			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
+			if (event.getType().compareTo("Family")==0 && isCertified(event))
+				certifiedBanner.setVisibility(View.VISIBLE);
+			else certifiedBanner.setVisibility(View.GONE);
+
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.event_details_title);
 			tv.setText(event.getTitle());
@@ -267,6 +275,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	}
 
+	private boolean isCertified(EventObject event) {
+		if ((Boolean) event.getCustomData().get("certified"))
+				return true;
+		else return false;
+		
+	}
+
 	private void updateAttending() {
 		TextView tv;
 		// attendees
@@ -333,16 +348,20 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.get_dir) {
-			Address to = getPOI().asGoogleAddress();
-			Address from = null;
-			GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
-			if (mylocation != null) {
-				from = new Address(Locale.getDefault());
-				from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-				from.setLongitude(mylocation.getLongitudeE6() / 1E6);
-			}
-			NavigationHelper.bringMeThere(getActivity(), from, to);
+//			if (bringMeThere(getEvent())){
+//			Address to = getPOI().asGoogleAddress();
+//			Address from = null;
+//			GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+//			if (mylocation != null) {
+//				from = new Address(Locale.getDefault());
+//				from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+//				from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+//			}
+//			NavigationHelper.bringMeThere(getActivity(), from, to);
+			bringMeThere(getEvent());
 			return true;
+//			}
+//			else return false;
 		} else if (item.getItemId() == R.id.see_on_map) {
 			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
 			getEvent().setLocation(poi.getLocation());
@@ -413,7 +432,55 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	private void bringMeThere(EventObject eventObject){
+		AlertDialog.Builder builder;
 
+		builder = new AlertDialog.Builder(getSherlockActivity());
+		/*check event Object*/
+		if (eventObject.getType().compareTo("Family")!=0){
+		/*if it's not a family event, no problem*/
+			return;
+		} else{
+		/*if it is, show the dialog box*/
+		/*press true return true, press false return false*/
+			DialogInterface.OnClickListener updateDialogClickListener;
+
+			updateDialogClickListener = new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+
+
+						switch (which) {
+						case DialogInterface.BUTTON_POSITIVE:
+							//upgrade the user
+							Address to = getPOI().asGoogleAddress();
+							Address from = null;
+							GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+							if (mylocation != null) {
+								from = new Address(Locale.getDefault());
+								from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+								from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+							}
+							NavigationHelper.bringMeThere(getActivity(), from, to);
+							break;
+
+						case DialogInterface.BUTTON_NEGATIVE:
+							//CLOSE
+
+							break;
+						
+						}
+
+				}
+			};
+			builder.setCancelable(false).setMessage(getSherlockActivity().getString(R.string.warning_for_direction))
+			.setPositiveButton(android.R.string.yes, updateDialogClickListener)
+			.setNegativeButton(R.string.cancel, updateDialogClickListener).show();}
+		return;
+		}
+	
 	private void setFollowByIntent() {
 		try {
 			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(

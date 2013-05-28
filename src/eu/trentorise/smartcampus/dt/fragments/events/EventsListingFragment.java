@@ -150,10 +150,12 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 				// modifica se numero della versione e' diverso
 //				if (event.getUpdateTime() != eventsAdapter.getItem(indexAdapter)
 //						.getUpdateTime()) {
-				if (event.getUpdateTime() == 0) {						
+				if (event.getUpdateTime() == 0) {
+					
 					event.assignPoi(poi);
-					removeEvent(eventsAdapter,indexAdapter);
-					insertEvent(event);
+					restoreElement(eventsAdapter,indexAdapter,event);
+//					removeEvent(eventsAdapter,indexAdapter);
+//					insertEvent(event);
 				}
 			}
 			// notify
@@ -164,34 +166,34 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 
 	}
 
+	private void restoreElement(EventAdapter eventsAdapter2, Integer indexAdapter2, EventObject event) {
+		removeEvent(eventsAdapter,indexAdapter);
+		insertEvent(event,indexAdapter);
+		
+	}
+
 	/*
 	 * insert in the same adapter the new items
 	 *do the post proc if they are multiday events
 	 */
-	private void insertEvent(EventObject event) {
+	private void insertEvent(EventObject event, Integer indexAdapter2) {
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(System.currentTimeMillis());
 		calToDate(cal);
 		biggerFromTime = cal.getTimeInMillis();
 		//add in the right place
-		int i=0;
-		while (i<eventsAdapter.getCount()){
-			if (eventsAdapter.getItem(i).getFromTime()<= event.getFromTime())
-				 i++;
-			else 
-				{
-				eventsAdapter.insert(event, i);
-				break;
-				}
-			
-			}
-		//create the new list
 		List<EventObject> returnList = new ArrayList<EventObject>();	
-		i=0;
-		while (i<eventsAdapter.getCount()){
-			returnList.add(eventsAdapter.getItem(i));
-		 i++;
+		int i=0;
+		int j=0;
+		while (i<eventsAdapter.getCount()+1){
+			if (i!=indexAdapter2){
+				returnList.add(eventsAdapter.getItem(j));
+				 j++;
+				}
+			else returnList.add(event);
+			i++;
+		
 		}
 		eventsAdapter.clear();
 		

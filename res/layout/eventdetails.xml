@@ -29,6 +29,13 @@
         android:orientation="vertical"
         android:padding="8dp" >
 
+        <ImageView
+            android:id="@+id/banner_certified"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/banner_certified"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/event_details_title"
             android:layout_width="match_parent"

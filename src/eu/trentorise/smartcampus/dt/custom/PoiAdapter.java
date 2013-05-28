@@ -16,6 +16,7 @@
 package eu.trentorise.smartcampus.dt.custom;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 
 public class PoiAdapter extends ArrayAdapter<POIObject> {
@@ -58,13 +60,27 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		p.poi = getItem(position);// data[position];
 		p.title.setText(p.poi.getTitle());
 	//	p.description.setText(data[position].getDescription());
-		p.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType())));
+		Drawable drawable;
+		if (p.poi.getType().compareTo("Family - Organizations")==0)
+			drawable=poiCertified(p.poi);
+		else drawable = context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType()));
+		p.icon.setImageDrawable(drawable);
+//		p.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType())));
 
 		p.location.setText(p.poi.shortAddress());
 		
 		return row;
 	}
+	private Drawable poiCertified(POIObject poi) {
+		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0)
+		{
+			/*se ceretificato e evento*/
 
+				return context.getResources().getDrawable(R.drawable.ic_event_family_certified);
+		}	
+		
+		return context.getResources().getDrawable(CategoryHelper.getIconByType(poi.getType()));
+	}
 //	@Override
 //	public void remove(POIObject object) {
 //		POIObject[] newData = new POIObject[data.length-1];

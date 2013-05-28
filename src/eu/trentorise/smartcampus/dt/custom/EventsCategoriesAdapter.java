@@ -57,6 +57,7 @@ public class EventsCategoriesAdapter extends BaseAdapter {
 			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
 			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
 					null);
+			holder.button.setOnClickListener(new EventsCategoriesOnClickListener());
 
 		return holder.button;
 	}

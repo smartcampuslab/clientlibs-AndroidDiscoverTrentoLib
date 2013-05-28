@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TableRow;
@@ -68,6 +69,7 @@ import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
+import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
@@ -118,6 +120,10 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	public void onStart() {
 		super.onStart();
 		if (getPOI() != null) {
+			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
+			if (getPOI().getType().compareTo("Family - Organizations")==0 && isCertified(getPOI()))
+				certifiedBanner.setVisibility(View.VISIBLE);
+			else certifiedBanner.setVisibility(View.GONE);
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.poi_details_title);
 			tv.setText(getPOI().getTitle());
@@ -237,6 +243,13 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			}
 
 		}
+	}
+
+	private boolean isCertified(POIObject poi) {
+		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0)
+				return true;
+		else return false;
+		
 	}
 
 	private boolean hasMultimediaAttached() {
