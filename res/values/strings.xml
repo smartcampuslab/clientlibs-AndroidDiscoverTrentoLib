@@ -232,8 +232,8 @@
     <string name="to_date_before_from_date">Start date should be earlier than end date!</string>
     <string name="date_field_empty">Select event date!</string>
     
-    <string name="info_dialog_title_poi">Informations Place</string>
-    <string name="info_dialog_title_event">Informations Event</string>
+    <string name="info_dialog_title_poi">Place Infos </string>
+    <string name="info_dialog_title_event">Event Infos</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
  
 </resources>   
