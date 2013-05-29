@@ -36,9 +36,7 @@ import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
@@ -84,9 +82,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		if (item.getItemId() == android.R.id.home) {
 			onBackPressed();
 			return true;
-		}
-		else return super.onOptionsItemSelected(item);
-		
+		} else
+			return super.onOptionsItemSelected(item);
+
 	}
 
 	@Override
@@ -104,7 +102,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
-			DTParamsHelper.init(getApplicationContext());
 			DTHelper.init(getApplicationContext());
 			String token = DTHelper.getAccessProvider().getAuthToken(this, null);
 			if (token != null) {
@@ -196,7 +193,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		private int syncRequired = 0;
 		private SherlockFragmentActivity currentRootActivity = null;
-		
+
 		public LoadDataProcessor(Activity activity) {
 			super(activity);
 		}
@@ -320,6 +317,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
+
 	// private BroadcastReceiver mTokenInvalidReceiver = new BroadcastReceiver()
 	// {
 	// @Override
