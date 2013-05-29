@@ -29,7 +29,8 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
 	private final SherlockFragmentActivity mActivity;
 	private final String mTag;
 	private final Class<T> mClass;
-//	private int mViewGroup = android.R.id.content;
+
+	// private int mViewGroup = android.R.id.content;
 
 	/**
 	 * Constructor used each time a new tab is created.
@@ -49,35 +50,38 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
 
 	/* The following are each of the ActionBar.TabListener callbacks */
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		SherlockFragment preInitializedFragment = (SherlockFragment) mActivity
-		.getSupportFragmentManager().findFragmentByTag(mTag);
-		if (preInitializedFragment != null && ! preInitializedFragment.equals(mFragment)) {
+		// SherlockFragment preInitializedFragment = (SherlockFragment)
+		// mActivity
+		Fragment preInitializedFragment = (Fragment) mActivity.getSupportFragmentManager().findFragmentByTag(mTag);
+		if (preInitializedFragment != null && !preInitializedFragment.equals(mFragment)) {
 			ft.remove(preInitializedFragment);
 		}
 
 		if (mFragment == null) {
-            // If not, instantiate and add it to the activity
-            mFragment = Fragment.instantiate(mActivity, mClass.getName());
-            ft.add(android.R.id.content, mFragment, mTag);
-        } else {
-            // If it exists, simply attach it in order to show it
-            ft.attach(mFragment);
-        }
+			// If not, instantiate and add it to the activity
+			mFragment = Fragment.instantiate(mActivity, mClass.getName());
+			ft.add(android.R.id.content, mFragment, mTag);
+		} else {
+			// If it exists, simply attach it in order to show it
+			ft.attach(mFragment);
+		}
 
-//		SherlockFragment preInitializedFragment = (SherlockFragment) mActivity
-//				.getSupportFragmentManager().findFragmentByTag(mTag);
-//
-//		if (mFragment == null && preInitializedFragment == null) {
-//			mFragment = (SherlockFragment) SherlockFragment.instantiate(
-//					mActivity, mClass.getName());
-//			ft.add(R.id.mainlayout, mFragment, mTag);
-//		} else if (mFragment != null && mFragment == preInitializedFragment) {
-//			// If it exists, simply attach it in order to show it
-//			ft.attach(mFragment);
-//		} else if (preInitializedFragment != null) {
-//			mFragment = preInitializedFragment;
-//			ft.attach(mFragment);
-//		}
+		// SherlockFragment preInitializedFragment = (SherlockFragment)
+		// mActivity
+		// .getSupportFragmentManager().findFragmentByTag(mTag);
+		//
+		// if (mFragment == null && preInitializedFragment == null) {
+		// mFragment = (SherlockFragment) SherlockFragment.instantiate(
+		// mActivity, mClass.getName());
+		// ft.add(R.id.mainlayout, mFragment, mTag);
+		// } else if (mFragment != null && mFragment == preInitializedFragment)
+		// {
+		// // If it exists, simply attach it in order to show it
+		// ft.attach(mFragment);
+		// } else if (preInitializedFragment != null) {
+		// mFragment = preInitializedFragment;
+		// ft.attach(mFragment);
+		// }
 
 		// if (preInitializedFragment != null && mFragment !=
 		// preInitializedFragment) {
@@ -97,12 +101,13 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
 	}
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-//		SherlockFragment preInitializedFragment = (SherlockFragment) mActivity
-//				.getSupportFragmentManager().findFragmentByTag(mTag);
-//		if (preInitializedFragment != null
-//				&& mFragment != preInitializedFragment) {
-//			ft.detach(preInitializedFragment);
-//		}
+		// SherlockFragment preInitializedFragment = (SherlockFragment)
+		// mActivity
+		// .getSupportFragmentManager().findFragmentByTag(mTag);
+		// if (preInitializedFragment != null
+		// && mFragment != preInitializedFragment) {
+		// ft.detach(preInitializedFragment);
+		// }
 
 		mActivity.getSupportFragmentManager().popBackStack(mTag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 		if (mFragment != null) {

@@ -41,14 +41,15 @@ import eu.trentorise.smartcampus.dt.model.POIObject;
 public class InfoDialog extends SherlockDialogFragment {
 	private BaseDTObject data;
 
-	
+	public InfoDialog() {
+	}
+
 	public InfoDialog(BaseDTObject o) {
 		this.data = o;
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		if (data instanceof POIObject) {
 			getDialog().setTitle(getString(R.string.info_dialog_title_poi));
 		} else if (data instanceof EventObject) {
@@ -64,20 +65,15 @@ public class InfoDialog extends SherlockDialogFragment {
 
 		if (data instanceof POIObject) {
 
-			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle()
-					+ "</h2><br><p>" + ((POIObject) data).shortAddress()
-					+ "</p>"));
+			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle() + "</h2><br><p>"
+					+ ((POIObject) data).shortAddress() + "</p>"));
 		} else if (data instanceof EventObject) {
-			POIObject poi = DTHelper.findPOIById(((EventObject) data)
-					.getPoiId());
+			POIObject poi = DTHelper.findPOIById(((EventObject) data).getPoiId());
 			msg.setText(Html.fromHtml("<h2>"
 					+ ((EventObject) data).getTitle()
 					+ "</h2><br><p>"
-					+ getString(CategoryHelper
-							.getCategoryDescriptorByCategoryFiltered(
-									CategoryHelper.CATEGORY_TYPE_EVENTS,
-									((EventObject) data).getType()).description)
-					+ "<br>" + (((EventObject) data).getTiming()) + "<br>"
+					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_EVENTS,
+							((EventObject) data).getType()).description) + "<br>" + (((EventObject) data).getTiming()) + "<br>"
 					+ poi.shortAddress() + "</p>"));
 		}
 		msg.setMovementMethod(new ScrollingMovementMethod());
@@ -94,28 +90,22 @@ public class InfoDialog extends SherlockDialogFragment {
 
 			@Override
 			public void onClick(View v) {
-				FragmentTransaction fragmentTransaction = getSherlockActivity()
-						.getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Bundle args = new Bundle();
 
 				if (data instanceof POIObject) {
 					PoiDetailsFragment fragment = new PoiDetailsFragment();
 					args.putSerializable(PoiDetailsFragment.ARG_POI, data);
 					fragment.setArguments(args);
-					fragmentTransaction
-							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment,
-							"me");
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.replace(android.R.id.content, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				} else if (data instanceof EventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
-					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT,
-							(data.getId()));
+					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (data.getId()));
 					fragment.setArguments(args);
-					fragmentTransaction
-							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment,
-							"me");
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.replace(android.R.id.content, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				}
 				fragmentTransaction.commit();
