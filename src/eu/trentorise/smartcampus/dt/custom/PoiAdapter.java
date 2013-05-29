@@ -31,8 +31,6 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 
 	private Context context;
 	private int layoutResourceId;
-//	private POIObject[] data;
-
 	public PoiAdapter(Context context, int layoutResourceId) {
 		super(context, layoutResourceId);
 		this.context = context;
@@ -59,14 +57,10 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		
 		p.poi = getItem(position);// data[position];
 		p.title.setText(p.poi.getTitle());
-	//	p.description.setText(data[position].getDescription());
-		Drawable drawable;
-		if (p.poi.getType().compareTo("Family - Organizations")==0)
-			drawable=poiCertified(p.poi);
-		else drawable = context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType()));
+		Drawable drawable  = context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType()));
+		if (CategoryHelper.FAMILY_POI_CATEGORY.equals(p.poi.getType()))
+				drawable=poiCertified(p.poi);
 		p.icon.setImageDrawable(drawable);
-//		p.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType())));
-
 		p.location.setText(p.poi.shortAddress());
 		
 		return row;

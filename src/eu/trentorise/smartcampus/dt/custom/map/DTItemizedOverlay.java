@@ -95,10 +95,9 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 			GeoPoint point = new GeoPoint((int)(o.getLocation()[0]*1E6),(int)(o.getLocation()[1]*1E6));
 			OverlayItem overlayitem = new OverlayItem(point, o.getTitle(), o.getDescription());
 			/*check if it's certified*/
-			Drawable drawable = null;
-			if (o.getType().compareTo("Family")==0 || o.getType().compareTo("Family - Organizations")==0)
+			Drawable drawable = mContext.getResources().getDrawable(CategoryHelper.getMapIconByType(o.getType()));
+			if (CategoryHelper.FAMILY_POI_CATEGORY.equals(o.getType())||(CategoryHelper.FAMILY_EVENT_CATEGORY.equals(o.getType())))
 				drawable=objectCertified(o);
-			else drawable = mContext.getResources().getDrawable(CategoryHelper.getMapIconByType(o.getType()));
 			drawable.setBounds(-drawable.getIntrinsicWidth()/2, -drawable.getIntrinsicHeight(), drawable.getIntrinsicWidth() /2, 0);
 			overlayitem.setMarker(drawable);
 			mOverlays.add(overlayitem);

@@ -102,12 +102,11 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 			e.location.setText(null);
 		}
 		e.hour.setText(e.event.getTimingFormatted());
-		Drawable drawable;
-		if (e.event.getType().compareTo("Family")==0)
+		Drawable drawable =  context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType()));
+
+		if (CategoryHelper.FAMILY_EVENT_CATEGORY.equals(e.event.getType()))
 			drawable=eventCertified(e.event);
-		else drawable = context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType()));
 		e.icon.setImageDrawable(drawable);
-//		e.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(e.event.getType())));
 		//Choose if show the separator or not
 		EventObject event = getItem(position);
 		
