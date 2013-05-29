@@ -29,7 +29,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp" >
-            
+       <ImageView
+                    android:id="@+id/banner_certified"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/banner_certified"
+                    android:visibility="gone"
+                	android:background="@drawable/banner_repeat"
+                    android:padding="0dp" />      
         <ImageView
             android:id="@+id/banner_certified"
             android:layout_width="wrap_content"

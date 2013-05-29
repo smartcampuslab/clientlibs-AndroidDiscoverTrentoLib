@@ -72,7 +72,7 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		return row;
 	}
 	private Drawable poiCertified(POIObject poi) {
-		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0)
+		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0 || ((String) poi.getCustomData().get("status")).compareTo("Certificato base")==0)
 		{
 			/*se ceretificato e evento*/
 

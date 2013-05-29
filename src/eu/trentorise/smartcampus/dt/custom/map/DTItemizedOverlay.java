@@ -116,7 +116,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 				return mContext.getResources().getDrawable(R.drawable.marker_event_family_certified);
 		}	
 			/*se certificato e poi*/
-		if ( (o instanceof POIObject)&&(((String) o.getCustomData().get("status")).compareTo("Certificato finale")==0))
+		if ( (o instanceof POIObject)&&(((String) o.getCustomData().get("status")).compareTo("Certificato finale")==0|| ((String) o.getCustomData().get("status")).compareTo("Certificato base")==0))
 			{
 				return mContext.getResources().getDrawable(R.drawable.marker_poi_family_certified);
 			}

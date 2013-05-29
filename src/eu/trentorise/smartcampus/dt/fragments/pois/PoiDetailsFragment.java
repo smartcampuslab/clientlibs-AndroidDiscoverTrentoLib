@@ -246,7 +246,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private boolean isCertified(POIObject poi) {
-		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0)
+		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0 || ((String) poi.getCustomData().get("status")).compareTo("Certificato base")==0)
 				return true;
 		else return false;
 		
