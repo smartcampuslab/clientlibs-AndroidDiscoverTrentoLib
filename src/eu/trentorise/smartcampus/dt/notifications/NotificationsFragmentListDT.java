@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -160,11 +161,29 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			EntityObject entityObject = params[0];
 
 			if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_EVENT)) {
-				return (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+				EventObject eo = (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+				if (eo == null)
+					{
+					DTHelper.synchronize();
+					eo = (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					}
+				return eo;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_LOCATION)) {
-				return (POIObject) DTHelper.findPOIByEntityId((entityObject.getEntityId()));
+				POIObject po = (POIObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+				if (po == null)
+					{
+					DTHelper.synchronize();
+					po = (POIObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					}
+				return po;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_STORY)) {
-				return (StoryObject) DTHelper.findStoryByEntityId((entityObject.getEntityId()));
+				StoryObject so = (StoryObject) DTHelper.findStoryByEntityId((entityObject.getEntityId()));
+				if (so == null)
+					{
+					DTHelper.synchronize();
+					so = (StoryObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					}
+				return so;
 			}
 
 			return null;
@@ -173,8 +192,10 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 		@Override
 		public void handleResult(BaseDTObject result) {
 			if (result == null)
+				{
+				Toast.makeText(getSherlockActivity(), getString(R.string.app_failure_obj_not_found), Toast.LENGTH_LONG).show();
 				return;
-
+				}
 			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			SherlockFragment fragment = null;
 			Bundle args = new Bundle();

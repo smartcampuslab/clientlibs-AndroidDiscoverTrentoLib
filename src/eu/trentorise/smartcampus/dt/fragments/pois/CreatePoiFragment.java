@@ -118,7 +118,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.createpoiform, container, false);
 
-		categoryDescriptors = CategoryHelper.POI_CATEGORIES;
+		categoryDescriptors = CategoryHelper.getPOICategoryDescriptorsFiltered();
 
 		Spinner categories = (Spinner) view.findViewById(R.id.poi_category);
 		int selected = -1;

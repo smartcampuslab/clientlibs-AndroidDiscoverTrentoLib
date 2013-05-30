@@ -820,22 +820,31 @@ public class DTHelper {
 
 	private static BaseDTObject findDTObjectByEntityId(Class<? extends BaseDTObject> cls, Long entityId) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
-		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken()) > 0) {
+		BaseDTObject returnObject = null;
 			String where = "entityId = " + entityId;
 			Collection<? extends BaseDTObject> coll = getInstance().storage.query(cls, where, null);
 			if (coll != null && coll.size() == 1)
-				return coll.iterator().next();
-		}
+				returnObject = coll.iterator().next();
+		if (returnObject == null)
+			returnObject = findLocalDTOObjectByEntityId(cls, entityId);
+		return returnObject;
 
-		ObjectFilter filter = new ObjectFilter();
-		Map<String, Object> criteria = new HashMap<String, Object>();
-		criteria.put("entityId", entityId);
-		filter.setCriteria(criteria);
-		Collection<? extends BaseDTObject> coll = getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
-		if (coll != null && coll.size() == 1)
-			return coll.iterator().next();
+	}
+
+	
+	private static BaseDTObject findLocalDTOObjectByEntityId(Class<? extends BaseDTObject> cls, Long entityId) {
+		try {
+		DTHelper.synchronize();
+		BaseDTObject returnObject = null;
+		String where = "entityId = " + entityId;
+		Collection<? extends BaseDTObject> coll = getInstance().storage.query(cls, where, null);
+			if (coll != null && coll.size() == 1)
+				returnObject = coll.iterator().next();
+		return returnObject;
+	} catch (Exception e) {
 		return null;
-
+	}
+		
 	}
 
 	public static Boolean saveStory(StoryObject storyObject) throws RemoteException, DataException,

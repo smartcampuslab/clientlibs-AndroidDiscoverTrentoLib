@@ -194,7 +194,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.createeventform, container, false);
 
-		categoryDescriptors = CategoryHelper.EVENT_CATEGORIES;
+		categoryDescriptors = CategoryHelper.getEventCategoryDescriptorsFiltered();
 
 		Spinner categories = (Spinner) view.findViewById(R.id.event_category);
 		int selected = -1;

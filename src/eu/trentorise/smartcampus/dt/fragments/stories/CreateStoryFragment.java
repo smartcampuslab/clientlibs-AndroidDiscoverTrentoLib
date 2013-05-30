@@ -156,7 +156,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		list.setAdapter(stepAdapter);
 
 		// categories
-		categoryDescriptors = CategoryHelper.STORY_CATEGORIES;
+		categoryDescriptors = CategoryHelper.getStoryCategoryDescriptorsFiltered();
 
 		Spinner categories = (Spinner) view.findViewById(R.id.story_category);
 		int selected = 0;
