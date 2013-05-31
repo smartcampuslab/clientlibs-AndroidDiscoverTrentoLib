@@ -100,7 +100,9 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject>
 	private String idPoi = "";
 	private Integer indexAdapter;
 	private Boolean reload = false;
-
+	private Integer postitionSelected = 0;
+	private ViewSwitcher previousViewSwitcher;
+	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -428,9 +430,17 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject>
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				ViewSwitcher vs = (ViewSwitcher) view;
+				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
+				{
+//					//close the old viewSwitcher
+					previousViewSwitcher.showPrevious();
+				}
+				ViewSwitcher vs = (ViewSwitcher) view
+						.findViewById(R.id.poi_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
+				postitionSelected=position;
+				previousViewSwitcher = vs;
 				return true;
 			}
 		});

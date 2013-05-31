@@ -107,7 +107,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	private String idStory = "";
 	private Integer indexAdapter;
 	private Boolean reload = false;
-
+	private Integer postitionSelected = 0;
+	private ViewSwitcher previousViewSwitcher;
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -400,9 +401,17 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				ViewSwitcher vs = (ViewSwitcher) view;
+				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
+				{
+//					//close the old viewSwitcher
+					previousViewSwitcher.showPrevious();
+				}
+				ViewSwitcher vs = (ViewSwitcher) view
+						.findViewById(R.id.story_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
+				postitionSelected=position;
+				previousViewSwitcher = vs;
 				return true;
 			}
 		});

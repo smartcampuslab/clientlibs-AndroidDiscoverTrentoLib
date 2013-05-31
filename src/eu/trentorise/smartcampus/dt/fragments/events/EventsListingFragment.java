@@ -113,7 +113,8 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	private String idEvent = "";
 	private Integer indexAdapter;
 	private Boolean reload = false;
-
+	private Integer postitionSelected = 0;
+	private ViewSwitcher previousViewSwitcher;
 	@Override
 	public void onActivityCreated(Bundle arg0) {
 		super.onActivityCreated(arg0);
@@ -474,10 +475,18 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
+				{
+//					//close the old viewSwitcher
+					previousViewSwitcher.showPrevious();
+				}
 				ViewSwitcher vs = (ViewSwitcher) view
 						.findViewById(R.id.event_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
+				postitionSelected=position;
+				previousViewSwitcher = vs;
+
 				return true;
 			}
 		});
