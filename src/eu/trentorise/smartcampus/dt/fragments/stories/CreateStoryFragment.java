@@ -383,7 +383,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment.validate");
 		}
 
-		if (data.getTitle() == null || data.getTitle().length() == 0)
+		if (data.getTitle() == null || data.getTitle().trim().length()==0)
 			return R.string.create_title;
 		return result;
 	}

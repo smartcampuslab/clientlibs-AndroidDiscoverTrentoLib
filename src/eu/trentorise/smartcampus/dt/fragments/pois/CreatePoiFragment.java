@@ -231,7 +231,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 
 	private Integer validate(POIObject data) {
 		Integer result = null;
-		if (data.getTitle() == null || data.getTitle().length() == 0)
+		if (data.getTitle() == null || data.getTitle().trim().length()==0 )
 			return R.string.create_title;
 		if (data.getLocation() == null)
 			return R.string.create_place;

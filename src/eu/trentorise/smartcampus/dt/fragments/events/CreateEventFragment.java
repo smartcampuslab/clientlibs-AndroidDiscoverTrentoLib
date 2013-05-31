@@ -353,7 +353,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 	private Integer validate(EventObject data) {
 		Integer result = null;
-		if (data.getTitle() == null || data.getTitle().length() == 0)
+		if (data.getTitle() == null || data.getTitle().trim().length()==0)
 			return R.string.create_title;
 		// if (data.getFromTime() == null)
 		// return R.string.createevent_timestart;
