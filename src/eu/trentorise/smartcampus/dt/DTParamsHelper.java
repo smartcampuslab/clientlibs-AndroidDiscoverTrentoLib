@@ -28,7 +28,6 @@ public class DTParamsHelper {
 	public static final String KEY_APP_TOKEN = "app_token";
 	public static final String KEY_CENTER_MAP = "center_map";
 	public static final String KEY_ZOOM_MAP = "zoom_map";
-
 	private Map<Object, Object> paramsAsset;
 
 	protected DTParamsHelper(Context mContext) {
@@ -111,7 +110,10 @@ public class DTParamsHelper {
 		return returnlist.toArray(new CategoryDescriptor[] {});
 	}
 	public static int getZoomLevelMap(){
-		return (Integer) getInstance().getParamsAsset().get(KEY_ZOOM_MAP);
+		Integer zoom = (Integer) getInstance().getParamsAsset().get(KEY_ZOOM_MAP);
+		if (zoom == null)
+			return 0;
+		else return zoom;
 	}
 	
 	public static List<Double> getCenterMap(){
