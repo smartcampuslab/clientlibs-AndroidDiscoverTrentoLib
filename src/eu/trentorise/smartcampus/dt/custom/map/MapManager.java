@@ -28,6 +28,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
@@ -35,15 +36,23 @@ import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 
 public class MapManager {
 
-//	public static final int ZOOM_DEFAULT = 15;
-	public static final int ZOOM_DEFAULT = 11;
+	public static int ZOOM_DEFAULT = 15;
 	private static MapView mapView;
 	
-	private static GeoPoint trento = new GeoPoint((int) (46.0696727540531 * 1E6),
+	private static GeoPoint DEFAULT_POINT = new GeoPoint((int) (46.0696727540531 * 1E6),
 			(int) (11.1212700605392 * 1E6));
-	
+
+	public static void iniWithParam() {
+		ZOOM_DEFAULT = DTParamsHelper.getZoomLevelMap();
+		List<Double> centerMap = DTParamsHelper.getCenterMap();
+		Double latitute=centerMap.get(0);
+				Double longitude =centerMap.get(1);
+				DEFAULT_POINT = new GeoPoint(latitute.intValue(),
+				longitude.intValue());
+		
+	}
 	public static GeoPoint trento() {
-		return trento;
+		return DEFAULT_POINT;
 	}
 	
 	public static MapView getMapView() {

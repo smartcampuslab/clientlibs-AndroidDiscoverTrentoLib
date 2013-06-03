@@ -26,6 +26,8 @@ public class DTParamsHelper {
 	public static final String KEY_EXCLUDE = "exclude";
 	public static final String KEY_INCLUDE = "include";
 	public static final String KEY_APP_TOKEN = "app_token";
+	public static final String KEY_CENTER_MAP = "center_map";
+	public static final String KEY_ZOOM_MAP = "zoom_map";
 
 	private Map<Object, Object> paramsAsset;
 
@@ -107,5 +109,12 @@ public class DTParamsHelper {
 			returnlist.add(pOI_CATEGORIES2[index - 1]);
 		}
 		return returnlist.toArray(new CategoryDescriptor[] {});
+	}
+	public static int getZoomLevelMap(){
+		return (Integer) getInstance().getParamsAsset().get(KEY_ZOOM_MAP);
+	}
+	
+	public static List<Double> getCenterMap(){
+		return (List<Double>) getInstance().getParamsAsset().get(KEY_CENTER_MAP);
 	}
 }

@@ -133,7 +133,7 @@ public class DTHelper {
 		this.mContext = mContext;
 
 		DTParamsHelper.init(mContext);
-
+		MapManager.iniWithParam();
 		// this.mSyncManager = new SyncManager(mContext,
 		// DTSyncStorageService.class);
 		config = new DTStorageConfiguration();
