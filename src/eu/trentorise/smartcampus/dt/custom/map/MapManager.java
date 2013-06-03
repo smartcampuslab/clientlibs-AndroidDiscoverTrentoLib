@@ -43,13 +43,13 @@ public class MapManager {
 	public static void iniWithParam() {
 		int zoom = DTParamsHelper.getZoomLevelMap();
 		if (zoom != 0) {
-			ZOOM_DEFAULT = DTParamsHelper.getZoomLevelMap();
+			ZOOM_DEFAULT = zoom;
 		}
 		List<Double> centerMap = DTParamsHelper.getCenterMap();
 		if (centerMap != null) {
 			Double latitute = centerMap.get(0);
 			Double longitude = centerMap.get(1);
-			DEFAULT_POINT = new GeoPoint(latitute.intValue(), longitude.intValue());
+			DEFAULT_POINT = new GeoPoint((int) (latitute * 1E6),(int) (longitude *1E6));
 		}
 	}
 
