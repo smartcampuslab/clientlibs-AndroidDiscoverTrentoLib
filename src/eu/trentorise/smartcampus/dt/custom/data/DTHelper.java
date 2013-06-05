@@ -821,30 +821,29 @@ public class DTHelper {
 	private static BaseDTObject findDTObjectByEntityId(Class<? extends BaseDTObject> cls, Long entityId) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
 		BaseDTObject returnObject = null;
-			String where = "entityId = " + entityId;
-			Collection<? extends BaseDTObject> coll = getInstance().storage.query(cls, where, null);
-			if (coll != null && coll.size() == 1)
-				returnObject = coll.iterator().next();
+		String where = "entityId = " + entityId;
+		Collection<? extends BaseDTObject> coll = getInstance().storage.query(cls, where, null);
+		if (coll != null && coll.size() == 1)
+			returnObject = coll.iterator().next();
 		if (returnObject == null)
 			returnObject = findLocalDTOObjectByEntityId(cls, entityId);
 		return returnObject;
 
 	}
 
-	
 	private static BaseDTObject findLocalDTOObjectByEntityId(Class<? extends BaseDTObject> cls, Long entityId) {
 		try {
-		DTHelper.synchronize();
-		BaseDTObject returnObject = null;
-		String where = "entityId = " + entityId;
-		Collection<? extends BaseDTObject> coll = getInstance().storage.query(cls, where, null);
+			DTHelper.synchronize();
+			BaseDTObject returnObject = null;
+			String where = "entityId = " + entityId;
+			Collection<? extends BaseDTObject> coll = getInstance().storage.query(cls, where, null);
 			if (coll != null && coll.size() == 1)
 				returnObject = coll.iterator().next();
-		return returnObject;
-	} catch (Exception e) {
-		return null;
-	}
-		
+			return returnObject;
+		} catch (Exception e) {
+			return null;
+		}
+
 	}
 
 	public static Boolean saveStory(StoryObject storyObject) throws RemoteException, DataException,
@@ -1072,14 +1071,14 @@ public class DTHelper {
 				args = new ArrayList<String>();
 				where = addCategoriesToWhere(where, inCategories, args);
 			}
-			if ((what != null) && (what.compareTo("") != 0)) {
+			if (what != null && what.length() > 0) {
 				where = addWhatToWhere(cls, where, what);
 				if (args == null)
 					args = new ArrayList<String>(Arrays.asList(what));
 				else
 					args.add(what);
 			}
-			if (cls.getCanonicalName().compareTo(EventObject.class.getCanonicalName()) == 0) {
+			if (EventObject.class.getCanonicalName().equals(cls.getCanonicalName())) {
 				if (when != null)
 					where = addWhenToWhere(where, when.getFrom(), when.getTo());
 
@@ -1095,7 +1094,7 @@ public class DTHelper {
 			 * se evento metti in ordine di data ma se place metti in ordine
 			 * alfabetico
 			 */
-			if (cls.getCanonicalName().compareTo(EventObject.class.getCanonicalName()) == 0) {
+			if (EventObject.class.getCanonicalName().equals(cls.getCanonicalName())) {
 				return getInstance().storage.query(cls, where, argsArray, position, size, "fromTime ASC");
 			} else {
 				return getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
@@ -1152,7 +1151,7 @@ public class DTHelper {
 						(double) mypos.getLongitudeE6() / 1000000 });
 				filter.setRadius(distance.getFilter());
 			}
-			if ((what != null) && (what.compareTo("") != 0)) {
+			if (what != null && what.length() > 0) {
 				filter.setText(what);
 			}
 			if (inCategories[0] != null) {

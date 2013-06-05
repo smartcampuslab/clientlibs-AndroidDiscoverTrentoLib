@@ -3,14 +3,11 @@ package eu.trentorise.smartcampus.dt.fragments.home;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -33,9 +30,7 @@ public class EventsAdapter extends BaseAdapter {
 		super();
 		this.context = ctx;
 		this.inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 		this.eventDescription = new ArrayList<String>(Arrays.asList(itemsDescriptions));
-
 		this.Dialogue = Dialogue;
 		this.checked = checkedItems;
 		this.addtoarray = addtoarray;
@@ -80,18 +75,18 @@ public class EventsAdapter extends BaseAdapter {
 		holder.chkinterest = (CheckBox) convertView.findViewById(R.id.home_events_checked);
 
 		holder.events_name.setText(eventDescription.get(pos));
-		if (eventDescription.get(pos).compareTo(context.getResources().getString(R.string.categories_event_today)) == 0) {
+		if (context.getResources().getString(R.string.categories_event_today).equals(eventDescription.get(pos))) {
 			holder.events_name.setTextAppearance(context, R.style.today_events);
 		}
 		holder.chkinterest.setChecked(checked[position]);
 		holder.chkinterest.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				addtoarray.addtoarray(isChecked, position);
 
 			}
 		});
+
 		return convertView;
 	}
 

@@ -38,8 +38,8 @@ public class CategoryHelper {
 	public static final String CATEGORY_TYPE_POIS = "pois";
 	public static final String CATEGORY_TYPE_EVENTS = "events";
 	public static final String CATEGORY_TYPE_STORIES = "stories";
-	public static final String FAMILY_POI_CATEGORY =  "Family - Organizations";
-	public static final String FAMILY_EVENT_CATEGORY = "Family";
+	public static final String FAMILY_CATEGORY_POI =  "Family - Organizations";
+	public static final String FAMILY_CATEGORY_EVENT = "Family";
 
 	public static CategoryDescriptor TODAY_EVENTS = new CategoryDescriptor(R.drawable.marker_event_generic,
 			R.drawable.ic_other_event, "Today", R.string.categories_event_today);

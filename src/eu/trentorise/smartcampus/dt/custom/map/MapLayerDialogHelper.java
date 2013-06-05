@@ -121,12 +121,13 @@ public class MapLayerDialogHelper {
 				dialog.dismiss();
 			}
 		});
-		createAdapterAndInterface(newSelected,items, ctx,  itemsDescriptions, checkedItems,  builder);
+		createAdapterAndInterface(newSelected, items, ctx, itemsDescriptions, checkedItems, builder);
 		return builder.create();
 
 	}
 
-	private static void createAdapterAndInterface(final ArrayList<String> newSelected, final CategoryDescriptor[] items,Context ctx, String[] itemsDescriptions, boolean[] checkedItems, AlertDialog.Builder builder ) {
+	private static void createAdapterAndInterface(final ArrayList<String> newSelected, final CategoryDescriptor[] items,
+			Context ctx, String[] itemsDescriptions, boolean[] checkedItems, AlertDialog.Builder builder) {
 		EventsAdapter adapter;
 		class AddToArrayImpl implements AddToArray {
 
@@ -174,7 +175,7 @@ public class MapLayerDialogHelper {
 	// public static void changeColor(AlertDialog eventsDialog, Context
 	// mContext) {
 	// if
-	// (eventsDialog.getListView().getAdapter().getItem(0).toString().compareTo(mContext.getString(R.string.menu_item_todayevent_text))==0)
+	// (mContext.getString(R.string.menu_item_todayevent_text).equals(eventsDialog.getListView().getAdapter().getItem(0).toString()))
 	// {
 	// /*change the adapter*/
 	// CheckedTextView view = (CheckedTextView)

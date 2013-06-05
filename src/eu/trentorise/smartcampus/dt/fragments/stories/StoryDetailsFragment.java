@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,7 +67,6 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.BasicObjectMapItemTapListener;
@@ -76,7 +74,6 @@ import eu.trentorise.smartcampus.dt.custom.map.DTStoryItemizedOverlay;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.custom.map.MapStoryHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapStoryLoadProcessor;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
@@ -447,8 +444,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			} else {
 				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
 						new FollowAsyncTaskProcessor(getSherlockActivity()));
-				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(), DTHelper.getAuthToken(),
-						obj);
+				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
+						DTHelper.getAuthToken(), obj);
 			}
 			return true;
 		} else if (item.getItemId() == R.id.edit_btn) {
@@ -591,11 +588,10 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		POIObject poiTapped = (POIObject) o;
 		for (int i = 0; i < story.getSteps().size(); i++)
 			if (story.getSteps().get(i).assignedPoi() != null)
-				if (story.getSteps().get(i).assignedPoi().getId().compareTo(poiTapped.getId()) == 0) {
+				if (poiTapped.getId().equals(story.getSteps().get(i).assignedPoi().getId())) {
 					actualStepPosition = i;
 					changeStep(actualStepPosition);
 				}
-
 	}
 
 	/*
@@ -603,10 +599,6 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	 * used in it.
 	 */
 	private class AddStep implements StepHandler, Parcelable {
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 16774297617446649L;
 
 		/*

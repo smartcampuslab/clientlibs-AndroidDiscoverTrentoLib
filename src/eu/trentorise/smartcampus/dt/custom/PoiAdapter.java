@@ -24,13 +24,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 
 public class PoiAdapter extends ArrayAdapter<POIObject> {
 
 	private Context context;
 	private int layoutResourceId;
+
 	public PoiAdapter(Context context, int layoutResourceId) {
 		super(context, layoutResourceId);
 		this.context = context;
@@ -42,51 +42,52 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		View row = convertView;
 		PoiPlaceholder p = null;
 		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			row = inflater.inflate(layoutResourceId, parent, false);
 			p = new PoiPlaceholder();
 			p.title = (TextView) row.findViewById(R.id.poi_placeholder_title);
-	//		p.description = (TextView) row.findViewById(R.id.poi_placeholder_descr);
+			// p.description = (TextView)
+			// row.findViewById(R.id.poi_placeholder_descr);
 			p.icon = (ImageView) row.findViewById(R.id.poi_placeholder_icon);
 
 			p.location = (TextView) row.findViewById(R.id.poi_placeholder_loc);
 			row.setTag(p);
 		} else
 			p = (PoiPlaceholder) row.getTag();
-		
+
 		p.poi = getItem(position);// data[position];
 		p.title.setText(p.poi.getTitle());
-		Drawable drawable  = context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType()));
-		if (CategoryHelper.FAMILY_POI_CATEGORY.equals(p.poi.getType()))
-				drawable=poiCertified(p.poi);
+		Drawable drawable = context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType()));
+		if (CategoryHelper.FAMILY_CATEGORY_POI.equals(p.poi.getType()))
+			drawable = poiCertified(p.poi);
 		p.icon.setImageDrawable(drawable);
 		p.location.setText(p.poi.shortAddress());
-		
+
 		return row;
 	}
-	private Drawable poiCertified(POIObject poi) {
-		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0 || ((String) poi.getCustomData().get("status")).compareTo("Certificato base")==0)
-		{
-			/*se ceretificato e evento*/
 
-				return context.getResources().getDrawable(R.drawable.ic_event_family_certified);
-		}	
-		
+	private Drawable poiCertified(POIObject poi) {
+		String status = (String) poi.getCustomData().get("status");
+		if (("Certificato finale").equals(status) || ("Certificato base").equals(status)) {
+			/* se ceretificato e evento */
+			return context.getResources().getDrawable(R.drawable.ic_event_family_certified);
+		}
+
 		return context.getResources().getDrawable(CategoryHelper.getIconByType(poi.getType()));
 	}
-//	@Override
-//	public void remove(POIObject object) {
-//		POIObject[] newData = new POIObject[data.length-1];
-//		int i = 0;
-//		for (POIObject o : data) {
-//			if (i == newData.length) return;
-//			if (!o.getId().equals(object.getId())) {
-//				newData[i] = o;
-//			}
-//			i++;
-//		}
-//		data = newData;
-//	}
+
+	// @Override
+	// public void remove(POIObject object) {
+	// POIObject[] newData = new POIObject[data.length-1];
+	// int i = 0;
+	// for (POIObject o : data) {
+	// if (i == newData.length) return;
+	// if (!o.getId().equals(object.getId())) {
+	// newData[i] = o;
+	// }
+	// i++;
+	// }
+	// data = newData;
+	// }
 
 }

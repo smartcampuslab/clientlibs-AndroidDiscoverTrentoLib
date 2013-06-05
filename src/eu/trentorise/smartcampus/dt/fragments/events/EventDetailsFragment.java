@@ -28,7 +28,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Address;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,9 +56,9 @@ import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
@@ -107,13 +106,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private EventObject getEvent() {
-			Bundle bundle = this.getArguments();
-			if (eventId==null)
-				 eventId = bundle.getString(ARG_EVENT_OBJECT);
-			mEvent = DTHelper.findEventById(eventId);
-			if (mEvent != null) {
-				poi = DTHelper.findPOIById(mEvent.getPoiId());
-				mEvent.assignPoi(poi);
+		Bundle bundle = this.getArguments();
+		if (eventId == null)
+			eventId = bundle.getString(ARG_EVENT_OBJECT);
+		mEvent = DTHelper.findEventById(eventId);
+		if (mEvent != null) {
+			poi = DTHelper.findPOIById(mEvent.getPoiId());
+			mEvent.assignPoi(poi);
 		}
 		return mEvent;
 	}
@@ -124,9 +123,10 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		EventObject event = getEvent();
 		if (event != null) {
 			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
-			if (event.getType().compareTo("Family")==0 && isCertified(event))
+			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(event.getType()) && isCertified(event))
 				certifiedBanner.setVisibility(View.VISIBLE);
-			else certifiedBanner.setVisibility(View.GONE);
+			else
+				certifiedBanner.setVisibility(View.GONE);
 
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.event_details_title);
@@ -134,7 +134,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// timing
 			tv = (TextView) this.getView().findViewById(R.id.event_timing);
-			if (getEvent().getTiming() != null &&event.getTiming().length() > 0) {
+			if (getEvent().getTiming() != null && event.getTiming().length() > 0) {
 				tv.setText(event.getTimingFormatted());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
@@ -182,7 +182,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				if (fromTime.equals(toTime)) {
 					tv.setText(fromTime);
 				} else {
-					tv.setText(fromTime+" - "+toTime);
+					tv.setText(fromTime + " - " + toTime);
 				}
 			} else {
 				tv.setText("");
@@ -277,9 +277,10 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	private boolean isCertified(EventObject event) {
 		if ((Boolean) event.getCustomData().get("certified"))
-				return true;
-		else return false;
-		
+			return true;
+		else
+			return false;
+
 	}
 
 	private void updateAttending() {
@@ -348,20 +349,21 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.get_dir) {
-//			if (bringMeThere(getEvent())){
-//			Address to = getPOI().asGoogleAddress();
-//			Address from = null;
-//			GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
-//			if (mylocation != null) {
-//				from = new Address(Locale.getDefault());
-//				from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-//				from.setLongitude(mylocation.getLongitudeE6() / 1E6);
-//			}
-//			NavigationHelper.bringMeThere(getActivity(), from, to);
+			// if (bringMeThere(getEvent())){
+			// Address to = getPOI().asGoogleAddress();
+			// Address from = null;
+			// GeoPoint mylocation =
+			// MapManager.requestMyLocation(getActivity());
+			// if (mylocation != null) {
+			// from = new Address(Locale.getDefault());
+			// from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+			// from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+			// }
+			// NavigationHelper.bringMeThere(getActivity(), from, to);
 			bringMeThere(getEvent());
 			return true;
-//			}
-//			else return false;
+			// }
+			// else return false;
 		} else if (item.getItemId() == R.id.see_on_map) {
 			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
 			getEvent().setLocation(poi.getLocation());
@@ -371,13 +373,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		} else if (item.getItemId() == R.id.follow) {
 			FollowEntityObject obj = new FollowEntityObject(getEvent().getEntityId(), getEvent().getTitle(),
 					DTConstants.ENTITY_TYPE_EVENT);
-			if (mFollowByIntent){
+			if (mFollowByIntent) {
 				FollowHelper.follow(getSherlockActivity(), obj);
 			} else {
-			SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-					new FollowAsyncTaskProcessor(getSherlockActivity()));
-			followTask
-					.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+						new FollowAsyncTaskProcessor(getSherlockActivity()));
+				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
+						DTHelper.getAuthToken(), obj);
 			}
 			return true;
 		} else if (item.getItemId() == R.id.rate) {
@@ -408,7 +410,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
-//				args.putSerializable(CreateEventFragment.ARG_EVENT, getEvent());
+				// args.putSerializable(CreateEventFragment.ARG_EVENT,
+				// getEvent());
 				args.putString(CreateEventFragment.ARG_EVENT, getEvent().getId());
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -432,55 +435,54 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	private void bringMeThere(EventObject eventObject){
+
+	private void bringMeThere(EventObject eventObject) {
 		AlertDialog.Builder builder;
 
 		builder = new AlertDialog.Builder(getSherlockActivity());
-		/*check event Object*/
-		if (eventObject.getType().compareTo("Family")!=0){
-		/*if it's not a family event, no problem*/
+		/* check event Object */
+		if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(eventObject.getType())) {
+			/* if it's not a family event, no problem */
 			return;
-		} else{
-		/*if it is, show the dialog box*/
-		/*press true return true, press false return false*/
+		} else {
+			/* if it is, show the dialog box */
+			/* press true return true, press false return false */
 			DialogInterface.OnClickListener updateDialogClickListener;
 
 			updateDialogClickListener = new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 
-
-
-						switch (which) {
-						case DialogInterface.BUTTON_POSITIVE:
-							//upgrade the user
-							Address to = getPOI().asGoogleAddress();
-							Address from = null;
-							GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
-							if (mylocation != null) {
-								from = new Address(Locale.getDefault());
-								from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-								from.setLongitude(mylocation.getLongitudeE6() / 1E6);
-							}
-							NavigationHelper.bringMeThere(getActivity(), from, to);
-							break;
-
-						case DialogInterface.BUTTON_NEGATIVE:
-							//CLOSE
-
-							break;
-						
+					switch (which) {
+					case DialogInterface.BUTTON_POSITIVE:
+						// upgrade the user
+						Address to = getPOI().asGoogleAddress();
+						Address from = null;
+						GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+						if (mylocation != null) {
+							from = new Address(Locale.getDefault());
+							from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+							from.setLongitude(mylocation.getLongitudeE6() / 1E6);
 						}
+						NavigationHelper.bringMeThere(getActivity(), from, to);
+						break;
+
+					case DialogInterface.BUTTON_NEGATIVE:
+						// CLOSE
+
+						break;
+
+					}
 
 				}
 			};
 			builder.setCancelable(false).setMessage(getSherlockActivity().getString(R.string.warning_for_direction))
-			.setPositiveButton(android.R.string.yes, updateDialogClickListener)
-			.setNegativeButton(R.string.cancel, updateDialogClickListener).show();}
-		return;
+					.setPositiveButton(android.R.string.yes, updateDialogClickListener)
+					.setNegativeButton(R.string.cancel, updateDialogClickListener).show();
 		}
-	
+		return;
+	}
+
 	private void setFollowByIntent() {
 		try {
 			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(

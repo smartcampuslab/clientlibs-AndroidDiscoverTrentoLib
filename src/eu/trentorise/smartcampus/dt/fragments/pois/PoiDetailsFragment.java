@@ -26,7 +26,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Address;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
@@ -49,7 +48,6 @@ import com.google.android.maps.GeoPoint;
 
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
-import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
@@ -58,18 +56,16 @@ import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
@@ -82,7 +78,6 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	private TmpComment tmp_comments[];
 	private boolean mFollowByIntent;
 
-	
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -121,9 +116,11 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		super.onStart();
 		if (getPOI() != null) {
 			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
-			if (getPOI().getType().compareTo("Family - Organizations")==0 && isCertified(getPOI()))
+			if (CategoryHelper.FAMILY_CATEGORY_POI.equals(getPOI().getType()) && isCertified(getPOI())) {
 				certifiedBanner.setVisibility(View.VISIBLE);
-			else certifiedBanner.setVisibility(View.GONE);
+			} else {
+				certifiedBanner.setVisibility(View.GONE);
+			}
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.poi_details_title);
 			tv.setText(getPOI().getTitle());
@@ -246,10 +243,12 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private boolean isCertified(POIObject poi) {
-		if (((String) poi.getCustomData().get("status")).compareTo("Certificato finale")==0 || ((String) poi.getCustomData().get("status")).compareTo("Certificato base")==0)
-				return true;
-		else return false;
-		
+		String status = (String) poi.getCustomData().get("status");
+		if (("Certificato finale").equals(status) || ("Certificato base").equals(status)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private boolean hasMultimediaAttached() {
@@ -334,8 +333,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
 						new FollowAsyncTaskProcessor(getSherlockActivity()));
-				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(), DTHelper.getAuthToken(),
-						obj);
+				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
+						DTHelper.getAuthToken(), obj);
 
 			}
 			return true;

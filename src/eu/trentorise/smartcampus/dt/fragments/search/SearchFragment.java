@@ -22,20 +22,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
@@ -43,13 +40,12 @@ import com.actionbarsherlock.view.SubMenu;
 import eu.trentorise.smartcampus.android.common.listing.AbstractLstingFragment;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoriesListingFragment;
-import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
 public class SearchFragment extends NotificationsSherlockFragmentDT {
@@ -61,7 +57,7 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 	public static final String ARG_LIST = "list";
 	public static final String ARG_CATEGORY_SEARCH = "category_search";
 	public static final String ARG_QUERY = "query";
-	
+
 	private TextView titleSearch;
 	private EditText whatSearch;
 	private List<WhenForSearch> when = new ArrayList<WhenForSearch>();
@@ -80,8 +76,6 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 	private boolean isonline = true;
 	private String type = "";
 
-
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.search, container, false);
@@ -99,7 +93,7 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 
 		setupSpinnersAndLabel();
 		hideViewDependOnType(bundle);
-		
+
 		if (bundle != null && bundle.containsKey(ARG_MY)) {
 			selectedMy = bundle.getBoolean(ARG_MY);
 			titleSearch.setText(R.string.myevents);
@@ -113,37 +107,37 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 		} else
 			titleSearch.setText(R.string.search_txt);
 
-
-		
 		Button sendBtn = (Button) getView().findViewById(R.id.search_ok_button);
 		sendBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				AbstractLstingFragment fragment = null;
-				WhenForSearch passedWhen =null;
+				WhenForSearch passedWhen = null;
 				selectedWhat = whatSearch.getText().toString();
 				selectedWhen = whenSearchSpinner.getSelectedItemPosition() > 0 ? when.get(whenSearchSpinner
 						.getSelectedItemPosition()) : null;
 				/* set when if events */
-				if (type.compareTo(CategoryHelper.CATEGORY_TYPE_EVENTS) == 0) {
-					if (selectedWhen==null)
-					{
-						selectedWhen = new  WhenForSearch("",0,0);
-						passedWhen = new WhenForSearch("", DTHelper.getCurrentDateTimeForSearching() ,0);
+				if (CategoryHelper.CATEGORY_TYPE_EVENTS.equals(type)) {
+					if (selectedWhen == null) {
+						selectedWhen = new WhenForSearch("", 0, 0);
+						passedWhen = new WhenForSearch("", DTHelper.getCurrentDateTimeForSearching(), 0);
+					} else {
+						passedWhen = new WhenForSearch("", DTHelper.getCurrentDateTimeForSearching() + selectedWhen.getFrom(),
+								DTHelper.getCurrentDateTimeForSearching() + selectedWhen.getFrom() + selectedWhen.getTo());
 					}
-					else passedWhen = new WhenForSearch("", DTHelper.getCurrentDateTimeForSearching() + selectedWhen.getFrom(),DTHelper.getCurrentDateTimeForSearching()+ selectedWhen.getFrom()+selectedWhen.getTo());
 				}
 				selectedWhere = whereSearchSpinner.getSelectedItemPosition() > 0 ? where.get(whereSearchSpinner
 						.getSelectedItemPosition()) : null;
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
-				if (type.compareTo(CategoryHelper.CATEGORY_TYPE_EVENTS) == 0) {
-					 fragment = new EventsListingFragment();
-				} else if (type.compareTo(CategoryHelper.CATEGORY_TYPE_POIS) == 0) {
-					 fragment = new PoisListingFragment();
-				} else if (type.compareTo(CategoryHelper.CATEGORY_TYPE_STORIES) == 0) {
-					 fragment = new StoriesListingFragment();
+				if (CategoryHelper.CATEGORY_TYPE_EVENTS.equals(type)) {
+					fragment = new EventsListingFragment();
+				} else if (CategoryHelper.CATEGORY_TYPE_POIS.equals(type)) {
+					fragment = new PoisListingFragment();
+				} else if (CategoryHelper.CATEGORY_TYPE_STORIES.equals(type)) {
+					fragment = new StoriesListingFragment();
 				}
+
 				Bundle args = new Bundle();
 				if (selectedWhen != null)
 					args.putParcelable(ARG_WHEN_SEARCH, passedWhen);
@@ -155,7 +149,7 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 					args.putString(ARG_CATEGORY, selectedCategory);
 				if (selectedWhat != null)
 					args.putString(ARG_QUERY, selectedWhat);
-				
+
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				fragmentTransaction.replace(android.R.id.content, fragment, type);
@@ -165,57 +159,56 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 		});
 		Button cancelBtn = (Button) getView().findViewById(R.id.search_cancel_button);
 		cancelBtn.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
 				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			}
 		});
 	}
+
 	/*
-	 * Hide button and field depending on the type searched by the user
-	 * Events search by distance AND by date
-	 * Pois search by distance
-	 * Stories search only by text (common for all of these)*/
-private void hideViewDependOnType(Bundle bundle) {
-	/*get the type*/
-	if (bundle != null && bundle.containsKey(CategoryHelper.CATEGORY_TYPE_EVENTS)) {
-		type = CategoryHelper.CATEGORY_TYPE_EVENTS;
+	 * Hide button and field depending on the type searched by the user Events
+	 * search by distance AND by date Pois search by distance Stories search
+	 * only by text (common for all of these)
+	 */
+	private void hideViewDependOnType(Bundle bundle) {
+		/* get the type */
+		if (bundle != null && bundle.containsKey(CategoryHelper.CATEGORY_TYPE_EVENTS)) {
+			type = CategoryHelper.CATEGORY_TYPE_EVENTS;
 
-	} else 		if (bundle != null && bundle.containsKey(CategoryHelper.CATEGORY_TYPE_POIS)) {
-		type = CategoryHelper.CATEGORY_TYPE_POIS;
-		whenSearchSpinner.setVisibility(View.GONE);
-		whenLabel.setVisibility(View.GONE);
+		} else if (bundle != null && bundle.containsKey(CategoryHelper.CATEGORY_TYPE_POIS)) {
+			type = CategoryHelper.CATEGORY_TYPE_POIS;
+			whenSearchSpinner.setVisibility(View.GONE);
+			whenLabel.setVisibility(View.GONE);
 
-	} else 		if (bundle != null && bundle.containsKey(CategoryHelper.CATEGORY_TYPE_STORIES)) {
-		type = CategoryHelper.CATEGORY_TYPE_STORIES;
-		whenSearchSpinner.setVisibility(View.GONE);
-		whenLabel.setVisibility(View.GONE);
-		whereSearchSpinner.setVisibility(View.GONE);
-		whereLabel.setVisibility(View.GONE);
+		} else if (bundle != null && bundle.containsKey(CategoryHelper.CATEGORY_TYPE_STORIES)) {
+			type = CategoryHelper.CATEGORY_TYPE_STORIES;
+			whenSearchSpinner.setVisibility(View.GONE);
+			whenLabel.setVisibility(View.GONE);
+			whereSearchSpinner.setVisibility(View.GONE);
+			whereLabel.setVisibility(View.GONE);
+
+		}
 
 	}
-		
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		isonline = DTHelper.checkInternetConnection(getSherlockActivity());
+		whereSearchSpinner.setEnabled(isonline);
+		if (!isonline) {
+			new AlertDialog.Builder(getSherlockActivity()).setTitle(R.string.dialog_connectivity_title)
+					.setMessage(R.string.dialog_connection_search)
+					.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// continue with delete
+						}
+					}).show();
+		}
 	}
 
-@Override
-public void onResume() {
-	super.onResume();
-	 isonline = DTHelper.checkInternetConnection(getSherlockActivity());
-	whereSearchSpinner.setEnabled(isonline);
-	if (!isonline)
-	{
-		new AlertDialog.Builder(getSherlockActivity())
-	    .setTitle(R.string.dialog_connectivity_title)
-	    .setMessage(R.string.dialog_connection_search)
-	    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int which) { 
-	            // continue with delete
-	        }
-	     })
-	     .show();
-	}
-}
 	private void setupSpinnersAndLabel() {
 		SearchHelper.initSpinners(getSherlockActivity());
 		whenLabel = (TextView) getView().findViewById(R.id.when_label);
@@ -236,7 +229,6 @@ public void onResume() {
 			whereAdapter.add(when);
 		}
 		whereAdapter.notifyDataSetChanged();
-
 
 	}
 
@@ -259,29 +251,28 @@ public void onResume() {
 	private class WhereAdapter extends ArrayAdapter<WhereForSearch> {
 		private final int SPINNER_ENABLED = R.layout.simple_spinner_item_enabled;
 		private final int SPINNER_DISABLED = R.layout.simple_spinner_item_disabled;
+
 		public WhereAdapter(Context context, int resource, int textViewResourceId, List<WhereForSearch> objects) {
 			super(context, resource, textViewResourceId, objects);
 		}
 
+		@Override
+		public final View getView(int position, View convertView, ViewGroup parent) {
+			View newView = null;
+			TextView someText;
 
-		    @Override
-		    public final View getView(int position, View convertView, ViewGroup parent) {
-		    	 View newView = null;
-		    	    TextView someText;
+			LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			if (isonline)
+				newView = inflater.inflate(SPINNER_ENABLED, null);
+			else {
+				newView = inflater.inflate(SPINNER_DISABLED, null);
+				parent.setEnabled(false);
+			}
 
-		    	        LayoutInflater inflater = (LayoutInflater) parent.getContext()
-		    	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		    	        if (isonline)
-		    	        	newView = inflater.inflate(SPINNER_ENABLED, null);
-		    	        else {
-		    	        	newView = inflater.inflate(SPINNER_DISABLED, null);
-		    	        	parent.setEnabled(false);
-		    	        }
+			TextView textView = (TextView) newView.findViewById(R.id.text1);
+			textView.setText(getItem(position).toString());
+			return newView;
+		}
 
-		    	    TextView textView = (TextView) newView.findViewById(R.id.text1);
-			        textView.setText(getItem(position).toString());
-			        return newView;
-		    }
-		
 	}
 }

@@ -43,36 +43,38 @@ import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 
-public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
+public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
-    private final static int densityX = 5;
-    private final static int densityY = 5;
-    
+	private final static int densityX = 5;
+	private final static int densityY = 5;
+
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	private ArrayList<BaseDTObject> mObjects = new ArrayList<BaseDTObject>();
 	private Set<OverlayItem> mGeneric = new HashSet<OverlayItem>();
 
 	private SparseArray<int[]> item2group = new SparseArray<int[]>();
-	
+
 	private BaseDTObjectMapItemTapListener listener = null;
 
 	private Drawable groupMarker = null;
-	
+
 	private Context mContext = null;
-	
+
 	private MapView mMapView = null;
 
 	List<List<List<OverlayItem>>> grid = new ArrayList<List<List<OverlayItem>>>();
-	private Map<String,OverlayItem> layerMap = new HashMap<String,OverlayItem>();
+	private Map<String, OverlayItem> layerMap = new HashMap<String, OverlayItem>();
 
 	private boolean isPinch = false;
-	
-	// flag specifying that the map is being moved so there is no need to recompute items
+
+	// flag specifying that the map is being moved so there is no need to
+	// recompute items
 	private boolean animating = false;
-	// hack parameters: need to compute consecutively the value to see whether the animation is finished
+	// hack parameters: need to compute consecutively the value to see whether
+	// the animation is finished
 	int lastStep = 0;
 	int lastStepCount = 0;
-	
+
 	public DTItemizedOverlay(Context mContext, MapView mapView) {
 		super(boundCenterBottom(mContext.getResources().getDrawable(R.drawable.poi)));
 		this.mContext = mContext;
@@ -80,50 +82,48 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 		populate();
 	}
 
-
 	public void populateAll() {
 		setLastFocusedIndex(-1);
 		populate();
 	}
-	
+
 	public void setMapItemTapListener(BaseDTObjectMapItemTapListener listener) {
 		this.listener = listener;
 	}
 
 	public void addOverlay(BaseDTObject o) {
 		if (o.getLocation() != null) {
-			GeoPoint point = new GeoPoint((int)(o.getLocation()[0]*1E6),(int)(o.getLocation()[1]*1E6));
+			GeoPoint point = new GeoPoint((int) (o.getLocation()[0] * 1E6), (int) (o.getLocation()[1] * 1E6));
 			OverlayItem overlayitem = new OverlayItem(point, o.getTitle(), o.getDescription());
-			/*check if it's certified*/
+			/* check if it's certified */
 			Drawable drawable = mContext.getResources().getDrawable(CategoryHelper.getMapIconByType(o.getType()));
-			if (CategoryHelper.FAMILY_POI_CATEGORY.equals(o.getType())||(CategoryHelper.FAMILY_EVENT_CATEGORY.equals(o.getType())))
-				drawable=objectCertified(o);
-			drawable.setBounds(-drawable.getIntrinsicWidth()/2, -drawable.getIntrinsicHeight(), drawable.getIntrinsicWidth() /2, 0);
+			if (CategoryHelper.FAMILY_CATEGORY_POI.equals(o.getType())
+					|| (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(o.getType())))
+				drawable = objectCertified(o);
+			drawable.setBounds(-drawable.getIntrinsicWidth() / 2, -drawable.getIntrinsicHeight(),
+					drawable.getIntrinsicWidth() / 2, 0);
 			overlayitem.setMarker(drawable);
 			mOverlays.add(overlayitem);
 			mObjects.add(o);
 			mMapView.invalidate();
-//			populate();
+			// populate();
 		}
 	}
 
 	private Drawable objectCertified(BaseDTObject o) {
-		if ( (o instanceof EventObject)&&((Boolean) o.getCustomData().get("certified")))
-		{
-			/*se ceretificato e evento*/
+		if ((o instanceof EventObject) && ((Boolean) o.getCustomData().get("certified"))) {
+			/* se ceretificato e evento */
+			return mContext.getResources().getDrawable(R.drawable.marker_event_family_certified);
+		}
 
-				return mContext.getResources().getDrawable(R.drawable.marker_event_family_certified);
-		}	
-			/*se certificato e poi*/
-		if ( (o instanceof POIObject)&&(((String) o.getCustomData().get("status")).compareTo("Certificato finale")==0|| ((String) o.getCustomData().get("status")).compareTo("Certificato base")==0))
-			{
-				return mContext.getResources().getDrawable(R.drawable.marker_poi_family_certified);
-			}
+		/* se certificato e poi */
+		String status = (String) o.getCustomData().get("status");
+		if ((o instanceof POIObject) && (("Certificato finale").equals(status) || ("Certificato base").equals(status))) {
+			return mContext.getResources().getDrawable(R.drawable.marker_poi_family_certified);
+		}
 
-		
 		return mContext.getResources().getDrawable(CategoryHelper.getMapIconByType(o.getType()));
 	}
-
 
 	@Override
 	protected OverlayItem createItem(int i) {
@@ -136,20 +136,20 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 	}
 
 	public void addGenericOverlay(OverlayItem overlay, String key) {
-		//actually is used only for my position. So clear and add the new one
-		//mGeneric.clear();
-		//mObjects.add(null);
-		//mGeneric.add(overlay);
-		//populate();
-		//mMapView.invalidate();
-		
-		if (layerMap.containsKey(key)){
-			//elimina layer esistente da mOverlay e poi dalla hashmap
+		// actually is used only for my position. So clear and add the new one
+		// mGeneric.clear();
+		// mObjects.add(null);
+		// mGeneric.add(overlay);
+		// populate();
+		// mMapView.invalidate();
+
+		if (layerMap.containsKey(key)) {
+			// elimina layer esistente da mOverlay e poi dalla hashmap
 			OverlayItem precLayer = layerMap.get(key);
 			mOverlays.remove(precLayer);
 			mGeneric.remove(precLayer);
 			layerMap.remove(key);
-	
+
 		}
 		layerMap.put(key, overlay);
 		mOverlays.add(overlay);
@@ -168,179 +168,182 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 		lastStep = 0;
 		lastStepCount = 0;
 		populate();
-		
+
 	}
 
-	
 	@Override
-	public boolean onTouchEvent(MotionEvent e, MapView mapView)
-	{
-	    int fingers = e.getPointerCount();
-	    if( e.getAction()==MotionEvent.ACTION_DOWN ){
-	    	animating = true;
-	        isPinch=false;  // Touch DOWN, don't know if it's a pinch yet
-	    }
-	    if( e.getAction()==MotionEvent.ACTION_MOVE && fingers==2 ){
-	        isPinch=true;   // Two fingers, def a pinch
-	    }
-	    if (e.getAction() == MotionEvent.ACTION_UP) {
-	    	animating = false;
-	    }
-	    return super.onTouchEvent(e,mapView);
+	public boolean onTouchEvent(MotionEvent e, MapView mapView) {
+		int fingers = e.getPointerCount();
+		if (e.getAction() == MotionEvent.ACTION_DOWN) {
+			animating = true;
+			isPinch = false; // Touch DOWN, don't know if it's a pinch yet
+		}
+		if (e.getAction() == MotionEvent.ACTION_MOVE && fingers == 2) {
+			isPinch = true; // Two fingers, def a pinch
+		}
+		if (e.getAction() == MotionEvent.ACTION_UP) {
+			animating = false;
+		}
+		return super.onTouchEvent(e, mapView);
 	}
 
-	
-	
 	protected boolean onTap(int index) {
-		 if ( !isPinch ){
-		if (listener != null) {
-			if (mObjects.size() >= index && mObjects.get(index) != null) {
-				if (item2group.get(index) != null) {
-					int[] coords = item2group.get(index);
-					try {
-						List<OverlayItem> list = grid.get(coords[0]).get(coords[1]);
-						if (list.size() > 1) {
-							if (mMapView.getZoomLevel() == mMapView.getMaxZoomLevel()) {
-								List<BaseDTObject> objects = new ArrayList<BaseDTObject>(list.size());
-								for (OverlayItem item : list) {
-									int idx = mOverlays.indexOf(item);
-									if (idx > 0) objects.add(mObjects.get(idx));
+		if (!isPinch) {
+			if (listener != null) {
+				if (mObjects.size() >= index && mObjects.get(index) != null) {
+					if (item2group.get(index) != null) {
+						int[] coords = item2group.get(index);
+						try {
+							List<OverlayItem> list = grid.get(coords[0]).get(coords[1]);
+							if (list.size() > 1) {
+								if (mMapView.getZoomLevel() == mMapView.getMaxZoomLevel()) {
+									List<BaseDTObject> objects = new ArrayList<BaseDTObject>(list.size());
+									for (OverlayItem item : list) {
+										int idx = mOverlays.indexOf(item);
+										if (idx > 0)
+											objects.add(mObjects.get(idx));
+									}
+									listener.onBaseDTObjectsTap(objects);
+								} else {
+									MapManager.fitMapWithOverlays(list, mMapView);
 								}
-								listener.onBaseDTObjectsTap(objects);
-							} else {
-								MapManager.fitMapWithOverlays(list, mMapView);
+								return super.onTap(index);
 							}
+						} catch (Exception e) {
 							return super.onTap(index);
 						}
-					} catch (Exception e) {
-						return super.onTap(index);
-					} 
+					}
+					listener.onBaseDTObjectTap(mObjects.get(index));
+					return true;
 				}
-				listener.onBaseDTObjectTap(mObjects.get(index));
-				return true;
-			} 
-		}
-		return super.onTap(index);
-		 }
-		 else return false;
+			}
+			return super.onTap(index);
+		} else
+			return false;
 	}
 
 	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
-		if (mOverlays == null || mOverlays.isEmpty()) return;
-		
+		if (mOverlays == null || mOverlays.isEmpty())
+			return;
+
 		// if not animating do not compute
 		if (!animating) {
-	        Projection proj = mapView.getProjection();
-	        // coordinates of visible part
-	        GeoPoint lu = proj.fromPixels(0, 0);
-	        GeoPoint rd = proj.fromPixels(mapView.getWidth(), mapView.getHeight());
-	        // grid step
-	        int step = Math.abs(lu.getLongitudeE6()-rd.getLongitudeE6()) / densityX;
-	        
-	        // check if zoom is being animated
-	        boolean zooming = false;
-	        // step changes
-	        if (step != lastStep) {
-	        	if (lastStep > 0) zooming = true;
-	        	lastStepCount = 0;
-	        	lastStep = step;
-	        } else {//if (lastStep > 0) {
-	        	lastStepCount++;
-	        	// step does not change for several calls in a sequence
-	        	if (lastStepCount < 3) zooming = true;
-	        }
-	        
-	        if (!zooming) {
-		        item2group.clear();
-		        // 2D array with some configurable, fixed density
-		        grid.clear(); 
-		        
-		        for(int i = 0; i<= densityX; i++){
-		            ArrayList<List<OverlayItem>> column = new ArrayList<List<OverlayItem>>(densityY+1);
-		            for(int j = 0; j <= densityY; j++){
-		                column.add(new ArrayList<OverlayItem>());
-		            }
-		            grid.add(column);
-		        }
+			Projection proj = mapView.getProjection();
+			// coordinates of visible part
+			GeoPoint lu = proj.fromPixels(0, 0);
+			GeoPoint rd = proj.fromPixels(mapView.getWidth(), mapView.getHeight());
+			// grid step
+			int step = Math.abs(lu.getLongitudeE6() - rd.getLongitudeE6()) / densityX;
 
-		        // compute leftmost bound of the affected grid:
-		        // this is the bound of the leftmost grid cell that intersects with the visible part
-		        int startX = lu.getLongitudeE6() - (lu.getLongitudeE6() % step);
-		        if (lu.getLongitudeE6() < 0) startX -= step;
-		        // compute bottom bound of the affected grid
-		        int startY = rd.getLatitudeE6() - (rd.getLatitudeE6() % step);
-		        if (lu.getLatitudeE6() < 0) startY -= step;
-		        int endX = startX+(densityX+1)*step;
-		        int endY = startY+(densityY+1)*step;
-		        
-		        int idx = 0;
-		        for (OverlayItem m : mOverlays) {
-		        	if (!mGeneric.contains(m) &&
-		        		m.getPoint().getLongitudeE6()>=startX && m.getPoint().getLongitudeE6()<=endX &&
-		        		m.getPoint().getLatitudeE6()>=startY && m.getPoint().getLatitudeE6()<=endY) 
-		        	{
-		                int binX = Math.abs(m.getPoint().getLongitudeE6()-startX)/step;
-		                int binY = Math.abs(m.getPoint().getLatitudeE6()-startY)/step;
+			// check if zoom is being animated
+			boolean zooming = false;
+			// step changes
+			if (step != lastStep) {
+				if (lastStep > 0)
+					zooming = true;
+				lastStepCount = 0;
+				lastStep = step;
+			} else {// if (lastStep > 0) {
+				lastStepCount++;
+				// step does not change for several calls in a sequence
+				if (lastStepCount < 3)
+					zooming = true;
+			}
 
-		                item2group.put(idx, new int[]{binX,binY});
-		                grid.get(binX).get(binY).add(m); // just push the reference
-		        	}
-		            idx++;
-		        }
-		        
-		        if (mapView.getZoomLevel() == mapView.getMaxZoomLevel()) {
-		        	for (int i = 0; i < grid.size(); i++) {
-		        		for (int j = 0; j < grid.get(0).size(); j++) {
-		        			List<OverlayItem> curr = grid.get(i).get(j);
-		        			if (curr.size() == 0) continue;
-		        			
-		        			if (i > 0) {
-		        				if (checkDistanceAndMerge(i-1, j, curr)) continue;
-		        			}
-		        			if (j > 0) {
-		        				if (checkDistanceAndMerge(i, j-1, curr)) continue;
-		        			}
-		        			if (i>0 && j > 0) {
-		        				if (checkDistanceAndMerge(i-1, j-1, curr)) continue;
-		        			}
-		        		}
-		        	}
-		        }
-	        }
+			if (!zooming) {
+				item2group.clear();
+				// 2D array with some configurable, fixed density
+				grid.clear();
+
+				for (int i = 0; i <= densityX; i++) {
+					ArrayList<List<OverlayItem>> column = new ArrayList<List<OverlayItem>>(densityY + 1);
+					for (int j = 0; j <= densityY; j++) {
+						column.add(new ArrayList<OverlayItem>());
+					}
+					grid.add(column);
+				}
+
+				// compute leftmost bound of the affected grid:
+				// this is the bound of the leftmost grid cell that intersects
+				// with the visible part
+				int startX = lu.getLongitudeE6() - (lu.getLongitudeE6() % step);
+				if (lu.getLongitudeE6() < 0)
+					startX -= step;
+				// compute bottom bound of the affected grid
+				int startY = rd.getLatitudeE6() - (rd.getLatitudeE6() % step);
+				if (lu.getLatitudeE6() < 0)
+					startY -= step;
+				int endX = startX + (densityX + 1) * step;
+				int endY = startY + (densityY + 1) * step;
+
+				int idx = 0;
+				for (OverlayItem m : mOverlays) {
+					if (!mGeneric.contains(m) && m.getPoint().getLongitudeE6() >= startX
+							&& m.getPoint().getLongitudeE6() <= endX && m.getPoint().getLatitudeE6() >= startY
+							&& m.getPoint().getLatitudeE6() <= endY) {
+						int binX = Math.abs(m.getPoint().getLongitudeE6() - startX) / step;
+						int binY = Math.abs(m.getPoint().getLatitudeE6() - startY) / step;
+
+						item2group.put(idx, new int[] { binX, binY });
+						grid.get(binX).get(binY).add(m); // just push the
+															// reference
+					}
+					idx++;
+				}
+
+				if (mapView.getZoomLevel() == mapView.getMaxZoomLevel()) {
+					for (int i = 0; i < grid.size(); i++) {
+						for (int j = 0; j < grid.get(0).size(); j++) {
+							List<OverlayItem> curr = grid.get(i).get(j);
+							if (curr.size() == 0)
+								continue;
+
+							if (i > 0) {
+								if (checkDistanceAndMerge(i - 1, j, curr))
+									continue;
+							}
+							if (j > 0) {
+								if (checkDistanceAndMerge(i, j - 1, curr))
+									continue;
+							}
+							if (i > 0 && j > 0) {
+								if (checkDistanceAndMerge(i - 1, j - 1, curr))
+									continue;
+							}
+						}
+					}
+				}
+			}
 		}
-        
-        // drawing:
 
-        for (int i = 0; i < grid.size(); i++) {
-            for (int j = 0; j < grid.get(i).size(); j++) {
-                List<OverlayItem> markerList = grid.get(i).get(j);
-                if (markerList.size() > 1) {
-                    drawGroup(canvas, mapView, markerList, i, j);
-                } else {
-                    // draw single marker
-                    drawSingle(canvas, mapView, markerList);
-                }
-            }
-        }
-        
-        for (OverlayItem m : mGeneric) {
-        	drawSingleItem(canvas, mapView, m);
-        }
+		// drawing:
+
+		for (int i = 0; i < grid.size(); i++) {
+			for (int j = 0; j < grid.get(i).size(); j++) {
+				List<OverlayItem> markerList = grid.get(i).get(j);
+				if (markerList.size() > 1) {
+					drawGroup(canvas, mapView, markerList, i, j);
+				} else {
+					// draw single marker
+					drawSingle(canvas, mapView, markerList);
+				}
+			}
+		}
+
+		for (OverlayItem m : mGeneric) {
+			drawSingleItem(canvas, mapView, m);
+		}
 	}
-
 
 	private boolean checkDistanceAndMerge(int i, int j, List<OverlayItem> curr) {
 		List<OverlayItem> src = grid.get(i).get(j);
-		if (src.size() == 0) return false;
-		
+		if (src.size() == 0)
+			return false;
+
 		float[] dist = new float[3];
-		Location.distanceBetween(
-				src.get(0).getPoint().getLatitudeE6()/1E6, 
-				src.get(0).getPoint().getLongitudeE6()/1E6, 
-				curr.get(0).getPoint().getLatitudeE6()/1E6, 
-				curr.get(0).getPoint().getLongitudeE6()/1E6, 
-				dist);
+		Location.distanceBetween(src.get(0).getPoint().getLatitudeE6() / 1E6, src.get(0).getPoint().getLongitudeE6() / 1E6,
+				curr.get(0).getPoint().getLatitudeE6() / 1E6, curr.get(0).getPoint().getLongitudeE6() / 1E6, dist);
 		if (dist[0] < 20) {
 			src.addAll(curr);
 			curr.clear();
@@ -354,34 +357,33 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 		GeoPoint point = item.getPoint();
 		Point ptScreenCoord = new Point();
 		mapView.getProjection().toPixels(point, ptScreenCoord);
-		
+
 		if (groupMarker == null) {
 			groupMarker = mContext.getResources().getDrawable(R.drawable.marker_poi_generic);
-			groupMarker.setBounds(-groupMarker.getIntrinsicWidth()/2, -groupMarker.getIntrinsicHeight(), groupMarker.getIntrinsicWidth() /2, 0);
+			groupMarker.setBounds(-groupMarker.getIntrinsicWidth() / 2, -groupMarker.getIntrinsicHeight(),
+					groupMarker.getIntrinsicWidth() / 2, 0);
 		}
 
 		drawAt(canvas, groupMarker, ptScreenCoord.x, ptScreenCoord.y, true);
 		drawAt(canvas, groupMarker, ptScreenCoord.x, ptScreenCoord.y, false);
-        
-        Paint paint = new Paint();
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(20);
-        paint.setAntiAlias(true);
-        paint.setARGB(255, 255, 255, 255);
-        // show text to the right of the icon
-        int scaledSize = mContext.getResources().getDimensionPixelSize(R.dimen.mapIconText);
-        canvas.drawText(""+markerList.size(), ptScreenCoord.x, ptScreenCoord.y - scaledSize, paint);
-    }
 
-    private void drawSingle(Canvas canvas, MapView mapView, List<OverlayItem> markerList) {
-        for (OverlayItem item : markerList) {
-            drawSingleItem(canvas, mapView, item);
-        }
-    }
+		Paint paint = new Paint();
+		paint.setTextAlign(Paint.Align.CENTER);
+		paint.setTextSize(20);
+		paint.setAntiAlias(true);
+		paint.setARGB(255, 255, 255, 255);
+		// show text to the right of the icon
+		int scaledSize = mContext.getResources().getDimensionPixelSize(R.dimen.mapIconText);
+		canvas.drawText("" + markerList.size(), ptScreenCoord.x, ptScreenCoord.y - scaledSize, paint);
+	}
 
+	private void drawSingle(Canvas canvas, MapView mapView, List<OverlayItem> markerList) {
+		for (OverlayItem item : markerList) {
+			drawSingleItem(canvas, mapView, item);
+		}
+	}
 
-	protected Point drawSingleItem(Canvas canvas, MapView mapView,
-			OverlayItem item) {
+	protected Point drawSingleItem(Canvas canvas, MapView mapView, OverlayItem item) {
 		GeoPoint point = item.getPoint();
 		Point ptScreenCoord = new Point();
 		mapView.getProjection().toPixels(point, ptScreenCoord);
@@ -390,9 +392,9 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem>  {
 		drawAt(canvas, item.getMarker(0), ptScreenCoord.x, ptScreenCoord.y, false);
 		return ptScreenCoord;
 	}
+
 	public static boolean isWithin(Point p, MapView mapView) {
-        return (p.x > 0 & p.x < mapView.getWidth() & p.y > 0 & p.y < mapView
-                .getHeight());
-    }
-	
-}	
+		return (p.x > 0 & p.x < mapView.getWidth() & p.y > 0 & p.y < mapView.getHeight());
+	}
+
+}
