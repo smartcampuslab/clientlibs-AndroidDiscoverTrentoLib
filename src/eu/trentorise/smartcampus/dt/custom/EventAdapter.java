@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 
@@ -39,7 +40,7 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 	private static final DateFormat extDateFormat = new SimpleDateFormat("EEEEEE dd/MM/yyyy");
 	private Context context;
 	private int layoutResourceId;
-
+	private int elementSelected = -1;
 	// private EventObject[] data;
 
 	public EventAdapter(Context context, int layoutResourceId) {
@@ -78,13 +79,15 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 			e.location = (TextView) row.findViewById(R.id.event_placeholder_loc);
 			e.hour = (TextView) row.findViewById(R.id.event_placeholder_hour);
 			e.icon = (ImageView) row.findViewById(R.id.event_placeholder_icon);
-
+			e.vs = (ViewSwitcher) row.findViewById(R.id.event_viewswitecher);
 			e.separator = (LinearLayout) row.findViewById(R.id.separator);
 			e.dateSeparator = (TextView) row.findViewById(R.id.separator_text);
 			row.setTag(e);
 		} else
+		{
 			e = (EventPlaceholder) row.getTag();
-
+		}
+		
 		e.event = getItem(position);// data[position];
 		e.title.setText(e.event.getTitle());
 		// e.description.setText(data[position].getDescription());
@@ -158,6 +161,14 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 		else
 			newdateformatted = extDateFormat.format(new Date(e.event.getFromTime()));
 		return newdateformatted;
+	}
+
+	public int getElementSelected() {
+		return elementSelected;
+	}
+
+	public void setElementSelected(int elementSelected) {
+		this.elementSelected = elementSelected;
 	}
 
 }

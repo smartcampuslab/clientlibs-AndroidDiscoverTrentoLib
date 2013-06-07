@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 
@@ -28,6 +29,8 @@ public class EventPlaceholder {
 	public EventObject event;
 	public LinearLayout separator;
 	public TextView dateSeparator;
+	public ViewSwitcher vs;
+	public int displayChild=0;
 	public TextView title, description, notes, location, hour, tags, source, attendees;
 	public ImageView icon;
 	public RatingBar rating;

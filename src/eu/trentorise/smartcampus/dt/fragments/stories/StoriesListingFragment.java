@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -375,12 +376,12 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				hideListItemsMenu(v);
+				hideListItemsMenu(v,false);
 			}
 		});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				hideListItemsMenu(view);
+				hideListItemsMenu(view,false);
 				setStorePoiId(view, position);
 			}
 		});
@@ -388,22 +389,40 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if ((position != postitionSelected) && (previousViewSwitcher != null)) {
-					// //close the old viewSwitcher
+				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
+				{
+//					//close the old viewSwitcher
 					previousViewSwitcher.showPrevious();
+					storiesAdapter.setElementSelected(-1);
+					previousViewSwitcher=null;
+					hideListItemsMenu(view,true);
+
+
 				}
-				ViewSwitcher vs = (ViewSwitcher) view.findViewById(R.id.story_viewswitecher);
+				ViewSwitcher vs = (ViewSwitcher) view
+						.findViewById(R.id.story_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
-				postitionSelected = position;
+				postitionSelected=position;
+				storiesAdapter.setElementSelected(position);
 				previousViewSwitcher = vs;
+
 				return true;
 			}
 		});
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
 	}
-
+	
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		super.onScrollStateChanged(view, scrollState);
+		if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
+		{
+		hideListItemsMenu(view,true);
+		
+		}
+	}
 	/*
 	 * the contextual menu for every item in the list
 	 */
@@ -501,16 +520,19 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		});
 	}
 
-	private void hideListItemsMenu(View v) {
+	private void hideListItemsMenu(View v,boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
 			if (view instanceof ViewSwitcher && ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
+				storiesAdapter.setElementSelected(-1);
+				postitionSelected =-1;
+				previousViewSwitcher=null;
 			}
 		}
-		if (!toBeHidden && v != null && v.getTag() != null) {
+		if (!toBeHidden && v != null && v.getTag() != null && !close) {
 			// no items needed to be flipped, fill and open details page
 			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			StoryDetailsFragment fragment = new StoryDetailsFragment();
@@ -667,7 +689,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			if (result) {
 				((StoryAdapter) list.getAdapter()).remove(object);
 				((StoryAdapter) list.getAdapter()).notifyDataSetChanged();
-				hideListItemsMenu(clickedElement);
+				hideListItemsMenu(clickedElement,false);
 				updateList(((StoryAdapter) list.getAdapter()).isEmpty());
 			} else {
 				Toast.makeText(getActivity(), R.string.app_failure_cannot_delete, Toast.LENGTH_LONG).show();
@@ -693,7 +715,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
 					R.id.storylistcontainer));
 		}
-		hideListItemsMenu(null);
+		hideListItemsMenu(null,false);
 	}
 
 }

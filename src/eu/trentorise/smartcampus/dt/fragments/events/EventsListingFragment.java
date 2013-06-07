@@ -40,6 +40,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -113,7 +115,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	private String idEvent = "";
 	private Integer indexAdapter;
 	private Boolean reload = false;
-	private Integer postitionSelected = 0;
+	private Integer postitionSelected = -1;
 	private ViewSwitcher previousViewSwitcher;
 	@Override
 	public void onActivityCreated(Bundle arg0) {
@@ -459,17 +461,18 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		((View) list.getParent())
 				.setOnClickListener(new View.OnClickListener() {
 					public void onClick(View v) {
-						hideListItemsMenu(v);
+						hideListItemsMenu(v,false);
 					}
 				});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				hideListItemsMenu(view);
+				hideListItemsMenu(view,false);
 				setStoreEventId(view, position);
 			}
 
 		});
+		
 
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -479,17 +482,26 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 				{
 //					//close the old viewSwitcher
 					previousViewSwitcher.showPrevious();
+					eventsAdapter.setElementSelected(-1);
+					previousViewSwitcher=null;
+					hideListItemsMenu(view,true);
+
+
 				}
 				ViewSwitcher vs = (ViewSwitcher) view
 						.findViewById(R.id.event_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
 				postitionSelected=position;
+				eventsAdapter.setElementSelected(position);
 				previousViewSwitcher = vs;
 
 				return true;
 			}
 		});
+
+		
+
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(),
 				getView());
 		super.onStart();
@@ -501,8 +513,17 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		idEvent = event.getId();
 		indexAdapter = position;
 	}
-
-	private void hideListItemsMenu(View v) {
+	
+@Override
+public void onScrollStateChanged(AbsListView view, int scrollState) {
+	super.onScrollStateChanged(view, scrollState);
+	if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
+	{
+	hideListItemsMenu(view,true);
+	
+	}
+}
+	private void hideListItemsMenu(View v,boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
@@ -510,12 +531,16 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 					&& ((LinearLayout) view).getChildCount() == 2)
 				view = ((LinearLayout) view).getChildAt(1);
 			if (view instanceof ViewSwitcher
-					&& ((ViewSwitcher) view).getDisplayedChild() == 1) {
+					&& ((ViewSwitcher) view).getDisplayedChild() == 1 ) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
+				eventsAdapter.setElementSelected(-1);
+				postitionSelected =-1;
+				previousViewSwitcher=null;
+
 			}
 		}
-		if (!toBeHidden && v != null && v.getTag() != null) {
+		if (!toBeHidden && v != null && v.getTag() != null && !close) {
 			// no items needed to be flipped, fill and open details page
 			FragmentTransaction fragmentTransaction = getSherlockActivity()
 					.getSupportFragmentManager().beginTransaction();
@@ -559,7 +584,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 						new SCAsyncTask<EventObject, Void, Boolean>(
 								getActivity(), new EventDeleteProcessor(
 										getActivity())).execute(event);
-						hideListItemsMenu(vs);
+						hideListItemsMenu(vs,false);
 					}
 				}
 			});
@@ -978,7 +1003,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 					.addEmptyListView((LinearLayout) getView().findViewById(
 							R.id.eventlistcontainer));
 		}
-		hideListItemsMenu(null);
+		hideListItemsMenu(null,false);
 	}
 
 }

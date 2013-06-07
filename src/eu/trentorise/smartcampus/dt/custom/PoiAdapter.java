@@ -30,6 +30,7 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 
 	private Context context;
 	private int layoutResourceId;
+	private int elementSelected = -1;
 
 	public PoiAdapter(Context context, int layoutResourceId) {
 		super(context, layoutResourceId);
@@ -75,7 +76,13 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 
 		return context.getResources().getDrawable(CategoryHelper.getIconByType(poi.getType()));
 	}
+	public int getElementSelected() {
+		return elementSelected;
+	}
 
+	public void setElementSelected(int elementSelected) {
+		this.elementSelected = elementSelected;
+	}
 	// @Override
 	// public void remove(POIObject object) {
 	// POIObject[] newData = new POIObject[data.length-1];

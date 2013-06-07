@@ -30,6 +30,7 @@ public class StoryAdapter extends ArrayAdapter<StoryObject> {
 
 	private Context context;
 	private int layoutResourceId;
+	private int elementSelected = -1;
 
 	public StoryAdapter(Context context, int layoutResourceId) {
 		super(context, layoutResourceId);
@@ -63,6 +64,14 @@ public class StoryAdapter extends ArrayAdapter<StoryObject> {
 		s.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(s.story.getType())));
 
 		return row;
+	}
+
+	public int getElementSelected() {
+		return elementSelected;
+	}
+
+	public void setElementSelected(int elementSelected) {
+		this.elementSelected = elementSelected;
 	}
 
 }

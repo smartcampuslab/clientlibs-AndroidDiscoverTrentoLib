@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -94,6 +95,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	private Boolean reload = false;
 	private Integer postitionSelected = 0;
 	private ViewSwitcher previousViewSwitcher;
+
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -372,12 +374,12 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				hideListItemsMenu(v);
+				hideListItemsMenu(v,false);
 			}
 		});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				hideListItemsMenu(view);
+				hideListItemsMenu(view,false);
 				setStorePoiId(view, position);
 
 			}
@@ -386,22 +388,37 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if ((position != postitionSelected) && (previousViewSwitcher != null)) {
-					// //close the old viewSwitcher
+				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
+				{
+//					//close the old viewSwitcher
 					previousViewSwitcher.showPrevious();
+					poiAdapter.setElementSelected(-1);
+					previousViewSwitcher=null;
+					hideListItemsMenu(view,true);
+
+
 				}
 				ViewSwitcher vs = (ViewSwitcher) view.findViewById(R.id.poi_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
 				postitionSelected = position;
+				poiAdapter.setElementSelected(position);
 				previousViewSwitcher = vs;
+
 				return true;
 			}
 		});
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
 	}
-
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		super.onScrollStateChanged(view, scrollState);
+		if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
+		{
+		hideListItemsMenu(view,false);
+		}
+	}
 	protected void setupOptionsListeners(final ViewSwitcher vs, final int position) {
 		final POIObject poi = ((PoiPlaceholder) vs.getTag()).poi;
 
@@ -500,16 +517,19 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		});
 	}
 
-	private void hideListItemsMenu(View v) {
+	private void hideListItemsMenu(View v,boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
 			if (view instanceof ViewSwitcher && ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
+				poiAdapter.setElementSelected(-1);
+				postitionSelected =-1;
+				previousViewSwitcher=null;
 			}
 		}
-		if (!toBeHidden && v != null && v.getTag() != null) {
+		if (!toBeHidden && v != null && v.getTag() != null && !close) {
 			// no items needed to be flipped, fill and open details page
 			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
@@ -708,7 +728,9 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
 					R.id.poilistcontainer));
 		}
-		hideListItemsMenu(null);
+		hideListItemsMenu(null,false);
 	}
+
+
 
 }
