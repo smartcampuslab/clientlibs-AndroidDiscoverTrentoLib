@@ -16,27 +16,30 @@
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollview"
+    android:id="@+id/createevent_scrollview"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:background="@android:color/white" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_title" />
+            android:layout_marginTop="8dp"
+            android:text="@string/create_title"
+            android:textColor="@color/dtappcolor"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/import_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:hint="@string/create_title" />
 
         <requestFocus />
@@ -44,14 +47,15 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/createevent_date" />
+            android:layout_marginTop="8dp"
+            android:text="@string/createevent_date"
+            android:textColor="@color/dtappcolor"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/import_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:focusableInTouchMode="false"
             android:hint="@string/createevent_datehint"
             android:inputType="date" />
@@ -59,19 +63,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/createevent_timestart" />
+                android:text="@string/createevent_timestart"
+                android:textColor="@color/dtappcolor"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/import_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_marginLeft="4dp"
                 android:ems="6"
                 android:focusableInTouchMode="false"
                 android:hint="@string/createevent_timestarthint"
@@ -80,13 +86,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/createevent_timeend" />
+                android:layout_marginLeft="4dp"
+                android:text="@string/createevent_timeend"
+                android:textColor="@color/dtappcolor"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/import_end"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_marginLeft="4dp"
                 android:ems="6"
                 android:focusableInTouchMode="false"
                 android:hint="@string/createevent_timeendhint"
@@ -96,19 +105,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/create_place" />
+                android:text="@string/create_place"
+                android:textColor="@color/dtappcolor"
+                android:textStyle="bold" />
 
             <AutoCompleteTextView
                 android:id="@+id/import_place"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_marginLeft="4dp"
                 android:ems="10"
                 android:hint="@string/create_placehint" />
 
@@ -116,70 +127,72 @@
                 android:id="@+id/btn_import_locate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_marginLeft="4dp"
                 android:background="@android:color/transparent"
+                android:contentDescription="@string/empty"
                 android:src="@drawable/map" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_tags" />
+            android:layout_marginTop="8dp"
+            android:text="@string/create_tags"
+            android:textColor="@color/dtappcolor"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/import_tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:hint="@string/create_tagshint" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_cat" />
+            android:layout_marginTop="8dp"
+            android:text="@string/create_cat"
+            android:textColor="@color/dtappcolor"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/import_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             tools:listitem="@android:layout/simple_spinner_item" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_notes" />
+            android:layout_marginTop="8dp"
+            android:text="@string/create_notes"
+            android:textColor="@color/dtappcolor"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/import_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:hint="@string/create_noteshint"
             android:inputType="textMultiLine" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal" >
 
             <CheckBox
                 android:id="@+id/apply_to_all_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="3dp"
-                 />
+                android:layout_gravity="center" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="3dp"
+                android:layout_marginLeft="4dp"
                 android:layout_weight="1"
                 android:text="@string/apply_to_all_text" />
         </LinearLayout>
@@ -187,27 +200,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal" >
 
             <Button
                 android:id="@+id/btn_import_cancel"
-                style="@style/Theme.discovertrento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:padding="3dp"
                 android:text="@android:string/cancel" />
 
             <Button
                 android:id="@+id/btn_import_ok"
-                style="@style/Theme.discovertrento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:padding="3dp"
                 android:text="@android:string/ok" />
         </LinearLayout>
     </LinearLayout>

@@ -17,99 +17,80 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-<LinearLayout 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg"
-    android:gravity="top"
-    android:orientation="vertical" >
 
     <ScrollView
-        android:id="@+id/scrollview"
+        android:id="@+id/createevent_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_height="match_parent"
+        android:layout_above="@+id/createevent_buttons" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-        
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:layout_marginTop="3dp"
-            android:background="@color/transparent_discovertrento"
-            android:padding="5dp"
-            android:text="@string/createevent"
-            android:textColor="@color/sc_light_gray" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_title" 
-            android:textColor="@color/sc_light_gray"/>
+            <TextView
+                android:id="@+id/createevent_header"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/dtappcolor"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/createevent"
+                android:textColor="@color/sc_light_gray" />
 
-        <EditText
-            android:id="@+id/event_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textColorHint="@color/sc_hint"
-            android:hint="@string/create_title" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" >
 
-        <requestFocus />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/create_title"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
 
-<!--        <TextView -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_margin="3dp" -->
-<!--             android:text="@string/createevent_date"  -->
-<!--             android:textColor="@color/sc_light_gray"/> -->
+                <EditText
+                    android:id="@+id/event_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/create_title" />
 
-<!--         <EditText -->
-<!--             android:id="@+id/event_date" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_margin="3dp" -->
-<!--             android:focusableInTouchMode="false" -->
-<!--             android:hint="@string/createevent_datehint" -->
-<!--             android:textColorHint="@color/sc_hint" -->
-<!--             android:inputType="date" /> -->
-
-				<LinearLayout
+                <LinearLayout
                     android:id="@+id/createnew_date_top"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:weightSum="1"
-                    android:paddingTop="5dp" >
+                    android:layout_marginTop="8dp"
+                    android:weightSum="1" >
 
-				       <TextView
-				            android:layout_width="0dip"
-				            android:layout_height="wrap_content"
-				            android:layout_margin="3dp"
-				            android:layout_weight="0.5"
-				            android:text="@string/event_date_from" 
-				            android:textColor="@color/sc_light_gray"/>
-				    
-				        <CheckBox
-                        android:id="@+id/more_days_checkbox"
-                        android:layout_width="0dip"
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/more_days" 
                         android:layout_weight="0.5"
-                        android:layout_margin="3dp"
-                        />
-				        </LinearLayout>
-				        
-				<LinearLayout
+                        android:text="@string/event_date_from"
+                        android:textColor="@color/dtappcolor"
+                        android:textStyle="bold" />
+
+                    <CheckBox
+                        android:id="@+id/more_days_checkbox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/more_days" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/createnew_date_bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5dp" >
+                    android:layout_height="wrap_content" >
+
                     <EditText
                         android:id="@+id/event_date_from"
                         android:layout_width="wrap_content"
@@ -118,7 +99,7 @@
                         android:ems="10"
                         android:focusableInTouchMode="false"
                         android:hint="@string/event_date_from"
-                        android:inputType="time" />
+                        android:inputType="date" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -133,188 +114,140 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
+                        android:enabled="false"
                         android:focusableInTouchMode="false"
                         android:hint="@string/event_date_to"
-                        android:inputType="time" 
-                        android:enabled="false"/>
-                    </LinearLayout>
+                        android:inputType="date" />
+                </LinearLayout>
 
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/createevent_timing" 
-                android:textColor="@color/sc_light_gray"/>  
-          
-          <EditText
-                android:id="@+id/event_timing_et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:hint="@string/createevent_timing_hint"
-                android:textColorHint="@color/sc_hint"
-                android:inputType="textMultiLine"/>
-          
-<!--              
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:orientation="horizontal" >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/createevent_timing"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
 
-            
-          <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/createevent_timestart" 
-                android:textColor="@color/sc_light_gray"/>
-          <EditText
-                android:id="@+id/event_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="6"
-                android:focusableInTouchMode="false"
-                android:hint="@string/createevent_timestarthint"
-                android:textColorHint="@color/sc_hint"
-                android:inputType="time" />
+                <EditText
+                    android:id="@+id/event_timing_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/createevent_timing_hint"
+                    android:inputType="textMultiLine" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/createevent_timeend" 
-                android:textColor="@color/sc_light_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal" >
 
-            <EditText
-                android:id="@+id/event_end"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:ems="6"
-                android:textColorHint="@color/sc_hint"
-                android:focusableInTouchMode="false"
-                android:hint="@string/createevent_timeendhint"
-                android:inputType="time" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_place"
+                        android:textColor="@color/dtappcolor"
+                        android:textStyle="bold" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/event_place"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/create_placehint" />
+
+                    <ImageButton
+                        android:id="@+id/btn_event_add_poi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:contentDescription="@string/empty"
+                        android:src="@drawable/add" />
+
+                    <ImageButton
+                        android:id="@+id/btn_event_locate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:contentDescription="@string/empty"
+                        android:src="@drawable/ic_map" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/create_tags"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/event_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/create_tagshint" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/create_cat"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/event_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/create_notes"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/event_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/create_noteshint"
+                    android:inputType="textMultiLine" />
+            </LinearLayout>
+
+            <requestFocus />
         </LinearLayout>
- -->
-     
-        <LinearLayout
-            android:layout_width="match_parent"
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/createevent_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal" >
+
+        <!-- style="@style/Theme.Discovertrento" -->
+
+        <Button
+            android:id="@+id/btn_createevent_cancel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:orientation="horizontal" >
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@android:string/cancel" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/create_place"
-                android:textColor="@color/sc_light_gray" />
-
-            <AutoCompleteTextView
-                android:id="@+id/event_place"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="15"
-                android:ems="10"
-                android:hint="@string/create_placehint"
-                android:textColorHint="@color/sc_hint" />
-
-
-
-              <ImageButton
-                  android:id="@+id/btn_event_add_poi"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_margin="3dp"
-                  android:layout_weight="1"
-                  android:background="@android:color/transparent"
-                  android:src="@drawable/add" />
-
-
-
-            <ImageButton
-                android:id="@+id/btn_event_locate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_map" />
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_createevent_ok"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_tags" 
-            android:textColor="@color/sc_light_gray"/>
-
-        <EditText
-            android:id="@+id/event_tags" 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textColorHint="@color/sc_hint"
-            android:hint="@string/create_tagshint" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/create_cat" 
-            android:textColor="@color/sc_light_gray"/>
-
-        <Spinner
-            android:id="@+id/event_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textColor="@color/sc_light_gray"
-            android:text="@string/create_notes" />
-
-        <EditText
-            android:id="@+id/event_notes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:hint="@string/create_noteshint"
-            android:textColorHint="@color/sc_hint"
-            android:inputType="textMultiLine" />
-
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@android:string/ok" />
     </LinearLayout>
-</ScrollView>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:orientation="horizontal" >
 
-            <Button
-                android:id="@+id/btn_createevent_cancel"
-                style="@style/Theme.discovertrento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:padding="3dp"
-                android:text="@android:string/cancel" />
-
-            <Button
-                android:id="@+id/btn_createevent_ok"
-                style="@style/Theme.discovertrento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:padding="3dp"
-                android:text="@android:string/ok" />
-        </LinearLayout>
-</LinearLayout>
 </RelativeLayout>

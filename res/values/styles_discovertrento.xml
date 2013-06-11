@@ -1,142 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright 2012-2013 Trento RISE
+<!-- File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
   
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+          http://www.apache.org/licenses/LICENSE-2.0
   
-         http://www.apache.org/licenses/LICENSE-2.0
-  
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either   express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
 -->
+
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<style name="ratingBar" parent="@android:style/Widget.RatingBar">
-	    <item name="android:progressDrawable">@drawable/ratingstars</item>
-	    <item name="android:minHeight">50dip</item>
-	    <item name="android:maxHeight">50dip</item>
-	    <item name="android:thumb">@null</item>
-        <item name="android:isIndicator">true</item>
-	</style>
-
-	<style name="ratingBarDlg" parent="@android:style/Widget.RatingBar">
-        <item name="android:progressDrawable">@drawable/ratingstars_dlg</item>
-        <item name="android:minHeight">70dip</item>
-        <item name="android:maxHeight">70dip</item>
-    </style>
-	
-    <style name="Theme.discovertrento" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+    <style name="Theme.Discovertrento" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="actionBarItemBackground">@drawable/selectable_background_discovertrento</item>
-        <item name="popupMenuStyle">@style/discovertrento_PopupMenu</item>
-        <item name="dropDownListViewStyle">@style/discovertrento_DropDownListView</item>
-        <item name="actionBarTabStyle">@style/discovertrento_ActionBarTabStyle</item>
-        <item name="actionDropDownStyle">@style/discovertrento_DropDownNav</item>
-        <item name="actionBarStyle">@style/discovertrento_solid_ActionBar</item>
+        <item name="popupMenuStyle">@style/PopupMenu.Discovertrento</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Discovertrento</item>
+        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Discovertrento</item>
+        <item name="actionDropDownStyle">@style/DropDownNav.Discovertrento</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.Discovertrento</item>
+        <item name="actionModeBackground">@drawable/cab_background_top_discovertrento</item>
+        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_discovertrento</item>
+        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Discovertrento</item>
 
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_discovertrento</item>
-        <item name="android:popupMenuStyle">@style/discovertrento_PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@style/discovertrento_DropDownListView</item>
-        <item name="android:actionBarTabStyle">@style/discovertrento_ActionBarTabStyle</item>
-        <item name="android:actionDropDownStyle">@style/discovertrento_DropDownNav</item>
-        <item name="android:actionBarStyle">@style/discovertrento_solid_ActionBar</item>
-        <item name="android:panelBackground">@drawable/menu_hardkey_panel_discovertrento</item>
-        
                 <!-- Light.DarkActionBar specific -->
-        <item name="actionBarWidgetTheme">@style/Theme.discovertrento.widget</item>
-        <item name="android:actionBarWidgetTheme">@style/Theme.discovertrento.widget</item>
-<!--         <item name="spinnerDropDownItemStyle">@style/discovertrento_DropDownItem</item> -->
-<!--         <item name="android:spinnerDropDownItemStyle">@style/discovertrento_DropDownItem</item> -->
-<!--         <item name="spinnerItemStyle">@style/discovertrento_SpinnerItem</item> -->
-<!--         <item name="android:spinnerItemStyle">@style/discovertrento_SpinnerItem</item> -->
-   
-<!--         <item name="android:spinnerStyle">@style/discovertrento_SpinnerStyle</item> -->
-<!--         <item name="android:editTextStyle">@style/discovertrento_EditTextStyle</item> -->
-<!--         <item name="android:autoCompleteTextViewStyle">@style/discovertrento_autoCompleteTextViewStyle</item> -->
-        </style>
+        <item name="actionBarWidgetTheme">@style/Theme.Discovertrento.Widget</item>
 
-    <style name="discovertrento_solid_ActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    </style>
+
+    <style name="ActionBar.Solid.Discovertrento" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
         <item name="background">@drawable/ab_solid_discovertrento</item>
         <item name="backgroundStacked">@drawable/ab_stacked_solid_discovertrento</item>
         <item name="backgroundSplit">@drawable/ab_bottom_solid_discovertrento</item>
-        <item name="progressBarStyle">@style/discovertrento_ProgressBar</item>
-
-        <item name="android:background">@drawable/ab_solid_discovertrento</item>
-        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_discovertrento</item>
-        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_discovertrento</item>
-        <item name="android:progressBarStyle">@style/discovertrento_ProgressBar</item>
+        <item name="progressBarStyle">@style/ProgressBar.Discovertrento</item>
     </style>
 
-    <style name="discovertrento_transparent_ActionBar" parent="@style/Widget.Sherlock.ActionBar">
+    <style name="ActionBar.Transparent.Discovertrento" parent="@style/Widget.Sherlock.ActionBar">
         <item name="background">@drawable/ab_transparent_discovertrento</item>
-        <item name="progressBarStyle">@style/discovertrento_ProgressBar</item>
-        
-        <item name="android:background">@drawable/ab_transparent_discovertrento</item>
-        <item name="android:progressBarStyle">@style/discovertrento_ProgressBar</item>
+        <item name="progressBarStyle">@style/ProgressBar.Discovertrento</item>
     </style>
 	
-    <style name="discovertrento_PopupMenu" parent="@style/Widget.Sherlock.ListPopupWindow">	
+    <style name="PopupMenu.Discovertrento" parent="@style/Widget.Sherlock.ListPopupWindow">	
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_discovertrento</item>	
     </style>
 	
-    <style name="discovertrento_DropDownListView" parent="@style/Widget.Sherlock.ListView.DropDown">
+    <style name="DropDownListView.Discovertrento" parent="@style/Widget.Sherlock.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_discovertrento</item>
     </style>
 
-    <style name="discovertrento_ActionBarTabStyle" parent="@style/Widget.Sherlock.ActionBar.TabView">
-        <item name="background">@drawable/tab_indicator_ab_discovertrento</item>
-
+    <style name="ActionBarTabStyle.Discovertrento" parent="@style/Widget.Sherlock.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_discovertrento</item>
     </style>
-    <style name="today_events" >
-        <item name="android:textColor">@color/dtappcolor</item>
-        <item name="android:textStyle">bold</item>
-    </style>
 	
-    <style name="discovertrento_DropDownNav" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
-        <item name="background">@drawable/spinner_background_ab_discovertrento</item>
-
+    <style name="DropDownNav.Discovertrento" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
         <item name="android:background">@drawable/spinner_background_ab_discovertrento</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_discovertrento</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_discovertrento</item>
     </style>
     
-    <style name="discovertrento_ProgressBar" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
+    <style name="ProgressBar.Discovertrento" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_discovertrento</item>
     </style>
     
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.discovertrento.widget" parent="@style/Theme.Sherlock">
-        <item name="popupMenuStyle">@style/discovertrento_PopupMenu</item>
-        <item name="dropDownListViewStyle">@style/discovertrento_DropDownListView</item>
-        
-        <item name="android:popupMenuStyle">@style/discovertrento_PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@style/discovertrento_DropDownListView</item>
-    </style>    
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="discovertrento_DropDownItem" parent="@style/Widget.Sherlock.Light.DropDownItem.Spinner">
-        <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
+    <style name="ActionButton.CloseMode.Discovertrento" parent="@style/Widget.Sherlock.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_discovertrento</item>
     </style>
+    
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="discovertrento_SpinnerItem" parent="@style/Widget.Sherlock.TextView.SpinnerItem">
+    <style name="Theme.Discovertrento.Widget" parent="@style/Theme.Sherlock">
+        <item name="popupMenuStyle">@style/PopupMenu.Discovertrento</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Discovertrento</item>
     </style>
 
-    <style name="discovertrento_EditTextStyle" parent="@android:style/Widget.EditText">
-        <item name="android:background">@android:color/white</item>
-    </style>
-    <style name="discovertrento_SpinnerStyle" parent="@android:style/Widget.Spinner">
-        <item name="android:background">@android:color/white</item>
-    </style>
-    <style name="discovertrento_autoCompleteTextViewStyle" parent="@android:style/Widget.AutoCompleteTextView">
-        <item name="android:background">@android:color/white</item>
-    </style>
-    <style name="discovertrento_search_label" parent="@android:style/Widget.TextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">@color/sc_light_gray</item>
-        <item name="android:padding">5dp</item>
-    </style>
 </resources>

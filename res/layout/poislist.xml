@@ -22,25 +22,27 @@
         android:id="@+id/poilistcontainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/list_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:layout_marginTop="3dp"
-            android:background="@color/transparent_discovertrento"
-            android:padding="5dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/dtappcolor"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:textColor="@color/sc_light_gray" />
 
         <ListView
             android:id="@+id/pois_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:cacheColorHint="@android:color/transparent" >
-        </ListView>
+            android:layout_height="wrap_content" />
+        <!--
+         WORKAROUND for the list
+         android:cacheColorHint="@android:color/transparent"
+        -->
     </LinearLayout>
 
 </RelativeLayout>

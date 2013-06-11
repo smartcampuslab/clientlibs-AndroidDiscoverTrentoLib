@@ -17,59 +17,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
     android:orientation="vertical" >
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
-        android:layout_marginTop="3dp"
-        android:background="@color/transparent_discovertrento"
-        android:padding="5dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/dtappcolor"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:text="@string/menu_item_import_text"
         android:textColor="@color/sc_light_gray" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="3dp"
-        android:text="@string/upload_file" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
 
-        <EditText
-            android:id="@+id/file_path"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:focusableInTouchMode="false"
-            android:hint="@string/file_hint"
-            android:inputType="text" />
+            android:layout_marginTop="8dp"
+            android:text="@string/upload_file"
+            android:textColor="@color/dtappcolor"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/file_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:focusableInTouchMode="false"
+                android:hint="@string/file_hint"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/browse_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/search_txt" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/browse_btn"
+            android:id="@+id/import_btn_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/search_txt" />
+            android:layout_gravity="center"
+            android:paddingTop="8dp"
+            android:text="@android:string/ok" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/import_btn_ok"
-        style="@style/Theme.discovertrento"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:paddingBottom="3dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="3dp"
-        android:text="@android:string/ok" />
 
 </LinearLayout>

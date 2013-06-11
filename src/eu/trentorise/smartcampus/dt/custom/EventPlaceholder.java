@@ -27,7 +27,6 @@ import eu.trentorise.smartcampus.dt.model.POIObject;
 public class EventPlaceholder {
 
 	public EventObject event;
-	public LinearLayout separator;
 	public TextView dateSeparator;
 	public ViewSwitcher vs;
 	public int displayChild=0;

@@ -16,103 +16,106 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:background="@drawable/bg"
-    >
+    android:layout_height="match_parent" >
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" 
-         android:fillViewport="true">
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_above="@+id/search_buttons"
+        android:fillViewport="true" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:orientation="vertical" 
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/title_search_label"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
-                android:layout_marginTop="3dp"
-                android:background="@color/transparent_discovertrento"
-                android:padding="5dp"
-                android:text="asde"
+                android:layout_height="32dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/dtappcolor"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/search_txt"
                 android:textColor="@color/sc_light_gray" />
 
-            <TextView
-                android:id="@+id/what_label"
-                style="@style/discovertrento_search_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_what" />
-
-            <EditText
-                android:id="@+id/what_text"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" >
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" >
 
-                <requestFocus />
-            </EditText>
+                <TextView
+                    android:id="@+id/what_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/search_what"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/when_label"
-                style="@style/discovertrento_search_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_when" />
+                <EditText
+                    android:id="@+id/what_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" >
+                </EditText>
 
-            <Spinner
-                android:id="@+id/when_spinner"
-                style="@style/discovertrento_SpinnerItem"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/when_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/search_when"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/where_label"
-                style="@style/discovertrento_search_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/search_where" />
+                <Spinner
+                    android:id="@+id/when_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
 
-            <Spinner
-                android:id="@+id/where_spinner"
-                style="@style/discovertrento_SpinnerItem"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" 
-                />
+                <TextView
+                    android:id="@+id/where_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/search_where"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/where_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+    <LinearLayout
+        android:id="@+id/search_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
 
-            <Button
-                android:id="@+id/search_cancel_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@android:string/cancel" />
+        <Button
+            android:id="@+id/search_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@android:string/cancel" />
 
-            <Button
-                android:id="@+id/search_ok_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@android:string/ok" />
-        </LinearLayout>
+        <Button
+            android:id="@+id/search_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/search_txt" />
     </LinearLayout>
-  </ScrollView>
-    
+
 </RelativeLayout>
