@@ -60,7 +60,8 @@
     <string name="getdir">Indicazioni stradali</string>
     <string name="onmap">Mostra sulla mappa</string>
     <string name="poi_select_address_content_description">Seleziona un indirizzo sulla mappa</string>
-    <string name="layers_title">Cosa stai cercando?</string>
+    <string name="layers_title_places">Mostra i luoghi selezionati</string>
+    <string name="layers_title_events">Mostra gli eventi selezionati</string>
     <string name="tmp">Disponibile a breve!</string>
     <string name="search_txt">Cerca</string>
     <string name="join">Partecipa all\'evento</string>

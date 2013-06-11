@@ -60,7 +60,8 @@
     <string name="getdir">Directions</string>
     <string name="onmap">View on map</string>
     <string name="poi_select_address_content_description">Select an address on the map</string>
-    <string name="layers_title">What are you looking for?</string>
+    <string name="layers_title_places">Show the selected places</string>
+    <string name="layers_title_events">Show the selected events</string>
     <string name="tmp">Coming soon!</string>
     <string name="search_txt">Search</string>
     <string name="join">Join event</string>

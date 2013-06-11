@@ -206,10 +206,10 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_show_places_layers) {
-			MapLayerDialogHelper.createPOIDialog(getActivity(), this, getString(R.string.layers_title), poiCategories).show();
+			MapLayerDialogHelper.createPOIDialog(getActivity(), this, getString(R.string.layers_title_places), poiCategories).show();
 			return true;
 		} else 		if (item.getItemId() == R.id.menu_item_show_events_layers) {
-			Dialog eventsDialog =  MapLayerDialogHelper.createEventsDialog(getActivity(), this, getString(R.string.layers_title), eventsCategories);
+			Dialog eventsDialog =  MapLayerDialogHelper.createEventsDialog(getActivity(), this, getString(R.string.layers_title_events), eventsCategories);
 			eventsDialog.show();			
 			return true;
 		} else {
