@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +60,9 @@ import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.Concept;
@@ -75,6 +76,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	public static final String ARG_POI = "poi_object";
 	POIObject poi = null;
+	String poiId;
 	private TmpComment tmp_comments[];
 	private boolean mFollowByIntent;
 
@@ -96,7 +98,9 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	private POIObject getPOI() {
 		if (poi == null) {
 			poi = (POIObject) getArguments().getSerializable(ARG_POI);
+			poiId = poi.getId();
 		}
+		poi = DTHelper.findPOIById(poiId);
 		return poi;
 	}
 
@@ -276,8 +280,13 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
+		String userId = DTHelper.getUserId();
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.rate, Menu.NONE, R.string.rate);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.follow, Menu.NONE, R.string.follow);
+		if (getPOI().getCommunityData().getFollowing().containsKey(userId)) {
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.unfollow, Menu.NONE, R.string.unfollow);
+		} else {
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.follow, Menu.NONE, R.string.follow);
+		}
 		submenu.add(Menu.NONE, R.id.show_related_events, Menu.NONE, R.string.related_events);
 		submenu.add(Menu.NONE, R.id.get_dir, Menu.NONE, R.string.getdir);
 		submenu.add(Menu.NONE, R.id.see_on_map, Menu.NONE, R.string.onmap);
@@ -337,6 +346,20 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 						DTHelper.getAuthToken(), obj);
 
+			}
+			return true;
+		} else if (item.getItemId() == R.id.unfollow) {
+			BaseDTObject obj;
+			try {
+				obj = DTHelper.findPOIByEntityId(getPOI().getEntityId());
+				if (obj != null) {
+					SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+							getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity()));
+					unfollowTask.execute(obj);
+
+				}
+			} catch (Exception e) {
+				Log.e(EventDetailsFragment.class.getName(), String.format("Error unfollowing event %s", getPOI().getEntityId()));
 			}
 			return true;
 		} else if (item.getItemId() == R.id.rate) {

@@ -38,19 +38,34 @@ public class BaseDTStorageHelper {
 		o.setCreatorId(cursor.getString(cursor.getColumnIndex("creatorId")));
 		o.setCreatorName(cursor.getString(cursor.getColumnIndex("creatorName")));
 		o.setEntityId(cursor.getLong(cursor.getColumnIndex("entityId")));
-		o.setLocation(new double[]{cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude"))});
+		o.setLocation(new double[] {
+				cursor.getDouble(cursor.getColumnIndex("latitude")),
+				cursor.getDouble(cursor.getColumnIndex("longitude")) });
 
-		o.setTypeUserDefined(cursor.getInt(cursor.getColumnIndex("typeUserDefined")) > 0);
+		o.setTypeUserDefined(cursor.getInt(cursor
+				.getColumnIndex("typeUserDefined")) > 0);
 		o.setCommunityData(new CommunityData());
-		o.getCommunityData().setAverageRating(cursor.getInt(cursor.getColumnIndex("averageRating")));
-		o.getCommunityData().setNotes(cursor.getString(cursor.getColumnIndex("notes")));
-		o.getCommunityData().setTags(Utils.convertJSONToObjects(cursor.getString(cursor.getColumnIndex("tags")), Concept.class));
-		
+		o.getCommunityData().setAverageRating(
+				cursor.getInt(cursor.getColumnIndex("averageRating")));
+		o.getCommunityData().setNotes(
+				cursor.getString(cursor.getColumnIndex("notes")));
+		o.getCommunityData().setFollowing(
+				Utils.convertJSONToObject(
+						cursor.getString(cursor.getColumnIndex("following")),
+						Map.class));
+		o.getCommunityData().setTags(
+				Utils.convertJSONToObjects(
+						cursor.getString(cursor.getColumnIndex("tags")),
+						Concept.class));
+
 		@SuppressWarnings("unchecked")
-		Map<String,Object> map = Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("customData")), Map.class);
-		if (map != null && ! map.isEmpty()) o.setCustomData(map);
+		Map<String, Object> map = Utils.convertJSONToObject(
+				cursor.getString(cursor.getColumnIndex("customData")),
+				Map.class);
+		if (map != null && !map.isEmpty())
+			o.setCustomData(map);
 	}
-	
+
 	public static ContentValues toCommonContent(BaseDTObject bean) {
 		ContentValues values = new ContentValues();
 		values.put("id", bean.getId());
@@ -67,24 +82,28 @@ public class BaseDTStorageHelper {
 			values.put("latitude", bean.getLocation()[0]);
 			values.put("longitude", bean.getLocation()[1]);
 		}
-		
+
 		values.put("typeUserDefined", bean.isTypeUserDefined() ? 1 : 0);
-		
+
 		if (bean.getCommunityData() != null) {
-			values.put("averageRating", bean.getCommunityData().getAverageRating());
+			values.put("averageRating", bean.getCommunityData()
+					.getAverageRating());
+			values.put("following",
+					Utils.convertToJSON(bean.getCommunityData().getFollowing()));
 			values.put("notes", bean.getCommunityData().getNotes());
 			if (bean.getCommunityData().getTags() != null) {
-				values.put("tags", Utils.convertToJSON(bean.getCommunityData().getTags()));
+				values.put("tags",
+						Utils.convertToJSON(bean.getCommunityData().getTags()));
 			}
 		}
-		if (bean.getCustomData() != null && ! bean.getCustomData().isEmpty()) {
+		if (bean.getCustomData() != null && !bean.getCustomData().isEmpty()) {
 			values.put("customData", Utils.convertToJSON(bean.getCustomData()));
 		}
 		return values;
 	}
 
-	public static Map<String,String> getCommonColumnDefinitions() {
-		Map<String,String> defs = new HashMap<String, String>();
+	public static Map<String, String> getCommonColumnDefinitions() {
+		Map<String, String> defs = new HashMap<String, String>();
 		defs.put("title", "TEXT");
 		defs.put("averageRating", "TEXT");
 		defs.put("description", "TEXT");
@@ -100,6 +119,7 @@ public class BaseDTStorageHelper {
 		defs.put("typeUserDefined", "INTEGER");
 		defs.put("notes", "TEXT");
 		defs.put("tags", "TEXT");
+		defs.put("following", "TEXT");
 		defs.put("customData", "TEXT");
 		return defs;
 	}
