@@ -30,7 +30,6 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
@@ -64,30 +63,38 @@ public class InfoDialog extends SherlockDialogFragment {
 		TextView msg = (TextView) getDialog().findViewById(R.id.mapdialog_msg);
 
 		if (data instanceof POIObject) {
-
-			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle() + "</h2><br><p>"
+			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle() + "</h2><br/><p>"
 					+ ((POIObject) data).shortAddress() + "</p>"));
 		} else if (data instanceof EventObject) {
-			POIObject poi = DTHelper.findPOIById(((EventObject) data).getPoiId());
-			msg.setText(Html.fromHtml("<h2>"
-					+ ((EventObject) data).getTitle()
-					+ "</h2><br><p>"
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_EVENTS,
-							((EventObject) data).getType()).description) + "<br>" + (((EventObject) data).getTiming()) + "<br>"
-					+ poi.shortAddress() + "</p>"));
+			EventObject event = (EventObject) data;
+			POIObject poi = DTHelper.findPOIById(event.getPoiId());
+			String msgText = "";
+			msgText += "<h2>";
+			msgText += event.getTitle();
+			msgText += "</h2><br/><p>";
+			if (event.getType() != null) {
+				msgText += "<p>";
+				msgText += getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+						CategoryHelper.CATEGORY_TYPE_EVENTS, event.getType()).description);
+				msgText += "</p><br/>";
+			}
+			msgText += "<p>" + event.getTiming() + "</p>";
+			msgText += "<p>" + poi.shortAddress() + "</p>";
+			msg.setText(Html.fromHtml(msgText));
 		}
+
 		msg.setMovementMethod(new ScrollingMovementMethod());
+
 		Button b = (Button) getDialog().findViewById(R.id.mapdialog_cancel);
 		b.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				getDialog().dismiss();
 			}
 		});
+
 		b = (Button) getDialog().findViewById(R.id.mapdialog_ok);
 		b.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();

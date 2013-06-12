@@ -165,7 +165,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			}
 
 			// multimedia
-			((TableRow) getView().findViewById(R.id.tablerow)).removeView(getView().findViewById(R.id.gallery_btn));
+			((LinearLayout) getView().findViewById(R.id.multimedia_source))
+					.removeView(getView().findViewById(R.id.gallery_btn));
 
 			/*
 			 * ImageButton b = (ImageButton) getView().findViewById(

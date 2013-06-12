@@ -322,13 +322,11 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	public void onDestroyView() {
 		try {
 			FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
 			transaction.remove(getFragmentManager().findFragmentById(R.id.my_map_fragment1)).commit();
 		} catch (Exception e) {
 		}
 
 		super.onDestroyView();
-
 	}
 
 	/*

@@ -59,7 +59,8 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 	public void onStart() {
 		super.onStart();
 		gridview = (GridView) getView().findViewById(R.id.events_gridview);
-		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(), fragmentManager));
+		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(),
+				R.layout.grid_item, fragmentManager));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
@@ -76,23 +77,26 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_todayevent, Menu.NONE, R.string.menu_item_todayevent_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_myevents, Menu.NONE, R.string.menu_item_myevents_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
-//
-//		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-//			@Override
-//			public void onSearch(String query) {
-//				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//				EventsListingFragment fragment = new EventsListingFragment();
-//				Bundle args = new Bundle();
-//				args.putString(EventsListingFragment.ARG_QUERY, query);
-//				fragment.setArguments(args);
-//				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//				// fragmentTransaction.detach(currentFragment);
-//				fragmentTransaction.replace(android.R.id.content, fragment, "events");
-//				fragmentTransaction.addToBackStack(fragment.getTag());
-//				fragmentTransaction.commit();
-//			}
-//		});
-		
+		//
+		// SearchHelper.createSearchMenu(submenu, getActivity(), new
+		// SearchHelper.OnSearchListener() {
+		// @Override
+		// public void onSearch(String query) {
+		// FragmentTransaction fragmentTransaction =
+		// fragmentManager.beginTransaction();
+		// EventsListingFragment fragment = new EventsListingFragment();
+		// Bundle args = new Bundle();
+		// args.putString(EventsListingFragment.ARG_QUERY, query);
+		// fragment.setArguments(args);
+		// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		// // fragmentTransaction.detach(currentFragment);
+		// fragmentTransaction.replace(android.R.id.content, fragment,
+		// "events");
+		// fragmentTransaction.addToBackStack(fragment.getTag());
+		// fragmentTransaction.commit();
+		// }
+		// });
+
 		super.onPrepareOptionsMenu(menu);
 	}
 

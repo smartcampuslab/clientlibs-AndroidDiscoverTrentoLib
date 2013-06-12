@@ -35,7 +35,6 @@ import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.StoriesCategoriesAdapter;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
@@ -46,80 +45,80 @@ import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentD
 public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 	private GridView gridview;
 	private FragmentManager fragmentManager;
-    private static final String TAG = "AllStoriesFragment";
+	private static final String TAG = "AllStoriesFragment";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onCreate ");
-        }
- 
+
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onCreate ");
+		}
+
 		fragmentManager = getSherlockActivity().getSupportFragmentManager();
 		setHasOptionsMenu(true);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onCreateView ");
-        }
- 		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onCreateView ");
+		}
+
 		return inflater.inflate(R.layout.stories_categories, container, false);
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onStart ");
-        }
- 
+
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onStart ");
+		}
+
 		gridview = (GridView) getView().findViewById(R.id.stories_gridview);
-		gridview.setAdapter(new StoriesCategoriesAdapter(getSherlockActivity().getApplicationContext(), fragmentManager));
-		//hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager)getSherlockActivity().getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
+		gridview.setAdapter(new StoriesCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
+				fragmentManager));
+		// hide keyboard if it is still open
+		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
 	}
 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-		
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onPrepareOptionsMenu ");
-        }
- 
+
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onPrepareOptionsMenu ");
+		}
+
 		menu.clear();
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE,
-				R.string.menu_item_addstory_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_mystory, Menu.NONE,
-				R.string.menu_item_mystories_text);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, R.string.menu_item_addstory_text);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_mystory, Menu.NONE, R.string.menu_item_mystories_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
 
-//		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-//			@Override
-//			public void onSearch(String query) {
-//				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//				StoriesListingFragment fragment = new StoriesListingFragment();
-//				Bundle args = new Bundle();
-//				args.putString(StoriesListingFragment.ARG_QUERY, query);
-//				fragment.setArguments(args);
-//				fragmentTransaction
-//						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//				fragmentTransaction.replace(android.R.id.content, fragment,"stories");
-//				fragmentTransaction.addToBackStack(fragment.getTag());
-//				fragmentTransaction.commit();
-//			}
-//		});
+		// SearchHelper.createSearchMenu(submenu, getActivity(), new
+		// SearchHelper.OnSearchListener() {
+		// @Override
+		// public void onSearch(String query) {
+		// FragmentTransaction fragmentTransaction =
+		// fragmentManager.beginTransaction();
+		// StoriesListingFragment fragment = new StoriesListingFragment();
+		// Bundle args = new Bundle();
+		// args.putString(StoriesListingFragment.ARG_QUERY, query);
+		// fragment.setArguments(args);
+		// fragmentTransaction
+		// .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		// fragmentTransaction.replace(android.R.id.content,
+		// fragment,"stories");
+		// fragmentTransaction.addToBackStack(fragment.getTag());
+		// fragmentTransaction.commit();
+		// }
+		// });
 		super.onPrepareOptionsMenu(menu);
 	}
 
@@ -127,25 +126,23 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		FragmentTransaction fragmentTransaction;
 		Fragment fragment;
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onOptionsItemSelected ");
-        }
- 
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onOptionsItemSelected ");
+		}
+
 		if (item.getItemId() == R.id.menu_item_addstory) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-			fragmentTransaction = fragmentManager
-					.beginTransaction();
-			fragment = new CreateStoryFragment();
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
-			fragmentTransaction.addToBackStack(fragment.getTag());
-			fragmentTransaction.commit();
-			return true;
+				fragmentTransaction = fragmentManager.beginTransaction();
+				fragment = new CreateStoryFragment();
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
+				return true;
 			}
 		} else if (item.getItemId() == R.id.menu_item_mystory) {
 			fragmentTransaction = fragmentManager.beginTransaction();
@@ -153,8 +150,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			Bundle args = new Bundle();
 			args.putBoolean(SearchFragment.ARG_MY, true);
 			fragment.setArguments(args);
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();

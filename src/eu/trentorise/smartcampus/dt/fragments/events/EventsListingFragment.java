@@ -91,8 +91,7 @@ import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentD
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
 // to be used for event listing both in categories and in My Events
-public class EventsListingFragment extends AbstractLstingFragment<EventObject>
-		implements TagProvider {
+public class EventsListingFragment extends AbstractLstingFragment<EventObject> implements TagProvider {
 	private ListView list;
 	private Context context;
 
@@ -117,6 +116,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	private Boolean reload = false;
 	private Integer postitionSelected = -1;
 	private ViewSwitcher previousViewSwitcher;
+
 	@Override
 	public void onActivityCreated(Bundle arg0) {
 		super.onActivityCreated(arg0);
@@ -147,18 +147,19 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 			}
 			if (event == null) {
 				// cancellazione
-				removeEvent(eventsAdapter,indexAdapter);
+				removeEvent(eventsAdapter, indexAdapter);
 
 			} else {
 				// modifica se numero della versione e' diverso
-//				if (event.getUpdateTime() != eventsAdapter.getItem(indexAdapter)
-//						.getUpdateTime()) {
+				// if (event.getUpdateTime() !=
+				// eventsAdapter.getItem(indexAdapter)
+				// .getUpdateTime()) {
 				if (event.getUpdateTime() == 0) {
-					
+
 					event.assignPoi(poi);
-					restoreElement(eventsAdapter,indexAdapter,event);
-//					removeEvent(eventsAdapter,indexAdapter);
-//					insertEvent(event);
+					restoreElement(eventsAdapter, indexAdapter, event);
+					// removeEvent(eventsAdapter,indexAdapter);
+					// insertEvent(event);
 				}
 			}
 			// notify
@@ -170,14 +171,14 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	}
 
 	private void restoreElement(EventAdapter eventsAdapter2, Integer indexAdapter2, EventObject event) {
-		removeEvent(eventsAdapter,indexAdapter);
-		insertEvent(event,indexAdapter);
-		
+		removeEvent(eventsAdapter, indexAdapter);
+		insertEvent(event, indexAdapter);
+
 	}
 
 	/*
-	 * insert in the same adapter the new items
-	 *do the post proc if they are multiday events
+	 * insert in the same adapter the new itemsdo the post proc if they are
+	 * multiday events
 	 */
 	private void insertEvent(EventObject event, Integer indexAdapter2) {
 
@@ -185,39 +186,39 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		cal.setTimeInMillis(System.currentTimeMillis());
 		calToDate(cal);
 		biggerFromTime = cal.getTimeInMillis();
-		//add in the right place
-		List<EventObject> returnList = new ArrayList<EventObject>();	
-		int i=0;
-		int j=0;
-		while (i<eventsAdapter.getCount()+1){
-			if (i!=indexAdapter2){
+		// add in the right place
+		List<EventObject> returnList = new ArrayList<EventObject>();
+		int i = 0;
+		int j = 0;
+		while (i < eventsAdapter.getCount() + 1) {
+			if (i != indexAdapter2) {
 				returnList.add(eventsAdapter.getItem(j));
-				 j++;
-				}
-			else returnList.add(event);
+				j++;
+			} else
+				returnList.add(event);
 			i++;
-		
+
 		}
 		eventsAdapter.clear();
-		
-		//post proc for multidays
-		i=0;
-		List<EventObject> newList =postProcForRecurrentEvents(returnList, biggerFromTime);
-		while (i<newList.size()){
+
+		// post proc for multidays
+		i = 0;
+		List<EventObject> newList = postProcForRecurrentEvents(returnList, biggerFromTime);
+		while (i < newList.size()) {
 			eventsAdapter.insert(newList.get(i), i);
-		 i++;
+			i++;
 		}
 	}
 
-	/*clean the adapter from the items modified or erased*/
-	private void removeEvent(EventAdapter eventsAdapter,
-			Integer indexAdapter) {
+	/* clean the adapter from the items modified or erased */
+	private void removeEvent(EventAdapter eventsAdapter, Integer indexAdapter) {
 		EventObject objectToRemove = eventsAdapter.getItem(indexAdapter);
-		int i=0;
-		while (i<eventsAdapter.getCount()){
-		if (eventsAdapter.getItem(i).getEntityId() == objectToRemove.getEntityId())
-			eventsAdapter.remove(eventsAdapter.getItem(i));
-		else i++;
+		int i = 0;
+		while (i < eventsAdapter.getCount()) {
+			if (eventsAdapter.getItem(i).getEntityId() == objectToRemove.getEntityId())
+				eventsAdapter.remove(eventsAdapter.getItem(i));
+			else
+				i++;
 		}
 	}
 
@@ -239,22 +240,19 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.eventslist, container, false);
 	}
 
 	private void setFollowByIntent() {
 		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager()
-					.getApplicationInfo(getSherlockActivity().getPackageName(),
-							PackageManager.GET_META_DATA);
+			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
+					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
 			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
-			Log.e(EventsListingFragment.class.getName(),
-					"you should set the follow-by-intent metadata in app manifest");
+			Log.e(EventsListingFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
 		}
 
 	}
@@ -268,42 +266,33 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		 * item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		 */
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu,
-				menu);
+		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE,
-				R.string.map_view);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 		if (getArguments() == null || !getArguments().containsKey(ARG_POI)
-				&& !getArguments().containsKey(SearchFragment.ARG_LIST)
-				&& !getArguments().containsKey(ARG_QUERY_TODAY)
+				&& !getArguments().containsKey(SearchFragment.ARG_LIST) && !getArguments().containsKey(ARG_QUERY_TODAY)
 				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE,
-					R.string.search_txt);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
 		}
 		if (category == null)
-			category = (getArguments() != null) ? getArguments().getString(
-					SearchFragment.ARG_CATEGORY) : null;
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-							CategoryHelper.CATEGORY_TYPE_EVENTS, category).description)
-					+ " " + getString(R.string.event);
+					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_EVENTS,
+							category).description) + " " + getString(R.string.event);
 			if (Locale.getDefault().equals(Locale.ITALY))
 				addString = getString(R.string.add)
 						+ " "
 						+ getString(R.string.event)
 						+ " su "
-						+ getString(CategoryHelper
-								.getCategoryDescriptorByCategoryFiltered(
-										CategoryHelper.CATEGORY_TYPE_EVENTS,
-										category).description);
+						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_EVENTS,
+								category).description);
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent,
-					Menu.NONE, addString);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, addString);
 		}
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
@@ -314,17 +303,14 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(
-				getSherlockActivity(), item);
+		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
 
 		if (item.getItemId() == R.id.map_view) {
 			ArrayList<BaseDTObject> target = new ArrayList<BaseDTObject>();
 			if (list != null) {
 				for (int i = 0; i < list.getAdapter().getCount(); i++) {
-					BaseDTObject o = (BaseDTObject) list.getAdapter()
-							.getItem(i);
-					if (o.getLocation() != null && o.getLocation()[0] != 0
-							&& o.getLocation()[1] != 0) {
+					BaseDTObject o = (BaseDTObject) list.getAdapter().getItem(i);
+					if (o.getLocation() != null && o.getLocation()[0] != 0 && o.getLocation()[1] != 0) {
 						target.add(o);
 					}
 				}
@@ -337,17 +323,14 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity()
-						.getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
 				args.putString(SearchFragment.ARG_CATEGORY, category);
 				fragment.setArguments(args);
-				fragmentTransaction
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment,
-						"events");
+				fragmentTransaction.replace(android.R.id.content, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				reload = true;
@@ -356,23 +339,17 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		} else if (item.getItemId() == R.id.search) {
 			FragmentTransaction fragmentTransaction;
 			Fragment fragment;
-			fragmentTransaction = getSherlockActivity()
-					.getSupportFragmentManager().beginTransaction();
+			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			fragment = new SearchFragment();
 			Bundle args = new Bundle();
 			args.putString(SearchFragment.ARG_CATEGORY, category);
-			args.putString(CategoryHelper.CATEGORY_TYPE_EVENTS,
-					CategoryHelper.CATEGORY_TYPE_EVENTS);
-			if (getArguments() != null
-					&& getArguments().containsKey(SearchFragment.ARG_MY)
+			args.putString(CategoryHelper.CATEGORY_TYPE_EVENTS, CategoryHelper.CATEGORY_TYPE_EVENTS);
+			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_MY)
 					&& getArguments().getBoolean(SearchFragment.ARG_MY))
-				args.putBoolean(SearchFragment.ARG_MY, getArguments()
-						.getBoolean(SearchFragment.ARG_MY));
+				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment,
-					"events");
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(android.R.id.content, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			/* add category to bundle */
@@ -399,100 +376,79 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		String category = bundle.getString(SearchFragment.ARG_CATEGORY);
-		CategoryDescriptor catDescriptor = CategoryHelper
-				.getCategoryDescriptorByCategoryFiltered("events", category);
-		String categoryString = (catDescriptor != null) ? context
-				.getResources().getString(catDescriptor.description) : null;
+		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategoryFiltered("events", category);
+		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
 
 		if (bundle != null && bundle.containsKey(SearchFragment.ARG_QUERY)
 				&& bundle.getString(SearchFragment.ARG_QUERY) != null) {
 			String query = bundle.getString(SearchFragment.ARG_QUERY);
-			title.setText(context.getResources().getString(R.string.search_for)
-					+ " ' " + query + " '");
+			title.setText(context.getResources().getString(R.string.search_for) + " ' " + query + " '");
 			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
 				category = bundle.getString(SearchFragment.ARG_CATEGORY);
 				if (category != null)
-					title.append(" "
-							+ context.getResources().getString(
-									R.string.search_in_category) + " "
+					title.append(" " + context.getResources().getString(R.string.search_in_category) + " "
 							+ getString(catDescriptor.description));
 			}
 
-		} else if (bundle != null
-				&& bundle.containsKey(SearchFragment.ARG_CATEGORY)
+		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_CATEGORY)
 				&& (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 			title.setText(categoryString);
-		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_MY)
-				&& bundle.getBoolean(SearchFragment.ARG_MY)) {
+		} else if (bundle != null && bundle.containsKey(SearchFragment.ARG_MY) && bundle.getBoolean(SearchFragment.ARG_MY)) {
 			title.setText(R.string.myevents);
 		} else if (bundle != null && bundle.containsKey(ARG_POI_NAME)) {
 			String poiName = bundle.getString(ARG_POI_NAME);
-			title.setText(getResources().getString(R.string.eventlist_at_place)
-					+ " " + poiName);
+			title.setText(getResources().getString(R.string.eventlist_at_place) + " " + poiName);
 		} else if (bundle != null && bundle.containsKey(ARG_QUERY)) {
 			String query = bundle.getString(ARG_QUERY);
-			title.setText(context.getResources().getString(R.string.search_for)
-					+ " '" + query + "'");
+			title.setText(context.getResources().getString(R.string.search_for) + " '" + query + "'");
 			if (bundle.containsKey(ARG_CATEGORY_SEARCH)) {
 				category = bundle.getString(ARG_CATEGORY_SEARCH);
 				if (category != null)
-					title.append(context.getResources().getString(
-							R.string.search_in_category)
-							+ " " + category);
+					title.append(context.getResources().getString(R.string.search_in_category) + " " + category);
 			}
 		} else if (bundle != null && bundle.containsKey(ARG_QUERY_TODAY)) {
-			title.setText(context.getResources().getString(
-					R.string.search_today_events));
+			title.setText(context.getResources().getString(R.string.search_today_events));
 		}
 		if (bundle.containsKey(SearchFragment.ARG_WHERE_SEARCH)) {
-			WhereForSearch where = bundle
-					.getParcelable(SearchFragment.ARG_WHERE_SEARCH);
+			WhereForSearch where = bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH);
 			if (where != null)
 				title.append(" " + where.getDescription() + " ");
 		}
 
 		if (bundle.containsKey(SearchFragment.ARG_WHEN_SEARCH)) {
-			WhenForSearch when = bundle
-					.getParcelable(SearchFragment.ARG_WHEN_SEARCH);
+			WhenForSearch when = bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH);
 			if (when != null)
 				title.append(" " + when.getDescription() + " ");
 		}
 		// close items menus if open
-		((View) list.getParent())
-				.setOnClickListener(new View.OnClickListener() {
-					public void onClick(View v) {
-						hideListItemsMenu(v,false);
-					}
-				});
+		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				hideListItemsMenu(v, false);
+			}
+		});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				hideListItemsMenu(view,false);
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				hideListItemsMenu(view, false);
 				setStoreEventId(view, position);
 			}
 
 		});
-		
 
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
-				{
-//					//close the old viewSwitcher
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if ((position != postitionSelected) && (previousViewSwitcher != null)) {
+					// //close the old viewSwitcher
 					previousViewSwitcher.showPrevious();
 					eventsAdapter.setElementSelected(-1);
-					previousViewSwitcher=null;
-					hideListItemsMenu(view,true);
-
+					previousViewSwitcher = null;
+					hideListItemsMenu(view, true);
 
 				}
-				ViewSwitcher vs = (ViewSwitcher) view
-						.findViewById(R.id.event_viewswitecher);
+				ViewSwitcher vs = (ViewSwitcher) view.findViewById(R.id.event_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
-				postitionSelected=position;
+				postitionSelected = position;
 				eventsAdapter.setElementSelected(position);
 				previousViewSwitcher = vs;
 
@@ -500,10 +456,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 			}
 		});
 
-		
-
-		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(),
-				getView());
+		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
 
 	}
@@ -513,62 +466,54 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		idEvent = event.getId();
 		indexAdapter = position;
 	}
-	
-@Override
-public void onScrollStateChanged(AbsListView view, int scrollState) {
-	super.onScrollStateChanged(view, scrollState);
-	if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
-	{
-	hideListItemsMenu(view,true);
-	
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		super.onScrollStateChanged(view, scrollState);
+		if ((postitionSelected != -1) && (scrollState == SCROLL_STATE_TOUCH_SCROLL)) {
+			hideListItemsMenu(view, true);
+
+		}
 	}
-}
-	private void hideListItemsMenu(View v,boolean close) {
+
+	private void hideListItemsMenu(View v, boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
-			if (view != null && view instanceof LinearLayout
-					&& ((LinearLayout) view).getChildCount() == 2)
+			if (view != null && view instanceof LinearLayout && ((LinearLayout) view).getChildCount() == 2)
 				view = ((LinearLayout) view).getChildAt(1);
-			if (view instanceof ViewSwitcher
-					&& ((ViewSwitcher) view).getDisplayedChild() == 1 ) {
+			if (view instanceof ViewSwitcher && ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
 				eventsAdapter.setElementSelected(-1);
-				postitionSelected =-1;
-				previousViewSwitcher=null;
+				postitionSelected = -1;
+				previousViewSwitcher = null;
 
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
 			// no items needed to be flipped, fill and open details page
-			FragmentTransaction fragmentTransaction = getSherlockActivity()
-					.getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			EventDetailsFragment fragment = new EventDetailsFragment();
 
 			Bundle args = new Bundle();
 			// args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT,
 			// ((EventPlaceholder) v.getTag()).event);
-			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT,
-					((EventPlaceholder) v.getTag()).event.getId());
+			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event.getId());
 
 			fragment.setArguments(args);
 
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment,
-					"events");
+			fragmentTransaction.replace(android.R.id.content, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 
 		}
 	}
 
-	protected void setupOptionsListeners(final ViewSwitcher vs,
-			final int position) {
-		final EventObject event = ((EventPlaceholder) ((View) vs.getParent())
-				.getTag()).event;
+	protected void setupOptionsListeners(final ViewSwitcher vs, final int position) {
+		final EventObject event = ((EventPlaceholder) ((View) vs.getParent()).getTag()).event;
 		ImageButton b = (ImageButton) vs.findViewById(R.id.delete_btn);
 		if (DTHelper.isOwnedObject(event)) {
 			b.setVisibility(View.VISIBLE);
@@ -576,15 +521,13 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 
 				@Override
 				public void onClick(View v) {
-					if (new AMSCAccessProvider()
-							.isUserAnonymous(getSherlockActivity())) {
+					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 						// show dialog box
 						UserRegistration.upgradeuser(getSherlockActivity());
 					} else {
-						new SCAsyncTask<EventObject, Void, Boolean>(
-								getActivity(), new EventDeleteProcessor(
-										getActivity())).execute(event);
-						hideListItemsMenu(vs,false);
+						new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(getActivity()))
+								.execute(event);
+						hideListItemsMenu(vs, false);
 					}
 				}
 			});
@@ -596,13 +539,12 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider()
-						.isUserAnonymous(getSherlockActivity())) {
+				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-					FragmentTransaction fragmentTransaction = getSherlockActivity()
-							.getSupportFragmentManager().beginTransaction();
+					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+							.beginTransaction();
 					Fragment fragment = new CreateEventFragment();
 					Bundle args = new Bundle();
 					setStoreEventId((View) vs.getParent(), position);
@@ -611,11 +553,9 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 					// event);
 					args.putString(CreateEventFragment.ARG_EVENT, event.getId());
 					fragment.setArguments(args);
-					fragmentTransaction
-							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					// fragmentTransaction.detach(this);
-					fragmentTransaction.replace(android.R.id.content, fragment,
-							"events");
+					fragmentTransaction.replace(android.R.id.content, fragment, "events");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}
@@ -636,25 +576,18 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider()
-						.isUserAnonymous(getSherlockActivity())) {
+				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-					TaggingDialog taggingDialog = new TaggingDialog(
-							getActivity(),
-							new TaggingDialog.OnTagsSelectedListener() {
+					TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
 
-								@SuppressWarnings("unchecked")
-								@Override
-								public void onTagsSelected(
-										Collection<SemanticSuggestion> suggestions) {
-									new TaggingAsyncTask(event).execute(Concept
-											.convertSS(suggestions));
-								}
-							}, EventsListingFragment.this, Concept
-									.convertToSS(event.getCommunityData()
-											.getTags()));
+						@SuppressWarnings("unchecked")
+						@Override
+						public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
+							new TaggingAsyncTask(event).execute(Concept.convertSS(suggestions));
+						}
+					}, EventsListingFragment.this, Concept.convertToSS(event.getCommunityData().getTags()));
 					taggingDialog.show();
 				}
 			}
@@ -665,25 +598,21 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 			@Override
 			public void onClick(View v) {
 
-				FollowEntityObject obj = new FollowEntityObject(event
-						.getEntityId(), event.getTitle(),
+				FollowEntityObject obj = new FollowEntityObject(event.getEntityId(), event.getTitle(),
 						DTConstants.ENTITY_TYPE_EVENT);
 				if (mFollowByIntent) {
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
-					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-							getSherlockActivity(),
+					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
 							new FollowAsyncTaskProcessor(getSherlockActivity()));
-					followTask.execute(getSherlockActivity()
-							.getApplicationContext(), DTParamsHelper.getAppToken(),
+					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 				}
 			}
 		});
 	}
 
-	private List<EventObject> getEvents(
-			AbstractLstingFragment.ListingRequest... params) {
+	private List<EventObject> getEvents(AbstractLstingFragment.ListingRequest... params) {
 		try {
 			Collection<EventObject> result = null;
 			Bundle bundle = getArguments();
@@ -697,58 +626,37 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 			String categories = bundle.getString(SearchFragment.ARG_CATEGORY);
 			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
 			sort.put("fromTime", 1);
-			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)
-					&& (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 
-				result = DTHelper
-						.searchInGeneral(
-								params[0].position,
-								params[0].size,
-								bundle.getString(SearchFragment.ARG_QUERY),
-								(WhereForSearch) bundle
-										.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-								(WhenForSearch) bundle
-										.getParcelable(SearchFragment.ARG_WHEN_SEARCH),
-								my, EventObject.class, sort, categories);
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
+						bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class, sort,
+						categories);
 
-			} else if (bundle.containsKey(ARG_POI)
-					&& (bundle.getString(ARG_POI) != null)) {
-				result = DTHelper.getEventsByPOI(params[0].position,
-						params[0].size, bundle.getString(ARG_POI));
-			} else if (bundle.containsKey(SearchFragment.ARG_MY)
-					&& (bundle.getBoolean(SearchFragment.ARG_MY))) {
+			} else if (bundle.containsKey(ARG_POI) && (bundle.getString(ARG_POI) != null)) {
+				result = DTHelper.getEventsByPOI(params[0].position, params[0].size, bundle.getString(ARG_POI));
+			} else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
 
-				result = DTHelper
-						.searchInGeneral(
-								params[0].position,
-								params[0].size,
-								bundle.getString(SearchFragment.ARG_QUERY),
-								(WhereForSearch) bundle
-										.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-								(WhenForSearch) bundle
-										.getParcelable(SearchFragment.ARG_WHEN_SEARCH),
-								my, EventObject.class, sort, categories);
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
+						bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class, sort,
+						categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
 
-				result = DTHelper
-						.searchInGeneral(
-								params[0].position,
-								params[0].size,
-								bundle.getString(SearchFragment.ARG_QUERY),
-								(WhereForSearch) bundle
-										.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-								(WhenForSearch) bundle
-										.getParcelable(SearchFragment.ARG_WHEN_SEARCH),
-								my, EventObject.class, sort, categories);
+				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
+						bundle.getString(SearchFragment.ARG_QUERY),
+						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class, sort,
+						categories);
 
 			} else if (bundle.containsKey(ARG_QUERY_TODAY)) {
-				result = DTHelper.searchTodayEvents(params[0].position,
-						params[0].size,
+				result = DTHelper.searchTodayEvents(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY));
 			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-				result = (List<EventObject>) bundle
-						.get(SearchFragment.ARG_LIST);
+				result = (List<EventObject>) bundle.get(SearchFragment.ARG_LIST);
 			} else {
 				return Collections.emptyList();
 			}
@@ -756,8 +664,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 			List<EventObject> sorted = new ArrayList<EventObject>(result);
 			for (EventObject eventObject : sorted) {
 				if (eventObject.getPoiId() != null) {
-					eventObject.assignPoi(DTHelper.findPOIById(eventObject
-							.getPoiId()));
+					eventObject.assignPoi(DTHelper.findPOIById(eventObject.getPoiId()));
 				}
 			}
 			if (params[0].position == 0) {
@@ -767,8 +674,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 				biggerFromTime = cal.getTimeInMillis();
 			}
 			if (sorted.size() > 0) {
-				List<EventObject> returnList = postProcForRecurrentEvents(
-						sorted, biggerFromTime);
+				List<EventObject> returnList = postProcForRecurrentEvents(sorted, biggerFromTime);
 				return returnList;
 			} else
 				return sorted;
@@ -795,35 +701,27 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 		}
 	}
 
-	private class TaggingAsyncTask extends
-			SCAsyncTask<List<Concept>, Void, Void> {
+	private class TaggingAsyncTask extends SCAsyncTask<List<Concept>, Void, Void> {
 
 		public TaggingAsyncTask(final EventObject p) {
-			super(getSherlockActivity(),
-					new AbstractAsyncTaskProcessor<List<Concept>, Void>(
-							getSherlockActivity()) {
-						@Override
-						public Void performAction(List<Concept>... params)
-								throws SecurityException, Exception {
-							p.getCommunityData().setTags(params[0]);
-							DTHelper.saveEvent(p);
-							return null;
-						}
+			super(getSherlockActivity(), new AbstractAsyncTaskProcessor<List<Concept>, Void>(getSherlockActivity()) {
+				@Override
+				public Void performAction(List<Concept>... params) throws SecurityException, Exception {
+					p.getCommunityData().setTags(params[0]);
+					DTHelper.saveEvent(p);
+					return null;
+				}
 
-						@Override
-						public void handleResult(Void result) {
-							Toast.makeText(
-									getSherlockActivity(),
-									getString(R.string.tags_successfully_added),
-									Toast.LENGTH_SHORT).show();
-						}
-					});
+				@Override
+				public void handleResult(Void result) {
+					Toast.makeText(getSherlockActivity(), getString(R.string.tags_successfully_added), Toast.LENGTH_SHORT)
+							.show();
+				}
+			});
 		}
 	}
 
-	private class EventLoader
-			extends
-			AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<EventObject>> {
+	private class EventLoader extends AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<EventObject>> {
 
 		public EventLoader(Activity activity) {
 			super(activity);
@@ -831,9 +729,8 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 
 		// fetches the events
 		@Override
-		public List<EventObject> performAction(
-				AbstractLstingFragment.ListingRequest... params)
-				throws SecurityException, Exception {
+		public List<EventObject> performAction(AbstractLstingFragment.ListingRequest... params) throws SecurityException,
+				Exception {
 			return getEvents(params);
 		}
 
@@ -854,8 +751,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 		}
 	}
 
-	private List<EventObject> postProcForRecurrentEvents(
-			List<EventObject> result, long lessFromTime) {
+	private List<EventObject> postProcForRecurrentEvents(List<EventObject> result, long lessFromTime) {
 		List<EventObject> returnList = new ArrayList<EventObject>();
 		EventComparator r = new EventComparator();
 		Calendar cal = Calendar.getInstance();
@@ -868,8 +764,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 			 * if an event has toTime null o equal to toTime, it is only for
 			 * that day
 			 */
-			if ((event.getToTime() != null) && (event.getFromTime() != null)
-					&& (event.getToTime() != event.getFromTime())) {
+			if ((event.getToTime() != null) && (event.getFromTime() != null) && (event.getToTime() != event.getFromTime())) {
 				long eventFromTime = event.getFromTime();
 				long eventToTime = 0;
 				if (event.getToTime() == 0) {
@@ -937,8 +832,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 		}
 	}
 
-	private class EventDeleteProcessor extends
-			AbstractAsyncTaskProcessor<EventObject, Boolean> {
+	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
 		private EventObject object = null;
 
 		public EventDeleteProcessor(Activity activity) {
@@ -946,8 +840,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 		}
 
 		@Override
-		public Boolean performAction(EventObject... params)
-				throws SecurityException, Exception {
+		public Boolean performAction(EventObject... params) throws SecurityException, Exception {
 			object = params[0];
 			return DTHelper.deleteEvent(params[0]);
 		}
@@ -961,8 +854,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 				 */
 				int i = 0;
 				while (i < list.getAdapter().getCount()) {
-					EventObject event = (EventObject) list.getAdapter()
-							.getItem(i);
+					EventObject event = (EventObject) list.getAdapter().getItem(i);
 					if (object.getId() == event.getId()) {
 						((EventAdapter) list.getAdapter()).remove(event);
 						updateList(list == null || list.getAdapter().isEmpty());
@@ -974,11 +866,8 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 				((EventAdapter) list.getAdapter()).notifyDataSetChanged();
 				updateList(((EventAdapter) list.getAdapter()).isEmpty());
 			} else {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getString(
-								R.string.app_failure_cannot_delete),
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
+						.show();
 			}
 		}
 
@@ -995,15 +884,13 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 	}
 
 	private void updateList(boolean empty) {
-		eu.trentorise.smartcampus.dt.custom.ViewHelper
-				.removeEmptyListView((LinearLayout) getView().findViewById(
-						R.id.eventlistcontainer));
+		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
+				R.id.eventlistcontainer));
 		if (empty) {
-			eu.trentorise.smartcampus.dt.custom.ViewHelper
-					.addEmptyListView((LinearLayout) getView().findViewById(
-							R.id.eventlistcontainer));
+			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+					R.id.eventlistcontainer));
 		}
-		hideListItemsMenu(null,false);
+		hideListItemsMenu(null, false);
 	}
 
 }
