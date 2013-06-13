@@ -25,13 +25,10 @@ import eu.trentorise.smartcampus.dt.R;
 
 public class ImageAdapter extends BaseAdapter {
 	private Context context;
-	public static Integer[] thumbnailIds = { R.drawable.event_all,
-			R.drawable.ic_event_concerts, R.drawable.ic_event_parties,
-			R.drawable.event_all, R.drawable.ic_event_concerts,
-			R.drawable.ic_event_parties, R.drawable.event_all,
-			R.drawable.ic_event_concerts, R.drawable.ic_event_parties,
-			R.drawable.event_all, R.drawable.ic_event_concerts,
-			R.drawable.ic_event_parties };
+	public static Integer[] thumbnailIds = { R.drawable.event_all, R.drawable.ic_e_concerts, R.drawable.ic_e_parties,
+			R.drawable.event_all, R.drawable.ic_e_concerts, R.drawable.ic_e_parties, R.drawable.event_all,
+			R.drawable.ic_e_concerts, R.drawable.ic_e_parties, R.drawable.event_all, R.drawable.ic_e_concerts,
+			R.drawable.ic_e_parties };
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
