@@ -69,7 +69,7 @@
                     android:layout_below="@+id/story_details_title"
                     android:layout_toRightOf="@+id/story_details_rating"
                     android:contentDescription="@string/attendees"
-                    android:src="@drawable/ic_attendees" />
+                    android:src="@drawable/ic_menu_attendees_p" />
 
                 <TextView
                     android:id="@+id/attendees_num"

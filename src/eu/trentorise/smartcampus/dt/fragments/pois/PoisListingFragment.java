@@ -239,7 +239,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			// fragmentTransaction.commit();
 			// }
 			// });
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		}
 		if (category == null)
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
@@ -301,7 +301,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				reload = true;
 				return true;
 			}
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			FragmentTransaction fragmentTransaction;
 			Fragment fragment;
 			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();

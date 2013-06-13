@@ -164,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:contentDescription="@string/empty"
-                        android:src="@drawable/add" />
+                        android:src="@drawable/ic_menu_add_p" />
 
                     <ImageButton
                         android:id="@+id/btn_event_locate"

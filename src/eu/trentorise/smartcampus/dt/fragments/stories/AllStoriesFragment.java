@@ -99,7 +99,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, R.string.menu_item_addstory_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_mystory, Menu.NONE, R.string.menu_item_mystories_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 
 		// SearchHelper.createSearchMenu(submenu, getActivity(), new
 		// SearchHelper.OnSearchListener() {
@@ -155,7 +155,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			fragmentTransaction = fragmentManager.beginTransaction();
 			fragment = new SearchFragment();
 			Bundle args = new Bundle();

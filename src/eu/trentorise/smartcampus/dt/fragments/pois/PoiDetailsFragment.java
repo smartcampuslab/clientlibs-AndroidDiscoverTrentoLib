@@ -19,11 +19,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Address;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -34,11 +37,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -80,6 +87,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	private TmpComment tmp_comments[];
 	private boolean mFollowByIntent;
 
+	private Fragment mFragment = this;
+
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -118,6 +127,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+
 		if (getPOI() != null) {
 			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
 			if (CategoryHelper.FAMILY_CATEGORY_POI.equals(getPOI().getType()) && isCertified(getPOI())) {
@@ -128,6 +138,82 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.poi_details_title);
 			tv.setText(getPOI().getTitle());
+
+			// BUTTONS
+			ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.poidetails_follow_tbtn);
+			if (getPOI().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				followTbtn.setChecked(true);
+			} else {
+				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+				followTbtn.setChecked(false);
+			}
+
+			// follow/unfollow
+			followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if (isChecked) {
+						// FOLLOW
+						FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(),
+								DTConstants.ENTITY_TYPE_POI);
+						if (mFollowByIntent) {
+							FollowHelper.follow(this, obj, 3000);
+						} else {
+
+							SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+									getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity()));
+							followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
+									DTHelper.getAuthToken(), obj);
+
+						}
+					} else {
+						buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+						// UNFOLLOW
+						BaseDTObject obj;
+						try {
+							obj = DTHelper.findPOIByEntityId(getPOI().getEntityId());
+							if (obj != null) {
+								SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+										getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity()));
+								unfollowTask.execute(obj);
+
+							}
+						} catch (Exception e) {
+							Log.e(EventDetailsFragment.class.getName(),
+									String.format("Error unfollowing event %s", getPOI().getEntityId()));
+						}
+					}
+				}
+			});
+
+			// map
+			ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.poidetails_map);
+			mapBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+					list.add(poi);
+					MapManager.switchToMapView(list, mFragment);
+				}
+			});
+
+			// directions
+			ImageButton directionsBtn = (ImageButton) getView().findViewById(R.id.poidetails_directions);
+			directionsBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Address to = poi.asGoogleAddress();
+					Address from = null;
+					GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+					if (mylocation != null) {
+						from = new Address(Locale.getDefault());
+						from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+						from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+					}
+					NavigationHelper.bringMeThere(getActivity(), from, to);
+				}
+			});
 
 			// description, optional
 			tv = (TextView) this.getView().findViewById(R.id.poi_details_descr);
@@ -278,22 +364,25 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		menu.clear();
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 
+		String userId = DTHelper.getUserId();
+
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		String userId = DTHelper.getUserId();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.rate, Menu.NONE, R.string.rate);
-		if (getPOI().getCommunityData().getFollowing().containsKey(userId)) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.unfollow, Menu.NONE, R.string.unfollow);
-		} else {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.follow, Menu.NONE, R.string.follow);
-		}
-		submenu.add(Menu.NONE, R.id.show_related_events, Menu.NONE, R.string.related_events);
-		submenu.add(Menu.NONE, R.id.get_dir, Menu.NONE, R.string.getdir);
-		submenu.add(Menu.NONE, R.id.see_on_map, Menu.NONE, R.string.onmap);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_btn, Menu.NONE, R.string.edit);
-		// CAN DELETE ONLY OWN OBJECTS
+
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE,
+		// R.string.rate);
+		// submenu.add(Menu.NONE, R.id.submenu_get_dir, Menu.NONE,
+		// R.string.getdir);
+		// submenu.add(Menu.NONE, R.id.submenu_see_on_map, Menu.NONE,
+		// R.string.onmap);
+
+		submenu.add(Menu.NONE, R.id.submenu_show_related_events, Menu.NONE, R.string.submenu_related_events);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
+
+		// ONLY THE OWNER CAN EDIT AND DELETE OBJECTS
 		if (DTHelper.isOwnedObject(getPOI())) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.delete_btn, Menu.NONE, R.string.delete);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
 		}
 
 		super.onPrepareOptionsMenu(menu);
@@ -301,7 +390,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.show_related_events) {
+		if (item.getItemId() == R.id.submenu_show_related_events) {
 			/*
 			 * It would be great if we could already know whether there are any
 			 * events related to this POI: in case there were not, this entry in
@@ -319,59 +408,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
-		} else if (item.getItemId() == R.id.get_dir) {
-			Address to = poi.asGoogleAddress();
-			Address from = null;
-			GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
-			if (mylocation != null) {
-				from = new Address(Locale.getDefault());
-				from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-				from.setLongitude(mylocation.getLongitudeE6() / 1E6);
-			}
-			NavigationHelper.bringMeThere(getActivity(), from, to);
-			return true;
-		} else if (item.getItemId() == R.id.see_on_map) {
-			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-			list.add(poi);
-			MapManager.switchToMapView(list, this);
-			return true;
-		} else if (item.getItemId() == R.id.follow) {
-			FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(), DTConstants.ENTITY_TYPE_POI);
-			if (mFollowByIntent) {
-				FollowHelper.follow(getSherlockActivity(), obj);
-			} else {
-
-				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-						new FollowAsyncTaskProcessor(getSherlockActivity()));
-				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
-						DTHelper.getAuthToken(), obj);
-
-			}
-			return true;
-		} else if (item.getItemId() == R.id.unfollow) {
-			BaseDTObject obj;
-			try {
-				obj = DTHelper.findPOIByEntityId(getPOI().getEntityId());
-				if (obj != null) {
-					SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-							getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity()));
-					unfollowTask.execute(obj);
-
-				}
-			} catch (Exception e) {
-				Log.e(EventDetailsFragment.class.getName(), String.format("Error unfollowing event %s", getPOI().getEntityId()));
-			}
-			return true;
-		} else if (item.getItemId() == R.id.rate) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
-				ratingDialog();
-				return true;
-			}
-		} else if (item.getItemId() == R.id.edit_btn) {
+		} else if (item.getItemId() == R.id.submenu_edit) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
@@ -389,7 +426,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.commit();
 				return true;
 			}
-		} else if (item.getItemId() == R.id.delete_btn) {
+		} else if (item.getItemId() == R.id.submenu_delete) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
@@ -403,6 +440,21 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		}
 	}
 
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 3000) {
+			if (resultCode == Activity.RESULT_OK) {
+				eu.trentorise.smartcampus.cm.model.Topic topic = (eu.trentorise.smartcampus.cm.model.Topic) data
+						.getSerializableExtra("topic");
+				new FollowAsyncTask().execute(topic.getId());
+				// fix to avoid onActivityResult DiscoverTrentoActivity failure
+				data.putExtra(AccountManager.KEY_AUTHTOKEN,
+						DTHelper.getAuthToken());
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
 	private void ratingDialog() {
 		float rating = (poi != null && poi.getCommunityData() != null && poi.getCommunityData().getAverageRating() > 0) ? poi
 				.getCommunityData().getAverageRating() : 2.5f;
@@ -410,6 +462,9 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_place_dialog_title);
 	}
 
+	/*
+	 * CLASSES
+	 */
 	private class RatingProcessor extends AbstractAsyncTaskProcessor<Integer, Integer> implements RatingHandler {
 
 		public RatingProcessor(Activity activity) {
@@ -455,4 +510,64 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	}
 
+	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			String topicId = params[0];
+			try {
+				DTHelper.follow(DTHelper.findPOIById(poiId), topicId);
+			} catch (Exception e) {
+				Log.e(FollowAsyncTask.class.getName(),
+						String.format("Exception following event %s", poiId));
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			getSherlockActivity().invalidateOptionsMenu();
+		}
+
+	}
+	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			String topicId = params[0];
+			try {
+				DTHelper.follow(DTHelper.findPOIById(poiId), topicId);
+			} catch (Exception e) {
+				Log.e(FollowAsyncTask.class.getName(),
+						String.format("Exception following event %s", poiId));
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			getSherlockActivity().invalidateOptionsMenu();
+		}
+
+	}
+	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			String topicId = params[0];
+			try {
+				DTHelper.follow(DTHelper.findPOIById(poiId), topicId);
+			} catch (Exception e) {
+				Log.e(FollowAsyncTask.class.getName(),
+						String.format("Exception following event %s", poiId));
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			getSherlockActivity().invalidateOptionsMenu();
+		}
+
+	}
 }

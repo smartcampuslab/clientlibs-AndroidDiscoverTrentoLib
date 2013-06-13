@@ -56,7 +56,8 @@
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
     <string name="menu_item_poicategory_text">Categorie dei luoghi</string>
     <string name="related_poi">Luogo dell\'evento</string>
-    <string name="related_events">Eventi in programma</string>
+    <string name="submenu_related_events">Eventi in programma</string>
+    <string name="submenu_tag">Aggiungi tag</string>
     <string name="getdir">Indicazioni stradali</string>
     <string name="onmap">Mostra sulla mappa</string>
     <string name="poi_select_address_content_description">Seleziona un indirizzo sulla mappa</string>

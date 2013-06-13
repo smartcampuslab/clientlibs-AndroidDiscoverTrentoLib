@@ -110,7 +110,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.commit();
 				return true;
 			}
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 			Fragment fragment = new SearchFragment();
 			Bundle args = new Bundle();

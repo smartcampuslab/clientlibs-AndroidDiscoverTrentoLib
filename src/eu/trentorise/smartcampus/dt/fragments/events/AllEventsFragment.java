@@ -76,7 +76,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, R.string.menu_item_addevent_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_todayevent, Menu.NONE, R.string.menu_item_todayevent_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_myevents, Menu.NONE, R.string.menu_item_myevents_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		//
 		// SearchHelper.createSearchMenu(submenu, getActivity(), new
 		// SearchHelper.OnSearchListener() {
@@ -158,7 +158,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			fragmentTransaction = fragmentManager.beginTransaction();
 			fragment = new SearchFragment();
 			args = new Bundle();

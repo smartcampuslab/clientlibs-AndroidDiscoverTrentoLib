@@ -243,7 +243,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			// fragmentTransaction.commit();
 			// }
 			// });
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		} else if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)
 				&& !getArguments().containsKey(SearchFragment.ARG_MY)
 				&& !getArguments().containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
@@ -313,7 +313,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				return true;
 			}
 
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			FragmentTransaction fragmentTransaction;
 			Fragment fragment;
 			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();

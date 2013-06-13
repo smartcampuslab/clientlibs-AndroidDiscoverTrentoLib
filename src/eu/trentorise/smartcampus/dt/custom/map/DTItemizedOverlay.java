@@ -113,13 +113,13 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	private Drawable objectCertified(BaseDTObject o) {
 		if ((o instanceof EventObject) && ((Boolean) o.getCustomData().get("certified"))) {
 			/* se ceretificato e evento */
-			return mContext.getResources().getDrawable(R.drawable.marker_event_family_certified);
+			return mContext.getResources().getDrawable(R.drawable.ic_marker_e_family_certified);
 		}
 
 		/* se certificato e poi */
 		String status = (String) o.getCustomData().get("status");
 		if ((o instanceof POIObject) && (("Certificato finale").equals(status) || ("Certificato base").equals(status))) {
-			return mContext.getResources().getDrawable(R.drawable.marker_poi_family_certified);
+			return mContext.getResources().getDrawable(R.drawable.ic_marker_p_family_certified);
 		}
 
 		return mContext.getResources().getDrawable(CategoryHelper.getMapIconByType(o.getType()));
@@ -359,7 +359,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		mapView.getProjection().toPixels(point, ptScreenCoord);
 
 		if (groupMarker == null) {
-			groupMarker = mContext.getResources().getDrawable(R.drawable.marker_poi_generic);
+			groupMarker = mContext.getResources().getDrawable(R.drawable.ic_marker_p_generic);
 			groupMarker.setBounds(-groupMarker.getIntrinsicWidth() / 2, -groupMarker.getIntrinsicHeight(),
 					groupMarker.getIntrinsicWidth() / 2, 0);
 		}

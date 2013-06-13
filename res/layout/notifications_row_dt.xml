@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/notifications_unread"
-            android:src="@drawable/ic_ab_notifications_w"
+            android:src="@drawable/ic_menu_notifications_w"
             android:visibility="invisible" />
     </LinearLayout>
 

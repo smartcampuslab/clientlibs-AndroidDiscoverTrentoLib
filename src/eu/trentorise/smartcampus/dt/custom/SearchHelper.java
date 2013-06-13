@@ -83,7 +83,7 @@ public class SearchHelper {
 		View searchView = SearchViewCompat.newSearchView(activity);
 
 		if (searchView != null) {
-			MenuItem search = submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+			MenuItem search = submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 			search.setActionView(searchView);
 			search.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 			SearchViewCompat.setOnQueryTextListener(searchView, helper.listener);

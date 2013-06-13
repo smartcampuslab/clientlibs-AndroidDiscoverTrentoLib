@@ -130,7 +130,7 @@
                 android:layout_marginLeft="4dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/empty"
-                android:src="@drawable/map" />
+                android:src="@drawable/ic_menu_map_p" />
         </LinearLayout>
 
         <TextView
