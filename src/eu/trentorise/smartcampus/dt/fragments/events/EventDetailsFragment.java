@@ -91,15 +91,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		tmp_comments = new TmpComment[0];
 		// tmp_comments = new TmpComment[5];
 		for (int i = 0; i < tmp_comments.length; i++)
-			tmp_comments[i] = new TmpComment(
-					"This is a very nice, detailed and lengthy comment about the event",
-					"student", new Date());
+			tmp_comments[i] = new TmpComment("This is a very nice, detailed and lengthy comment about the event", "student",
+					new Date());
 		setFollowByIntent();
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.eventdetails, container, false);
 	}
 
@@ -127,50 +125,39 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		super.onStart();
 		EventObject event = getEvent();
 		if (event != null) {
-			ImageView certifiedBanner = (ImageView) this.getView()
-					.findViewById(R.id.banner_certified);
-			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(event.getType())
-					&& isCertified(event))
+			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
+			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(event.getType()) && isCertified(event))
 				certifiedBanner.setVisibility(View.VISIBLE);
 			else
 				certifiedBanner.setVisibility(View.GONE);
 
 			// title
-			TextView tv = (TextView) this.getView().findViewById(
-					R.id.event_details_title);
+			TextView tv = (TextView) this.getView().findViewById(R.id.event_details_title);
 			tv.setText(event.getTitle());
 
 			// timing
 			tv = (TextView) this.getView().findViewById(R.id.event_timing);
-			if (getEvent().getTiming() != null
-					&& event.getTiming().length() > 0) {
+			if (getEvent().getTiming() != null && event.getTiming().length() > 0) {
 				tv.setText(event.getTimingFormatted());
 			} else {
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails))
-						.removeView(tv);
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// description, optional
-			tv = (TextView) this.getView().findViewById(
-					R.id.event_details_descr);
-			if (event.getDescription() != null
-					&& event.getDescription().length() > 0) {
+			tv = (TextView) this.getView().findViewById(R.id.event_details_descr);
+			if (event.getDescription() != null && event.getDescription().length() > 0) {
 				tv.setText(event.getFormattedDescription());
 			} else {
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails))
-						.removeView(tv);
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// notes
-			tv = (TextView) this.getView().findViewById(
-					R.id.event_details_notes);
-			if (event.getCommunityData() != null
-					&& event.getCommunityData().getNotes() != null
+			tv = (TextView) this.getView().findViewById(R.id.event_details_notes);
+			if (event.getCommunityData() != null && event.getCommunityData().getNotes() != null
 					&& event.getCommunityData().getNotes().length() > 0) {
 				tv.setText(event.getCommunityData().getNotes());
 			} else {
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails))
-						.removeView(tv);
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// location
@@ -179,25 +166,19 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (poi != null)
 				tv.setText(poi.shortAddress());
 			else
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails))
-						.removeView(tv);
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 
 			// tags
-			tv = (TextView) this.getView()
-					.findViewById(R.id.event_details_tags);
-			if (event.getCommunityData() != null
-					&& event.getCommunityData().getTags() != null
+			tv = (TextView) this.getView().findViewById(R.id.event_details_tags);
+			if (event.getCommunityData() != null && event.getCommunityData().getTags() != null
 					&& event.getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(event.getCommunityData()
-						.getTags()));
+				tv.setText(Concept.toSimpleString(event.getCommunityData().getTags()));
 			} else {
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails))
-						.removeView(tv);
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// date
-			tv = (TextView) this.getView()
-					.findViewById(R.id.event_details_date);
+			tv = (TextView) this.getView().findViewById(R.id.event_details_date);
 			if (event.getFromTime() != null && event.getFromTime() > 0) {
 				CharSequence fromTime = event.dateTimeString();
 				CharSequence toTime = event.toDateTimeString();
@@ -234,15 +215,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			 */
 
 			// source
-			tv = (TextView) this.getView().findViewById(
-					R.id.event_details_source);
+			tv = (TextView) this.getView().findViewById(R.id.event_details_source);
 			if (event.getSource() != null && event.getSource().length() > 0) {
 				tv.setText(event.getSource());
 			} else if (event.createdByUser()) {
 				tv.setText(getString(R.string.source_smartcampus));
 			} else {
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails))
-						.removeView(tv);
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// rating
@@ -250,15 +229,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			 * It may be not useful to rate events a posteriori, unless they are
 			 * recurrent (which is a situation we do not handle)
 			 */
-			RatingBar rating = (RatingBar) getView().findViewById(
-					R.id.event_rating);
+			RatingBar rating = (RatingBar) getView().findViewById(R.id.event_rating);
 			rating.setOnTouchListener(new View.OnTouchListener() {
 
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider()
-								.isUserAnonymous(getSherlockActivity())) {
+						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 							// show dialog box
 							UserRegistration.upgradeuser(getSherlockActivity());
 							return false;
@@ -277,14 +254,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			if (tmp_comments.length > 0) {
 				// Comments
-				LinearLayout commentsList = (LinearLayout) getView()
-						.findViewById(R.id.comments_list);
+				LinearLayout commentsList = (LinearLayout) getView().findViewById(R.id.comments_list);
 				for (int i = 0; i < tmp_comments.length; i++) {
-					View entry = getSherlockActivity().getLayoutInflater()
-							.inflate(R.layout.comment_row, null);
+					View entry = getSherlockActivity().getLayoutInflater().inflate(R.layout.comment_row, null);
 
-					TextView tmp = (TextView) entry
-							.findViewById(R.id.comment_text);
+					TextView tmp = (TextView) entry.findViewById(R.id.comment_text);
 					tmp.setText(tmp_comments[i].getText());
 					tmp = (TextView) entry.findViewById(R.id.comment_author);
 					tmp.setText(tmp_comments[i].getAuthor());
@@ -293,13 +267,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 					commentsList.addView(entry);
 				}
 			} else {
-				((LinearLayout) getView().findViewById(R.id.eventdetails))
-						.removeView(getView().findViewById(R.id.event_comments));
-				((LinearLayout) getView().findViewById(R.id.eventdetails))
-						.removeView(getView().findViewById(R.id.comments_list));
-				((LinearLayout) getView().findViewById(R.id.eventdetails))
-						.removeView(getView().findViewById(
-								R.id.event_comments_separator));
+				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
+						R.id.event_comments));
+				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView()
+						.findViewById(R.id.comments_list));
+				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
+						R.id.event_comments_separator));
 
 			}
 		}
@@ -319,8 +292,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		// attendees
 		tv = (TextView) this.getView().findViewById(R.id.attendees_num);
 		if (getEvent().getAttendees() != null) {
-			tv.setText(getEvent().getAttendees() + " "
-					+ getString(R.string.attendees_extended));
+			tv.setText(getEvent().getAttendees() + " " + getString(R.string.attendees_extended));
 		} else {
 			tv.setText("0 " + getString(R.string.attendees_extended));
 		}
@@ -332,52 +304,41 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	private void updateRating(Integer result) {
 		getEvent().getCommunityData().setAverageRating(result);
-		RatingBar rating = (RatingBar) getView()
-				.findViewById(R.id.event_rating);
+		RatingBar rating = (RatingBar) getView().findViewById(R.id.event_rating);
 		rating.setRating(getEvent().getCommunityData().getAverageRating());
 	}
 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu,
-				menu);
+		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		String userId = DTHelper.getUserId();
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.rate, Menu.NONE, R.string.rate);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE, R.string.rate);
 		EventObject event = getEvent();
 
 		if (event.getAttending() == null || event.getAttending().isEmpty()) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.attend, Menu.NONE,
-					R.string.attend);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_attend, Menu.NONE, R.string.attend);
 		} else {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.attend, Menu.NONE,
-					R.string.attend_not);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_attend, Menu.NONE, R.string.attend_not);
 		}
 		if (getEvent().getCommunityData().getFollowing().containsKey(userId)) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.unfollow, Menu.NONE,
-					R.string.unfollow);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_unfollow, Menu.NONE, R.string.unfollow);
 		} else {
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.follow, Menu.NONE,
-					R.string.follow);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_follow, Menu.NONE, R.string.follow);
 		}
 
 		if (getPOI() != null) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.see_on_map, Menu.NONE,
-					R.string.onmap);
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.show_related_poi, Menu.NONE,
-					R.string.related_poi);
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.get_dir, Menu.NONE,
-					R.string.getdir);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_see_on_map, Menu.NONE, R.string.onmap);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_show_related_poi, Menu.NONE, R.string.related_poi);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_get_dir, Menu.NONE, R.string.getdir);
 		}
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_btn, Menu.NONE,
-				R.string.edit);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_btn, Menu.NONE, R.string.edit);
 		// CAN DELETE ONLY OWN OBJECTS
 		if (DTHelper.isOwnedObject(getEvent())) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.delete_btn, Menu.NONE,
-					R.string.delete);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.delete_btn, Menu.NONE, R.string.delete);
 		}
 
 		super.onPrepareOptionsMenu(menu);
@@ -385,22 +346,19 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.show_related_poi) {
-			FragmentTransaction fragmentTransaction = getSherlockActivity()
-					.getSupportFragmentManager().beginTransaction();
+		if (item.getItemId() == R.id.submenu_show_related_poi) {
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 			Bundle args = new Bundle();
 			args.putSerializable(PoiDetailsFragment.ARG_POI, getPOI());
 			fragment.setArguments(args);
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment,
-					"events");
+			fragmentTransaction.replace(android.R.id.content, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
-		} else if (item.getItemId() == R.id.get_dir) {
+		} else if (item.getItemId() == R.id.submenu_get_dir) {
 			// if (bringMeThere(getEvent())){
 			// Address to = getPOI().asGoogleAddress();
 			// Address from = null;
@@ -416,45 +374,40 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			return true;
 			// }
 			// else return false;
-		} else if (item.getItemId() == R.id.see_on_map) {
+		} else if (item.getItemId() == R.id.submenu_see_on_map) {
 			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
 			getEvent().setLocation(poi.getLocation());
 			list.add(getEvent());
 			MapManager.switchToMapView(list, this);
 			return true;
-		} else if (item.getItemId() == R.id.follow) {
-			FollowEntityObject obj = new FollowEntityObject(getEvent()
-					.getEntityId(), getEvent().getTitle(),
+		} else if (item.getItemId() == R.id.submenu_follow) {
+			FollowEntityObject obj = new FollowEntityObject(getEvent().getEntityId(), getEvent().getTitle(),
 					DTConstants.ENTITY_TYPE_EVENT);
 			if (mFollowByIntent) {
 				FollowHelper.follow(this, obj, 3000);
 			} else {
-				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-						getSherlockActivity(), new FollowAsyncTaskProcessor(
-								getSherlockActivity()));
-				followTask.execute(getSherlockActivity()
-						.getApplicationContext(), DTParamsHelper.getAppToken(),
+				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+						new FollowAsyncTaskProcessor(getSherlockActivity()));
+				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 						DTHelper.getAuthToken(), obj);
 			}
 			return true;
-		} else if (item.getItemId() == R.id.unfollow) {
+		} else if (item.getItemId() == R.id.submenu_unfollow) {
 			BaseDTObject obj;
 			try {
 				obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
 				if (obj != null) {
 					SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-							getSherlockActivity(),
-							new UnfollowAsyncTaskProcessor(
-									getSherlockActivity()));
+							getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity()));
 					unfollowTask.execute(obj);
 
 				}
 			} catch (Exception e) {
-				Log.e(EventDetailsFragment.class.getName(), String.format(
-						"Error unfollowing event %s", getEvent().getEntityId()));
+				Log.e(EventDetailsFragment.class.getName(),
+						String.format("Error unfollowing event %s", getEvent().getEntityId()));
 			}
 			return true;
-		} else if (item.getItemId() == R.id.rate) {
+		} else if (item.getItemId() == R.id.submenu_rate) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
@@ -463,16 +416,14 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				ratingDialog();
 				return true;
 			}
-		} else if (item.getItemId() == R.id.attend) {
+		} else if (item.getItemId() == R.id.submenu_attend) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				new SCAsyncTask<Boolean, Void, EventObject>(getActivity(),
-						new AttendProcessor(getActivity())).execute(getEvent()
-						.getAttending() == null
-						|| getEvent().getAttending().isEmpty());
+				new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(getActivity()))
+						.execute(getEvent().getAttending() == null || getEvent().getAttending().isEmpty());
 				return true;
 			}
 		} else if (item.getItemId() == R.id.edit_btn) {
@@ -481,20 +432,16 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity()
-						.getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
 				// args.putSerializable(CreateEventFragment.ARG_EVENT,
 				// getEvent());
-				args.putString(CreateEventFragment.ARG_EVENT, getEvent()
-						.getId());
+				args.putString(CreateEventFragment.ARG_EVENT, getEvent().getId());
 				fragment.setArguments(args);
-				fragmentTransaction
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment,
-						"events");
+				fragmentTransaction.replace(android.R.id.content, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -505,8 +452,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				new SCAsyncTask<EventObject, Void, Boolean>(getActivity(),
-						new EventDeleteProcessor(getActivity()))
+				new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(getActivity()))
 						.execute(getEvent());
 				return true;
 			}
@@ -523,8 +469,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
-				data.putExtra(AccountManager.KEY_AUTHTOKEN,
-						DTHelper.getAuthToken());
+				data.putExtra(AccountManager.KEY_AUTHTOKEN, DTHelper.getAuthToken());
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -558,8 +503,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						// upgrade the user
 						Address to = getPOI().asGoogleAddress();
 						Address from = null;
-						GeoPoint mylocation = MapManager
-								.requestMyLocation(getActivity());
+						GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 						if (mylocation != null) {
 							from = new Address(Locale.getDefault());
 							from.setLatitude(mylocation.getLatitudeE6() / 1E6);
@@ -577,108 +521,86 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 				}
 			};
-			builder.setCancelable(false)
-					.setMessage(
-							getSherlockActivity().getString(
-									R.string.warning_for_direction))
-					.setPositiveButton(android.R.string.yes,
-							updateDialogClickListener)
-					.setNegativeButton(R.string.cancel,
-							updateDialogClickListener).show();
+			builder.setCancelable(false).setMessage(getSherlockActivity().getString(R.string.warning_for_direction))
+					.setPositiveButton(android.R.string.yes, updateDialogClickListener)
+					.setNegativeButton(R.string.cancel, updateDialogClickListener).show();
 		}
 		return;
 	}
 
 	private void setFollowByIntent() {
 		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager()
-					.getApplicationInfo(getSherlockActivity().getPackageName(),
-							PackageManager.GET_META_DATA);
+			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
+					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
 			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
-			Log.e(EventDetailsFragment.class.getName(),
-					"you should set the follow-by-intent metadata in app manifest");
+			Log.e(EventDetailsFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
 		}
 
 	}
 
 	private void ratingDialog() {
-		float rating = (getEvent() != null
-				&& getEvent().getCommunityData() != null && getEvent()
-				.getCommunityData().getAverageRating() > 0) ? getEvent()
-				.getCommunityData().getAverageRating() : 2.5f;
-		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(
-				getActivity()), R.string.rating_event_dialog_title);
+		float rating = (getEvent() != null && getEvent().getCommunityData() != null && getEvent().getCommunityData()
+				.getAverageRating() > 0) ? getEvent().getCommunityData().getAverageRating() : 2.5f;
+		RatingHelper
+				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_event_dialog_title);
 	}
 
-	private class RatingProcessor extends
-			AbstractAsyncTaskProcessor<Integer, Integer> implements
-			RatingHandler {
+	private class RatingProcessor extends AbstractAsyncTaskProcessor<Integer, Integer> implements RatingHandler {
 
 		public RatingProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Integer performAction(Integer... params)
-				throws SecurityException, Exception {
+		public Integer performAction(Integer... params) throws SecurityException, Exception {
 			return DTHelper.rate(getEvent(), params[0]);
 		}
 
 		@Override
 		public void handleResult(Integer result) {
 			updateRating(result);
-			Toast.makeText(getSherlockActivity(), R.string.rating_success,
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), R.string.rating_success, Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
 		public void onRatingChanged(float rating) {
-			new SCAsyncTask<Integer, Void, Integer>(getActivity(), this)
-					.execute((int) rating);
+			new SCAsyncTask<Integer, Void, Integer>(getActivity(), this).execute((int) rating);
 		}
 	}
 
-	private class EventDeleteProcessor extends
-			AbstractAsyncTaskProcessor<EventObject, Boolean> {
+	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
 		public EventDeleteProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(EventObject... params)
-				throws SecurityException, Exception {
+		public Boolean performAction(EventObject... params) throws SecurityException, Exception {
 			return DTHelper.deleteEvent(params[0]);
 		}
 
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				getSherlockActivity().getSupportFragmentManager()
-						.popBackStack();
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getString(
-								R.string.app_failure_cannot_delete),
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
+						.show();
 			}
 		}
 
 	}
 
-	private class AttendProcessor extends
-			AbstractAsyncTaskProcessor<Boolean, EventObject> {
+	private class AttendProcessor extends AbstractAsyncTaskProcessor<Boolean, EventObject> {
 
 		public AttendProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public EventObject performAction(Boolean... params)
-				throws SecurityException, Exception {
+		public EventObject performAction(Boolean... params) throws SecurityException, Exception {
 			if (params[0])
 				return DTHelper.attend(getEvent());
 			return DTHelper.notAttend(getEvent());
@@ -691,11 +613,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			getSherlockActivity().invalidateOptionsMenu();
 			EventObject event = getEvent();
 			if (event.getAttending() == null || event.getAttending().isEmpty())
-				Toast.makeText(getSherlockActivity(),
-						R.string.not_attend_success, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();
 			else
-				Toast.makeText(getSherlockActivity(), R.string.attend_success,
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(getSherlockActivity(), R.string.attend_success, Toast.LENGTH_SHORT).show();
 		}
 
 	}
@@ -708,8 +628,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			try {
 				DTHelper.follow(DTHelper.findEventById(eventId), topicId);
 			} catch (Exception e) {
-				Log.e(FollowAsyncTask.class.getName(),
-						String.format("Exception following event %s", eventId));
+				Log.e(FollowAsyncTask.class.getName(), String.format("Exception following event %s", eventId));
 			}
 			return null;
 		}
