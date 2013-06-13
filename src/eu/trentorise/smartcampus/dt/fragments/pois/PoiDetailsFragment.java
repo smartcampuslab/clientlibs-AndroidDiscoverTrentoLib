@@ -154,6 +154,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (isChecked) {
+						buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 						// FOLLOW
 						FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(),
 								DTConstants.ENTITY_TYPE_POI);
@@ -165,7 +166,6 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 									getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity()));
 							followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 									DTHelper.getAuthToken(), obj);
-
 						}
 					} else {
 						buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
