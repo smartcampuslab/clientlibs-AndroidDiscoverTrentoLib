@@ -427,7 +427,6 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 					.getEntityId(), getEvent().getTitle(),
 					DTConstants.ENTITY_TYPE_EVENT);
 			if (mFollowByIntent) {
-				// FollowHelper.follow(getSherlockActivity(), obj);
 				FollowHelper.follow(this, obj, 3000);
 			} else {
 				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
