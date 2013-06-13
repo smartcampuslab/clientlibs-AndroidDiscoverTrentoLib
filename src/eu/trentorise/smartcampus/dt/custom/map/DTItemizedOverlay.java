@@ -76,7 +76,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	int lastStepCount = 0;
 
 	public DTItemizedOverlay(Context mContext, MapView mapView) {
-		super(boundCenterBottom(mContext.getResources().getDrawable(R.drawable.poi)));
+		super(boundCenterBottom(mContext.getResources().getDrawable(R.drawable.ic_menu_pois)));
 		this.mContext = mContext;
 		this.mMapView = mapView;
 		populate();

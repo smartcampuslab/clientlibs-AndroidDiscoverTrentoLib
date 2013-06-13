@@ -51,8 +51,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.poiscategories, container, false);
 	}
 
@@ -60,11 +59,11 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	public void onStart() {
 		super.onStart();
 		gridview = (GridView) getView().findViewById(R.id.pois_gridview);
-		gridview.setAdapter(new PoisCategoriesAdapter(getSherlockActivity().getApplicationContext(), fragmentManager));
-		//hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager)getSherlockActivity().getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
+		gridview.setAdapter(new PoisCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
+				fragmentManager));
+		// hide keyboard if it is still open
+		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
 	}
 
 	@Override
@@ -74,8 +73,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE,
-				R.string.menu_item_addpoi_text);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, R.string.menu_item_addpoi_text);
 		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
 			@Override
 			public void onSearch(String query) {
@@ -84,15 +82,14 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				Bundle args = new Bundle();
 				args.putString(SearchFragment.ARG_QUERY, query);
 				fragment.setArguments(args);
-				fragmentTransaction
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//				fragmentTransaction.detach(currentFragment);
-				fragmentTransaction.replace(android.R.id.content, fragment,"pois");
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				// fragmentTransaction.detach(currentFragment);
+				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}
 		});
-		
+
 		super.onPrepareOptionsMenu(menu);
 	}
 
@@ -104,21 +101,18 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-			FragmentTransaction fragmentTransaction = fragmentManager
-					.beginTransaction();
-			Fragment fragment = new CreatePoiFragment();
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			//			fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-			fragmentTransaction.addToBackStack(fragment.getTag());
-			fragmentTransaction.commit();
-			return true;
+				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+				Fragment fragment = new CreatePoiFragment();
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				// fragmentTransaction.detach(this);
+				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
+				return true;
 			}
 		} else if (item.getItemId() == R.id.search) {
-			FragmentTransaction fragmentTransaction = fragmentManager
-					.beginTransaction();
-			Fragment fragment  = new SearchFragment();
+			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+			Fragment fragment = new SearchFragment();
 			Bundle args = new Bundle();
 			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
 			fragment.setArguments(args);

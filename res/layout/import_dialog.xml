@@ -176,26 +176,12 @@
             android:hint="@string/create_noteshint"
             android:inputType="textMultiLine" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/apply_to_all_checkbox"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:orientation="horizontal" >
-
-            <CheckBox
-                android:id="@+id/apply_to_all_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="4dp"
-                android:layout_weight="1"
-                android:text="@string/apply_to_all_text" />
-        </LinearLayout>
+            android:text="@string/apply_to_all_text" />
 
         <LinearLayout
             android:layout_width="match_parent"

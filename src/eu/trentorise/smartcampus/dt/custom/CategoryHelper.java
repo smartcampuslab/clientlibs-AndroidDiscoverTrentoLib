@@ -22,12 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import android.util.Log;
-
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
-import eu.trentorise.smartcampus.storage.DataException;
 
 public class CategoryHelper {
 	private final static String TAG = "CategoryHelper";
@@ -38,71 +34,70 @@ public class CategoryHelper {
 	public static final String CATEGORY_TYPE_POIS = "pois";
 	public static final String CATEGORY_TYPE_EVENTS = "events";
 	public static final String CATEGORY_TYPE_STORIES = "stories";
-	public static final String FAMILY_CATEGORY_POI =  "Family - Organizations";
+	public static final String FAMILY_CATEGORY_POI = "Family - Organizations";
 	public static final String FAMILY_CATEGORY_EVENT = "Family";
 
 	public static CategoryDescriptor TODAY_EVENTS = new CategoryDescriptor(R.drawable.marker_event_generic,
-			R.drawable.ic_other_event, "Today", R.string.categories_event_today);
+			R.drawable.ic_e_todaysevents, "Today", R.string.categories_event_today);
 	public static CategoryDescriptor[] EVENT_CATEGORIES = new CategoryDescriptor[] {
-			/* 1 */new CategoryDescriptor(R.drawable.marker_event_concert, R.drawable.ic_event_concerts, "Concerts",
+			/* 1 */new CategoryDescriptor(R.drawable.marker_event_concert, R.drawable.ic_e_concerts, "Concerts",
 					R.string.categories_event_concert),
-			/* 2 */new CategoryDescriptor(R.drawable.marker_event_happy, R.drawable.ic_event_happy, "Happy hours",
+			/* 2 */new CategoryDescriptor(R.drawable.marker_event_happy, R.drawable.ic_e_happyhours, "Happy hours",
 					R.string.categories_event_happyhour),
-			/* 3 */new CategoryDescriptor(R.drawable.marker_event_movie, R.drawable.ic_event_movies, "Movies",
+			/* 3 */new CategoryDescriptor(R.drawable.marker_event_movie, R.drawable.ic_e_movies, "Movies",
 					R.string.categories_event_movie),
-			/* 4 */new CategoryDescriptor(R.drawable.marker_event_party, R.drawable.ic_event_parties, "Parties",
+			/* 4 */new CategoryDescriptor(R.drawable.marker_event_party, R.drawable.ic_e_parties, "Parties",
 					R.string.categories_event_party),
-			/* 5 */new CategoryDescriptor(R.drawable.marker_event_seminar, R.drawable.ic_event_seminars, "Seminars",
+			/* 5 */new CategoryDescriptor(R.drawable.marker_event_seminar, R.drawable.ic_e_seminars, "Seminars",
 					R.string.categories_event_seminar),
-			/* 6 */new CategoryDescriptor(R.drawable.marker_event_theater, R.drawable.ic_event_theaters, "Theaters",
+			/* 6 */new CategoryDescriptor(R.drawable.marker_event_theater, R.drawable.ic_e_performances, "Theaters",
 					R.string.categories_event_theater),
-			/* 7 */new CategoryDescriptor(R.drawable.marker_event_exhibition, R.drawable.ic_event_exhibition,
-					"Exhibitions", R.string.categories_event_exhibition),
-			/* 8 */new CategoryDescriptor(R.drawable.marker_event_family, R.drawable.ic_event_family, "Family",
+			/* 7 */new CategoryDescriptor(R.drawable.marker_event_exhibition, R.drawable.ic_e_exhibitions, "Exhibitions",
+					R.string.categories_event_exhibition),
+			/* 8 */new CategoryDescriptor(R.drawable.marker_event_family, R.drawable.ic_e_family, "Family",
 					R.string.categories_event_family),
-			/* 9 */new CategoryDescriptor(R.drawable.marker_event_generic, R.drawable.ic_other_event,
-					EVENT_NONCATEGORIZED, R.string.categories_event_generic), };
+			/* 9 */new CategoryDescriptor(R.drawable.marker_event_generic, R.drawable.ic_e_other, EVENT_NONCATEGORIZED,
+					R.string.categories_event_generic), };
 
 	public static CategoryDescriptor[] POI_CATEGORIES = new CategoryDescriptor[] {
-			/* 1 */new CategoryDescriptor(R.drawable.marker_poi_museum, R.drawable.ic_museums, "Museums",
+			/* 1 */new CategoryDescriptor(R.drawable.marker_poi_museum, R.drawable.ic_p_museums, "Museums",
 					R.string.categories_poi_museum),
-			/* 2 */new CategoryDescriptor(R.drawable.marker_poi_mobility, R.drawable.ic_mobility, "Mobility",
+			/* 2 */new CategoryDescriptor(R.drawable.marker_poi_mobility, R.drawable.ic_p_mobility, "Mobility",
 					R.string.categories_poi_mobility),
-			/* 3 */new CategoryDescriptor(R.drawable.marker_poi_parking, R.drawable.ic_parking, "Parking",
+			/* 3 */new CategoryDescriptor(R.drawable.marker_poi_parking, R.drawable.ic_p_parkings, "Parking",
 					R.string.categories_poi_parking),
-			/* 4 */new CategoryDescriptor(R.drawable.marker_poi_office, R.drawable.ic_offices, "Offices",
+			/* 4 */new CategoryDescriptor(R.drawable.marker_poi_office, R.drawable.ic_p_offices, "Offices",
 					R.string.categories_poi_office),
-			/* 5 */new CategoryDescriptor(R.drawable.marker_poi_theater, R.drawable.ic_event_theaters, "Theater",
+			/* 5 */new CategoryDescriptor(R.drawable.marker_poi_theater, R.drawable.ic_p_theaters, "Theater",
 					R.string.categories_poi_theater),
-			/* 6 */new CategoryDescriptor(R.drawable.marker_poi_university, R.drawable.ic_university, "University",
+			/* 6 */new CategoryDescriptor(R.drawable.marker_poi_university, R.drawable.ic_p_university, "University",
 					R.string.categories_poi_university),
-			/* 7 */new CategoryDescriptor(R.drawable.marker_poi_accomodation, R.drawable.ic_accomodation,
-					"Accomodation", R.string.categories_poi_accommodation),
-			/* 8 */new CategoryDescriptor(R.drawable.marker_poi_library, R.drawable.ic_libraries, "Libraries",
+			/* 7 */new CategoryDescriptor(R.drawable.marker_poi_accomodation, R.drawable.ic_p_accomodation, "Accomodation",
+					R.string.categories_poi_accommodation),
+			/* 8 */new CategoryDescriptor(R.drawable.marker_poi_library, R.drawable.ic_p_libraries, "Libraries",
 					R.string.categories_poi_library),
-			/* 9 */new CategoryDescriptor(R.drawable.marker_poi_food, R.drawable.ic_food, "Food",
+			/* 9 */new CategoryDescriptor(R.drawable.marker_poi_food, R.drawable.ic_p_food, "Food",
 					R.string.categories_poi_food),
-			/* 10 */new CategoryDescriptor(R.drawable.marker_poi_drink, R.drawable.ic_event_happy, "Drink",
+			/* 10 */new CategoryDescriptor(R.drawable.marker_poi_drink, R.drawable.ic_p_drink, "Drink",
 					R.string.categories_poi_drink),
-			/* 11 */new CategoryDescriptor(R.drawable.marker_poi_cinema, R.drawable.ic_event_movies, "Cinemas",
+			/* 11 */new CategoryDescriptor(R.drawable.marker_poi_cinema, R.drawable.ic_p_cinemas, "Cinemas",
 					R.string.categories_poi_cinema),
-			/* 12 */new CategoryDescriptor(R.drawable.marker_poi_family, R.drawable.ic_poi_family, "Family - Organizations",
-							R.string.categories_poi_family),
-			/* 13 */new CategoryDescriptor(R.drawable.marker_poi_generic, R.drawable.ic_other_poi, POI_NONCATEGORIZED,
+			/* 12 */new CategoryDescriptor(R.drawable.marker_poi_family, R.drawable.ic_p_family, "Family - Organizations",
+					R.string.categories_poi_family),
+			/* 13 */new CategoryDescriptor(R.drawable.marker_poi_generic, R.drawable.ic_p_other, POI_NONCATEGORIZED,
 					R.string.categories_poi_generic), };
 
 	public static CategoryDescriptor[] STORY_CATEGORIES = new CategoryDescriptor[] {
-			/* 1 */new CategoryDescriptor(R.drawable.marker_story_leisure, R.drawable.ic_story_leisure, "Leisure",
+			/* 1 */new CategoryDescriptor(R.drawable.marker_story_leisure, R.drawable.ic_s_leisure, "Leisure",
 					R.string.categories_story_leisure),
-			/* 2 */new CategoryDescriptor(R.drawable.marker_story_offices_and_services,
-					R.drawable.ic_story_offices_and_services, "Offices and Services",
-					R.string.categories_story_offices_and_services),
-			/* 3 */new CategoryDescriptor(R.drawable.marker_story_univerisity, R.drawable.ic_story_university,
-					"University", R.string.categories_story_university),
-			/* 4 */new CategoryDescriptor(R.drawable.marker_story_culture, R.drawable.ic_story_culture, "Culture",
+			/* 2 */new CategoryDescriptor(R.drawable.marker_story_offices_and_services, R.drawable.ic_s_organizations,
+					"Offices and Services", R.string.categories_story_offices_and_services),
+			/* 3 */new CategoryDescriptor(R.drawable.marker_story_univerisity, R.drawable.ic_s_university, "University",
+					R.string.categories_story_university),
+			/* 4 */new CategoryDescriptor(R.drawable.marker_story_culture, R.drawable.ic_s_cultural, "Culture",
 					R.string.categories_story_culture),
-			/* 5 */new CategoryDescriptor(R.drawable.marker_story_generic, R.drawable.ic_other_story,
-					STORY_NONCATEGORIZED, R.string.categories_story_generic), };
+			/* 5 */new CategoryDescriptor(R.drawable.marker_story_generic, R.drawable.ic_s_other, STORY_NONCATEGORIZED,
+					R.string.categories_story_generic), };
 
 	private static Map<String, String> categoryMapping = new HashMap<String, String>();
 
@@ -147,8 +142,7 @@ public class CategoryHelper {
 		List<String> result = new ArrayList<String>();
 		for (String key : categoryMapping.keySet()) {
 			if (set.contains(categoryMapping.get(key))) {
-				if (key.equals(EVENT_NONCATEGORIZED) || key.equals(POI_NONCATEGORIZED)
-						|| key.equals(STORY_NONCATEGORIZED)) {
+				if (key.equals(EVENT_NONCATEGORIZED) || key.equals(POI_NONCATEGORIZED) || key.equals(STORY_NONCATEGORIZED)) {
 
 					result.add(null);
 				}
@@ -172,7 +166,7 @@ public class CategoryHelper {
 	public static int getIconByType(String type) {
 		if (categoryMapping.containsKey(type))
 			return descriptorMap.get(categoryMapping.get(type)).thumbnail;
-		return R.drawable.ic_other_event;
+		return R.drawable.ic_e_other;
 	}
 
 	public static class CategoryDescriptor {
@@ -257,26 +251,23 @@ public class CategoryHelper {
 
 	public static CategoryDescriptor[] getPOICategoryDescriptorsFiltered() {
 		return DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, CATEGORY_TYPE_POIS);
-
 	}
 
 	public static CategoryDescriptor[] getStoryCategoryDescriptorsFiltered() {
 		return DTParamsHelper.getInstance().getFilteredArrayByParams(STORY_CATEGORIES, CATEGORY_TYPE_STORIES);
-
 	}
 
 	public static CategoryDescriptor getCategoryDescriptorByCategoryFiltered(String type, String cat) {
 		CategoryDescriptor[] cdarray = null;
 
 		if (type.equalsIgnoreCase(CATEGORY_TYPE_POIS)) {
-
 			cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, type);
-
 		} else if (type.equalsIgnoreCase(CATEGORY_TYPE_EVENTS)) {
 			cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(EVENT_CATEGORIES, type);
 		} else if (type.equalsIgnoreCase(CATEGORY_TYPE_STORIES)) {
 			cdarray = DTParamsHelper.getInstance().getFilteredArrayByParams(STORY_CATEGORIES, type);
 		}
+
 		if (cdarray != null) {
 			for (int i = 0; i < cdarray.length; i++) {
 				CategoryDescriptor cd = cdarray[i];

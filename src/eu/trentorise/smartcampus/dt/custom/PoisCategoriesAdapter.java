@@ -19,54 +19,48 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 
 public class PoisCategoriesAdapter extends BaseAdapter {
-	private Context context;
+
+	private Context mContext;
+	private int layoutResourceId;
 	private FragmentManager fragmentManager;
 
-	public PoisCategoriesAdapter(Context c) {
-		this.context = c;
+	public PoisCategoriesAdapter(Context mContext, int layoutResourceId) {
+		this.mContext = mContext;
+		this.layoutResourceId = layoutResourceId;
 	}
 
-	public PoisCategoriesAdapter(Context applicationContext, FragmentManager fragmentManager) {
+	public PoisCategoriesAdapter(Context mContext, int layoutResourceId, FragmentManager fragmentManager) {
+		this.mContext = mContext;
+		this.layoutResourceId = layoutResourceId;
 		this.fragmentManager = fragmentManager;
-		this.context = applicationContext;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder = new ViewHolder();
 		CategoryDescriptor cd = CategoryHelper.getPOICategoryDescriptorsFiltered()[position];
 
-			holder.button = new Button(context);
-			holder.button.setTag(cd);
-			holder.button.setText(context.getResources().getString(cd.description));
-			holder.button.setTextSize(11);
-			holder.button.setTextColor(context.getResources().getColor(R.color.sc_light_gray));
-			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
-					null);
-			holder.button.setOnClickListener(new PoisCategoriesOnClickListener());
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+		Button button = (Button) inflater.inflate(layoutResourceId, parent, false);
+		button.setTag(cd);
+		button.setText(mContext.getResources().getString(cd.description));
+		button.setCompoundDrawablesWithIntrinsicBounds(null, mContext.getResources().getDrawable(cd.thumbnail), null, null);
+		button.setOnClickListener(new PoisCategoriesOnClickListener());
 
-
-		return holder.button;
-	}
-
-	static class ViewHolder {
-		Button button;
+		return button;
 	}
 
 	public class PoisCategoriesOnClickListener implements OnClickListener {
-
 		@Override
 		public void onClick(View v) {
 			String cat = ((CategoryDescriptor) v.getTag()).category;
@@ -80,7 +74,6 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
-
 	}
 
 	@Override

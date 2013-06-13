@@ -47,7 +47,6 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
-import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.BaseDTObjectMapItemTapListener;
@@ -64,8 +63,7 @@ import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
-public class HomeFragment extends NotificationsSherlockFragmentDT
-implements MapItemsHandler, BaseDTObjectMapItemTapListener {
+public class HomeFragment extends NotificationsSherlockFragmentDT implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 
 	public static final String ARG_OBJECTS = "objects";
 	public static final String ARG_POI_CATEGORY = "poi category";
@@ -114,7 +112,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 		mItemizedoverlay = new DTItemizedOverlay(getActivity(), mapView);
 		mItemizedoverlay.setMapItemTapListener(this);
 		listOfOverlays.add(mItemizedoverlay);
-//		setEventCategoriesToLoad("Family");
+		// setEventCategoriesToLoad("Family");
 
 		mMyLocationOverlay = new MyLocationOverlay(getSherlockActivity(), mapView) {
 			@Override
@@ -170,8 +168,8 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 			setEventCategoriesToLoad(getArguments().getString(ARG_EVENT_CATEGORY));
 		} else {
 			if (poiCategories != null) {
-			setPOICategoriesToLoad(poiCategories);
-		}
+				setPOICategoriesToLoad(poiCategories);
+			}
 			if (eventsCategories != null) {
 				setEventCategoriesToLoad(eventsCategories);
 			}
@@ -194,11 +192,12 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1, R.string.menu_item__places_layers_text);
-		item.setIcon(R.drawable.places_layers);
+		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1,
+				R.string.menu_item__places_layers_text);
+		item.setIcon(R.drawable.ic_menu_pois);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_events_layers, 1, R.string.menu_item__events_layers_text);
-		item.setIcon(R.drawable.events_layers);
+		item.setIcon(R.drawable.ic_menu_events);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		super.onPrepareOptionsMenu(menu);
 	}
@@ -206,18 +205,19 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_show_places_layers) {
-			MapLayerDialogHelper.createPOIDialog(getActivity(), this, getString(R.string.layers_title_places), poiCategories).show();
+			MapLayerDialogHelper.createPOIDialog(getActivity(), this, getString(R.string.layers_title_places), poiCategories)
+					.show();
 			return true;
-		} else 		if (item.getItemId() == R.id.menu_item_show_events_layers) {
-			Dialog eventsDialog =  MapLayerDialogHelper.createEventsDialog(getActivity(), this, getString(R.string.layers_title_events), eventsCategories);
-			eventsDialog.show();			
+		} else if (item.getItemId() == R.id.menu_item_show_events_layers) {
+			Dialog eventsDialog = MapLayerDialogHelper.createEventsDialog(getActivity(), this,
+					getString(R.string.layers_title_events), eventsCategories);
+			eventsDialog.show();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	
 	public void setEventsCategoriesToLoad(final String... categories) {
 		this.eventsCategories = categories;
 		mItemizedoverlay.clearMarkers();
@@ -236,9 +236,7 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 			}
 		}).execute();
 	}
-	
-	
-	
+
 	public void setPOICategoriesToLoad(final String... categories) {
 		this.poiCategories = categories;
 		mItemizedoverlay.clearMarkers();
@@ -303,40 +301,38 @@ implements MapItemsHandler, BaseDTObjectMapItemTapListener {
 			@Override
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
-					/*check if todays is checked and cat with searchTodayEvents*/
-					
-					if (isTodayIncluded()){
+					/* check if todays is checked and cat with searchTodayEvents */
+
+					if (isTodayIncluded()) {
 						List<EventObject> newList = new ArrayList<EventObject>();
 						newList.addAll(DTHelper.searchTodayEvents(0, -1, ""));
-						if (categories!=null)
+						if (categories != null)
 							newList.addAll(DTHelper.getEventsByCategories(0, -1, eventsNotTodayCategories));
 						return newList;
-					}
-					else return DTHelper.getEventsByCategories(0, -1, categories);
+					} else
+						return DTHelper.getEventsByCategories(0, -1, categories);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return Collections.emptyList();
 				}
 			}
 
-			
 		}).execute();
 	}
+
 	private boolean isTodayIncluded() {
 		List<String> categoriesNotToday = new ArrayList<String>();
-		boolean istodayincluded=false;
-		if (eventsNotTodayCategories.length>0)
-			for (int i=0;i<eventsNotTodayCategories.length;i++)
-			 {
-				if (eventsNotTodayCategories[i].contains("Today"))
-				{
-		
-					istodayincluded = true;
-				}
-				else categoriesNotToday.add(eventsNotTodayCategories[i]);
+		boolean istodayincluded = false;
+		if (eventsNotTodayCategories.length > 0)
+			for (int i = 0; i < eventsNotTodayCategories.length; i++) {
+				if (eventsNotTodayCategories[i].contains("Today")) {
 
-			 }
-		eventsNotTodayCategories =  categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
+					istodayincluded = true;
+				} else
+					categoriesNotToday.add(eventsNotTodayCategories[i]);
+
+			}
+		eventsNotTodayCategories = categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
 		return istodayincluded;
 	}
 }

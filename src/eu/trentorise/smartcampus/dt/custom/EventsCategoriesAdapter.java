@@ -19,51 +19,47 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 
 public class EventsCategoriesAdapter extends BaseAdapter {
 
-	private Context context;
+	private Context mContext;
+	private int layoutResourceId;
 	private FragmentManager fragmentManager;
 
-	public EventsCategoriesAdapter(Context c) {
-		this.context = c;
+	public EventsCategoriesAdapter(Context mContext, int layoutResourceId) {
+		this.mContext = mContext;
+		this.layoutResourceId = layoutResourceId;
 	}
 
-	public EventsCategoriesAdapter(Context applicationContext, FragmentManager fragmentManager) {
+	public EventsCategoriesAdapter(Context mContext, int layoutResourceId, FragmentManager fragmentManager) {
+		this.mContext = mContext;
+		this.layoutResourceId = layoutResourceId;
 		this.fragmentManager = fragmentManager;
-		this.context = applicationContext;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder = new ViewHolder();
-//		CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
+		// CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
 		CategoryDescriptor cd = CategoryHelper.getEventCategoryDescriptorsFiltered()[position];
-			holder.button = new Button(context);
-			// holder.button.setText(CategoryHelper.EVENT_CATEGORIES[position].description);
-			holder.button.setTag(cd);
-			holder.button.setText(context.getResources().getString(cd.description));
-			holder.button.setTextSize(11);
-			holder.button.setTextColor(context.getResources().getColor(R.color.sc_light_gray));
-			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
-					null);
-			holder.button.setOnClickListener(new EventsCategoriesOnClickListener());
 
-		return holder.button;
-	}
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+		Button button = (Button) inflater.inflate(layoutResourceId, parent, false);
+		// button.setText(CategoryHelper.EVENT_CATEGORIES[position].description);
+		button.setTag(cd);
+		button.setText(mContext.getResources().getString(cd.description));
+		button.setCompoundDrawablesWithIntrinsicBounds(null, mContext.getResources().getDrawable(cd.thumbnail), null, null);
+		button.setOnClickListener(new EventsCategoriesOnClickListener());
 
-	static class ViewHolder {
-		Button button;
+		return button;
 	}
 
 	public class EventsCategoriesOnClickListener implements OnClickListener {
