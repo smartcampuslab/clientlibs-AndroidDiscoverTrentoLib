@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
@@ -41,7 +40,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -73,9 +71,6 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.EventAdapter;
 import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
-import eu.trentorise.smartcampus.dt.custom.StoryAdapter;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
@@ -117,6 +112,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 	private Boolean reload = false;
 	private Integer postitionSelected = -1;
 	private ViewSwitcher previousViewSwitcher;
+
 	@Override
 	public void onActivityCreated(Bundle arg0) {
 		super.onActivityCreated(arg0);
@@ -147,18 +143,19 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 			}
 			if (event == null) {
 				// cancellazione
-				removeEvent(eventsAdapter,indexAdapter);
+				removeEvent(eventsAdapter, indexAdapter);
 
 			} else {
 				// modifica se numero della versione e' diverso
-//				if (event.getUpdateTime() != eventsAdapter.getItem(indexAdapter)
-//						.getUpdateTime()) {
+				// if (event.getUpdateTime() !=
+				// eventsAdapter.getItem(indexAdapter)
+				// .getUpdateTime()) {
 				if (event.getUpdateTime() == 0) {
-					
+
 					event.assignPoi(poi);
-					restoreElement(eventsAdapter,indexAdapter,event);
-//					removeEvent(eventsAdapter,indexAdapter);
-//					insertEvent(event);
+					restoreElement(eventsAdapter, indexAdapter, event);
+					// removeEvent(eventsAdapter,indexAdapter);
+					// insertEvent(event);
 				}
 			}
 			// notify
@@ -169,15 +166,16 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 
 	}
 
-	private void restoreElement(EventAdapter eventsAdapter2, Integer indexAdapter2, EventObject event) {
-		removeEvent(eventsAdapter,indexAdapter);
-		insertEvent(event,indexAdapter);
-		
+	private void restoreElement(EventAdapter eventsAdapter2,
+			Integer indexAdapter2, EventObject event) {
+		removeEvent(eventsAdapter, indexAdapter);
+		insertEvent(event, indexAdapter);
+
 	}
 
 	/*
-	 * insert in the same adapter the new items
-	 *do the post proc if they are multiday events
+	 * insert in the same adapter the new itemsdo the post proc if they are
+	 * multiday events
 	 */
 	private void insertEvent(EventObject event, Integer indexAdapter2) {
 
@@ -185,39 +183,41 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		cal.setTimeInMillis(System.currentTimeMillis());
 		calToDate(cal);
 		biggerFromTime = cal.getTimeInMillis();
-		//add in the right place
-		List<EventObject> returnList = new ArrayList<EventObject>();	
-		int i=0;
-		int j=0;
-		while (i<eventsAdapter.getCount()+1){
-			if (i!=indexAdapter2){
+		// add in the right place
+		List<EventObject> returnList = new ArrayList<EventObject>();
+		int i = 0;
+		int j = 0;
+		while (i < eventsAdapter.getCount() + 1) {
+			if (i != indexAdapter2) {
 				returnList.add(eventsAdapter.getItem(j));
-				 j++;
-				}
-			else returnList.add(event);
+				j++;
+			} else
+				returnList.add(event);
 			i++;
-		
+
 		}
 		eventsAdapter.clear();
-		
-		//post proc for multidays
-		i=0;
-		List<EventObject> newList =postProcForRecurrentEvents(returnList, biggerFromTime);
-		while (i<newList.size()){
+
+		// post proc for multidays
+		i = 0;
+		List<EventObject> newList = postProcForRecurrentEvents(returnList,
+				biggerFromTime);
+		while (i < newList.size()) {
 			eventsAdapter.insert(newList.get(i), i);
-		 i++;
+			i++;
 		}
 	}
 
-	/*clean the adapter from the items modified or erased*/
-	private void removeEvent(EventAdapter eventsAdapter,
-			Integer indexAdapter) {
+	/* clean the adapter from the items modified or erased */
+	private void removeEvent(EventAdapter eventsAdapter, Integer indexAdapter) {
 		EventObject objectToRemove = eventsAdapter.getItem(indexAdapter);
-		int i=0;
-		while (i<eventsAdapter.getCount()){
-		if (eventsAdapter.getItem(i).getEntityId() == objectToRemove.getEntityId())
-			eventsAdapter.remove(eventsAdapter.getItem(i));
-		else i++;
+		int i = 0;
+		while (i < eventsAdapter.getCount()) {
+			if (eventsAdapter.getItem(i).getEntityId() == objectToRemove
+					.getEntityId())
+				eventsAdapter.remove(eventsAdapter.getItem(i));
+			else
+				i++;
 		}
 	}
 
@@ -289,9 +289,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-							CategoryHelper.CATEGORY_TYPE_EVENTS, category).description)
-					+ " " + getString(R.string.event);
+					+ getString(CategoryHelper
+							.getCategoryDescriptorByCategoryFiltered(
+									CategoryHelper.CATEGORY_TYPE_EVENTS,
+									category).description) + " "
+					+ getString(R.string.event);
 			if (Locale.getDefault().equals(Locale.ITALY))
 				addString = getString(R.string.add)
 						+ " "
@@ -461,46 +463,42 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		((View) list.getParent())
 				.setOnClickListener(new View.OnClickListener() {
 					public void onClick(View v) {
-						hideListItemsMenu(v,false);
+						hideListItemsMenu(v, false);
 					}
 				});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				hideListItemsMenu(view,false);
+				hideListItemsMenu(view, false);
 				setStoreEventId(view, position);
 			}
 
 		});
-		
 
 		// open items menu for that entry
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
-				{
-//					//close the old viewSwitcher
+				if ((position != postitionSelected)
+						&& (previousViewSwitcher != null)) {
+					// //close the old viewSwitcher
 					previousViewSwitcher.showPrevious();
 					eventsAdapter.setElementSelected(-1);
-					previousViewSwitcher=null;
-					hideListItemsMenu(view,true);
-
+					previousViewSwitcher = null;
+					hideListItemsMenu(view, true);
 
 				}
 				ViewSwitcher vs = (ViewSwitcher) view
 						.findViewById(R.id.event_viewswitecher);
 				setupOptionsListeners(vs, position);
 				vs.showNext();
-				postitionSelected=position;
+				postitionSelected = position;
 				eventsAdapter.setElementSelected(position);
 				previousViewSwitcher = vs;
 
 				return true;
 			}
 		});
-
-		
 
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(),
 				getView());
@@ -513,17 +511,18 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject>
 		idEvent = event.getId();
 		indexAdapter = position;
 	}
-	
-@Override
-public void onScrollStateChanged(AbsListView view, int scrollState) {
-	super.onScrollStateChanged(view, scrollState);
-	if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
-	{
-	hideListItemsMenu(view,true);
-	
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		super.onScrollStateChanged(view, scrollState);
+		if ((postitionSelected != -1)
+				&& (scrollState == SCROLL_STATE_TOUCH_SCROLL)) {
+			hideListItemsMenu(view, true);
+
+		}
 	}
-}
-	private void hideListItemsMenu(View v,boolean close) {
+
+	private void hideListItemsMenu(View v, boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
@@ -531,12 +530,12 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 					&& ((LinearLayout) view).getChildCount() == 2)
 				view = ((LinearLayout) view).getChildAt(1);
 			if (view instanceof ViewSwitcher
-					&& ((ViewSwitcher) view).getDisplayedChild() == 1 ) {
+					&& ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
 				eventsAdapter.setElementSelected(-1);
-				postitionSelected =-1;
-				previousViewSwitcher=null;
+				postitionSelected = -1;
+				previousViewSwitcher = null;
 
 			}
 		}
@@ -584,7 +583,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 						new SCAsyncTask<EventObject, Void, Boolean>(
 								getActivity(), new EventDeleteProcessor(
 										getActivity())).execute(event);
-						hideListItemsMenu(vs,false);
+						hideListItemsMenu(vs, false);
 					}
 				}
 			});
@@ -675,8 +674,8 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 							getSherlockActivity(),
 							new FollowAsyncTaskProcessor(getSherlockActivity()));
 					followTask.execute(getSherlockActivity()
-							.getApplicationContext(), DTParamsHelper.getAppToken(),
-							DTHelper.getAuthToken(), obj);
+							.getApplicationContext(), DTParamsHelper
+							.getAppToken(), DTHelper.getAuthToken(), obj);
 				}
 			}
 		});
@@ -1003,7 +1002,7 @@ public void onScrollStateChanged(AbsListView view, int scrollState) {
 					.addEmptyListView((LinearLayout) getView().findViewById(
 							R.id.eventlistcontainer));
 		}
-		hideListItemsMenu(null,false);
+		hideListItemsMenu(null, false);
 	}
 
 }

@@ -19,13 +19,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Address;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -424,7 +427,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 					.getEntityId(), getEvent().getTitle(),
 					DTConstants.ENTITY_TYPE_EVENT);
 			if (mFollowByIntent) {
-				FollowHelper.follow(getSherlockActivity(), obj);
+				// FollowHelper.follow(getSherlockActivity(), obj);
+				FollowHelper.follow(this, obj, 3000);
 			} else {
 				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
 						getSherlockActivity(), new FollowAsyncTaskProcessor(
@@ -510,6 +514,27 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 3000) {
+			if (resultCode == Activity.RESULT_OK) {
+				eu.trentorise.smartcampus.cm.model.Topic topic = (eu.trentorise.smartcampus.cm.model.Topic) data
+						.getSerializableExtra("topic");
+				new FollowAsyncTask().execute(topic.getId());
+				// fix to avoid onActivityResult DiscoverTrentoActivity failure
+				data.putExtra(AccountManager.KEY_AUTHTOKEN,
+						DTHelper.getAuthToken());
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
+	public void onResume() {
+		// getSherlockActivity().invalidateOptionsMenu();
+		super.onResume();
 	}
 
 	private void bringMeThere(EventObject eventObject) {
@@ -676,4 +701,24 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	}
 
+	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			String topicId = params[0];
+			try {
+				DTHelper.follow(DTHelper.findEventById(eventId), topicId);
+			} catch (Exception e) {
+				Log.e(FollowAsyncTask.class.getName(),
+						String.format("Exception following event %s", eventId));
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			getSherlockActivity().invalidateOptionsMenu();
+		}
+
+	}
 }
