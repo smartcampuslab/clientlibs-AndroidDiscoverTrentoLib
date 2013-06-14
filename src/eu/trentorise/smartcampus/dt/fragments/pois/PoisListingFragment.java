@@ -214,7 +214,11 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+
+		if (category == null) {
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+		}
+
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_LIST)
 				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 			// SearchHelper.createSearchMenu(submenu, getActivity(), new
@@ -240,8 +244,9 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			// });
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		}
-		if (category == null)
-			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "

@@ -222,6 +222,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
+
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 			// SearchHelper.createSearchMenu(submenu, getActivity(), new
 			// SearchHelper.OnSearchListener() {

@@ -368,6 +368,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
 						cd.getAverageRating()));
 			}
+			
 			updateAttending();
 
 			if (tmp_comments.length > 0) {

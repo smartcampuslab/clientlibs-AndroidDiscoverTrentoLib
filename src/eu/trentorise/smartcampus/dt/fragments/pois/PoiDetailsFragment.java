@@ -72,6 +72,7 @@ import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
+import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.POIObject;
@@ -295,7 +296,6 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			// rating
 			RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
 			rating.setOnTouchListener(new View.OnTouchListener() {
-
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -310,8 +310,23 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 					return true;
 				}
 			});
+
 			if (mPoi.getCommunityData() != null) {
-				rating.setRating(mPoi.getCommunityData().getAverageRating());
+				CommunityData cd = mPoi.getCommunityData();
+
+				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+					rating.setRating(cd.getRatings().get(0).getValue());
+				}
+
+				// user rating
+
+				// total raters
+				((TextView) getView().findViewById(R.id.poi_rating_raters)).setText(getString(R.string.ratingtext_raters,
+						cd.getRatingsCount()));
+
+				// averange rating
+				((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(R.string.ratingtext_average,
+						cd.getAverageRating()));
 			}
 
 			if (tmp_comments.length > 0) {
@@ -513,7 +528,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
-		
+
 		@Override
 		protected Void doInBackground(String... params) {
 			String topicId = params[0];

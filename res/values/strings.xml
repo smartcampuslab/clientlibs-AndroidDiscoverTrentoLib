@@ -71,6 +71,7 @@
     <string name="overflow">More</string>
     <string name="rate">Rate</string>
     <string name="attend">Attend</string>
+    <string name="save">Save</string>
     <string name="add_my_stories">Add to My stories</string>
     <string name="delete_my_stories">Remove from My stories</string>
         
@@ -148,6 +149,8 @@
 	<string name="list_event_tomorrow">Tomorrow</string>    
     <string name="menu_item_todayevent_text">Today\'s Events</string>
     <string name="categories_event_today">Today\'s Events</string>
+    <string name="categories_event_my">My Events</string>
+    <string name="categories_story_my">My Stories</string>
 	
 	<string name="tab_home">Home</string>
 	<string name="tab_places">Places</string>

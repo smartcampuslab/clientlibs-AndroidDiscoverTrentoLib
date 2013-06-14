@@ -71,6 +71,7 @@
     <string name="overflow">Altro &#8230;</string>
     <string name="rate">Esprimi giudizio</string>
     <string name="attend">Partecipa</string>
+    <string name="save">Salva</string>
     <string name="add_my_stories">Aggiungi a Le mie storie</string>
     <string name="delete_my_stories">Rimuovi da Le mie storie</string>
         
@@ -148,6 +149,8 @@
     <string name="list_event_tomorrow">Domani</string>    
     <string name="menu_item_todayevent_text">Eventi di oggi</string> 
 	<string name="categories_event_today">Eventi di oggi</string>
+	<string name="categories_event_my">I miei eventi</string>
+	<string name="categories_story_my">Le mie storie</string>
     
     <string name="tab_home">Home</string>
     <string name="tab_places">Luoghi</string>

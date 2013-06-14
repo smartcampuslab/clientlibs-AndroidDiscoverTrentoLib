@@ -22,25 +22,29 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:weightSum="10" >
 
         <fragment
             android:id="@+id/my_map_fragment1"
             android:name="eu.trentorise.smartcampus.dt.fragments.stories.MyMapFragment"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="0.7"
+            android:layout_weight="6"
             android:tag="mapfragment" />
 
         <ScrollView
             android:id="@+id/story_details"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3" >
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="4" >
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp" >
 
@@ -48,44 +52,104 @@
                     android:id="@+id/story_details_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginTop="8dp"
                     android:gravity="left"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/dtappcolor"
                     android:textStyle="bold" />
 
-                <RatingBar
-                    android:id="@+id/story_details_rating"
-                    style="@style/ratingBar"
+                <LinearLayout
+                    android:id="@+id/story_details_buttons"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/story_details_title"
-                    android:clickable="false"
-                    android:numStars="5" />
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
 
-                <ImageView
-                    android:id="@+id/img_attendees"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/follow" />
+
+                    <ToggleButton
+                        android:id="@+id/storydetails_follow_tbtn"
+                        android:layout_width="64dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="4dp"
+                        android:text="@string/empty"
+                        android:textOff="@string/empty"
+                        android:textOn="@string/empty" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:text="@string/save" />
+
+                    <ToggleButton
+                        android:id="@+id/storydetails_attend_tbtn"
+                        android:layout_width="64dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="4dp"
+                        android:text="@string/empty"
+                        android:textOff="@string/empty"
+                        android:textOn="@string/empty" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/story_details_title"
-                    android:layout_toRightOf="@+id/story_details_rating"
-                    android:contentDescription="@string/attendees"
-                    android:src="@drawable/ic_menu_attendees_p" />
+                    android:layout_marginTop="8dp"
+                    android:text="@string/ratingtext_user"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <RatingBar
+                        android:id="@+id/story_details_rating"
+                        style="@style/ratingBar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:numStars="5" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/event_rating_raters"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ratingtext_raters" />
+
+                        <TextView
+                            android:id="@+id/event_rating_average"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ratingtext_average" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/attendees_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/story_details_title"
-                    android:layout_toRightOf="@+id/img_attendees"
+                    android:drawableLeft="@drawable/ic_menu_attendees_p"
+                    android:gravity="center_vertical"
                     android:textAppearance="@android:style/TextAppearance.Large" />
 
                 <TextView
                     android:id="@+id/story_details_descr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/story_details_rating"
                     android:autoLink="web|all" />
-            </RelativeLayout>
+            </LinearLayout>
         </ScrollView>
 
         <LinearLayout
@@ -106,7 +170,7 @@
             android:id="@+id/step_details"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3" >
+            android:layout_weight="4" >
 
             <LinearLayout
                 android:layout_width="match_parent"

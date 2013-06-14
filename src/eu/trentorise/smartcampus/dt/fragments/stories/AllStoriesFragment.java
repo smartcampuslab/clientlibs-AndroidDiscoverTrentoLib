@@ -15,6 +15,10 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.stories;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -35,6 +39,7 @@ import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.StoriesCategoriesAdapter;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
@@ -77,9 +82,13 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onStart ");
 		}
 
+		List<CategoryDescriptor> list = new ArrayList<CategoryDescriptor>();
+		list.add(CategoryHelper.STORIES_MY);
+		list.addAll(Arrays.asList(CategoryHelper.getStoryCategoryDescriptorsFiltered()));
+
 		gridview = (GridView) getView().findViewById(R.id.stories_gridview);
 		gridview.setAdapter(new StoriesCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
-				fragmentManager));
+				list, fragmentManager));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
@@ -97,9 +106,11 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, R.string.menu_item_addstory_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_mystory, Menu.NONE, R.string.menu_item_mystories_text);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, R.string.menu_item_addstory_text);
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_mystory, Menu.NONE,
+		// R.string.menu_item_mystories_text);
 
 		// SearchHelper.createSearchMenu(submenu, getActivity(), new
 		// SearchHelper.OnSearchListener() {
@@ -144,17 +155,18 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.commit();
 				return true;
 			}
-		} else if (item.getItemId() == R.id.menu_item_mystory) {
-			fragmentTransaction = fragmentManager.beginTransaction();
-			fragment = new StoriesListingFragment();
-			Bundle args = new Bundle();
-			args.putBoolean(SearchFragment.ARG_MY, true);
-			fragment.setArguments(args);
-			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
-			fragmentTransaction.addToBackStack(fragment.getTag());
-			fragmentTransaction.commit();
-			return true;
+			// } else if (item.getItemId() == R.id.menu_item_mystory) {
+			// fragmentTransaction = fragmentManager.beginTransaction();
+			// fragment = new StoriesListingFragment();
+			// Bundle args = new Bundle();
+			// args.putBoolean(SearchFragment.ARG_MY, true);
+			// fragment.setArguments(args);
+			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// fragmentTransaction.replace(android.R.id.content, fragment,
+			// "stories");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
+			// fragmentTransaction.commit();
+			// return true;
 		} else if (item.getItemId() == R.id.submenu_search) {
 			fragmentTransaction = fragmentManager.beginTransaction();
 			fragment = new SearchFragment();

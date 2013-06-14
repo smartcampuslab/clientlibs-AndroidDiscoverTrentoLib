@@ -37,8 +37,15 @@ public class CategoryHelper {
 	public static final String FAMILY_CATEGORY_POI = "Family - Organizations";
 	public static final String FAMILY_CATEGORY_EVENT = "Family";
 
-	public static CategoryDescriptor TODAY_EVENTS = new CategoryDescriptor(R.drawable.ic_marker_e_generic,
-			R.drawable.ic_e_todaysevents, "Today", R.string.categories_event_today);
+	public static final String CATEGORY_TODAY = "Today";
+	public static final String CATEGORY_MY = "My";
+
+	public static CategoryDescriptor EVENTS_TODAY = new CategoryDescriptor(R.drawable.ic_marker_e_generic,
+			R.drawable.ic_e_todaysevents, CATEGORY_TODAY, R.string.categories_event_today);
+
+	public static CategoryDescriptor EVENTS_MY = new CategoryDescriptor(R.drawable.ic_marker_e_generic,
+			R.drawable.ic_e_myevents, CATEGORY_MY, R.string.categories_event_my);
+
 	public static CategoryDescriptor[] EVENT_CATEGORIES = new CategoryDescriptor[] {
 			/* 1 */new CategoryDescriptor(R.drawable.ic_marker_e_concert, R.drawable.ic_e_concerts, "Concerts",
 					R.string.categories_event_concert),
@@ -87,6 +94,9 @@ public class CategoryHelper {
 			/* 13 */new CategoryDescriptor(R.drawable.ic_marker_p_generic, R.drawable.ic_p_other, POI_NONCATEGORIZED,
 					R.string.categories_poi_generic), };
 
+	public static CategoryDescriptor STORIES_MY = new CategoryDescriptor(R.drawable.ic_marker_p_generic,
+			R.drawable.ic_s_mystories, CATEGORY_MY, R.string.categories_story_my);
+	
 	public static CategoryDescriptor[] STORY_CATEGORIES = new CategoryDescriptor[] {
 			/* 1 */new CategoryDescriptor(R.drawable.ic_marker_e_generic, R.drawable.ic_s_leisure, "Leisure",
 					R.string.categories_story_leisure),

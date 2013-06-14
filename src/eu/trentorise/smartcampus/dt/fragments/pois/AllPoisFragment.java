@@ -73,7 +73,6 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, R.string.menu_item_addpoi_text);
 		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
 			@Override
 			public void onSearch(String query) {
@@ -89,6 +88,8 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.commit();
 			}
 		});
+
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, R.string.menu_item_addpoi_text);
 
 		super.onPrepareOptionsMenu(menu);
 	}
