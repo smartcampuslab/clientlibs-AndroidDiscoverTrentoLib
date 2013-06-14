@@ -376,53 +376,55 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				hideListItemsMenu(v,false);
+				hideListItemsMenu(v, false);
 			}
 		});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				hideListItemsMenu(view,false);
+				hideListItemsMenu(view, false);
 				setStorePoiId(view, position);
 			}
 		});
 
 		// open items menu for that entry
-		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
-				{
-//					//close the old viewSwitcher
-					previousViewSwitcher.showPrevious();
-					storiesAdapter.setElementSelected(-1);
-					previousViewSwitcher=null;
-					hideListItemsMenu(view,true);
+		// list.setOnItemLongClickListener(new
+		// AdapterView.OnItemLongClickListener() {
+		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
+		// position, long id) {
+		// if ((position != postitionSelected) && (previousViewSwitcher !=
+		// null)) {
+		// // //close the old viewSwitcher
+		// previousViewSwitcher.showPrevious();
+		// storiesAdapter.setElementSelected(-1);
+		// previousViewSwitcher = null;
+		// hideListItemsMenu(view, true);
+		//
+		// }
+		// ViewSwitcher vs = (ViewSwitcher)
+		// view.findViewById(R.id.story_viewswitecher);
+		// setupOptionsListeners(vs, position);
+		// vs.showNext();
+		// postitionSelected = position;
+		// storiesAdapter.setElementSelected(position);
+		// previousViewSwitcher = vs;
+		//
+		// return true;
+		// }
+		// });
 
-
-				}
-				ViewSwitcher vs = (ViewSwitcher) view
-						.findViewById(R.id.story_viewswitecher);
-				setupOptionsListeners(vs, position);
-				vs.showNext();
-				postitionSelected=position;
-				storiesAdapter.setElementSelected(position);
-				previousViewSwitcher = vs;
-
-				return true;
-			}
-		});
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
 	}
-	
+
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		super.onScrollStateChanged(view, scrollState);
-		if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
-		{
-		hideListItemsMenu(view,true);
-		
+		if ((postitionSelected != -1) && (scrollState == SCROLL_STATE_TOUCH_SCROLL)) {
+			hideListItemsMenu(view, true);
+
 		}
 	}
+
 	/*
 	 * the contextual menu for every item in the list
 	 */
@@ -512,7 +514,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
 					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-							new FollowAsyncTaskProcessor(getSherlockActivity()));
+							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 				}
@@ -520,7 +522,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		});
 	}
 
-	private void hideListItemsMenu(View v,boolean close) {
+	private void hideListItemsMenu(View v, boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
@@ -528,8 +530,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
 				storiesAdapter.setElementSelected(-1);
-				postitionSelected =-1;
-				previousViewSwitcher=null;
+				postitionSelected = -1;
+				previousViewSwitcher = null;
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
@@ -689,7 +691,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			if (result) {
 				((StoryAdapter) list.getAdapter()).remove(object);
 				((StoryAdapter) list.getAdapter()).notifyDataSetChanged();
-				hideListItemsMenu(clickedElement,false);
+				hideListItemsMenu(clickedElement, false);
 				updateList(((StoryAdapter) list.getAdapter()).isEmpty());
 			} else {
 				Toast.makeText(getActivity(), R.string.app_failure_cannot_delete, Toast.LENGTH_LONG).show();
@@ -715,7 +717,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
 					R.id.storylistcontainer));
 		}
-		hideListItemsMenu(null,false);
+		hideListItemsMenu(null, false);
 	}
 
 }

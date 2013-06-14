@@ -88,7 +88,9 @@
     <string name="app_failure_operation">OOPS! An error occurred. Please check your connection or try again later</string>
     <string name="app_failure_cannot_delete">Object cannot be deleted.</string>
     <string name="app_failure_obj_not_found">Object not found!</string>
-    <string name="ratingtext">Community rating:</string>
+    <string name="ratingtext_average">Average rating: %s</string>
+    <string name="ratingtext_user">Your rating:</string>
+    <string name="ratingtext_raters">Total rates: %s</string>
     <string name="attendees_extended"> people are attending this event.</string>
     <string name="attendees_story_extended"> people are attending this story.</string>
     <string name="rating_place_dialog_title">Rate this place:</string>

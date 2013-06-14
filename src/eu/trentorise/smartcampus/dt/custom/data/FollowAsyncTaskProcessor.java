@@ -3,6 +3,7 @@ package eu.trentorise.smartcampus.dt.custom.data;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
@@ -14,28 +15,28 @@ import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
-public class FollowAsyncTaskProcessor extends
-		AbstractAsyncTaskProcessor<Object, Topic> {
-
-	private Context ctx;
+public class FollowAsyncTaskProcessor extends AbstractAsyncTaskProcessor<Object, Topic> {
+	private Context mContext;
 	private String appToken;
 	private String authToken;
 	private FollowEntityObject feo;
-	private Activity activity;
+	// private Activity activity;
 
-	public FollowAsyncTaskProcessor(Activity activity) {
+	private CompoundButton buttonView;
+
+	public FollowAsyncTaskProcessor(Activity activity, CompoundButton buttonView) {
 		super(activity);
-		this.activity = activity;
+		// this.activity = activity;
+		this.mContext = activity.getApplicationContext();
+		this.buttonView = buttonView;
 	}
 
 	@Override
-	public Topic performAction(Object... params) throws SecurityException,
-			ConnectionException, Exception {
-		ctx = (Context) params[0];
-		appToken = (String) params[1];
-		authToken = (String) params[2];
-		feo = (FollowEntityObject) params[3];
-		Topic topic = FollowHelper.follow(ctx, appToken, authToken, feo);
+	public Topic performAction(Object... params) throws SecurityException, ConnectionException, Exception {
+		appToken = (String) params[0];
+		authToken = (String) params[1];
+		feo = (FollowEntityObject) params[2];
+		Topic topic = FollowHelper.follow(mContext, appToken, authToken, feo);
 		if (topic != null) {
 			BaseDTObject obj = findObject(feo);
 			if (obj != null) {
@@ -56,9 +57,8 @@ public class FollowAsyncTaskProcessor extends
 					return DTHelper.findStoryByEntityId(feo.getEntityId());
 				}
 			} catch (Exception e) {
-				Log.e(FollowAsyncTaskProcessor.class.getName(), String.format(
-						"Error getting BaseDTObject %s of type %s",
-						feo.getEntityId(), feo.getType()));
+				Log.e(FollowAsyncTaskProcessor.class.getName(),
+						String.format("Error getting BaseDTObject %s of type %s", feo.getEntityId(), feo.getType()));
 				return null;
 			}
 		}
@@ -67,10 +67,11 @@ public class FollowAsyncTaskProcessor extends
 
 	@Override
 	public void handleResult(Topic result) {
-		Toast.makeText(ctx,
-				ctx.getString(R.string.toast_follow_ok, result.getName()),
-				Toast.LENGTH_SHORT).show();
-		activity.invalidateOptionsMenu();
+		Toast.makeText(mContext, mContext.getString(R.string.toast_follow_ok, result.getName()), Toast.LENGTH_SHORT).show();
+		// activity.invalidateOptionsMenu();
+		if (buttonView != null) {
+			buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+		}
 	}
 
 }

@@ -36,12 +36,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -67,6 +72,7 @@ import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
+import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.EventObject;
@@ -82,6 +88,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	private TmpComment tmp_comments[];
 	private boolean mFollowByIntent;
 	private String eventId;
+
+	private CompoundButton followButtonView;
+	private Fragment mFragment = this;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -123,65 +132,161 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
-		EventObject event = getEvent();
-		if (event != null) {
+		if (mEvent != null) {
 			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
-			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(event.getType()) && isCertified(event))
+			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(mEvent.getType()) && isCertified(mEvent))
 				certifiedBanner.setVisibility(View.VISIBLE);
 			else
 				certifiedBanner.setVisibility(View.GONE);
 
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.event_details_title);
-			tv.setText(event.getTitle());
+			tv.setText(mEvent.getTitle());
+
+			/*
+			 * BUTTONS
+			 */
+			// follow/unfollow
+			ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.event_details_follow_tbtn);
+			if (getEvent().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				followTbtn.setChecked(true);
+			} else {
+				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+				followTbtn.setChecked(false);
+			}
+
+			followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if (isChecked) {
+						// FOLLOW
+						FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(), mEvent.getTitle(),
+								DTConstants.ENTITY_TYPE_EVENT);
+						if (mFollowByIntent) {
+							// for MyPeople support
+							followButtonView = buttonView;
+							FollowHelper.follow(mFragment, obj, 3000);
+						} else {
+							SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+									getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
+							followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+						}
+					} else {
+						// UNFOLLOW
+						BaseDTObject obj;
+						try {
+							obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
+							if (obj != null) {
+								SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+										getSherlockActivity(),
+										new UnfollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
+								unfollowTask.execute(obj);
+
+							}
+						} catch (Exception e) {
+							Log.e(EventDetailsFragment.class.getName(),
+									String.format("Error unfollowing event %s", getEvent().getEntityId()));
+						}
+					}
+				}
+			});
+
+			// attend
+			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.event_details_attend_tbtn);
+			if (getEvent().getAttending() == null || getEvent().getAttending().isEmpty()) {
+				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+				attendTbtn.setChecked(false);
+			} else {
+				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				attendTbtn.setChecked(true);
+			}
+
+			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+						// show dialog box
+						UserRegistration.upgradeuser(getSherlockActivity());
+					} else {
+						new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
+								buttonView)).execute(getEvent().getAttending() == null || getEvent().getAttending().isEmpty());
+					}
+				}
+			});
+
+			// map
+			ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.event_details_map);
+			mapBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+					getEvent().setLocation(poi.getLocation());
+					list.add(getEvent());
+					MapManager.switchToMapView(list, mFragment);
+				}
+			});
+
+			// directions
+			ImageButton directionsBtn = (ImageButton) getView().findViewById(R.id.event_details_directions);
+			directionsBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					bringMeThere(getEvent());
+				}
+			});
+			/*
+			 * END BUTTONS
+			 */
+
+			// location
+			tv = (TextView) this.getView().findViewById(R.id.event_details_loc);
+			POIObject poi = getPOI();
+			if (poi != null) {
+				tv.setText(poi.shortAddress());
+			} else {
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
+			}
 
 			// timing
 			tv = (TextView) this.getView().findViewById(R.id.event_timing);
-			if (getEvent().getTiming() != null && event.getTiming().length() > 0) {
-				tv.setText(event.getTimingFormatted());
+			if (getEvent().getTiming() != null && mEvent.getTiming().length() > 0) {
+				tv.setText(mEvent.getTimingFormatted());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// description, optional
 			tv = (TextView) this.getView().findViewById(R.id.event_details_descr);
-			if (event.getDescription() != null && event.getDescription().length() > 0) {
-				tv.setText(event.getFormattedDescription());
+			if (mEvent.getDescription() != null && mEvent.getDescription().length() > 0) {
+				tv.setText(mEvent.getFormattedDescription());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// notes
 			tv = (TextView) this.getView().findViewById(R.id.event_details_notes);
-			if (event.getCommunityData() != null && event.getCommunityData().getNotes() != null
-					&& event.getCommunityData().getNotes().length() > 0) {
-				tv.setText(event.getCommunityData().getNotes());
+			if (mEvent.getCommunityData() != null && mEvent.getCommunityData().getNotes() != null
+					&& mEvent.getCommunityData().getNotes().length() > 0) {
+				tv.setText(mEvent.getCommunityData().getNotes());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
-			// location
-			tv = (TextView) this.getView().findViewById(R.id.event_details_loc);
-			POIObject poi = getPOI();
-			if (poi != null)
-				tv.setText(poi.shortAddress());
-			else
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
-
 			// tags
 			tv = (TextView) this.getView().findViewById(R.id.event_details_tags);
-			if (event.getCommunityData() != null && event.getCommunityData().getTags() != null
-					&& event.getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(event.getCommunityData().getTags()));
+			if (mEvent.getCommunityData() != null && mEvent.getCommunityData().getTags() != null
+					&& mEvent.getCommunityData().getTags().size() > 0) {
+				tv.setText(Concept.toSimpleString(mEvent.getCommunityData().getTags()));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
 
 			// date
 			tv = (TextView) this.getView().findViewById(R.id.event_details_date);
-			if (event.getFromTime() != null && event.getFromTime() > 0) {
-				CharSequence fromTime = event.dateTimeString();
-				CharSequence toTime = event.toDateTimeString();
+			if (mEvent.getFromTime() != null && mEvent.getFromTime() > 0) {
+				CharSequence fromTime = mEvent.dateTimeString();
+				CharSequence toTime = mEvent.toDateTimeString();
 				if (fromTime.equals(toTime)) {
 					tv.setText(fromTime);
 				} else {
@@ -216,9 +321,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// source
 			tv = (TextView) this.getView().findViewById(R.id.event_details_source);
-			if (event.getSource() != null && event.getSource().length() > 0) {
-				tv.setText(event.getSource());
-			} else if (event.createdByUser()) {
+			if (mEvent.getSource() != null && mEvent.getSource().length() > 0) {
+				tv.setText(mEvent.getSource());
+			} else if (mEvent.createdByUser()) {
 				tv.setText(getString(R.string.source_smartcampus));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
@@ -231,7 +336,6 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			 */
 			RatingBar rating = (RatingBar) getView().findViewById(R.id.event_rating);
 			rating.setOnTouchListener(new View.OnTouchListener() {
-
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -247,8 +351,22 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				}
 			});
 
-			if (event.getCommunityData() != null) {
-				rating.setRating(event.getCommunityData().getAverageRating());
+			if (mEvent.getCommunityData() != null) {
+				CommunityData cd = mEvent.getCommunityData();
+
+				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+					rating.setRating(cd.getRatings().get(0).getValue());
+				}
+
+				// user rating
+
+				// total raters
+				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
+						cd.getRatingsCount()));
+
+				// averange rating
+				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
+						cd.getAverageRating()));
 			}
 			updateAttending();
 
@@ -273,7 +391,6 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						.findViewById(R.id.comments_list));
 				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
 						R.id.event_comments_separator));
-
 			}
 		}
 
@@ -312,33 +429,45 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
-		String userId = DTHelper.getUserId();
+		// String userId = DTHelper.getUserId();
+		EventObject event = getEvent();
+
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE, R.string.rate);
-		EventObject event = getEvent();
+
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE,
+		// R.string.rate);
 
 		if (event.getAttending() == null || event.getAttending().isEmpty()) {
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_attend, Menu.NONE, R.string.attend);
 		} else {
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_attend, Menu.NONE, R.string.attend_not);
 		}
-		if (getEvent().getCommunityData().getFollowing().containsKey(userId)) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_unfollow, Menu.NONE, R.string.unfollow);
-		} else {
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_follow, Menu.NONE, R.string.follow);
-		}
+		// if (getEvent().getCommunityData().getFollowing().containsKey(userId))
+		// {
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_unfollow, Menu.NONE,
+		// R.string.unfollow);
+		// } else {
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_follow, Menu.NONE,
+		// R.string.follow);
+		// }
 
 		if (getPOI() != null) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_see_on_map, Menu.NONE, R.string.onmap);
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_show_related_poi, Menu.NONE, R.string.related_poi);
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_get_dir, Menu.NONE, R.string.getdir);
+			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_see_on_map,
+			// Menu.NONE, R.string.onmap);
+			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_show_related_poi,
+			// Menu.NONE, R.string.related_poi);
+			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_get_dir,
+			// Menu.NONE, R.string.getdir);
 		}
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_btn, Menu.NONE, R.string.edit);
+
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
+
 		// CAN DELETE ONLY OWN OBJECTS
 		if (DTHelper.isOwnedObject(getEvent())) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.delete_btn, Menu.NONE, R.string.delete);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
 		}
 
 		super.onPrepareOptionsMenu(menu);
@@ -358,75 +487,73 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
-		} else if (item.getItemId() == R.id.submenu_get_dir) {
-			// if (bringMeThere(getEvent())){
-			// Address to = getPOI().asGoogleAddress();
-			// Address from = null;
-			// GeoPoint mylocation =
-			// MapManager.requestMyLocation(getActivity());
-			// if (mylocation != null) {
-			// from = new Address(Locale.getDefault());
-			// from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-			// from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+			// } else if (item.getItemId() == R.id.submenu_get_dir) {
+			// bringMeThere(getEvent());
+			// return true;
+			// } else if (item.getItemId() == R.id.submenu_see_on_map) {
+			// ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+			// getEvent().setLocation(poi.getLocation());
+			// list.add(getEvent());
+			// MapManager.switchToMapView(list, this);
+			// return true;
+			// } else if (item.getItemId() == R.id.submenu_follow) {
+			// FollowEntityObject obj = new
+			// FollowEntityObject(getEvent().getEntityId(),
+			// getEvent().getTitle(),
+			// DTConstants.ENTITY_TYPE_EVENT);
+			// if (mFollowByIntent) {
+			// FollowHelper.follow(this, obj, 3000);
+			// } else {
+			// SCAsyncTask<Object, Void, Topic> followTask = new
+			// SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+			// new FollowAsyncTaskProcessor(getSherlockActivity()));
+			// followTask.execute(getSherlockActivity().getApplicationContext(),
+			// DTParamsHelper.getAppToken(),
+			// DTHelper.getAuthToken(), obj);
 			// }
-			// NavigationHelper.bringMeThere(getActivity(), from, to);
-			bringMeThere(getEvent());
-			return true;
+			// return true;
+			// } else if (item.getItemId() == R.id.submenu_unfollow) {
+			// BaseDTObject obj;
+			// try {
+			// obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
+			// if (obj != null) {
+			// SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new
+			// SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+			// getSherlockActivity(), new
+			// UnfollowAsyncTaskProcessor(getSherlockActivity()));
+			// unfollowTask.execute(obj);
+			//
 			// }
-			// else return false;
-		} else if (item.getItemId() == R.id.submenu_see_on_map) {
-			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-			getEvent().setLocation(poi.getLocation());
-			list.add(getEvent());
-			MapManager.switchToMapView(list, this);
-			return true;
-		} else if (item.getItemId() == R.id.submenu_follow) {
-			FollowEntityObject obj = new FollowEntityObject(getEvent().getEntityId(), getEvent().getTitle(),
-					DTConstants.ENTITY_TYPE_EVENT);
-			if (mFollowByIntent) {
-				FollowHelper.follow(this, obj, 3000);
-			} else {
-				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-						new FollowAsyncTaskProcessor(getSherlockActivity()));
-				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
-						DTHelper.getAuthToken(), obj);
-			}
-			return true;
-		} else if (item.getItemId() == R.id.submenu_unfollow) {
-			BaseDTObject obj;
-			try {
-				obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
-				if (obj != null) {
-					SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-							getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity()));
-					unfollowTask.execute(obj);
-
-				}
-			} catch (Exception e) {
-				Log.e(EventDetailsFragment.class.getName(),
-						String.format("Error unfollowing event %s", getEvent().getEntityId()));
-			}
-			return true;
-		} else if (item.getItemId() == R.id.submenu_rate) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
-				ratingDialog();
-				return true;
-			}
-		} else if (item.getItemId() == R.id.submenu_attend) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
-				new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(getActivity()))
-						.execute(getEvent().getAttending() == null || getEvent().getAttending().isEmpty());
-				return true;
-			}
-		} else if (item.getItemId() == R.id.edit_btn) {
+			// } catch (Exception e) {
+			// Log.e(EventDetailsFragment.class.getName(),
+			// String.format("Error unfollowing event %s",
+			// getEvent().getEntityId()));
+			// }
+			// return true;
+			// } else if (item.getItemId() == R.id.submenu_rate) {
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else {
+			// ratingDialog();
+			// return true;
+			// }
+			// } else if (item.getItemId() == R.id.submenu_attend) {
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else {
+			// new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new
+			// AttendProcessor(getActivity()))
+			// .execute(getEvent().getAttending() == null ||
+			// getEvent().getAttending().isEmpty());
+			// return true;
+			// }
+		} else if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
@@ -446,7 +573,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.commit();
 				return true;
 			}
-		} else if (item.getItemId() == R.id.delete_btn) {
+		} else if (item.getItemId() == R.id.submenu_delete) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
@@ -595,14 +722,20 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	private class AttendProcessor extends AbstractAsyncTaskProcessor<Boolean, EventObject> {
 
-		public AttendProcessor(Activity activity) {
+		private CompoundButton buttonView;
+		private Boolean attend;
+
+		public AttendProcessor(Activity activity, CompoundButton buttonView) {
 			super(activity);
+			this.buttonView = buttonView;
 		}
 
 		@Override
 		public EventObject performAction(Boolean... params) throws SecurityException, Exception {
-			if (params[0])
+			attend = params[0];
+			if (attend) {
 				return DTHelper.attend(getEvent());
+			}
 			return DTHelper.notAttend(getEvent());
 		}
 
@@ -610,12 +743,15 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		public void handleResult(EventObject result) {
 			mEvent = result;
 			updateAttending();
-			getSherlockActivity().invalidateOptionsMenu();
+			// getSherlockActivity().invalidateOptionsMenu();
 			EventObject event = getEvent();
-			if (event.getAttending() == null || event.getAttending().isEmpty())
+			if (event.getAttending() == null || event.getAttending().isEmpty()) {
 				Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();
-			else
+				buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+			} else {
 				Toast.makeText(getSherlockActivity(), R.string.attend_success, Toast.LENGTH_SHORT).show();
+				buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+			}
 		}
 
 	}
@@ -635,7 +771,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			getSherlockActivity().invalidateOptionsMenu();
+			// getSherlockActivity().invalidateOptionsMenu();
+			if (followButtonView != null) {
+				followButtonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				followButtonView = null;
+			}
 		}
 
 	}

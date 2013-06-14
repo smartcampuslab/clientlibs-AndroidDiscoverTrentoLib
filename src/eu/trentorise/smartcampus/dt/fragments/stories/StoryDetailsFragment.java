@@ -454,7 +454,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				FollowHelper.follow(this, obj, 3000);
 			} else {
 				SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-						new FollowAsyncTaskProcessor(getSherlockActivity()));
+						new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 						DTHelper.getAuthToken(), obj);
 			}
@@ -465,7 +465,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
 				if (obj != null) {
 					SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-							getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity()));
+							getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(), null));
 					unfollowTask.execute(obj);
 
 				}

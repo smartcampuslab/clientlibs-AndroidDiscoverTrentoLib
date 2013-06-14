@@ -88,7 +88,9 @@
     <string name="app_failure_operation">OOPS! C\'è stato un errore. Controlla la connessione e riprova a breve.</string>
     <string name="app_failure_cannot_delete">L\'oggetto non può essere cancellato.</string>
     <string name="app_failure_obj_not_found">Oggetto non trovato!</string>
-    <string name="ratingtext">Giudizio degli utenti:</string>
+    <string name="ratingtext_average">Giudizio degli utenti: %s</string>
+    <string name="ratingtext_user">Il tuo giudizio:</string>
+    <string name="ratingtext_raters">Giudizi totali: %s</string>
     <string name="attendees_extended"> persone parteciperanno all\'evento.</string>
     <string name="attendees_story_extended"> persone stanno seguendo questa storia.</string>
     <string name="rating_place_dialog_title">Valuta questo luogo:</string>

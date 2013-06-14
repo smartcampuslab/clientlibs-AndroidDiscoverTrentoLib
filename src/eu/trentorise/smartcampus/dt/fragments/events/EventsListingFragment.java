@@ -430,26 +430,30 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		});
 
 		// open items menu for that entry
-		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if ((position != postitionSelected) && (previousViewSwitcher != null)) {
-					// //close the old viewSwitcher
-					previousViewSwitcher.showPrevious();
-					eventsAdapter.setElementSelected(-1);
-					previousViewSwitcher = null;
-					hideListItemsMenu(view, true);
-
-				}
-				ViewSwitcher vs = (ViewSwitcher) view.findViewById(R.id.event_viewswitecher);
-				setupOptionsListeners(vs, position);
-				vs.showNext();
-				postitionSelected = position;
-				eventsAdapter.setElementSelected(position);
-				previousViewSwitcher = vs;
-
-				return true;
-			}
-		});
+		// list.setOnItemLongClickListener(new
+		// AdapterView.OnItemLongClickListener() {
+		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
+		// position, long id) {
+		// if ((position != postitionSelected) && (previousViewSwitcher !=
+		// null)) {
+		// // //close the old viewSwitcher
+		// previousViewSwitcher.showPrevious();
+		// eventsAdapter.setElementSelected(-1);
+		// previousViewSwitcher = null;
+		// hideListItemsMenu(view, true);
+		//
+		// }
+		// ViewSwitcher vs = (ViewSwitcher)
+		// view.findViewById(R.id.event_viewswitecher);
+		// setupOptionsListeners(vs, position);
+		// vs.showNext();
+		// postitionSelected = position;
+		// eventsAdapter.setElementSelected(position);
+		// previousViewSwitcher = vs;
+		//
+		// return true;
+		// }
+		// });
 
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
@@ -599,7 +603,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
 					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-							new FollowAsyncTaskProcessor(getSherlockActivity()));
+							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 				}
