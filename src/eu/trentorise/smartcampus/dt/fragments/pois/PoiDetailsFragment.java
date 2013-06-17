@@ -83,10 +83,13 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	public static final String ARG_POI = "poi_object";
+
+	private boolean mFollowByIntent;
+	private boolean mStart = true;
+
 	POIObject mPoi = null;
 	String poiId;
 	private TmpComment tmp_comments[];
-	private boolean mFollowByIntent;
 
 	private CompoundButton followButtonView;
 	private Fragment mFragment = this;
@@ -144,51 +147,52 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			 * BUTTONS
 			 */
 			// follow/unfollow
-			ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.poidetails_follow_tbtn);
-			if (mPoi.getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
-				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-				followTbtn.setChecked(true);
-			} else {
-				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-				followTbtn.setChecked(false);
-			}
+			if (mStart) {
+				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.poidetails_follow_tbtn);
+				if (mPoi.getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+					followTbtn.setChecked(true);
+				} else {
+					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+					followTbtn.setChecked(false);
+				}
 
-			followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (isChecked) {
-						// FOLLOW
-						FollowEntityObject obj = new FollowEntityObject(mPoi.getEntityId(), mPoi.getTitle(),
-								DTConstants.ENTITY_TYPE_POI);
-						if (mFollowByIntent) {
-							// for MyPeople support
-							followButtonView = buttonView;
-							FollowHelper.follow(mFragment, obj, 3000);
-						} else {
-
-							SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-									getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
-							followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
-						}
-					} else {
-						// UNFOLLOW
-						BaseDTObject obj;
-						try {
-							obj = DTHelper.findPOIByEntityId(getPOI().getEntityId());
-							if (obj != null) {
-								SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-										getSherlockActivity(),
-										new UnfollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
-								unfollowTask.execute(obj);
-
+				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						if (isChecked) {
+							// FOLLOW
+							FollowEntityObject obj = new FollowEntityObject(mPoi.getEntityId(), mPoi.getTitle(),
+									DTConstants.ENTITY_TYPE_POI);
+							if (mFollowByIntent) {
+								// for MyPeople support
+								followButtonView = buttonView;
+								FollowHelper.follow(mFragment, obj, 3000);
+							} else {
+								SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+										getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
+								followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
 							}
-						} catch (Exception e) {
-							Log.e(EventDetailsFragment.class.getName(),
-									String.format("Error unfollowing event %s", getPOI().getEntityId()));
+						} else {
+							// UNFOLLOW
+							BaseDTObject obj;
+							try {
+								obj = DTHelper.findPOIByEntityId(getPOI().getEntityId());
+								if (obj != null) {
+									SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+											getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+													buttonView));
+									unfollowTask.execute(obj);
+
+								}
+							} catch (Exception e) {
+								Log.e(EventDetailsFragment.class.getName(),
+										String.format("Error unfollowing event %s", getPOI().getEntityId()));
+							}
 						}
 					}
-				}
-			});
+				});
+			}
 
 			// map
 			ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.poidetails_map);
@@ -463,6 +467,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 3000) {
 			if (resultCode == Activity.RESULT_OK) {
+				mStart = false;
 				eu.trentorise.smartcampus.cm.model.Topic topic = (eu.trentorise.smartcampus.cm.model.Topic) data
 						.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
@@ -547,6 +552,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				followButtonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 				followButtonView = null;
 			}
+			mStart = true;
 		}
 
 	}
