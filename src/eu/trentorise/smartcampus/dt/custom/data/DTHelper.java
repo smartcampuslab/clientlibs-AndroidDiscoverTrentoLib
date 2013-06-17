@@ -87,6 +87,7 @@ public class DTHelper {
 	public static final int SYNC_NOT_REQUIRED = 0;
 	public static final int SYNC_REQUIRED_FIRST_TIME = 3;
 	public static final int SYNC_ONGOING = 1;
+	private static final int CURR_DB = 4;
 
 	private static DTHelper instance = null;
 
@@ -150,11 +151,11 @@ public class DTHelper {
 		// this.config = new SyncStorageConfiguration(sc,
 		// GlobalConfig.getAppUrl(mContext), Constants.SYNC_SERVICE,
 		// Constants.SYNC_INTERVAL);
-		if (Utils.getDBVersion(mContext, DTParamsHelper.getAppToken()) != 3) {
+		if (Utils.getDBVersion(mContext, DTParamsHelper.getAppToken()) != CURR_DB) {
 			Utils.writeObjectVersion(mContext, DTParamsHelper.getAppToken(), 0);
 		}
 		this.storage = new DTSyncStorage(mContext,
-				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME, 3, config);
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME, CURR_DB, config);
 		this.mProtocolCarrier = new ProtocolCarrier(mContext,
 				DTParamsHelper.getAppToken());
 
@@ -1408,7 +1409,7 @@ public class DTHelper {
 		if (where.length() > 0) {
 			return where += " and (" + whereReturns + ")";
 		} else
-			return whereReturns;
+			return "("+whereReturns+")";
 
 	}
 
