@@ -100,6 +100,10 @@ import eu.trentorise.smartcampus.storage.BasicObject;
 public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements MapStoryHandler,
 		BasicObjectMapItemTapListener {
 
+	private boolean mFollowByIntent;
+	private boolean mStart = true;
+	private boolean mCanceledFollow = false;
+
 	public static final String ARG_STORY = "story_object";
 	private StoryObject mStory = null;
 	private String storyId;
@@ -107,7 +111,6 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	private MapView mapViewStory = null;
 	private DTStoryItemizedOverlay mItemizedoverlay = null;
 	private AddStep stepHandler = new AddStep();
-	private boolean mFollowByIntent;
 
 	private CompoundButton followButtonView;
 	private Fragment mFragment = this;
@@ -163,49 +166,54 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			 * BUTTONS
 			 */
 			// follow/unfollow
-			ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
-			if (mStory.getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
-				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-				followTbtn.setChecked(true);
-			} else {
-				followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-				followTbtn.setChecked(false);
-			}
+			if (mStart) {
+				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
+				if (mStory.getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+					followTbtn.setChecked(true);
+				} else {
+					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+					followTbtn.setChecked(false);
+				}
 
-			followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (isChecked) {
-						// FOLLOW
-						FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(), getStory().getTitle(),
-								DTConstants.ENTITY_TYPE_STORY);
-						if (mFollowByIntent) {
-							followButtonView = buttonView;
-							FollowHelper.follow(mFragment, obj, 3000);
-						} else {
-							SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-									getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
-							followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
-									DTHelper.getAuthToken(), obj);
-						}
-					} else {
-						// UNFOLLOW
-						BaseDTObject obj;
-						try {
-							obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
-							if (obj != null) {
-								SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-										getSherlockActivity(),
-										new UnfollowAsyncTaskProcessor(getSherlockActivity(), buttonView));
-								unfollowTask.execute(obj);
+				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						if (!mCanceledFollow) {
+							if (isChecked) {
+								// FOLLOW
+								FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(),
+										getStory().getTitle(), DTConstants.ENTITY_TYPE_STORY);
+								if (mFollowByIntent) {
+									followButtonView = buttonView;
+									FollowHelper.follow(mFragment, obj, 3000);
+								} else {
+									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
+													buttonView));
+									followTask.execute(getSherlockActivity().getApplicationContext(),
+											DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+								}
+							} else {
+								// UNFOLLOW
+								BaseDTObject obj;
+								try {
+									obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
+									if (obj != null) {
+										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+														buttonView));
+										unfollowTask.execute(obj);
+									}
+								} catch (Exception e) {
+									Log.e(EventDetailsFragment.class.getName(),
+											String.format("Error unfollowing event %s", getStory().getEntityId()));
+								}
 							}
-						} catch (Exception e) {
-							Log.e(EventDetailsFragment.class.getName(),
-									String.format("Error unfollowing event %s", getStory().getEntityId()));
 						}
 					}
-				}
-			});
+				});
+			}
 
 			// attend
 			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_attend_tbtn);
@@ -672,6 +680,10 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
 				data.putExtra(AccountManager.KEY_AUTHTOKEN, DTHelper.getAuthToken());
+				mStart = false;
+			} else {
+				getStory().getCommunityData().getFollowing().clear();
+				mCanceledFollow = true;
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -921,6 +933,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				followButtonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 				followButtonView = null;
 			}
+			mStart = true;
 		}
 
 	}
