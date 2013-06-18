@@ -28,7 +28,7 @@ public class DTSyncStorageService extends SyncStorageService {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void handleSecurityProblem(String appToken) {
+	public void handleSecurityProblem(String appToken, String dbName) {
         Intent i = new Intent("eu.trentorise.smartcampus.START");
         i.setPackage(this.getPackageName());
 

@@ -418,26 +418,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				}
 			});
 
-			if (mEvent.getCommunityData() != null) {
-				CommunityData cd = mEvent.getCommunityData();
-
-				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-					rating.setRating(cd.getRatings().get(0).getValue());
-				}
-
-				// user rating
-
-				// total raters
-				((TextView) getView().findViewById(R.id.event_rating_raters))
-						.setText(getString(R.string.ratingtext_raters,
-								cd.getRatingsCount()));
-
-				// averange rating
-				((TextView) getView().findViewById(R.id.event_rating_average))
-						.setText(getString(R.string.ratingtext_average,
-								cd.getAverageRating()));
-			}
-
+			updateRating();
 			updateAttending();
 
 			if (tmp_comments.length > 0) {
@@ -494,11 +475,26 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	 * private boolean hasMultimediaAttached() { return true; }
 	 */
 
-	private void updateRating(Integer result) {
-		getEvent().getCommunityData().setAverageRating(result);
-		RatingBar rating = (RatingBar) getView()
-				.findViewById(R.id.event_rating);
-		rating.setRating(getEvent().getCommunityData().getAverageRating());
+	private void updateRating() {
+		RatingBar rating = (RatingBar) getView().findViewById(R.id.event_rating);
+		if (mEvent.getCommunityData() != null) {
+			CommunityData cd = mEvent.getCommunityData();
+
+			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+				rating.setRating(cd.getRatings().get(0).getValue());
+			}
+
+			// user rating
+
+			// total raters
+			((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
+					cd.getRatingsCount()));
+
+			// averange rating
+			((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
+					cd.getAverageRating()));
+		}
+
 	}
 
 	@Override
@@ -797,7 +793,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		@Override
 		public void handleResult(Integer result) {
-			updateRating(result);
+			mEvent = null; getEvent();
+			updateRating();
 			Toast.makeText(getSherlockActivity(), R.string.rating_success,
 					Toast.LENGTH_SHORT).show();
 		}
