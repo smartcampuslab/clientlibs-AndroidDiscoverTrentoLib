@@ -23,6 +23,8 @@ public class DTParamsHelper {
 	public static final String KEY_POI_CATEGORIES = "poi_categories";
 	public static final String KEY_EVENT_CATEGORIES = "events_categories";
 	public static final String KEY_STORY_CATEGORIES = "story_categories";
+	public static final String KEY_EVENTS_DEFAULT = "events_default";
+	public static final String KEY_POIS_DEFAULT = "pois_default";
 	public static final String KEY_EXCLUDE = "exclude";
 	public static final String KEY_INCLUDE = "include";
 	public static final String KEY_APP_TOKEN = "app_token";
@@ -96,6 +98,26 @@ public class DTParamsHelper {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		returnMap = (Map<String, Object>) getInstance().getParamsAsset().get(KEY_INCLUDE);
 		return returnMap;
+	}
+	
+	
+	public static CategoryDescriptor[] getDefaultArrayByParams(String type) {
+		if (type.equalsIgnoreCase(CategoryHelper.CATEGORY_TYPE_POIS)) {
+			if (getInstance().getParamsAsset().containsKey(KEY_POIS_DEFAULT)) {
+
+				return orderArrayByKey(CategoryHelper.POI_CATEGORIES,
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_POIS_DEFAULT));
+
+			}
+		}
+		if (type.equalsIgnoreCase(CategoryHelper.CATEGORY_TYPE_EVENTS)) {
+			if (getInstance().getParamsAsset().containsKey(KEY_EVENTS_DEFAULT)) {
+				return orderArrayByKey(CategoryHelper.EVENT_CATEGORIES,
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_EVENTS_DEFAULT));
+			}
+		}
+
+		return null;
 	}
 
 	private Map<Object, Object> getParamsAsset() {
