@@ -705,8 +705,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		builder = new AlertDialog.Builder(getSherlockActivity());
 		/* check event Object */
-		if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(eventObject.getType())) {
+		if (!CategoryHelper.FAMILY_CATEGORY_EVENT.equals(eventObject.getType())) {
 			/* if it's not a family event, no problem */
+			callBringMeThere();
 			return;
 		} else {
 			/* if it is, show the dialog box */
@@ -720,16 +721,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 					switch (which) {
 					case DialogInterface.BUTTON_POSITIVE:
 						// upgrade the user
-						Address to = getPOI().asGoogleAddress();
-						Address from = null;
-						GeoPoint mylocation = MapManager
-								.requestMyLocation(getActivity());
-						if (mylocation != null) {
-							from = new Address(Locale.getDefault());
-							from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-							from.setLongitude(mylocation.getLongitudeE6() / 1E6);
-						}
-						NavigationHelper.bringMeThere(getActivity(), from, to);
+						callBringMeThere();
 						break;
 
 					case DialogInterface.BUTTON_NEGATIVE:
@@ -775,6 +767,22 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				.getCommunityData().getAverageRating() : 2.5f;
 		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(
 				getActivity()), R.string.rating_event_dialog_title);
+	}
+
+	/**
+	 * 
+	 */
+	protected void callBringMeThere() {
+		Address to = getPOI().asGoogleAddress();
+		Address from = null;
+		GeoPoint mylocation = MapManager
+				.requestMyLocation(getActivity());
+		if (mylocation != null) {
+			from = new Address(Locale.getDefault());
+			from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+			from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+		}
+		NavigationHelper.bringMeThere(getActivity(), from, to);
 	}
 
 	private class RatingProcessor extends
