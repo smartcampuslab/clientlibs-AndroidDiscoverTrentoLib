@@ -31,6 +31,8 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.location.Location;
@@ -88,6 +90,38 @@ public class DTHelper {
 	public static final int SYNC_REQUIRED_FIRST_TIME = 3;
 	public static final int SYNC_ONGOING = 1;
 	private static final int CURR_DB = 4;
+	
+	//tutorial's stuff
+
+	private static final String TUT_PREFS= "dt_tut_prefs";
+	private static final String TOUR_PREFS= "dt_wantTour";
+	private static final String FIRST_LAUNCH_PREFS= "dt_firstLaunch";
+
+	public static enum Tutorial {
+		NOTIF("notifTut"),
+		PLACES("placesTut"),
+		EVENTS("eventsTut"),
+		MENU("menuTut"),
+		STORIES("storyTut"),
+		RATING("ratingTut")
+		;
+		/**
+		 * @param text
+		 */
+		private Tutorial(final String text) {
+			this.text = text;
+		}
+
+		private final String text;
+
+		/* (non-Javadoc)
+		 * @see java.lang.Enum#toString()
+		 */
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
 
 	private static DTHelper instance = null;
 
@@ -1399,7 +1433,7 @@ public class DTHelper {
 					+ " AND fromTime < " + whenTo + " ) OR (  toTime < "
 					+ whenTo + " AND toTime > " + whenFrom + " )");
 			// whereReturns = " (  fromTime <= " + whenTo + " AND toTime >= " +
-			// whenFrom + " )";
+			// whenFrom + " )";+
 		} else
 			whereReturns = new String(" ( fromTime > " + whenFrom
 					+ "  ) OR ( toTime > " + whenFrom + " )");
@@ -1474,6 +1508,54 @@ public class DTHelper {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public static SharedPreferences getTutorialPreferences(Context ctx){
+		SharedPreferences out = ctx.getSharedPreferences(TUT_PREFS, Context.MODE_PRIVATE);
+		return out;
+	}
+	
+	public static boolean isFirstLaunch(Context ctx){
+		return getTutorialPreferences(ctx).getBoolean(FIRST_LAUNCH_PREFS, true);
+	}
+	public static void disableFirstLaunch(Context ctx){
+		Editor edit = getTutorialPreferences(ctx).edit();
+		edit.putBoolean(FIRST_LAUNCH_PREFS, false);
+		edit.commit();
+	}
+	
+	public static boolean wantTour(Context ctx){
+		return getTutorialPreferences(ctx).getBoolean(TOUR_PREFS, false);
+	}
+	
+	public static void setWantTour(Context ctx,boolean want){
+		Editor edit = getTutorialPreferences(ctx).edit();
+		edit.putBoolean(TOUR_PREFS, want);
+		edit.commit();
+	}
+	
+	public static boolean isTutorialShowed(Context ctx,Tutorial t){
+		return getTutorialPreferences(ctx).getBoolean(t.toString(), false);
+	}
+	
+	public static void setTutorialAsShowed(Context ctx,Tutorial t){
+		Editor edit = getTutorialPreferences(ctx).edit();
+		edit.putBoolean(t.toString(), true);
+		edit.commit();
+	}
+	
+	/**
+	 * With this method you can get the last tutorial that was not showed
+	 * @param ctx the activity 
+	 * @return the last Tutorial not showed to the user otherwise null
+	 */
+	public static Tutorial getLastTutorialNotShowed(Context ctx){
+		for(Tutorial t : Tutorial.values() )
+		{
+			if(!isTutorialShowed(ctx, t))
+				return t;
+		}
+		return null;
 	}
 
 }

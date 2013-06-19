@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="first_launch">Welcome! Our app will guide you through the streets of Trento in search of places to explore and events to attend.</string>
+    <string name="notif_tut">Read your latest announcements here</string>
+    <string name="places_tut">This icon will let you see interesting places on the map</string>
+    <string name="events_tut">This other icon will let you see interesting events on the map</string>
+    <string name="ratings_tut">See what others thought of this place and vote for it yourself.</string>
+    <string name="stories_tut">Stories will let you create and share travels as you explore places and events in Trento</string>
+    <string name="menu_tut">By clicking this symbol, you will be able to search for events or places or add new </string>
+
+    <!-- Buttons -->
+    <string name="begin_tut">Start the guided tour</string>
+    <string name="next_tut">Next</string>
+    <string name="skip_tut">Skip</string>
+
+</resources>

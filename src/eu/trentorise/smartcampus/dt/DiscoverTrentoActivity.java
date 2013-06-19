@@ -17,10 +17,14 @@ package eu.trentorise.smartcampus.dt;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -30,6 +34,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.github.espiandev.showcaseview.ShowcaseView;
+import com.github.espiandev.showcaseview.ShowcaseView.OnShowcaseEventListener;
 import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
@@ -54,6 +60,8 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
+	private final static int TUTORIAL_REQUEST_CODE = 1;
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -71,6 +79,13 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		MapManager.setMapView(new MapView(this, getResources().getString(
 				R.string.maps_api_key)));
 
+		// DEBUG PURPOSE
+		DTHelper.getTutorialPreferences(this).edit().clear().commit();
+
+		if (DTHelper.isFirstLaunch(this)) {
+			showTourDialog();
+			DTHelper.disableFirstLaunch(this);
+		}
 	}
 
 	@Override
@@ -188,19 +203,26 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (resultCode == RESULT_OK) {
-			String token = data.getExtras().getString(
-					AccountManager.KEY_AUTHTOKEN);
-			if (token == null) {
-				Toast.makeText(this, R.string.app_failure_security,
-						Toast.LENGTH_LONG).show();
-				finish();
-			} else {
-				initData(token);
+		if (requestCode == TUTORIAL_REQUEST_CODE) {
+			if (resultCode == RESULT_CANCELED) {
+				if (DTHelper.wantTour(this))
+					showTutorial();
 			}
-		} else if (resultCode == RESULT_CANCELED
-				&& requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
-			DTHelper.endAppFailure(this, R.string.token_required);
+		} else {
+			if (resultCode == RESULT_OK) {
+				String token = data.getExtras().getString(
+						AccountManager.KEY_AUTHTOKEN);
+				if (token == null) {
+					Toast.makeText(this, R.string.app_failure_security,
+							Toast.LENGTH_LONG).show();
+					finish();
+				} else {
+					initData(token);
+				}
+			} else if (resultCode == RESULT_CANCELED
+					&& requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
+				DTHelper.endAppFailure(this, R.string.token_required);
+			}
 		}
 	}
 
@@ -350,29 +372,82 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		super.onConfigurationChanged(newConfig);
 	}
 
-	// private BroadcastReceiver mTokenInvalidReceiver = new BroadcastReceiver()
-	// {
-	// @Override
-	// public void onReceive(Context context, Intent intent) {
-	// DTHelper.getAccessProvider().invalidateToken(DiscoverTrentoActivity.this,
-	// null);
-	// initDataManagement(null);
-	// }
-	// };
-	//
-	// @Override
-	// protected void onResume() {
-	// IntentFilter filter = new
-	// IntentFilter(SyncStorageService.ACTION_AUTHENTICATION_PROBLEM);
-	// registerReceiver(mTokenInvalidReceiver, filter);
-	// super.onResume();
-	// }
-	//
-	// @Override
-	// protected void onPause() {
-	// unregisterReceiver(mTokenInvalidReceiver);
-	// super.onPause();
-	// }
+	private void showTourDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setMessage(getString(R.string.first_launch))
+				.setPositiveButton(getString(R.string.begin_tut),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								DTHelper.setWantTour(
+										DiscoverTrentoActivity.this, true);
+								showTutorial();
+							}
+						})
+				.setNeutralButton(getString(android.R.string.cancel),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								DTHelper.setWantTour(
+										DiscoverTrentoActivity.this, false);
+								dialog.dismiss();
+							}
+						});
+		builder.create().show();
+	}
+
+	private void showTutorial() {
+		DTHelper.Tutorial t = DTHelper.getLastTutorialNotShowed(this);
+		int id;
+		String title = "Tip!";
+		String msg = "";
+		switch (t) {
+		case NOTIF:
+			id = R.id.menu_item_notifications;
+			msg = getString(R.string.notif_tut);
+			break;
+		case EVENTS:
+			id = R.id.menu_item_allevents;
+			msg = getString(R.string.events_tut);
+			break;
+		case PLACES:
+			id = R.id.menu_item_allpois;
+			msg = getString(R.string.places_tut);
+			break;
+		// case MENU:
+		// id = -2;
+		// msg = getString(R.string.menu_tut);
+		// break;
+		// case STORIES:
+		// id = -3;
+		// msg = getString(R.string.stories_tut);
+		// break;
+		default:
+			id = -1;
+		}
+		if (t != null) {
+			// if(sv==null)
+			// initializeShowcaseView(id, title, msg);
+			// else
+			displayShowcaseView(id, title, msg);
+			DTHelper.setTutorialAsShowed(this, t);
+		} else
+			DTHelper.setWantTour(this, false);
+	}
+
+	private void displayShowcaseView(int id, String title, String msg) {
+		int[] position = new int[2];
+		View v = findViewById(id);
+		if (v != null) {
+			v.getLocationOnScreen(position);
+			TutorialActivity.newIstance(this, position,v.getWidth(), title, msg,
+					TUTORIAL_REQUEST_CODE);
+		}
+	}
 
 	@Override
 	public String getAppToken() {
@@ -383,4 +458,5 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
 	}
+
 }
