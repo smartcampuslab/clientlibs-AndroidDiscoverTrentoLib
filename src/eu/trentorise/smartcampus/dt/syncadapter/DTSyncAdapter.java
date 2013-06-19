@@ -65,7 +65,7 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
         ContentProviderClient provider, SyncResult syncResult) {
 
-    	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, DTParamsHelper.getAppToken()) < Constants.SYNC_INTERVAL*60*1000) {
+    	if (System.currentTimeMillis()-Utils.getLastObjectSyncTime(mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) < Constants.SYNC_INTERVAL*60*1000) {
     		return;
     	}
 

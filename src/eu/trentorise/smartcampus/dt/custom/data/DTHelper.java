@@ -185,8 +185,8 @@ public class DTHelper {
 		// this.config = new SyncStorageConfiguration(sc,
 		// GlobalConfig.getAppUrl(mContext), Constants.SYNC_SERVICE,
 		// Constants.SYNC_INTERVAL);
-		if (Utils.getDBVersion(mContext, DTParamsHelper.getAppToken()) != CURR_DB) {
-			Utils.writeObjectVersion(mContext, DTParamsHelper.getAppToken(), 0);
+		if (Utils.getDBVersion(mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) != CURR_DB) {
+			Utils.writeObjectVersion(mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME, 0);
 		}
 		this.storage = new DTSyncStorage(mContext,
 				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME, CURR_DB, config);
@@ -223,7 +223,7 @@ public class DTHelper {
 		if (getInstance().syncInProgress)
 			return SYNC_ONGOING;
 		long last = Utils.getLastObjectSyncTime(getInstance().mContext,
-				DTParamsHelper.getAppToken());
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME);
 		if (System.currentTimeMillis() - last > Constants.SYNC_INTERVAL * 60 * 1000) {
 			if (last > 0)
 				return SYNC_REQUIRED;
@@ -266,9 +266,9 @@ public class DTHelper {
 				return null;
 
 			if (Utils.getObjectVersion(getInstance().mContext,
-					DTParamsHelper.getAppToken()) <= 0) {
+					DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) <= 0) {
 				Utils.writeObjectVersion(getInstance().mContext,
-						DTParamsHelper.getAppToken(), 1L);
+						DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME, 1L);
 			}
 
 			getInstance().syncInProgress = true;
@@ -519,7 +519,7 @@ public class DTHelper {
 			throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			Collection<POIObject> pois = getInstance().storage
 					.getObjects(POIObject.class);
 			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>(pois);
@@ -548,7 +548,7 @@ public class DTHelper {
 						.asList(inCategories)));
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -582,7 +582,7 @@ public class DTHelper {
 			String text) throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			if (text == null || text.trim().length() == 0) {
 				return getInstance().storage.getObjects(POIObject.class);
 			}
@@ -613,7 +613,7 @@ public class DTHelper {
 						.asList(inCategories)));
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -665,7 +665,7 @@ public class DTHelper {
 						.asList(inCategories)));
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -726,7 +726,7 @@ public class DTHelper {
 						.asList(inCategories)));
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -778,7 +778,7 @@ public class DTHelper {
 						.asList(inCategories)));
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -828,7 +828,7 @@ public class DTHelper {
 		Date tomorrow = cal.getTime();
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			return getInstance().storage.query(EventObject.class,
 					" fromTime > " + getCurrentDateTimeForSearching()
 							+ " AND fromTime < " + tomorrow.getTime(), null,
@@ -850,7 +850,7 @@ public class DTHelper {
 			StorageConfigurationException, ConnectionException,
 			ProtocolException, SecurityException {
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			return getInstance().storage.query(EventObject.class,
 					"poiId = ? AND fromTime > "
 							+ getCurrentDateTimeForSearching(),
@@ -1086,7 +1086,7 @@ public class DTHelper {
 						.asList(inCategories)));
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			List<String> nonNullCategories = new ArrayList<String>();
 			String where = "";
 			for (int i = 0; i < categories.length; i++) {
@@ -1124,7 +1124,7 @@ public class DTHelper {
 			ConnectionException, ProtocolException, SecurityException {
 
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			if (text == null || text.trim().length() == 0) {
 				return getInstance().storage.getObjects(StoryObject.class);
 			}
@@ -1217,7 +1217,7 @@ public class DTHelper {
 			throws DataException, StorageConfigurationException,
 			ConnectionException, ProtocolException, SecurityException {
 		if (Utils.getObjectVersion(instance.mContext,
-				DTParamsHelper.getAppToken()) > 0) {
+				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			return getInstance().storage.query(StoryObject.class,
 					"attending IS NOT NULL", null, position, size, "title ASC");
 		} else {

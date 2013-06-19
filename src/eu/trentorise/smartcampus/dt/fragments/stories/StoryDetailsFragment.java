@@ -303,25 +303,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				}
 			});
 
-			if (mStory.getCommunityData() != null) {
-				CommunityData cd = mStory.getCommunityData();
-
-				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-					rating.setRating(cd.getRatings().get(0).getValue());
-				}
-
-				// user rating
-
-				// total raters
-				((TextView) getView().findViewById(R.id.event_rating_raters))
-						.setText(getString(R.string.ratingtext_raters,
-								cd.getRatingsCount()));
-
-				// averange rating
-				((TextView) getView().findViewById(R.id.event_rating_average))
-						.setText(getString(R.string.ratingtext_average,
-								cd.getAverageRating()));
-			}
+			updateRating();
 			updateAttending();
 
 			// description, optional
@@ -592,11 +574,26 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				getActivity()), R.string.rating_story_dialog_title);
 	}
 
-	private void updateRating(Integer result) {
-		getStory().getCommunityData().setAverageRating(result);
+	private void updateRating() {
 		RatingBar rating = (RatingBar) getView().findViewById(
 				R.id.story_details_rating);
-		rating.setRating(getStory().getCommunityData().getAverageRating());
+		if (mStory.getCommunityData() != null) {
+			CommunityData cd = mStory.getCommunityData();
+
+			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+				rating.setRating(cd.getRatings().get(0).getValue());
+			}
+
+			// user rating
+
+			// total raters
+			((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
+					cd.getRatingsCount()));
+
+			// averange rating
+			((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
+					cd.getAverageRating()));
+		}
 	}
 
 	private class RatingProcessor extends
@@ -615,7 +612,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 
 		@Override
 		public void handleResult(Integer result) {
-			updateRating(result);
+			mStory = null;
+			getStory();
+			updateRating();
 			Toast.makeText(getSherlockActivity(), R.string.rating_success,
 					Toast.LENGTH_SHORT).show();
 		}

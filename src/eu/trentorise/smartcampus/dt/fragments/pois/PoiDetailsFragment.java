@@ -126,10 +126,25 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		return inflater.inflate(R.layout.poidetails, container, false);
 	}
 
-	private void updateRating(Integer result) {
-		getPOI().getCommunityData().setAverageRating(result);
+	private void updateRating() {
 		RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
-		rating.setRating(getPOI().getCommunityData().getAverageRating());
+		if (mPoi.getCommunityData() != null) {
+			CommunityData cd = mPoi.getCommunityData();
+
+			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+				rating.setRating(cd.getRatings().get(0).getValue());
+			}
+
+			// user rating
+
+			// total raters
+			((TextView) getView().findViewById(R.id.poi_rating_raters)).setText(getString(R.string.ratingtext_raters,
+					cd.getRatingsCount()));
+
+			// averange rating
+			((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(R.string.ratingtext_average,
+					cd.getAverageRating()));
+		}
 	}
 
 	@Override
@@ -361,26 +376,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				}
 			});
 
-			if (mPoi.getCommunityData() != null) {
-				CommunityData cd = mPoi.getCommunityData();
-
-				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-					rating.setRating(cd.getRatings().get(0).getValue());
-				}
-
-				// user rating
-
-				// total raters
-				((TextView) getView().findViewById(R.id.poi_rating_raters))
-						.setText(getString(R.string.ratingtext_raters,
-								cd.getRatingsCount()));
-
-				// averange rating
-				((TextView) getView().findViewById(R.id.poi_rating_average))
-						.setText(getString(R.string.ratingtext_average,
-								cd.getAverageRating()));
-			}
-
+			updateRating();
 			if (tmp_comments.length > 0) {
 				// Comments
 				LinearLayout commentsList = (LinearLayout) getView()
@@ -577,7 +573,9 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		@Override
 		public void handleResult(Integer result) {
-			updateRating(result);
+			mPoi = null; 
+			getPOI();
+			updateRating();
 			Toast.makeText(getSherlockActivity(), R.string.rating_success,
 					Toast.LENGTH_SHORT).show();
 		}
