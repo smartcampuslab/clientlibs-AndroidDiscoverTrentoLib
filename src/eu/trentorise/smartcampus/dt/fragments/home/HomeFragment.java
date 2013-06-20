@@ -176,6 +176,9 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		}
 
 		if (getArguments() != null && getArguments().containsKey(ARG_OBJECTS)) {
+			mItemizedoverlay.clearMarkers();
+			poiCategories = null;
+			eventsCategories = null;
 			final List<BaseDTObject> list = (List<BaseDTObject>) getArguments().getSerializable(ARG_OBJECTS);
 			MapManager.fitMap(list, mapView);
 			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
@@ -191,8 +194,10 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 				}
 			}).execute();
 		} else if (getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY)) {
+			mItemizedoverlay.clearMarkers();
 			setPOICategoriesToLoad(getArguments().getString(ARG_POI_CATEGORY));
 		} else if (getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY)) {
+			mItemizedoverlay.clearMarkers();
 			setEventCategoriesToLoad(getArguments().getString(ARG_EVENT_CATEGORY));
 		} else {
 			if (poiCategories != null) {
@@ -279,13 +284,27 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 	public void setPOICategoriesToLoad(final String... categories) {
 		this.poiCategories = categories;
+
 		mItemizedoverlay.clearMarkers();
 
-		loadPoisCategory(categories);
+		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
+				getActivity(), mItemizedoverlay, mapView) {
+			@Override
+			protected Collection<? extends BaseDTObject> getObjects() {
+				try {
+					/* check if todays is checked and cat with searchTodayEvents */
+						return DTHelper.getPOIByCategory(0, -1, categories);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Collections.emptyList();
+				}
+			}
+
+		}).execute();
 		
 		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0))
 		{
-			loadEventsCategory(this.poiCategories);
+			loadEventsCategory(this.eventsCategories);
 		}
 	}
 
@@ -295,8 +314,14 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 			@Override
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
-					// TODO
-					return DTHelper.getEventsByCategories(0, -1, categories);
+					if (isTodayIncluded()) {
+						List<EventObject> newList = new ArrayList<EventObject>();
+						newList.addAll(DTHelper.searchTodayEvents(0, -1, ""));
+						if (categories != null)
+							newList.addAll(DTHelper.getEventsByCategories(0, -1, eventsNotTodayCategories));
+						return newList;
+					} else
+						return DTHelper.getEventsByCategories(0, -1, categories);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return Collections.emptyList();
@@ -378,16 +403,15 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 	private boolean isTodayIncluded() {
 		List<String> categoriesNotToday = new ArrayList<String>();
 		boolean istodayincluded = false;
-		if (eventsNotTodayCategories.length > 0)
-			for (int i = 0; i < eventsNotTodayCategories.length; i++) {
-				if (eventsNotTodayCategories[i].contains("Today")) {
+		if (eventsCategories.length > 0)
+			for (int i = 0; i < eventsCategories.length; i++) {
+				if (eventsCategories[i].contains("Today")) {
 
 					istodayincluded = true;
 				} else
-					categoriesNotToday.add(eventsNotTodayCategories[i]);
+					categoriesNotToday.add(eventsCategories[i]);
 
 			}
-		eventsNotTodayCategories = categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
 		return istodayincluded;
 	}
 }
