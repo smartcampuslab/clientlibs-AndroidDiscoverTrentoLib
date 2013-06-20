@@ -34,6 +34,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.github.espiandev.showcaseview.BaseTutorialActivity;
 import com.github.espiandev.showcaseview.ShowcaseView;
 import com.github.espiandev.showcaseview.ShowcaseView.OnShowcaseEventListener;
 import com.google.android.maps.MapView;
@@ -43,6 +44,7 @@ import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
+import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
@@ -443,9 +445,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		int[] position = new int[2];
 		View v = findViewById(id);
 		if (v != null) {
-			v.getLocationOnScreen(position);
-			TutorialActivity.newIstance(this, position,v.getWidth(), title, msg,
-					TUTORIAL_REQUEST_CODE);
+			v.getLocationInWindow(position);
+			BaseTutorialActivity.newIstance(this, position, v.getWidth(),Color.WHITE,null, 
+					title, msg, TUTORIAL_REQUEST_CODE, TutorialActivity.class);
 		}
 	}
 

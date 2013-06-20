@@ -9,9 +9,4 @@
     <string name="stories_tut">Stories will let you create and share travels as you explore places and events in Trento</string>
     <string name="menu_tut">By clicking this symbol, you will be able to search for events or places or add new </string>
 
-    <!-- Buttons -->
-    <string name="begin_tut">Start the guided tour</string>
-    <string name="next_tut">Next</string>
-    <string name="skip_tut">Skip</string>
-
 </resources>
