@@ -282,7 +282,8 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		mItemizedoverlay.clearMarkers();
 
 		loadPoisCategory(categories);
-		if (this.eventsCategories.length>0)
+		
+		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0))
 		{
 			loadEventsCategory(this.poiCategories);
 		}
@@ -368,7 +369,7 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 		}).execute();
 		
-		if (this.poiCategories.length>0)
+		if ((this.poiCategories!=null)&&(this.poiCategories.length>0))
 		{
 			loadPoisCategory(this.poiCategories);
 		}

@@ -68,20 +68,20 @@ public class DTParamsHelper {
 			if (getInstance().getParamsAsset().containsKey(KEY_POI_CATEGORIES)) {
 
 				return orderArrayByKey(CategoryHelper.POI_CATEGORIES,
-						(List<Integer>) getInstance().getParamsAsset().get(KEY_POI_CATEGORIES));
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_POI_CATEGORIES),type);
 
 			}
 		}
 		if (type.equalsIgnoreCase(CategoryHelper.CATEGORY_TYPE_EVENTS)) {
 			if (getInstance().getParamsAsset().containsKey(KEY_EVENT_CATEGORIES)) {
 				return orderArrayByKey(CategoryHelper.EVENT_CATEGORIES,
-						(List<Integer>) getInstance().getParamsAsset().get(KEY_EVENT_CATEGORIES));
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_EVENT_CATEGORIES),type);
 			}
 		}
 		if (type.equalsIgnoreCase(CategoryHelper.CATEGORY_TYPE_STORIES)) {
 			if (getInstance().getParamsAsset().containsKey(KEY_STORY_CATEGORIES)) {
 				return orderArrayByKey(CategoryHelper.STORY_CATEGORIES,
-						(List<Integer>) getInstance().getParamsAsset().get(KEY_STORY_CATEGORIES));
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_STORY_CATEGORIES),type);
 			}
 		}
 
@@ -106,14 +106,14 @@ public class DTParamsHelper {
 			if (getInstance().getParamsAsset().containsKey(KEY_POIS_DEFAULT)) {
 
 				return orderArrayByKey(CategoryHelper.POI_CATEGORIES,
-						(List<Integer>) getInstance().getParamsAsset().get(KEY_POIS_DEFAULT));
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_POIS_DEFAULT),type);
 
 			}
 		}
 		if (type.equalsIgnoreCase(CategoryHelper.CATEGORY_TYPE_EVENTS)) {
 			if (getInstance().getParamsAsset().containsKey(KEY_EVENTS_DEFAULT)) {
 				return orderArrayByKey(CategoryHelper.EVENT_CATEGORIES,
-						(List<Integer>) getInstance().getParamsAsset().get(KEY_EVENTS_DEFAULT));
+						(List<Integer>) getInstance().getParamsAsset().get(KEY_EVENTS_DEFAULT),type);
 			}
 		}
 
@@ -124,10 +124,13 @@ public class DTParamsHelper {
 		return paramsAsset;
 	}
 
-	private static CategoryDescriptor[] orderArrayByKey(CategoryDescriptor[] pOI_CATEGORIES2, List<Integer> filter) {
+	
+	private static CategoryDescriptor[] orderArrayByKey(CategoryDescriptor[] pOI_CATEGORIES2, List<Integer> filter, String type) {
 		List<CategoryDescriptor> returnlist = new ArrayList<CategoryDescriptor>();
 		for (Integer index : filter) {
-			returnlist.add(pOI_CATEGORIES2[index - 1]);
+			if ((index == 0)&&(type==CategoryHelper.CATEGORY_TYPE_EVENTS))
+				returnlist.add(CategoryHelper.EVENTS_TODAY);
+				else returnlist.add(pOI_CATEGORIES2[index - 1]);
 		}
 		return returnlist.toArray(new CategoryDescriptor[] {});
 	}
