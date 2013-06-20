@@ -201,7 +201,8 @@
 	<string name="toast_event_saved">Event saved!</string>
 	<string name="toast_poi_shared">Place shared.</string>
 	<string name="toast_follow_ok">OK! You\'re following \"%s\"</string>
-	
+    <string name="toast_unfollow_ok">OK! You\'re not following \"%s\"</string>
+		
 	<string name="notifications_unread">Unread notifications</string>
 	<string name="notifications_list_empty">You have not received notifications yet about the events and the places you are following.</string>
 	<string name="notifications_list_title">Notifications</string>
