@@ -412,6 +412,7 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 					categoriesNotToday.add(eventsCategories[i]);
 
 			}
+		eventsNotTodayCategories =  categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
 		return istodayincluded;
 	}
 }
