@@ -541,7 +541,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			StoryDetailsFragment fragment = new StoryDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(StoryDetailsFragment.ARG_STORY, ((StoryPlaceholder) v.getTag()).story);
+			args.putString(StoryDetailsFragment.ARG_STORY_ID, ((StoryPlaceholder) v.getTag()).story.getId());
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

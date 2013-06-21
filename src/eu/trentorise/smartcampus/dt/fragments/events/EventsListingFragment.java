@@ -502,7 +502,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			Bundle args = new Bundle();
 			// args.putSerializable(EventDetailsFragment.ARG_EVENT_OBJECT,
 			// ((EventPlaceholder) v.getTag()).event);
-			args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, ((EventPlaceholder) v.getTag()).event.getId());
+			args.putString(EventDetailsFragment.ARG_EVENT_ID, ((EventPlaceholder) v.getTag()).event.getId());
 
 			fragment.setArguments(args);
 

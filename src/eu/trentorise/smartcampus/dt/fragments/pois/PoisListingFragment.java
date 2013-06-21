@@ -543,7 +543,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(PoiDetailsFragment.ARG_POI, ((PoiPlaceholder) v.getTag()).poi);
+			args.putString(PoiDetailsFragment.ARG_POI_ID, ((PoiPlaceholder) v.getTag()).poi.getId());
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
