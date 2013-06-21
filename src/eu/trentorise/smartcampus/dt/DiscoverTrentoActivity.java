@@ -84,10 +84,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		// DEBUG PURPOSE
 		DTHelper.getTutorialPreferences(this).edit().clear().commit();
 
-		if (DTHelper.isFirstLaunch(this)) {
-			showTourDialog();
-			DTHelper.disableFirstLaunch(this);
-		}
+//		if (DTHelper.isFirstLaunch(this)) {
+//			showTourDialog();
+//			DTHelper.disableFirstLaunch(this);
+//		}
 	}
 
 	@Override
