@@ -97,16 +97,16 @@ import eu.trentorise.smartcampus.storage.BasicObject;
 /*
  * Shows the detail of the story and steps, manages the mapview and the refresh of it
  */
-public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
-		implements MapStoryHandler, BasicObjectMapItemTapListener {
+public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements MapStoryHandler,
+		BasicObjectMapItemTapListener {
 
 	private boolean mFollowByIntent;
 	private boolean mStart = true;
 	private boolean mCanceledFollow = false;
 
-	public static final String ARG_STORY = "story_object";
+	public static final String ARG_STORY_ID = "story_id";
 	private StoryObject mStory = null;
-	private String storyId;
+	private String mStoryId;
 	private int actualStepPosition = -1;
 	private MapView mapViewStory = null;
 	private DTStoryItemizedOverlay mItemizedoverlay = null;
@@ -121,35 +121,38 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setHasOptionsMenu(true);
+
+		if (getArguments() != null) {
+			mStoryId = getArguments().getString(ARG_STORY_ID);
+			mStory = DTHelper.findStoryById(mStoryId);
+		}
+
 		setFollowByIntent();
 	}
 
 	private StoryObject getStory() {
-		if (mStory == null) {
-			mStory = (StoryObject) getArguments().getSerializable(ARG_STORY);
-			storyId = mStory.getId();
+		if (mStoryId == null) {
+			mStoryId = getArguments().getString(ARG_STORY_ID);
 		}
-		mStory = DTHelper.findStoryById(storyId);
+
+		mStory = DTHelper.findStoryById(mStoryId);
 		return mStory;
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.story_details, container, false);
 	}
 
 	private void setFollowByIntent() {
 		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager()
-					.getApplicationInfo(getSherlockActivity().getPackageName(),
-							PackageManager.GET_META_DATA);
+			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
+					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
 			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
-			Log.e(StoryDetailsFragment.class.getName(),
-					"you should set the follow-by-intent metadata in app manifest");
+			Log.e(StoryDetailsFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
 		}
 
 	}
@@ -158,13 +161,11 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	public void onStart() {
 		super.onStart();
 
-		this.stepScollView = (ScrollView) getView().findViewById(
-				R.id.step_details);
+		this.stepScollView = (ScrollView) getView().findViewById(R.id.step_details);
 
 		if (getStory() != null) {
 			// title
-			TextView titleText = (TextView) this.getView().findViewById(
-					R.id.story_details_title);
+			TextView titleText = (TextView) this.getView().findViewById(R.id.story_details_title);
 			titleText.setText(getStory().getTitle());
 
 			/*
@@ -172,86 +173,59 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 			 */
 			// follow/unfollow
 			if (mStart) {
-				ToggleButton followTbtn = (ToggleButton) this.getView()
-						.findViewById(R.id.storydetails_follow_tbtn);
-				if (mStory.getCommunityData().getFollowing()
-						.containsKey(DTHelper.getUserId())) {
-					followTbtn
-							.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
+				if (mStory.getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 					followTbtn.setChecked(true);
 				} else {
-					followTbtn
-							.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
 					followTbtn.setChecked(false);
 				}
 
-				followTbtn
-						.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-							@Override
-							public void onCheckedChanged(
-									CompoundButton buttonView, boolean isChecked) {
-								if (!mCanceledFollow) {
-									if (isChecked) {
-										// FOLLOW
-										FollowEntityObject obj = new FollowEntityObject(
-												getStory().getEntityId(),
-												getStory().getTitle(),
-												DTConstants.ENTITY_TYPE_STORY);
-										if (mFollowByIntent) {
-											followButtonView = buttonView;
-											FollowHelper.follow(mFragment, obj,
-													3000);
-										} else {
-											SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-													getSherlockActivity(),
-													new FollowAsyncTaskProcessor(
-															getSherlockActivity(),
-															buttonView));
-											followTask
-													.execute(
-															getSherlockActivity()
-																	.getApplicationContext(),
-															DTParamsHelper
-																	.getAppToken(),
-															DTHelper.getAuthToken(),
-															obj);
-										}
-									} else {
-										// UNFOLLOW
-										BaseDTObject obj;
-										try {
-											obj = DTHelper
-													.findStoryByEntityId(getStory()
-															.getEntityId());
-											if (obj != null) {
-												SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-														getSherlockActivity(),
-														new UnfollowAsyncTaskProcessor(
-																getSherlockActivity(),
-																buttonView));
-												unfollowTask.execute(obj);
-											}
-										} catch (Exception e) {
-											Log.e(EventDetailsFragment.class
-													.getName(),
-													String.format(
-															"Error unfollowing event %s",
-															getStory()
-																	.getEntityId()));
-										}
-									}
+				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						if (!mCanceledFollow) {
+							if (isChecked) {
+								// FOLLOW
+								FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(),
+										getStory().getTitle(), DTConstants.ENTITY_TYPE_STORY);
+								if (mFollowByIntent) {
+									followButtonView = buttonView;
+									FollowHelper.follow(mFragment, obj, 3000);
 								} else {
-									mCanceledFollow = false;
+									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
+													buttonView));
+									followTask.execute(getSherlockActivity().getApplicationContext(),
+											DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+								}
+							} else {
+								// UNFOLLOW
+								BaseDTObject obj;
+								try {
+									obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
+									if (obj != null) {
+										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+														buttonView));
+										unfollowTask.execute(obj);
+									}
+								} catch (Exception e) {
+									Log.e(EventDetailsFragment.class.getName(),
+											String.format("Error unfollowing event %s", getStory().getEntityId()));
 								}
 							}
-						});
+						} else {
+							mCanceledFollow = false;
+						}
+					}
+				});
 			}
 
 			// attend
-			ToggleButton attendTbtn = (ToggleButton) this.getView()
-					.findViewById(R.id.storydetails_attend_tbtn);
-			if (mStory.getAttending() == null
-					|| mStory.getAttending().isEmpty()) {
+			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_attend_tbtn);
+			if (mStory.getAttending() == null || mStory.getAttending().isEmpty()) {
 				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
 				attendTbtn.setChecked(false);
 			} else {
@@ -259,39 +233,29 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				attendTbtn.setChecked(true);
 			}
 
-			attendTbtn
-					.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-						@Override
-						public void onCheckedChanged(CompoundButton buttonView,
-								boolean isChecked) {
-							if (new AMSCAccessProvider()
-									.isUserAnonymous(getSherlockActivity())) {
-								// show dialog box
-								UserRegistration
-										.upgradeuser(getSherlockActivity());
-							} else {
-								new SCAsyncTask<Boolean, Void, StoryObject>(
-										getActivity(), new AttendProcessor(
-												getSherlockActivity(),
-												buttonView)).execute(getStory()
-										.getAttending() == null
-										|| getStory().getAttending().isEmpty());
-							}
-						}
-					});
+			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+						// show dialog box
+						UserRegistration.upgradeuser(getSherlockActivity());
+					} else {
+						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
+								buttonView)).execute(getStory().getAttending() == null || getStory().getAttending().isEmpty());
+					}
+				}
+			});
 			/*
 			 * END BUTTONS
 			 */
 
 			// rating
-			RatingBar rating = (RatingBar) getView().findViewById(
-					R.id.story_details_rating);
+			RatingBar rating = (RatingBar) getView().findViewById(R.id.story_details_rating);
 			rating.setOnTouchListener(new View.OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider()
-								.isUserAnonymous(getSherlockActivity())) {
+						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 							// show dialog box
 							UserRegistration.upgradeuser(getSherlockActivity());
 							return false;
@@ -307,34 +271,27 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 			updateAttending();
 
 			// description, optional
-			titleText = (TextView) this.getView().findViewById(
-					R.id.story_details_descr);
-			if (mStory.getDescription() != null
-					&& mStory.getDescription().length() > 0) {
+			titleText = (TextView) this.getView().findViewById(R.id.story_details_descr);
+			if (mStory.getDescription() != null && mStory.getDescription().length() > 0) {
 				titleText.setText(mStory.getDescription());
 			}
 
 			// detail of the story (contains all the story elements)
-			final ScrollView detailStory = (ScrollView) this.getView()
-					.findViewById(R.id.story_details);
+			final ScrollView detailStory = (ScrollView) this.getView().findViewById(R.id.story_details);
 			detailStory.setVisibility(View.VISIBLE);
 
 			// detail of the step (contains all the step elements)
-			final ScrollView detailStep = (ScrollView) this.getView()
-					.findViewById(R.id.step_details);
+			final ScrollView detailStep = (ScrollView) this.getView().findViewById(R.id.step_details);
 
 			// disable the step part at the start
 			detailStep.setVisibility(View.GONE);
-			final LinearLayout buttonStep = (LinearLayout) this.getView()
-					.findViewById(R.id.navigation_buttons);
+			final LinearLayout buttonStep = (LinearLayout) this.getView().findViewById(R.id.navigation_buttons);
 			buttonStep.setVisibility(View.GONE);
 
 			// start button
-			final LinearLayout buttonSart = (LinearLayout) this.getView()
-					.findViewById(R.id.start_buttons);
+			final LinearLayout buttonSart = (LinearLayout) this.getView().findViewById(R.id.start_buttons);
 			buttonSart.setVisibility(View.VISIBLE);
-			final Button startStory = (Button) this.getView().findViewById(
-					R.id.btn_story_start);
+			final Button startStory = (Button) this.getView().findViewById(R.id.btn_story_start);
 			startStory.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -346,43 +303,37 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 					buttonStep.setVisibility(View.VISIBLE);
 					buttonSart.setVisibility(View.GONE);
 					detailStory.setVisibility(View.GONE);
-					mItemizedoverlay.changeElementsonMap(actualStepPosition,
-							mStory);
+					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
 				}
 			});
 
 			// prevbutton
-			final Button prevButton = (Button) this.getView().findViewById(
-					R.id.btn_story_prev);
+			final Button prevButton = (Button) this.getView().findViewById(R.id.btn_story_prev);
 			prevButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					mItemizedoverlay.fithMaptOnTheStory();
 					changeStep(actualStepPosition - 1);
-					mItemizedoverlay.changeElementsonMap(actualStepPosition,
-							mStory);
+					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
 					stepScollView.scrollTo(0, stepScollView.getTop());
 				}
 			});
 
 			// next button
-			final Button nextButton = (Button) this.getView().findViewById(
-					R.id.btn_story_next);
+			final Button nextButton = (Button) this.getView().findViewById(R.id.btn_story_next);
 			nextButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					mItemizedoverlay.fithMaptOnTheStory();
 					changeStep(actualStepPosition + 1);
-					mItemizedoverlay.changeElementsonMap(actualStepPosition,
-							mStory);
+					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
 					stepScollView.scrollTo(0, stepScollView.getTop());
 				}
 			});
 			// reinit the story every time this fragment is loaded
 			changeStep(-1);
 			// hide the keyboard
-			InputMethodManager imm = (InputMethodManager) getSherlockActivity()
-					.getSystemService(Context.INPUT_METHOD_SERVICE);
+			InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(nextButton.getWindowToken(), 0);
 			changeTheMapConfiguration();
 			mItemizedoverlay.fithMaptOnTheStory();
@@ -410,16 +361,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	private void changeStep(int i) {
 		actualStepPosition = i;
 		// detail of the story
-		ScrollView detailStory = (ScrollView) this.getView().findViewById(
-				R.id.story_details);
+		ScrollView detailStory = (ScrollView) this.getView().findViewById(R.id.story_details);
 		// disable the step part
-		ScrollView detailStep = (ScrollView) this.getView().findViewById(
-				R.id.step_details);
-		LinearLayout buttonStep = (LinearLayout) this.getView().findViewById(
-				R.id.navigation_buttons);
+		ScrollView detailStep = (ScrollView) this.getView().findViewById(R.id.step_details);
+		LinearLayout buttonStep = (LinearLayout) this.getView().findViewById(R.id.navigation_buttons);
 		// start button
-		LinearLayout startStory = (LinearLayout) this.getView().findViewById(
-				R.id.start_buttons);
+		LinearLayout startStory = (LinearLayout) this.getView().findViewById(R.id.start_buttons);
 
 		if (getStory().getSteps() == null || getStory().getSteps().size() == 0) {
 			startStory.setVisibility(View.GONE);
@@ -442,31 +389,24 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				detailStep.setVisibility(View.VISIBLE);
 				buttonStep.setVisibility(View.VISIBLE);
 				// number of the step
-				TextView numberOfStepText = (TextView) this.getView()
-						.findViewById(R.id.number_of_step);
-				numberOfStepText
-						.setText(String.valueOf(actualStepPosition + 1));
+				TextView numberOfStepText = (TextView) this.getView().findViewById(R.id.number_of_step);
+				numberOfStepText.setText(String.valueOf(actualStepPosition + 1));
 				// name of the step (if the POI hasn't been erased)
-				TextView nameOfStepText = (TextView) this.getView()
-						.findViewById(R.id.step_details_name);
+				TextView nameOfStepText = (TextView) this.getView().findViewById(R.id.step_details_name);
 				if (mStory.getSteps().get(actualStepPosition).assignedPoi() != null)
-					nameOfStepText.setText(mStory.getSteps()
-							.get(actualStepPosition).assignedPoi().getTitle());
+					nameOfStepText.setText(mStory.getSteps().get(actualStepPosition).assignedPoi().getTitle());
 				else
 					nameOfStepText.setText(getString(R.string.poi_erased));
 				// notes of the step
-				TextView noteOfStepText = (TextView) this.getView()
-						.findViewById(R.id.step_details_note);
+				TextView noteOfStepText = (TextView) this.getView().findViewById(R.id.step_details_note);
 				// if (story.getSteps().get(actualStepPosition).assignedPoi() !=
 				// null)
 				// noteOfStepText.setText(story.getSteps()
 				// .get(actualStepPosition).getNote());
 				// else
 				// noteOfStepText.setText(" ");
-				noteOfStepText.setText(mStory.getSteps()
-						.get(actualStepPosition).getNote());
-				Button nextStep = (Button) this.getView().findViewById(
-						R.id.btn_story_next);
+				noteOfStepText.setText(mStory.getSteps().get(actualStepPosition).getNote());
+				Button nextStep = (Button) this.getView().findViewById(R.id.btn_story_next);
 
 				// If it is at the end of the story, hides the "next" button
 				if (actualStepPosition == mStory.getSteps().size() - 1)
@@ -482,11 +422,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	@Override
 	public void onDestroyView() {
 		try {
-			FragmentTransaction transaction = getFragmentManager()
-					.beginTransaction();
-			transaction.remove(
-					getFragmentManager()
-							.findFragmentById(R.id.my_map_fragment1)).commit();
+			FragmentTransaction transaction = getFragmentManager().beginTransaction();
+			transaction.remove(getFragmentManager().findFragmentById(R.id.my_map_fragment1)).commit();
 		} catch (Exception e) {
 		}
 
@@ -501,27 +438,22 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	public void onPrepareOptionsMenu(Menu menu) {
 
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu,
-				menu);
+		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
-		if (actualStepPosition == -1 || getStory().getSteps() == null
-				|| getStory().getSteps().size() == 0) {
+		if (actualStepPosition == -1 || getStory().getSteps() == null || getStory().getSteps().size() == 0) {
 			// story visualization
 			// String userId = DTHelper.getUserId();
 
 			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE,
 			// R.string.rate);
 
-			if (getStory().getAttending() == null
-					|| getStory().getAttending().isEmpty()) {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories,
-						Menu.NONE, R.string.add_my_stories);
+			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE, R.string.add_my_stories);
 			} else {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories,
-						Menu.NONE, R.string.delete_my_stories);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE, R.string.delete_my_stories);
 			}
 
 			// if
@@ -534,23 +466,18 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 			// R.string.follow);
 			// }
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE,
-					R.string.submenu_tag);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
 
 			// CAN EDIT OR DELETE ONLY OWN STORY
 			if (DTHelper.isOwnedObject(getStory())) {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE,
-						R.string.edit);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete,
-						Menu.NONE, R.string.delete);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
 			}
 		} else {
 			// POI visualization
 			if (getStory().getSteps().get(actualStepPosition).assignedPoi() != null) {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.related_step_btn,
-						Menu.NONE, R.string.related_poi);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn,
-						Menu.NONE, R.string.getdir);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.related_step_btn, Menu.NONE, R.string.related_poi);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn, Menu.NONE, R.string.getdir);
 
 			}
 			// CAN EDIT AND DELETE STEPS ONLY IN OWN STORIES
@@ -558,8 +485,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				// TODO implement the step cancellation!!!!
 				// submenu.add(Menu.CATEGORY_SYSTEM, R.id.delete_step_btn,
 				// Menu.NONE, R.string.delete);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_step_btn,
-						Menu.NONE, R.string.edit);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_step_btn, Menu.NONE, R.string.edit);
 			}
 
 		}
@@ -567,16 +493,14 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	}
 
 	private void ratingDialog() {
-		float rating = (mStory != null && mStory.getCommunityData() != null && mStory
-				.getCommunityData().getAverageRating() > 0) ? mStory
+		float rating = (mStory != null && mStory.getCommunityData() != null && mStory.getCommunityData().getAverageRating() > 0) ? mStory
 				.getCommunityData().getAverageRating() : 2.5f;
-		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(
-				getActivity()), R.string.rating_story_dialog_title);
+		RatingHelper
+				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_story_dialog_title);
 	}
 
 	private void updateRating() {
-		RatingBar rating = (RatingBar) getView().findViewById(
-				R.id.story_details_rating);
+		RatingBar rating = (RatingBar) getView().findViewById(R.id.story_details_rating);
 		if (mStory.getCommunityData() != null) {
 			CommunityData cd = mStory.getCommunityData();
 
@@ -596,17 +520,14 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		}
 	}
 
-	private class RatingProcessor extends
-			AbstractAsyncTaskProcessor<Integer, Integer> implements
-			RatingHandler {
+	private class RatingProcessor extends AbstractAsyncTaskProcessor<Integer, Integer> implements RatingHandler {
 
 		public RatingProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Integer performAction(Integer... params)
-				throws SecurityException, Exception {
+		public Integer performAction(Integer... params) throws SecurityException, Exception {
 			return DTHelper.rate(mStory, params[0]);
 		}
 
@@ -615,14 +536,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 			mStory = null;
 			getStory();
 			updateRating();
-			Toast.makeText(getSherlockActivity(), R.string.rating_success,
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), R.string.rating_success, Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
 		public void onRatingChanged(float rating) {
-			new SCAsyncTask<Integer, Void, Integer>(getActivity(), this)
-					.execute((int) rating);
+			new SCAsyncTask<Integer, Void, Integer>(getActivity(), this).execute((int) rating);
 		}
 	}
 
@@ -688,23 +607,19 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		// getStory().getEntityId()));
 		// }
 		// return true;
-		if (item.getItemId() == R.id.submenu_edit
-				|| item.getItemId() == R.id.submenu_tag) {
+		if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
 				// show dialog box
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity()
-						.getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
 				args.putSerializable(CreateStoryFragment.ARG_STORY, mStory);
 				fragment.setArguments(args);
-				fragmentTransaction
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment,
-						"stories");
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -715,29 +630,23 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(),
-						new StoryDeleteProcessor(getActivity()))
+				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
 						.execute(mStory);
 				return true;
 			}
 		} else if (item.getItemId() == R.id.related_step_btn) {
-			FragmentTransaction fragmentTransaction = getSherlockActivity()
-					.getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 			Bundle args = new Bundle();
-			args.putSerializable(PoiDetailsFragment.ARG_POI, getStory()
-					.getSteps().get(actualStepPosition).assignedPoi());
+			args.putString(PoiDetailsFragment.ARG_POI_ID, getStory().getSteps().get(actualStepPosition).assignedPoi().getId());
 			fragment.setArguments(args);
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment,
-					"stories");
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.direction_step_btn) {
-			Address to = getStory().getSteps().get(actualStepPosition)
-					.assignedPoi().asGoogleAddress();
+			Address to = getStory().getSteps().get(actualStepPosition).assignedPoi().asGoogleAddress();
 			Address from = null;
 			GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 			if (mylocation != null) {
@@ -753,21 +662,15 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity()
-						.getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				AddStepToStoryFragment fragment = new AddStepToStoryFragment();
 				Bundle args = new Bundle();
-				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER,
-						stepHandler);
-				args.putSerializable(AddStepToStoryFragment.ARG_STORY_OBJECT,
-						mStory);
-				args.putInt(AddStepToStoryFragment.ARG_STEP_POSITION,
-						actualStepPosition);
+				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, stepHandler);
+				args.putSerializable(AddStepToStoryFragment.ARG_STORY_OBJECT, mStory);
+				args.putInt(AddStepToStoryFragment.ARG_STEP_POSITION, actualStepPosition);
 				fragment.setArguments(args);
-				fragmentTransaction
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment,
-						"stories");
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -785,8 +688,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 						.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
-				data.putExtra(AccountManager.KEY_AUTHTOKEN,
-						DTHelper.getAuthToken());
+				data.putExtra(AccountManager.KEY_AUTHTOKEN, DTHelper.getAuthToken());
 				mStart = false;
 			} else {
 				getStory().getCommunityData().getFollowing().clear();
@@ -805,25 +707,23 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 
 		mItemizedoverlay.clearMarkers();
 
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(
-				getActivity(), new MapStoryLoadProcessor(getActivity(),
-						mItemizedoverlay, mapViewStory) {
-					@Override
-					protected Collection<? extends BaseDTObject> getObjects() {
-						try {
-							ArrayList<POIObject> poiList = new ArrayList<POIObject>();
-							poiList = DTHelper.getPOIBySteps(story.getSteps());
-							for (int i = 0; i < poiList.size(); i++) {
-								story.getSteps().get(i)
-										.assignPoi(poiList.get(i));
-							}
-							return poiList;
-						} catch (Exception e) {
-							e.printStackTrace();
-							return Collections.emptyList();
-						}
+		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapStoryLoadProcessor(getActivity(),
+				mItemizedoverlay, mapViewStory) {
+			@Override
+			protected Collection<? extends BaseDTObject> getObjects() {
+				try {
+					ArrayList<POIObject> poiList = new ArrayList<POIObject>();
+					poiList = DTHelper.getPOIBySteps(story.getSteps());
+					for (int i = 0; i < poiList.size(); i++) {
+						story.getSteps().get(i).assignPoi(poiList.get(i));
 					}
-				}).execute();
+					return poiList;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Collections.emptyList();
+				}
+			}
+		}).execute();
 	}
 
 	/*
@@ -844,8 +744,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		mapViewStory.getController().setZoom(15);
 		List<Overlay> listOfOverlays = mapViewStory.getOverlays();
 
-		mItemizedoverlay = new DTStoryItemizedOverlay(getSherlockActivity(),
-				mapViewStory, mStory);
+		mItemizedoverlay = new DTStoryItemizedOverlay(getSherlockActivity(), mapViewStory, mStory);
 		mItemizedoverlay.setMapItemTapListener(this);
 		listOfOverlays.add(mItemizedoverlay);
 		setPOIStoryToLoad(mStory);
@@ -866,8 +765,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		POIObject poiTapped = (POIObject) o;
 		for (int i = 0; i < mStory.getSteps().size(); i++)
 			if (mStory.getSteps().get(i).assignedPoi() != null)
-				if (poiTapped.getId().equals(
-						mStory.getSteps().get(i).assignedPoi().getId())) {
+				if (poiTapped.getId().equals(mStory.getSteps().get(i).assignedPoi().getId())) {
 					actualStepPosition = i;
 					changeStep(actualStepPosition);
 				}
@@ -909,24 +807,21 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			// Add the buttons
 			builder.setMessage(getActivity().getString(R.string.sure_change));
-			builder.setPositiveButton(R.string.ok,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							// User clicked OK button
-							mStory.getSteps().set(position, step);
-							new SCAsyncTask<StoryObject, Void, Boolean>(
-									getActivity(), new CreateStoryProcessor(
-											getActivity())).execute(mStory);
+			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					// User clicked OK button
+					mStory.getSteps().set(position, step);
+					new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity()))
+							.execute(mStory);
 
-						}
-					});
-			builder.setNegativeButton(R.string.cancel,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							// User cancelled the dialog
-							dialog.dismiss();
-						}
-					});
+				}
+			});
+			builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					// User cancelled the dialog
+					dialog.dismiss();
+				}
+			});
 
 			// Create the AlertDialog
 			AlertDialog dialog = builder.create();
@@ -938,27 +833,22 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	/*
 	 * Delete a story
 	 */
-	private class StoryDeleteProcessor extends
-			AbstractAsyncTaskProcessor<StoryObject, Boolean> {
+	private class StoryDeleteProcessor extends AbstractAsyncTaskProcessor<StoryObject, Boolean> {
 		public StoryDeleteProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(StoryObject... params)
-				throws SecurityException, Exception {
+		public Boolean performAction(StoryObject... params) throws SecurityException, Exception {
 			return DTHelper.deleteStory(params[0]);
 		}
 
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				getSherlockActivity().getSupportFragmentManager()
-						.popBackStack();
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
-				Toast.makeText(getSherlockActivity(),
-						R.string.app_failure_cannot_delete, Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(getSherlockActivity(), R.string.app_failure_cannot_delete, Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -967,8 +857,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	/*
 	 * Attend to a story
 	 */
-	private class AttendProcessor extends
-			AbstractAsyncTaskProcessor<Boolean, StoryObject> {
+	private class AttendProcessor extends AbstractAsyncTaskProcessor<Boolean, StoryObject> {
 
 		private CompoundButton buttonView;
 		private Boolean attend;
@@ -979,8 +868,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		}
 
 		@Override
-		public StoryObject performAction(Boolean... params)
-				throws SecurityException, Exception {
+		public StoryObject performAction(Boolean... params) throws SecurityException, Exception {
 			attend = params[0];
 			if (attend) {
 				return DTHelper.addToMyStories(getStory());
@@ -994,16 +882,11 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 			updateAttending();
 			changeTheMapConfiguration();
 			// getSherlockActivity().invalidateOptionsMenu();
-			if (getStory().getAttending() == null
-					|| getStory().getAttending().isEmpty()) {
-				Toast.makeText(getSherlockActivity(),
-						R.string.not_attend_story_success, Toast.LENGTH_SHORT)
-						.show();
+			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
+				Toast.makeText(getSherlockActivity(), R.string.not_attend_story_success, Toast.LENGTH_SHORT).show();
 				buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
 			} else {
-				Toast.makeText(getSherlockActivity(),
-						R.string.attend_story_success, Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(getSherlockActivity(), R.string.attend_story_success, Toast.LENGTH_SHORT).show();
 				buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 			}
 		}
@@ -1013,33 +896,26 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 	/*
 	 * Create a story
 	 */
-	private class CreateStoryProcessor extends
-			AbstractAsyncTaskProcessor<StoryObject, Boolean> {
+	private class CreateStoryProcessor extends AbstractAsyncTaskProcessor<StoryObject, Boolean> {
 
 		public CreateStoryProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(StoryObject... params)
-				throws SecurityException, Exception {
+		public Boolean performAction(StoryObject... params) throws SecurityException, Exception {
 			return DTHelper.saveStory(params[0]);
 		}
 
 		@Override
 		public void handleResult(Boolean result) {
 			if (result) {
-				Toast.makeText(getSherlockActivity(),
-						R.string.story_create_success, Toast.LENGTH_SHORT)
-						.show();
-				getSherlockActivity().getSupportFragmentManager()
-						.popBackStack();
+				Toast.makeText(getSherlockActivity(), R.string.story_create_success, Toast.LENGTH_SHORT).show();
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 
 			} else {
-				Toast.makeText(getSherlockActivity(), R.string.update_success,
-						Toast.LENGTH_SHORT).show();
-				getSherlockActivity().getSupportFragmentManager()
-						.popBackStack();
+				Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
 
 			}
 			mItemizedoverlay.fithMaptOnTheStory();
@@ -1052,10 +928,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		protected Void doInBackground(String... params) {
 			String topicId = params[0];
 			try {
-				DTHelper.follow(DTHelper.findStoryById(storyId), topicId);
+				DTHelper.follow(DTHelper.findStoryById(mStoryId), topicId);
 			} catch (Exception e) {
-				Log.e(FollowAsyncTask.class.getName(),
-						String.format("Exception following event %s", storyId));
+				Log.e(FollowAsyncTask.class.getName(), String.format("Exception following event %s", mStoryId));
 			}
 			return null;
 		}
@@ -1064,8 +939,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT
 		protected void onPostExecute(Void result) {
 			// getSherlockActivity().invalidateOptionsMenu();
 			if (followButtonView != null) {
-				followButtonView
-						.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				followButtonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 				followButtonView = null;
 			}
 			mStart = true;

@@ -102,14 +102,14 @@ public class InfoDialog extends SherlockDialogFragment {
 
 				if (data instanceof POIObject) {
 					PoiDetailsFragment fragment = new PoiDetailsFragment();
-					args.putSerializable(PoiDetailsFragment.ARG_POI, data);
+					args.putString(PoiDetailsFragment.ARG_POI_ID, data.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					fragmentTransaction.replace(android.R.id.content, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				} else if (data instanceof EventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
-					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (data.getId()));
+					args.putString(EventDetailsFragment.ARG_EVENT_ID, (data.getId()));
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					fragmentTransaction.replace(android.R.id.content, fragment, "me");

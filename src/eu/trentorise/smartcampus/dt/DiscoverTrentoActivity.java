@@ -315,16 +315,16 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				Bundle args = new Bundle();
 				if (result instanceof POIObject) {
 					fragment = new PoiDetailsFragment();
-					args.putSerializable(PoiDetailsFragment.ARG_POI, result);
+					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
 					tag = "pois";
 				} else if (result instanceof EventObject) {
 					fragment = new EventDetailsFragment();
-					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT,
+					args.putString(EventDetailsFragment.ARG_EVENT_ID,
 							(result.getId()));
 					tag = "events";
 				} else if (result instanceof StoryObject) {
 					fragment = new StoryDetailsFragment();
-					args.putSerializable(StoryDetailsFragment.ARG_STORY, result);
+					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
 					tag = "stories";
 					// } else if (result instanceof StoryObject) {
 					// fragment = new EventDetailsFragment();
