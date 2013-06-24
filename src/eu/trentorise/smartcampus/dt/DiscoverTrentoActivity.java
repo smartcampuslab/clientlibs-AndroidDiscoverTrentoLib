@@ -17,15 +17,21 @@ package eu.trentorise.smartcampus.dt;
 
 import java.security.acl.LastOwnerException;
 
+import android.R.bool;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
 import android.widget.Toast;
 
@@ -376,7 +382,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private void showTourDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
-				.setMessage(getString(R.string.first_launch))
+				.setMessage(getString(R.string.dt_first_launch))
 				.setPositiveButton(getString(R.string.begin_tut),
 						new DialogInterface.OnClickListener() {
 
@@ -407,44 +413,74 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		int id;
 		String title = "Tip!";
 		String msg = "";
+		boolean isLast = false;
 		switch (t) {
 		case NOTIF:
 			id = R.id.menu_item_notifications;
-			msg = getString(R.string.notif_tut);
+			title = getString(R.string.notifications_unread);
+			msg = getString(R.string.dt_notif_tut);
 			break;
 		case EVENTS:
-			id = R.id.menu_item_allevents;
-			msg = getString(R.string.events_tut);
+			id = R.id.menu_item_show_events_layers;
+			title = getString(R.string.menu_item__events_layers_text);
+			msg = getString(R.string.dt_events_tut);
 			break;
 		case PLACES:
-			id = R.id.menu_item_allpois;
-			msg = getString(R.string.places_tut);
+			id = R.id.menu_item_show_places_layers;
+			title = getString(R.string.menu_item__places_layers_text);
+			msg = getString(R.string.dt_places_tut);
 			break;
-		// case MENU:
-		// id = -2;
-		// msg = getString(R.string.menu_tut);
-		// break;
-		// case STORIES:
-		// id = -3;
-		// msg = getString(R.string.stories_tut);
-		// break;
+		case STORIES:
+			id = -3;
+			title = getString(R.string.tab_stories);
+			msg = getString(R.string.dt_stories_tut);
+			break;
 		default:
 			id = -1;
 		}
 		if (t != null) {
 			lastShowed = t;
-			displayShowcaseView(id, title, msg);
+			displayShowcaseView(id, title, msg,isLast);
 		} else
 			DTHelper.setWantTour(this, false);
 	}
 
-	private void displayShowcaseView(int id, String title, String msg) {
+	private void displayShowcaseView(int id, String title, String msg, boolean isLast) {
 		int[] position = new int[2];
-		View v = findViewById(id);
-		if (v != null) {
-			v.getLocationOnScreen(position);
-			BaseTutorialActivity.newIstance(this, position, v.getWidth(),Color.WHITE,null, 
-					title, msg, TUTORIAL_REQUEST_CODE, TutorialActivity.class);
+		int radius;
+		if (id != -3) {
+			View v = findViewById(id);
+			if (v != null) {
+				v.getLocationOnScreen(position);
+				BaseTutorialActivity.newIstance(this, position, v.getWidth(),
+						Color.WHITE, null, title, msg, isLast,
+						TUTORIAL_REQUEST_CODE, TutorialActivity.class);
+			}
+		} else {
+			Resources res = getResources();
+			
+			if(res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+				Display d = getWindowManager().getDefaultDisplay();
+				radius = d.getWidth()/5;
+				position[0] = (int) (d.getWidth()-radius - 
+						TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, res.getDisplayMetrics()));
+				position[1]= (int) (getSupportActionBar().getHeight()/2 +
+						TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, res.getDisplayMetrics()));
+			
+			}
+			else{
+				View v = findViewById(R.id.menu_item_notifications);
+				if (v != null) {
+					v.getLocationOnScreen(position);
+				}
+				position[0]-=TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, title.length()*16,
+						res.getDisplayMetrics());
+				radius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, title.length()*12,
+						res.getDisplayMetrics());
+			}
+			BaseTutorialActivity.newIstance(this, position, radius,
+					Color.WHITE, null, title, msg, isLast,
+					TUTORIAL_REQUEST_CODE, TutorialActivity.class);
 		}
 	}
 
