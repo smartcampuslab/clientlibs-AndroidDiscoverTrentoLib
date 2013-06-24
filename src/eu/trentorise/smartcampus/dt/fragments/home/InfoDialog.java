@@ -79,7 +79,9 @@ public class InfoDialog extends SherlockDialogFragment {
 				msgText += "</p><br/>";
 			}
 			msgText += "<p>" + event.getTiming() + "</p>";
-			msgText += "<p>" + poi.shortAddress() + "</p>";
+			if (poi != null) {
+				msgText += "<p>" + poi.shortAddress() + "</p>";
+			}
 			msg.setText(Html.fromHtml(msgText));
 		}
 

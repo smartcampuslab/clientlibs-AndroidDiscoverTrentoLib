@@ -101,8 +101,8 @@ public class DTHelper {
 		NOTIF("notifTut"),
 		PLACES("placesTut"),
 		EVENTS("eventsTut"),
-		MENU("menuTut"),
 		STORIES("storyTut"),
+		MENU("menuTut"),
 		RATING("ratingTut")
 		;
 		/**

@@ -157,6 +157,9 @@
     <string name="tab_events">Eventi</string>
     <string name="tab_stories">Storie</string>
     
+    <string name="menu_item__places_layers_text">Luoghi</string>
+    <string name="menu_item__events_layers_text">Eventi</string>
+    
     <string name="categories_event_concert">Concerti</string>
     <string name="categories_event_happyhour">Happy hour</string>
     <string name="categories_event_movie">Film</string>

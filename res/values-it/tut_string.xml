@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="dt_first_launch">Benvenuto! La nostra app ti accompagnerà per le vie di Trento alla scoperta di luoghi da esplorare ed eventi da non perdere.</string>
+    <string name="dt_notif_tut">Controlla qui i tuoi avvisi!</string>
+    <string name="dt_places_tut">Visualizza i luoghi di tuo interesse sulla mappa.</string>
+    <string name="dt_events_tut">Visualizza gli eventi di tuo interesse sulla mappa.</string>
+    <string name="dt_ratings_tut">Consulta il giudizio di altri utenti e vota anche tu!</string>
+    <string name="dt_stories_tut">Crea itinerari di luoghi ed eventi o consulta le storie di altri utenti.</string>
+    <string name="dt_menu_tut">Aggiungi, cerca e consulta eventi e luoghi che segui.</string>
+
+</resources>
