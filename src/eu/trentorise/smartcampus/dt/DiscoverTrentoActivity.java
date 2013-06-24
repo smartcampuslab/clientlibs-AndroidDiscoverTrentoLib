@@ -15,6 +15,8 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt;
 
+import java.security.acl.LastOwnerException;
+
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,8 +37,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.github.espiandev.showcaseview.BaseTutorialActivity;
-import com.github.espiandev.showcaseview.ShowcaseView;
-import com.github.espiandev.showcaseview.ShowcaseView.OnShowcaseEventListener;
 import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
@@ -46,6 +46,7 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
 import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
+import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
@@ -63,6 +64,7 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private final static int TUTORIAL_REQUEST_CODE = 1;
+	private Tutorial lastShowed;
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -95,6 +97,13 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		if (DTHelper.getLocationHelper() != null)
 			DTHelper.getLocationHelper().start();
 		super.onResume();
+	}
+	
+	@Override
+	protected void onPostResume() {
+		super.onPostResume();
+		if (DTHelper.wantTour(this))
+			showTutorial();
 	}
 
 	@Override
@@ -206,7 +215,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == TUTORIAL_REQUEST_CODE) {
-			if (resultCode == RESULT_CANCELED) {
+			if (resultCode == RESULT_OK) {
+				String resData = data.getExtras().getString(BaseTutorialActivity.RESULT_DATA);
+				if(resData.equals(BaseTutorialActivity.OK)){
+					DTHelper.setTutorialAsShowed(this, lastShowed);
+				}
 				if (DTHelper.wantTour(this))
 					showTutorial();
 			}
@@ -361,19 +374,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	}
 
-	/*
-	 * @Override protected void onResume() { super.onResume();
-	 * 
-	 * try { DTHelper.init(getApplicationContext()); String token =
-	 * DTHelper.getAccessProvider().getAuthToken(this, null); if (token != null)
-	 * { initData(token); } } catch (Exception e) { Toast.makeText(this,
-	 * R.string.app_failure_init, Toast.LENGTH_LONG).show(); return; } }
-	 */
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-	}
-
 	private void showTourDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 				.setMessage(getString(R.string.first_launch))
@@ -432,11 +432,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			id = -1;
 		}
 		if (t != null) {
-			// if(sv==null)
-			// initializeShowcaseView(id, title, msg);
-			// else
+			lastShowed = t;
 			displayShowcaseView(id, title, msg);
-			DTHelper.setTutorialAsShowed(this, t);
 		} else
 			DTHelper.setWantTour(this, false);
 	}
@@ -445,7 +442,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		int[] position = new int[2];
 		View v = findViewById(id);
 		if (v != null) {
-			v.getLocationInWindow(position);
+			v.getLocationOnScreen(position);
 			BaseTutorialActivity.newIstance(this, position, v.getWidth(),Color.WHITE,null, 
 					title, msg, TUTORIAL_REQUEST_CODE, TutorialActivity.class);
 		}
