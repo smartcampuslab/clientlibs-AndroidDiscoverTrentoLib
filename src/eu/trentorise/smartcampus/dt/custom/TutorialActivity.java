@@ -14,4 +14,12 @@ public class TutorialActivity extends BaseTutorialActivity {
 		this.mShowcaseView.hide();
 	}
 
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+
+		// maybe we want to navigate back in tutorials?
+		skipTutorial(null);
+	}
+
 }

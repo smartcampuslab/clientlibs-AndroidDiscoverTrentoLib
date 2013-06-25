@@ -71,6 +71,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private final static int TUTORIAL_REQUEST_CODE = 1;
 	private Tutorial lastShowed;
+	private boolean needToSelect;
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -90,7 +91,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				R.string.maps_api_key)));
 
 		// DEBUG PURPOSE
-		DTHelper.getTutorialPreferences(this).edit().clear().commit();
+		// DTHelper.getTutorialPreferences(this).edit().clear().commit();
 
 //		if (DTHelper.isFirstLaunch(this)) {
 //			showTourDialog();
@@ -104,7 +105,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			DTHelper.getLocationHelper().start();
 		super.onResume();
 	}
-	
+
 	@Override
 	protected void onPostResume() {
 		super.onPostResume();
@@ -195,6 +196,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		actionBar.addTab(tab);
 
 		// Stories
+		// ATTENZIONE se si modifica la posizione di questa tab il tutorial
+		// sballa
+		// bisogna modificare anche alla riga 475 (circa) dove si seleziona la
+		// tab delle storie
 		tab = getSupportActionBar().newTab();
 		tab.setText(R.string.tab_stories);
 		tab.setTabListener(new TabListener<AllStoriesFragment>(this, "stories",
@@ -222,8 +227,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		if (requestCode == TUTORIAL_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
-				String resData = data.getExtras().getString(BaseTutorialActivity.RESULT_DATA);
-				if(resData.equals(BaseTutorialActivity.OK)){
+				String resData = data.getExtras().getString(
+						BaseTutorialActivity.RESULT_DATA);
+				if (resData.equals(BaseTutorialActivity.OK)) {
 					DTHelper.setTutorialAsShowed(this, lastShowed);
 				}
 				if (DTHelper.wantTour(this))
@@ -334,7 +340,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				Bundle args = new Bundle();
 				if (result instanceof POIObject) {
 					fragment = new PoiDetailsFragment();
-					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
+					args.putString(PoiDetailsFragment.ARG_POI_ID,
+							result.getId());
 					tag = "pois";
 				} else if (result instanceof EventObject) {
 					fragment = new EventDetailsFragment();
@@ -343,7 +350,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					tag = "events";
 				} else if (result instanceof StoryObject) {
 					fragment = new StoryDetailsFragment();
-					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
+					args.putString(StoryDetailsFragment.ARG_STORY_ID,
+							result.getId());
 					tag = "stories";
 					// } else if (result instanceof StoryObject) {
 					// fragment = new EventDetailsFragment();
@@ -434,18 +442,20 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			id = -3;
 			title = getString(R.string.tab_stories);
 			msg = getString(R.string.dt_stories_tut);
+			isLast = true;
 			break;
 		default:
 			id = -1;
 		}
 		if (t != null) {
 			lastShowed = t;
-			displayShowcaseView(id, title, msg,isLast);
+			displayShowcaseView(id, title, msg, isLast);
 		} else
 			DTHelper.setWantTour(this, false);
 	}
 
-	private void displayShowcaseView(int id, String title, String msg, boolean isLast) {
+	private void displayShowcaseView(int id, String title, String msg,
+			boolean isLast) {
 		int[] position = new int[2];
 		int radius;
 		if (id != -3) {
@@ -458,25 +468,37 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			}
 		} else {
 			Resources res = getResources();
-			
-			if(res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+
+			if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				Display d = getWindowManager().getDefaultDisplay();
-				radius = d.getWidth()/5;
-				position[0] = (int) (d.getWidth()-radius - 
-						TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, res.getDisplayMetrics()));
-				position[1]= (int) (getSupportActionBar().getHeight()/2 +
-						TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, res.getDisplayMetrics()));
-			
-			}
-			else{
+				radius = d.getWidth() / 5;
+				position[0] = (int) (d.getWidth() - radius - TypedValue
+						.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
+								res.getDisplayMetrics()));
+				position[1] = (int) (getSupportActionBar().getHeight() / 2 + TypedValue
+						.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16,
+								res.getDisplayMetrics()));
+
+			} else {
+
+				try {
+					getSupportActionBar().selectTab(
+							getSupportActionBar().getTabAt(3));
+				} catch (IllegalStateException e) {
+					// Do nothing because there is nothing to do
+				}
+
 				View v = findViewById(R.id.menu_item_notifications);
 				if (v != null) {
 					v.getLocationOnScreen(position);
 				}
-				position[0]-=TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, title.length()*16,
+				position[0] -= TypedValue.applyDimension(
+						TypedValue.COMPLEX_UNIT_DIP, title.length() * 6,
 						res.getDisplayMetrics());
-				radius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, title.length()*12,
+				radius = (int) TypedValue.applyDimension(
+						TypedValue.COMPLEX_UNIT_DIP, title.length() * 16,
 						res.getDisplayMetrics());
+
 			}
 			BaseTutorialActivity.newIstance(this, position, radius,
 					Color.WHITE, null, title, msg, isLast,
