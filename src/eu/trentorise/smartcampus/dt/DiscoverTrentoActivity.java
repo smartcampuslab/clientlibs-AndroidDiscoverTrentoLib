@@ -317,6 +317,12 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 										.runOnUiThread(new Runnable() {
 											@Override
 											public void run() {
+												//TODO invalidate map
+												//controllo se l'home fragment e' visibile
+												HomeFragment hf = (HomeFragment) getSupportFragmentManager().findFragmentByTag("me");
+												if(hf!=null && hf.isVisible()){
+													hf.refresh();
+												}
 												currentRootActivity
 														.setSupportProgressBarIndeterminateVisibility(false);
 												if(DiscoverTrentoActivity.this!=null)

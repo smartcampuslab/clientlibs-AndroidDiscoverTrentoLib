@@ -209,6 +209,11 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		}
 		return mapContainer;
 	}
+	
+	public void refresh(){
+		setPOICategoriesToLoad(poiCategories);
+		setEventCategoriesToLoad(eventsCategories);
+	}
 
 	@Override
 	public void onResume() {
