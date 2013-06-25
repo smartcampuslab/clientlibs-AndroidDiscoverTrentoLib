@@ -30,6 +30,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -318,6 +319,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 											public void run() {
 												currentRootActivity
 														.setSupportProgressBarIndeterminateVisibility(false);
+												if(DiscoverTrentoActivity.this!=null)
+													DiscoverTrentoActivity.this.setSupportProgressBarIndeterminateVisibility(false);
+												else
+													Log.e("no","woman no cry");
 												isLoading=false;
 											}
 										});
