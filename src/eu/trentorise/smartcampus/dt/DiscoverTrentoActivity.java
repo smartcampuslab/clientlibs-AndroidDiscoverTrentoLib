@@ -71,8 +71,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private final static int TUTORIAL_REQUEST_CODE = 1;
 	private Tutorial lastShowed;
-	private boolean needToSelect;
-
+	private boolean isLoading;
+	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -301,6 +301,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 							.show();
 				}
 				setSupportProgressBarIndeterminateVisibility(true);
+				isLoading=true;
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -317,6 +318,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 											public void run() {
 												currentRootActivity
 														.setSupportProgressBarIndeterminateVisibility(false);
+												isLoading=false;
 											}
 										});
 							}
@@ -457,12 +459,13 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private void displayShowcaseView(int id, String title, String msg,
 			boolean isLast) {
 		int[] position = new int[2];
-		int radius;
+		int radius = 0;
 		if (id != -3) {
 			View v = findViewById(id);
 			if (v != null) {
 				v.getLocationOnScreen(position);
-				BaseTutorialActivity.newIstance(this, position, v.getWidth(),
+				radius=v.getWidth();
+				BaseTutorialActivity.newIstance(this, position, radius,
 						Color.WHITE, null, title, msg, isLast,
 						TUTORIAL_REQUEST_CODE, TutorialActivity.class);
 			}
@@ -476,7 +479,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 						.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
 								res.getDisplayMetrics()));
 				position[1] = (int) (getSupportActionBar().getHeight() / 2 + TypedValue
-						.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16,
+						.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24,
 								res.getDisplayMetrics()));
 
 			} else {
@@ -492,18 +495,26 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				if (v != null) {
 					v.getLocationOnScreen(position);
 				}
+				if(isLoading){
+					position[0]-=TypedValue.applyDimension(
+							TypedValue.COMPLEX_UNIT_DIP, 48,
+							res.getDisplayMetrics());
+				}
 				position[0] -= TypedValue.applyDimension(
-						TypedValue.COMPLEX_UNIT_DIP, title.length() * 6,
+						TypedValue.COMPLEX_UNIT_DIP, 24,
 						res.getDisplayMetrics());
+				
 				radius = (int) TypedValue.applyDimension(
-						TypedValue.COMPLEX_UNIT_DIP, title.length() * 16,
+						TypedValue.COMPLEX_UNIT_DIP, title.length() * 12,
 						res.getDisplayMetrics());
-
+				
 			}
 			BaseTutorialActivity.newIstance(this, position, radius,
 					Color.WHITE, null, title, msg, isLast,
 					TUTORIAL_REQUEST_CODE, TutorialActivity.class);
 		}
+		
+		
 	}
 
 	@Override
