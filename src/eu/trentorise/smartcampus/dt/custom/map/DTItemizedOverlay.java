@@ -369,7 +369,8 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
 		Paint paint = new Paint();
 		paint.setTextAlign(Paint.Align.CENTER);
-		paint.setTextSize(20);
+		int scaledTextSize = mContext.getResources().getDimensionPixelSize(R.dimen.mapIconTextSize);
+		paint.setTextSize(scaledTextSize);
 		paint.setAntiAlias(true);
 		paint.setARGB(255, 255, 255, 255);
 		// show text to the right of the icon
