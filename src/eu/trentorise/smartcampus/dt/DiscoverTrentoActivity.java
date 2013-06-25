@@ -91,7 +91,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				R.string.maps_api_key)));
 
 		// DEBUG PURPOSE
-		// DTHelper.getTutorialPreferences(this).edit().clear().commit();
+		//DTHelper.getTutorialPreferences(this).edit().clear().commit();
 
 		if (DTHelper.isFirstLaunch(this)) {
 			showTourDialog();
