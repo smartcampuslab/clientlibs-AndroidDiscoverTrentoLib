@@ -15,7 +15,6 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.home;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -358,7 +357,7 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "home");
+			fragmentTransaction.replace(android.R.id.content, fragment, "me");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
