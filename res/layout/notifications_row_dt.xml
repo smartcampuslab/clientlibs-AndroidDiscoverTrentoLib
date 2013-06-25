@@ -20,6 +20,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
     android:layout_marginTop="8dp"
+    android:background="@android:color/white"
     android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
@@ -46,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/notifications_unread"
-            android:src="@drawable/ic_menu_notifications_w"
+            android:src="@drawable/ic_menu_notifications_r"
             android:visibility="invisible" />
     </LinearLayout>
 
@@ -56,7 +57,6 @@
         android:layout_height="wrap_content"
         android:gravity="right"
         android:textAppearance="@android:style/TextAppearance.Small"
-        android:textColor="@color/sc_light_gray"
         android:textIsSelectable="false" />
 
 </LinearLayout>
