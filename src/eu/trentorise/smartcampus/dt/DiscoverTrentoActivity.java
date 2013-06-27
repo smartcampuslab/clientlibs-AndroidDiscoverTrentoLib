@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.TypedValue;
@@ -84,6 +85,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setUpContent(savedInstanceState != null ? savedInstanceState
 				.getInt("tag") : null);
 
@@ -137,6 +139,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		super.onDestroy();
 	}
 
+
+	
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
 			DTHelper.init(getApplicationContext());
