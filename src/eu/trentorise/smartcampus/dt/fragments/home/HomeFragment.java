@@ -194,9 +194,11 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 			}).execute();
 		} else if (getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY)) {
 			mItemizedoverlay.clearMarkers();
+			eventsCategories = null;
 			setPOICategoriesToLoad(getArguments().getString(ARG_POI_CATEGORY));
 		} else if (getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY)) {
 			mItemizedoverlay.clearMarkers();
+			poiCategories = null;
 			setEventCategoriesToLoad(getArguments().getString(ARG_EVENT_CATEGORY));
 		} else {
 			if (poiCategories != null) {
