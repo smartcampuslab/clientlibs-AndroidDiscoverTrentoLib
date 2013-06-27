@@ -301,7 +301,7 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 		}).execute();
 		
-		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0))
+		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0)&& ((getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY))))
 		{
 			loadEventsCategory(this.eventsCategories);
 		}
@@ -393,7 +393,7 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 		}).execute();
 		
-		if ((this.poiCategories!=null)&&(this.poiCategories.length>0))
+		if ((this.poiCategories!=null)&&(this.poiCategories.length>0) && ((getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY))))
 		{
 			loadPoisCategory(this.poiCategories);
 		}
