@@ -335,7 +335,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					}
 				}).start();
 			}
+			else {
+				setSupportProgressBarIndeterminateVisibility(false);
 
+			}
 			Long entityId = getIntent().getLongExtra(
 					getString(R.string.view_intent_arg_entity_id), -1);
 			if (entityId > 0) {
