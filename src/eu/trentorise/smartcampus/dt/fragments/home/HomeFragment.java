@@ -23,6 +23,7 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -218,6 +219,10 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 	}
 
 	@Override
+	public void onConfigurationChanged(Configuration arg0) {
+		super.onConfigurationChanged(arg0);
+	}
+	@Override
 	public void onPause() {
 		mMyLocationOverlay.disableMyLocation();
 		super.onPause();
@@ -285,7 +290,9 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 	public void setPOICategoriesToLoad(final String... categories) {
 		this.poiCategories = categories;
-
+		/*actually only event or poi at the same time*/
+		this.eventsCategories = null;
+		
 		mItemizedoverlay.clearMarkers();
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
@@ -303,10 +310,10 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 		}).execute();
 		
-		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0)&& ((getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY))))
-		{
-			loadEventsCategory(this.eventsCategories);
-		}
+//		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0)|| ((getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY))))
+//		{
+//			loadEventsCategory(this.eventsCategories);
+//		}
 	}
 
 	private void loadEventsCategory(final String... categories) {
@@ -369,7 +376,10 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 	public void setEventCategoriesToLoad(final String... categories) {
 		this.eventsCategories = categories;
 		this.eventsNotTodayCategories = categories;
-
+		
+		/*actually only event or poi at the same time*/
+		this.poiCategories = null;
+		
 		mItemizedoverlay.clearMarkers();
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
@@ -395,10 +405,10 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 		}).execute();
 		
-		if ((this.poiCategories!=null)&&(this.poiCategories.length>0) && ((getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY))))
-		{
-			loadPoisCategory(this.poiCategories);
-		}
+//		if ((this.poiCategories!=null)&&(this.poiCategories.length>0) || ((getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY))))
+//		{
+//			loadPoisCategory(this.poiCategories);
+//		}
 	}
 
 	private boolean isTodayIncluded() {
