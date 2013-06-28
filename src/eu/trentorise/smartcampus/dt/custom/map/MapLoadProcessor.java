@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import android.app.Activity;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
@@ -27,13 +28,13 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
 public abstract class MapLoadProcessor extends AbstractAsyncTaskProcessor<Void, Collection<? extends BaseDTObject>> {
 	
-	protected DTItemizedOverlay overlay = null;
-	protected MapView mapView = null;
+	protected GoogleMap map = null;
+	private MapObjectContainer container;
 
-	public MapLoadProcessor(Activity activity, DTItemizedOverlay overlay, MapView mapView) {
+	public MapLoadProcessor(Activity activity, MapObjectContainer container, GoogleMap map) {
 		super(activity);
-		this.overlay = overlay;
-		this.mapView = mapView;
+		this.map = map;
+		this.container = container;
 	}
 
 	
@@ -45,11 +46,7 @@ public abstract class MapLoadProcessor extends AbstractAsyncTaskProcessor<Void, 
 	@Override
 	public void handleResult(Collection<? extends BaseDTObject> objects) {
 		if (objects != null) {
-			for (BaseDTObject o : objects) {
-				overlay.addOverlay(o);
-			}
-			overlay.populateAll();
-			mapView.invalidate();
+			container.addObjects(objects);
 		}
 	}
 

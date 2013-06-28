@@ -94,7 +94,7 @@ public class AddressSelectActivity extends FeedbackFragmentActivity {
 		} else {
 			// TODO uncomment for final version
 			//me = MapManager.requestMyLocation(this);
-			me = MapManager.trento();
+//			me = MapManager.DEFAULT_POINT;
 		}
 		if (me == null) {
 			me = new GeoPoint((int) (46.0696727540531 * 1E6), (int) (11.1212700605392 * 1E6));

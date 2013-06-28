@@ -205,7 +205,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 									}
 									listener.onBaseDTObjectsTap(objects);
 								} else {
-									MapManager.fitMapWithOverlays(list, mMapView);
+//									MapManager.fitMapWithOverlays(list, mMapView);
 								}
 								return super.onTap(index);
 							}

@@ -316,7 +316,7 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	public void fithMaptOnTheStory() {
-		MapManager.fitMapWithOverlays(mOverlays, mMapView);
+//		MapManager.fitMapWithOverlays(mOverlays, mMapView);
 	}
 
 }

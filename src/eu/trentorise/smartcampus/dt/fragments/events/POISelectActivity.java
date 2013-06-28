@@ -133,7 +133,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		// me = new GeoPoint((int) (46.0696727540531 * 1E6), (int)
 		// (11.1212700605392 * 1E6));
 		// }
-		mapView.getController().animateTo(MapManager.trento());
+//		mapView.getController().animateTo(MapManager.DEFAULT_POINT);
 		List<Overlay> listOfOverlays = mapView.getOverlays();
 
 		mItemizedoverlay = new DTItemizedOverlay(this, mapView);
@@ -172,18 +172,18 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	public void setPOICategoriesToLoad(final String... categories) {
 		mItemizedoverlay.clearMarkers();
 
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, mItemizedoverlay,
-				mapView) {
-			@Override
-			protected Collection<? extends BaseDTObject> getObjects() {
-				try {
-					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Collections.emptyList();
-				}
-			}
-		}).execute();
+//		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, mItemizedoverlay,
+//				mapView) {
+//			@Override
+//			protected Collection<? extends BaseDTObject> getObjects() {
+//				try {
+//					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					return Collections.emptyList();
+//				}
+//			}
+//		}).execute();
 	}
 
 	@Override
