@@ -30,7 +30,7 @@
     <string name="createevent_timestart">Start</string>
     <string name="createevent_timeend">End</string>
     <string name="createevent_timing">Time</string>
-    <string name="createevent_timing_hint">18:00 - 20:00</string>
+    <string name="createevent_timing_hint">18:00&#8211;20:00</string>
     <string name="createevent_timestarthint">12:00</string>
     <string name="createevent_datehint">24/07/2012</string>
     <string name="createevent_timeendhint">18:00</string>
@@ -50,7 +50,7 @@
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Create event</string>
     <string name="menu_item_myevents_text">My events</string>
-    <!-- <string name="menu_item_layers_text">Layers</string> -->
+    <string name="menu_item_layers_text">Categories</string>
     <string name="menu_item__places_layers_text">Places</string>
     <string name="menu_item__events_layers_text">Events</string>
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
@@ -214,7 +214,7 @@
     <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
     <string name="notifications_story_at_place_update">Story \"%1$s\" about %2$s is updated</string>
 	
-	<string name="initial_data_load">Loading initial data... (it may take a while this time)</string>
+	<string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
 	
     <!-- String for the searching fragment -->
     <string name="search_what">What: </string>
@@ -244,6 +244,6 @@
     <string name="info_dialog_title_poi">Place Info </string>
     <string name="info_dialog_title_event">Event Info</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
- 
+ 	<string name="choose_poi">Chose a POI</string>
 </resources>   
      
