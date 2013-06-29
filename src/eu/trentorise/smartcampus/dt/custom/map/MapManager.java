@@ -116,6 +116,17 @@ public class MapManager {
 		}
 	}
 
+	public static MarkerOptions createStoryStepMarker(Context ctx, BaseDTObject obj, int pos, boolean selected) {
+		LatLng latLng = getLatLngFromBasicObject(obj);
+
+		int markerIcon = selected ? R.drawable.selected_step : R.drawable.step;
+
+		BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnMarker(ctx, markerIcon,
+				Integer.toString(pos)));
+		MarkerOptions marker = new MarkerOptions().position(latLng).icon(bd).title(""+pos);
+		return marker;
+	}
+	
 	/*
 	 * CLUSTERING
 	 */
@@ -256,28 +267,6 @@ public class MapManager {
 			return marker;
 		}
 
-		private static Bitmap writeOnMarker(Context mContext, int drawableId, String text) {
-			float scale = mContext.getResources().getDisplayMetrics().density;
-
-			Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,
-					true);
-
-			Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-			paint.setTextAlign(Align.CENTER);
-			paint.setTextSize(scale * 14);
-			paint.setAntiAlias(true);
-			paint.setARGB(255, 255, 255, 255);
-
-			Canvas canvas = new Canvas(bitmap);
-			Rect bounds = new Rect();
-			paint.getTextBounds(text, 0, text.length(), bounds);
-			float x = bitmap.getWidth() / 2;
-			float y = bitmap.getHeight() / 2;
-			canvas.drawText(text, x, y, paint);
-
-			return bitmap;
-		}
-
 		public static List<BaseDTObject> getFromGridId(String id) {
 			try {
 				String[] parsed = id.split(":");
@@ -314,11 +303,6 @@ public class MapManager {
 			return false;
 		}
 
-		private static LatLng getLatLngFromBasicObject(BaseDTObject object) {
-			LatLng latLng = null;
-			latLng = new LatLng(object.getLocation()[0], object.getLocation()[1]);
-			return latLng;
-		}
 	}
 	
 	public static void switchToMapView(ArrayList<BaseDTObject> list, Fragment src) {
@@ -364,6 +348,33 @@ public class MapManager {
 		return CategoryHelper.getMapIconByType(o.getType());
 	}
 
+	private static Bitmap writeOnMarker(Context mContext, int drawableId, String text) {
+		float scale = mContext.getResources().getDisplayMetrics().density;
+
+		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,
+				true);
+
+		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paint.setTextAlign(Align.CENTER);
+		paint.setTextSize(scale * 14);
+		paint.setAntiAlias(true);
+		paint.setARGB(255, 255, 255, 255);
+
+		Canvas canvas = new Canvas(bitmap);
+		Rect bounds = new Rect();
+		paint.getTextBounds(text, 0, text.length(), bounds);
+		float x = bitmap.getWidth() / 2;
+		float y = bitmap.getHeight() / 2;
+		canvas.drawText(text, x, y, paint);
+
+		return bitmap;
+	}
 	
-	
+
+	private static LatLng getLatLngFromBasicObject(BaseDTObject object) {
+		LatLng latLng = null;
+		latLng = new LatLng(object.getLocation()[0], object.getLocation()[1]);
+		return latLng;
+	}
+
 }

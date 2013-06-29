@@ -27,7 +27,7 @@
 
         <fragment
             android:id="@+id/my_map_fragment1"
-            android:name="eu.trentorise.smartcampus.dt.fragments.stories.MyMapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="6"

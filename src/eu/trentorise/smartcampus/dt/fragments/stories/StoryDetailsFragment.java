@@ -15,9 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.stories;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +28,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,9 +56,14 @@ import android.widget.ToggleButton;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
@@ -76,11 +80,8 @@ import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.map.BasicObjectMapItemTapListener;
-import eu.trentorise.smartcampus.dt.custom.map.DTStoryItemizedOverlay;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
-import eu.trentorise.smartcampus.dt.custom.map.MapStoryHandler;
-import eu.trentorise.smartcampus.dt.custom.map.MapStoryLoadProcessor;
+import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
@@ -92,13 +93,12 @@ import eu.trentorise.smartcampus.dt.model.StepObject;
 import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.storage.BasicObject;
 
 /*
  * Shows the detail of the story and steps, manages the mapview and the refresh of it
  */
-public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements MapStoryHandler,
-		BasicObjectMapItemTapListener {
+public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements //MapStoryHandler,
+		MapObjectContainer, OnCameraChangeListener, OnMarkerClickListener {
 
 	private boolean mFollowByIntent;
 	private boolean mStart = true;
@@ -108,14 +108,15 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	private StoryObject mStory = null;
 	private String mStoryId;
 	private int actualStepPosition = -1;
-	private MapView mapViewStory = null;
-	private DTStoryItemizedOverlay mItemizedoverlay = null;
+//	private MapView mapViewStory = null;
+//	private DTStoryItemizedOverlay mItemizedoverlay = null;
 	private AddStep stepHandler = new AddStep();
 
 	private CompoundButton followButtonView;
-	private Fragment mFragment = this;
+//	private Fragment mFragment = this;
 
 	private ScrollView stepScollView;
+	private GoogleMap mMap;
 
 	@Override
 	public void onCreate(Bundle bundle) {
@@ -124,7 +125,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 		if (getArguments() != null) {
 			mStoryId = getArguments().getString(ARG_STORY_ID);
-			mStory = DTHelper.findStoryById(mStoryId);
+			getStory();
 		}
 
 		setFollowByIntent();
@@ -133,10 +134,25 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	private StoryObject getStory() {
 		if (mStoryId == null) {
 			mStoryId = getArguments().getString(ARG_STORY_ID);
+			mStory = DTHelper.findStoryById(mStoryId);
+			if (mStory != null) {
+				try {
+					List<POIObject> poiList = DTHelper.getPOIBySteps(mStory.getSteps());
+					for (int i = 0; i < poiList.size(); i++) {
+						mStory.getSteps().get(i).assignPoi(poiList.get(i));
+					}
+				} catch (Exception e) {
+					Log.e(getClass().getName(), "Error reading story places: "+e.getMessage());
+				}
+			}
+
 		}
 
-		mStory = DTHelper.findStoryById(mStoryId);
 		return mStory;
+	}
+	
+	private void resetStory() {
+		mStoryId = null;
 	}
 
 	@Override
@@ -144,6 +160,35 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		return inflater.inflate(R.layout.story_details, container, false);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (getSupportMap() != null) {
+			getSupportMap().setMyLocationEnabled(true);
+			getSupportMap().setOnCameraChangeListener(this);
+			getSupportMap().setOnMarkerClickListener(this);
+			getSupportMap().moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+//			if (objects != null) {
+//				render(objects);
+//			}
+		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration arg0) {
+		super.onConfigurationChanged(arg0);
+	}
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (getSupportMap() != null) {
+			getSupportMap().setMyLocationEnabled(false);
+			getSupportMap().setOnCameraChangeListener(null);
+			getSupportMap().setOnMarkerClickListener(null);
+		}
+	}
+
+	
 	private void setFollowByIntent() {
 		try {
 			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
@@ -174,7 +219,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// follow/unfollow
 			if (mStart) {
 				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
-				if (mStory.getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+				if (getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
 					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 					followTbtn.setChecked(true);
 				} else {
@@ -192,7 +237,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 										getStory().getTitle(), DTConstants.ENTITY_TYPE_STORY);
 								if (mFollowByIntent) {
 									followButtonView = buttonView;
-									FollowHelper.follow(mFragment, obj, 3000);
+									FollowHelper.follow(StoryDetailsFragment.this, obj, 3000);
 								} else {
 									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
@@ -219,13 +264,14 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						} else {
 							mCanceledFollow = false;
 						}
+						resetStory();
 					}
 				});
 			}
 
 			// attend
 			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_attend_tbtn);
-			if (mStory.getAttending() == null || mStory.getAttending().isEmpty()) {
+			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
 				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
 				attendTbtn.setChecked(false);
 			} else {
@@ -242,6 +288,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					} else {
 						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
 								buttonView)).execute(getStory().getAttending() == null || getStory().getAttending().isEmpty());
+						resetStory();
 					}
 				}
 			});
@@ -272,8 +319,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 			// description, optional
 			titleText = (TextView) this.getView().findViewById(R.id.story_details_descr);
-			if (mStory.getDescription() != null && mStory.getDescription().length() > 0) {
-				titleText.setText(mStory.getDescription());
+			if (getStory().getDescription() != null && getStory().getDescription().length() > 0) {
+				titleText.setText(getStory().getDescription());
 			}
 
 			// detail of the story (contains all the story elements)
@@ -297,13 +344,13 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				public void onClick(View v) {
 					// visualize first step enabling the its elements and
 					// disabling the story part
-					mItemizedoverlay.fithMaptOnTheStory();
+//					mItemizedoverlay.fithMaptOnTheStory();
 					changeStep(actualStepPosition + 1);
 					detailStep.setVisibility(View.VISIBLE);
 					buttonStep.setVisibility(View.VISIBLE);
 					buttonSart.setVisibility(View.GONE);
 					detailStory.setVisibility(View.GONE);
-					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
+//					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
 				}
 			});
 
@@ -312,9 +359,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			prevButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					mItemizedoverlay.fithMaptOnTheStory();
+//					mItemizedoverlay.fithMaptOnTheStory();
 					changeStep(actualStepPosition - 1);
-					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
+//					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
 					stepScollView.scrollTo(0, stepScollView.getTop());
 				}
 			});
@@ -324,9 +371,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			nextButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					mItemizedoverlay.fithMaptOnTheStory();
+//					mItemizedoverlay.fithMaptOnTheStory();
 					changeStep(actualStepPosition + 1);
-					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
+//					mItemizedoverlay.changeElementsonMap(actualStepPosition, mStory);
 					stepScollView.scrollTo(0, stepScollView.getTop());
 				}
 			});
@@ -335,9 +382,10 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// hide the keyboard
 			InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(nextButton.getWindowToken(), 0);
-			changeTheMapConfiguration();
-			mItemizedoverlay.fithMaptOnTheStory();
+//			changeTheMapConfiguration();
+//			mItemizedoverlay.fithMaptOnTheStory();
 
+//			setPOIStoryToLoad(getStory());
 		}
 	}
 
@@ -382,7 +430,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		// else load the details of the step
 		else {
 			// change layout
-			if (mStory.getSteps().get(actualStepPosition) != null) {
+			if (getStory().getSteps().get(actualStepPosition) != null) {
 
 				detailStory.setVisibility(View.GONE);
 				startStory.setVisibility(View.GONE);
@@ -393,8 +441,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				numberOfStepText.setText(String.valueOf(actualStepPosition + 1));
 				// name of the step (if the POI hasn't been erased)
 				TextView nameOfStepText = (TextView) this.getView().findViewById(R.id.step_details_name);
-				if (mStory.getSteps().get(actualStepPosition).assignedPoi() != null)
-					nameOfStepText.setText(mStory.getSteps().get(actualStepPosition).assignedPoi().getTitle());
+				if (getStory().getSteps().get(actualStepPosition).assignedPoi() != null)
+					nameOfStepText.setText(getStory().getSteps().get(actualStepPosition).assignedPoi().getTitle());
 				else
 					nameOfStepText.setText(getString(R.string.poi_erased));
 				// notes of the step
@@ -405,17 +453,17 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				// .get(actualStepPosition).getNote());
 				// else
 				// noteOfStepText.setText(" ");
-				noteOfStepText.setText(mStory.getSteps().get(actualStepPosition).getNote());
+				noteOfStepText.setText(getStory().getSteps().get(actualStepPosition).getNote());
 				Button nextStep = (Button) this.getView().findViewById(R.id.btn_story_next);
 
 				// If it is at the end of the story, hides the "next" button
-				if (actualStepPosition == mStory.getSteps().size() - 1)
+				if (actualStepPosition == getStory().getSteps().size() - 1)
 					nextStep.setVisibility(View.GONE);
 				else
 					nextStep.setVisibility(View.VISIBLE);
 			}
 		}
-
+		renderSteps(getStory().getSteps(), actualStepPosition);
 		getSherlockActivity().invalidateOptionsMenu();
 	}
 
@@ -424,6 +472,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		try {
 			FragmentTransaction transaction = getFragmentManager().beginTransaction();
 			transaction.remove(getFragmentManager().findFragmentById(R.id.my_map_fragment1)).commit();
+			mMap = null;
 		} catch (Exception e) {
 		}
 
@@ -493,7 +542,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	}
 
 	private void ratingDialog() {
-		float rating = (mStory != null && mStory.getCommunityData() != null && mStory.getCommunityData().getAverageRating() > 0) ? mStory
+		float rating = (getStory() != null && getStory().getCommunityData() != null && getStory().getCommunityData().getAverageRating() > 0) ? getStory()
 				.getCommunityData().getAverageRating() : 2.5f;
 		RatingHelper
 				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_story_dialog_title);
@@ -501,8 +550,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 	private void updateRating() {
 		RatingBar rating = (RatingBar) getView().findViewById(R.id.story_details_rating);
-		if (mStory.getCommunityData() != null) {
-			CommunityData cd = mStory.getCommunityData();
+		if (getStory().getCommunityData() != null) {
+			CommunityData cd = getStory().getCommunityData();
 
 			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
 				rating.setRating(cd.getRatings().get(0).getValue());
@@ -528,12 +577,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 		@Override
 		public Integer performAction(Integer... params) throws SecurityException, Exception {
-			return DTHelper.rate(mStory, params[0]);
+			return DTHelper.rate(getStory(), params[0]);
 		}
 
 		@Override
 		public void handleResult(Integer result) {
-			mStory = null;
+			resetStory();
 			getStory();
 			updateRating();
 			Toast.makeText(getSherlockActivity(), R.string.rating_success, Toast.LENGTH_SHORT).show();
@@ -616,7 +665,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
-				args.putSerializable(CreateStoryFragment.ARG_STORY, mStory);
+				args.putSerializable(CreateStoryFragment.ARG_STORY, getStory());
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
@@ -631,7 +680,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				return false;
 			} else {
 				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
-						.execute(mStory);
+						.execute(getStory());
 				return true;
 			}
 		} else if (item.getItemId() == R.id.related_step_btn) {
@@ -666,7 +715,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				AddStepToStoryFragment fragment = new AddStepToStoryFragment();
 				Bundle args = new Bundle();
 				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, stepHandler);
-				args.putSerializable(AddStepToStoryFragment.ARG_STORY_OBJECT, mStory);
+				args.putSerializable(AddStepToStoryFragment.ARG_STORY_OBJECT, getStory());
 				args.putInt(AddStepToStoryFragment.ARG_STEP_POSITION, actualStepPosition);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -702,74 +751,55 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	 * load on the map the story passed by parameter using an asynch task.
 	 */
 
-	@Override
-	public void setPOIStoryToLoad(final StoryObject story) {
+//	@Override
+//	public void setPOIStoryToLoad(final StoryObject story) {
+////		mItemizedoverlay.clearMarkers();
+//
+//		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(getActivity(),
+//				this, getSupportMap()) {
+//			@Override
+//			protected Collection<? extends BaseDTObject> getObjects() {
+//				try {
+//					ArrayList<POIObject> poiList = new ArrayList<POIObject>();
+//					poiList = DTHelper.getPOIBySteps(story.getSteps());
+//					for (int i = 0; i < poiList.size(); i++) {
+//						story.getSteps().get(i).assignPoi(poiList.get(i));
+//					}
+//					return poiList;
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					return Collections.emptyList();
+//				}
+//			}
+//		}).execute();
+//	}
 
-		mItemizedoverlay.clearMarkers();
+//	/*
+//	 * Method used by MyMapFragment to load the MapView. It requires the reset
+//	 * of the map
+//	 */
+//	public void setMap(MapView mapViewStory) {
+//
+//		this.mapViewStory = mapViewStory;
+//		changeTheMapConfiguration();
+//	}
+//
+//	/*
+//	 * Reset of the mapView and its overlays
+//	 */
+//	private void changeTheMapConfiguration() {
+//		mapViewStory.setClickable(true);
+//		mapViewStory.getController().setZoom(15);
+//		List<Overlay> listOfOverlays = mapViewStory.getOverlays();
+//
+//		mItemizedoverlay = new DTStoryItemizedOverlay(getSherlockActivity(), mapViewStory, mStory);
+//		mItemizedoverlay.setMapItemTapListener(this);
+//		listOfOverlays.add(mItemizedoverlay);
+//		setPOIStoryToLoad(mStory);
+//		mItemizedoverlay.fithMaptOnTheStory();
+//
+//	}
 
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapStoryLoadProcessor(getActivity(),
-				mItemizedoverlay, mapViewStory) {
-			@Override
-			protected Collection<? extends BaseDTObject> getObjects() {
-				try {
-					ArrayList<POIObject> poiList = new ArrayList<POIObject>();
-					poiList = DTHelper.getPOIBySteps(story.getSteps());
-					for (int i = 0; i < poiList.size(); i++) {
-						story.getSteps().get(i).assignPoi(poiList.get(i));
-					}
-					return poiList;
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Collections.emptyList();
-				}
-			}
-		}).execute();
-	}
-
-	/*
-	 * Method used by MyMapFragment to load the MapView. It requires the reset
-	 * of the map
-	 */
-	public void setMap(MapView mapViewStory) {
-
-		this.mapViewStory = mapViewStory;
-		changeTheMapConfiguration();
-	}
-
-	/*
-	 * Reset of the mapView and its overlays
-	 */
-	private void changeTheMapConfiguration() {
-		mapViewStory.setClickable(true);
-		mapViewStory.getController().setZoom(15);
-		List<Overlay> listOfOverlays = mapViewStory.getOverlays();
-
-		mItemizedoverlay = new DTStoryItemizedOverlay(getSherlockActivity(), mapViewStory, mStory);
-		mItemizedoverlay.setMapItemTapListener(this);
-		listOfOverlays.add(mItemizedoverlay);
-		setPOIStoryToLoad(mStory);
-		mItemizedoverlay.fithMaptOnTheStory();
-
-	}
-
-	/*
-	 * implementation of the BasicObjectMapItemTapListener interface method,
-	 * called when a user taps on an element it's called by
-	 * DTStoryItemizedOverlay.onTap anche checks which element is clicked,
-	 * compared with the element in the story, set the actual posistion and
-	 * modifies the layout
-	 */
-	@Override
-	public void onBasicObjectTap(BasicObject o) {
-		// TODO Auto-generated method stub
-		POIObject poiTapped = (POIObject) o;
-		for (int i = 0; i < mStory.getSteps().size(); i++)
-			if (mStory.getSteps().get(i).assignedPoi() != null)
-				if (poiTapped.getId().equals(mStory.getSteps().get(i).assignedPoi().getId())) {
-					actualStepPosition = i;
-					changeStep(actualStepPosition);
-				}
-	}
 
 	/*
 	 * class passsed to the AddStepToStoryFragment and implements two method
@@ -783,9 +813,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		 */
 		@Override
 		public void addStep(StepObject step) {
-			mStory.getSteps().add(step);
-			mItemizedoverlay.fithMaptOnTheStory();
-
+			getStory().getSteps().add(step);
+			// TODO ?
 		}
 
 		@Override
@@ -810,9 +839,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					// User clicked OK button
-					mStory.getSteps().set(position, step);
+					getStory().getSteps().set(position, step);
 					new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity()))
-							.execute(mStory);
+							.execute(getStory());
 
 				}
 			});
@@ -878,9 +907,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 		@Override
 		public void handleResult(StoryObject result) {
-			mStory = result;
+			resetStory();
 			updateAttending();
-			changeTheMapConfiguration();
+//			changeTheMapConfiguration();
 			// getSherlockActivity().invalidateOptionsMenu();
 			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
 				Toast.makeText(getSherlockActivity(), R.string.not_attend_story_success, Toast.LENGTH_SHORT).show();
@@ -916,9 +945,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			} else {
 				Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
 				getSherlockActivity().getSupportFragmentManager().popBackStack();
-
 			}
-			mItemizedoverlay.fithMaptOnTheStory();
 		}
 	}
 
@@ -946,4 +973,51 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		}
 
 	}
+	
+	private GoogleMap getSupportMap() {
+		if (mMap == null) {
+			mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.my_map_fragment1)).getMap();
+		}
+		return mMap;
+	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		int pos = Integer.parseInt(marker.getTitle());
+		actualStepPosition = pos-1;
+		changeStep(actualStepPosition);
+		return true;
+	}
+
+	@Override
+	public void onCameraChange(CameraPosition position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
+		render(objects,-1);
+	}
+
+	private void render(Collection<? extends BaseDTObject> objects, int selection) {
+		getSupportMap().clear();
+		if (objects != null) {
+			int i = 0;
+			for (BaseDTObject object : objects) {
+				getSupportMap().addMarker(MapManager.createStoryStepMarker(getActivity(), object, i+1, selection == i++));
+			}
+		}
+	} 
+
+	private void renderSteps(Collection<StepObject> objects, int selection) {
+		getSupportMap().clear();
+		if (objects != null) {
+			int i = 0;
+			for (StepObject object : objects) {
+				getSupportMap().addMarker(MapManager.createStoryStepMarker(getActivity(), object.assignedPoi(), i+1, selection == i++));
+			}
+		}
+	} 
+	
 }
