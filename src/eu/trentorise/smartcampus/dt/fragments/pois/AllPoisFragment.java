@@ -72,25 +72,8 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-
-		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-			@Override
-			public void onSearch(String query) {
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-				PoisListingFragment fragment = new PoisListingFragment();
-				Bundle args = new Bundle();
-				args.putString(SearchFragment.ARG_QUERY, query);
-				fragment.setArguments(args);
-				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				// fragmentTransaction.detach(currentFragment);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
-				fragmentTransaction.addToBackStack(fragment.getTag());
-				fragmentTransaction.commit();
-			}
-		});
-
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, R.string.menu_item_addpoi_text);
-
 		super.onPrepareOptionsMenu(menu);
 	}
 

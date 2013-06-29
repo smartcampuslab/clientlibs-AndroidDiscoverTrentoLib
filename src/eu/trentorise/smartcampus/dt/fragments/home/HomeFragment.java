@@ -23,29 +23,24 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.location.Location;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-import com.google.android.maps.MyLocationOverlay;
-import com.google.android.maps.Overlay;
-import com.google.android.maps.Projection;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
@@ -53,53 +48,47 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.custom.map.BaseDTObjectMapItemTapListener;
-import eu.trentorise.smartcampus.dt.custom.map.DTItemizedOverlay;
 import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
+import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockMapFragmentDT;
 
-public class HomeFragment extends NotificationsSherlockFragmentDT implements MapItemsHandler,
-		BaseDTObjectMapItemTapListener {
+public class HomeFragment extends NotificationsSherlockMapFragmentDT implements MapItemsHandler,
+		OnCameraChangeListener, OnMarkerClickListener, MapObjectContainer {
 
 	public static final String ARG_OBJECTS = "objects";
 	public static final String ARG_POI_CATEGORY = "poi category";
 	public static final String ARG_EVENT_CATEGORY = "event category";
 
 	protected ViewGroup mapContainer;
-	protected MapView mapView;
-	DTItemizedOverlay mItemizedoverlay = null;
-	DTItemizedOverlay mEventsItemizedoverlay = null;
-	DTItemizedOverlay mPoisItemizedoverlay = null;
-	
-	MyLocationOverlay mMyLocationOverlay = null;
+	protected GoogleMap mMap;
 
-	private Context context;
 	private String[] poiCategories = null;
 	private String[] eventsCategories = null;
 	private String[] eventsNotTodayCategories = null;
+	private Collection<? extends BaseDTObject> objects;
 
 	@Override
 	public void onStart() {
 		super.onStart();
 		// hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
 				Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(mapView.getWindowToken(), 0);
+		imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
+		initView();
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.context = this.getSherlockActivity();
 		CategoryDescriptor[] eventsDefault = DTParamsHelper
 				.getDefaultArrayByParams(CategoryHelper.CATEGORY_TYPE_EVENTS);
 		if (eventsDefault != null) {
@@ -120,83 +109,23 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		setHasOptionsMenu(true);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		boolean initialized = mapView != null;
-		mapContainer = new RelativeLayout(getActivity());
-		mapView = MapManager.getMapView();
-		final ViewGroup parent = (ViewGroup) mapView.getParent();
-		if (parent != null) {
-			parent.removeView(mapView);
-		}
-		mapContainer.addView(mapView);
-
-		List<Overlay> listOfOverlays = mapView.getOverlays();
-		mapView.getOverlays().clear();
-
-		mItemizedoverlay = new DTItemizedOverlay(getActivity(), mapView);
-		mItemizedoverlay.setMapItemTapListener(this);
-		listOfOverlays.add(mItemizedoverlay);
-		// setEventCategoriesToLoad("Family");
-
-		mMyLocationOverlay = new MyLocationOverlay(getSherlockActivity(), mapView) {
-			@Override
-			protected void drawMyLocation(Canvas canvas, MapView mapView, Location lastFix, GeoPoint myLocation,
-					long when) {
-				Projection p = mapView.getProjection();
-				float accuracy = p.metersToEquatorPixels(lastFix.getAccuracy());
-				Point loc = p.toPixels(myLocation, null);
-				Paint paint = new Paint();
-				paint.setAntiAlias(true);
-				// paint.setColor(Color.BLUE);
-				paint.setColor(Color.parseColor(context.getResources().getString(R.color.dtappcolor)));
-
-				if (accuracy > 10.0f) {
-					paint.setAlpha(50);
-					canvas.drawCircle(loc.x, loc.y, accuracy, paint);
-					// border
-					paint.setAlpha(200);
-					paint.setStyle(Paint.Style.STROKE);
-					canvas.drawCircle(loc.x, loc.y, accuracy, paint);
-				}
-
-				Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.me).copy(
-						Bitmap.Config.ARGB_8888, true);
-				canvas.drawBitmap(bitmap, loc.x - (bitmap.getWidth() / 2), loc.y - bitmap.getHeight(), null);
-			}
-		};
-		listOfOverlays.add(mMyLocationOverlay);
-
-		if (!initialized) {
-			// TODO correct for final version
-			mapView.getController().animateTo(MapManager.trento());
-			mapView.getController().setZoom(MapManager.ZOOM_DEFAULT);
-		}
+	/**
+	 * @return
+	 */
+	protected View initView() {
+		getSupportMap().clear();
 
 		if (getArguments() != null && getArguments().containsKey(ARG_OBJECTS)) {
-			mItemizedoverlay.clearMarkers();
 			poiCategories = null;
 			eventsCategories = null;
-			final List<BaseDTObject> list = (List<BaseDTObject>) getArguments().getSerializable(ARG_OBJECTS);
-			MapManager.fitMap(list, mapView);
-			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
-					getActivity(), mItemizedoverlay, mapView) {
-				@Override
-				protected Collection<? extends BaseDTObject> getObjects() {
-					try {
-						return list;
-					} catch (Exception e) {
-						e.printStackTrace();
-						return Collections.emptyList();
-					}
-				}
-			}).execute();
+			List<BaseDTObject> list = (List<BaseDTObject>) getArguments().getSerializable(ARG_OBJECTS);
+			addObjects(list);
+			
 		} else if (getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY)) {
-			mItemizedoverlay.clearMarkers();
+			eventsCategories = null;
 			setPOICategoriesToLoad(getArguments().getString(ARG_POI_CATEGORY));
 		} else if (getArguments() != null && getArguments().containsKey(ARG_EVENT_CATEGORY)) {
-			mItemizedoverlay.clearMarkers();
+			poiCategories = null;
 			setEventCategoriesToLoad(getArguments().getString(ARG_EVENT_CATEGORY));
 		} else {
 			if (poiCategories != null) {
@@ -211,14 +140,29 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 
 	@Override
 	public void onResume() {
-		mMyLocationOverlay.enableMyLocation();
 		super.onResume();
+		if (getSupportMap() != null) {
+			getSupportMap().setMyLocationEnabled(true);
+			getSupportMap().setOnCameraChangeListener(this);
+			getSupportMap().setOnMarkerClickListener(this);
+//			if (objects != null) {
+//				render(objects);
+//			}
+		}
 	}
 
 	@Override
+	public void onConfigurationChanged(Configuration arg0) {
+		super.onConfigurationChanged(arg0);
+	}
+	@Override
 	public void onPause() {
-		mMyLocationOverlay.disableMyLocation();
 		super.onPause();
+		if (getSupportMap() != null) {
+			getSupportMap().setMyLocationEnabled(false);
+			getSupportMap().setOnCameraChangeListener(null);
+			getSupportMap().setOnMarkerClickListener(null);
+		}
 	}
 
 	@Override
@@ -251,43 +195,13 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		}
 	}
 
-//	public void setEventsCategoriesToLoad(final String... categories) {
-//		this.eventsCategories = categories;
-//		
-//		mItemizedoverlay.clearMarkers();
-//
-//		loadEventsCategory(categories);
-//		
-//		if (this.poiCategories.length>0)
-//		{
-//			loadPoisCategory(this.poiCategories);
-//		}
-//	}
-
-	private void loadPoisCategory(final String... categories) {
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
-				getActivity(), mItemizedoverlay, mapView) {
-			@Override
-			protected Collection<? extends BaseDTObject> getObjects() {
-				try {
-					// TODO
-					return DTHelper.getPOIByCategory(0, -1, categories);
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Collections.emptyList();
-				}
-			}
-		}).execute();
-		
-	}
-
 	public void setPOICategoriesToLoad(final String... categories) {
 		this.poiCategories = categories;
-
-		mItemizedoverlay.clearMarkers();
+		/*actually only event or poi at the same time*/
+		this.eventsCategories = null;
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
-				getActivity(), mItemizedoverlay, mapView) {
+				getActivity(),this, getSupportMap()) {
 			@Override
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
@@ -300,43 +214,13 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 			}
 
 		}).execute();
-		
-		if ((this.eventsCategories!=null)&&(this.eventsCategories.length>0))
-		{
-			loadEventsCategory(this.eventsCategories);
-		}
 	}
 
-	private void loadEventsCategory(final String... categories) {
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
-				getActivity(), mItemizedoverlay, mapView) {
-			@Override
-			protected Collection<? extends BaseDTObject> getObjects() {
-				try {
-					if (isTodayIncluded()) {
-						List<EventObject> newList = new ArrayList<EventObject>();
-						newList.addAll(DTHelper.searchTodayEvents(0, -1, ""));
-						if (categories != null)
-							newList.addAll(DTHelper.getEventsByCategories(0, -1, eventsNotTodayCategories));
-						return newList;
-					} else
-						return DTHelper.getEventsByCategories(0, -1, categories);
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Collections.emptyList();
-				}
-			}
-		}).execute();
-		
+	private void onBaseDTObjectTap(BaseDTObject o) {
+		new InfoDialog(o).show(getActivity().getSupportFragmentManager(), "me");
 	}
 
-	@Override
-	public void onBaseDTObjectTap(BaseDTObject o) {
-		new InfoDialog(o).show(getSherlockActivity().getSupportFragmentManager(), "me");
-	}
-
-	@Override
-	public void onBaseDTObjectsTap(List<BaseDTObject> list) {
+	private void onBaseDTObjectsTap(List<BaseDTObject> list) {
 		if (list == null || list.size() == 0)
 			return;
 		if (list.size() == 1) {
@@ -348,10 +232,10 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		Bundle args = new Bundle();
 		if (list.get(0) instanceof EventObject) {
 			fragment = new EventsListingFragment();
-			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList<EventObject>((List) list));
+			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList(list));
 		} else if (list.get(0) instanceof POIObject) {
 			fragment = new PoisListingFragment();
-			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList<POIObject>((List) list));
+			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList(list));
 		}
 		if (fragment != null) {
 			fragment.setArguments(args);
@@ -367,11 +251,14 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 	public void setEventCategoriesToLoad(final String... categories) {
 		this.eventsCategories = categories;
 		this.eventsNotTodayCategories = categories;
-
-		mItemizedoverlay.clearMarkers();
+		
+		/*actually only event or poi at the same time*/
+		this.poiCategories = null;
+		
+//		mItemizedoverlay.clearMarkers();
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
-				getActivity(), mItemizedoverlay, mapView) {
+				getActivity(), this, getSupportMap()) {
 			@Override
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
@@ -392,11 +279,6 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 			}
 
 		}).execute();
-		
-		if ((this.poiCategories!=null)&&(this.poiCategories.length>0))
-		{
-			loadPoisCategory(this.poiCategories);
-		}
 	}
 
 	private boolean isTodayIncluded() {
@@ -414,4 +296,52 @@ public class HomeFragment extends NotificationsSherlockFragmentDT implements Map
 		eventsNotTodayCategories =  categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
 		return istodayincluded;
 	}
+	
+	private GoogleMap getSupportMap() {
+		if (mMap == null) {
+			mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(android.R.id.content)).getMap();
+			getSupportMap().moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+
+		}
+		return mMap;
+	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		List<BaseDTObject> list = MapManager.ClusteringHelper.getFromGridId(marker.getTitle());
+		if (list == null || list.isEmpty()) return true;
+		
+		if (list.size() == 1) {
+			onBaseDTObjectTap(list.get(0));
+		} else if (getSupportMap().getCameraPosition().zoom == getSupportMap().getMaxZoomLevel()) {
+			onBaseDTObjectsTap(list);
+		} else {
+			MapManager.fitMapWithOverlays(list, getSupportMap());
+		}
+		return true;
+	}
+
+	@Override
+	public void onCameraChange(CameraPosition position) {
+		render(objects);
+	}
+
+	@Override
+	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
+		this.objects = objects;
+		render(objects);
+	}
+
+	private void render(Collection<? extends BaseDTObject> objects) {
+		getSupportMap().clear();
+		if (objects != null) {
+			List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(
+					getActivity().getApplicationContext(), getSupportMap(),
+					objects);
+			MapManager.ClusteringHelper.render(getSupportMap(), cluster);
+		}
+
+	} 
+	
+	
 }

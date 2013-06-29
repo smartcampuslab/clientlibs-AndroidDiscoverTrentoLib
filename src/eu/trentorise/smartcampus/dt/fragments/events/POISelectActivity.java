@@ -15,6 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.events;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -22,11 +23,16 @@ import java.util.List;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -49,11 +55,15 @@ import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 
-public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener {
+
+
+
+public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick {
 
 	public final static int RESULT_SELECTED = 11;
 
@@ -79,7 +89,17 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		// dialogFragment.setArguments(args);
 		// dialogFragment.show(getSupportFragmentManager(), "dialog");
 	}
+	
+	@Override
+	public void OnDialogDetailsClick(BaseDTObject poi) {
 
+		 // User clicked OK button
+		 Intent data = new Intent();
+		 data.putExtra("poi", poi);
+		 setResult(RESULT_SELECTED, data);
+		 finish();
+	}
+	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1,
@@ -113,7 +133,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		// me = new GeoPoint((int) (46.0696727540531 * 1E6), (int)
 		// (11.1212700605392 * 1E6));
 		// }
-		mapView.getController().animateTo(MapManager.trento());
+//		mapView.getController().animateTo(MapManager.DEFAULT_POINT);
 		List<Overlay> listOfOverlays = mapView.getOverlays();
 
 		mItemizedoverlay = new DTItemizedOverlay(this, mapView);
@@ -121,54 +141,28 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		listOfOverlays.add(mItemizedoverlay);
 	}
 
-	// @Override
-	// protected boolean isRouteDisplayed() {
-	// return false;
-	// }
 
 	@Override
-	public void onBaseDTObjectTap(final BaseDTObject o) {
-		// //create dialog box for confirm
-		// AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		// // Add the buttons
-		// builder.setMessage(o.getTitle());
-		// builder.setPositiveButton(R.string.ok,
-		// new DialogInterface.OnClickListener() {
-		// public void onClick(DialogInterface dialog, int id) {
-		// // User clicked OK button
-		// Intent data = new Intent();
-		// data.putExtra("poi", o);
-		// setResult(RESULT_SELECTED, data);
-		// finish();
-		//
-		// }
-		// });
-		// builder.setNegativeButton(R.string.cancel,
-		// new DialogInterface.OnClickListener() {
-		// public void onClick(DialogInterface dialog, int id) {
-		// // User cancelled the dialog
-		// dialog.dismiss();
-		// }
-		// });
-		//
-		// // Create the AlertDialog
-		// AlertDialog dialog = builder.create();
-		// dialog.show();
-		new ConfirmPoiDialog(o).show(getSupportFragmentManager(), "me");
+	public void onBaseDTObjectTap(BaseDTObject poiObject) {
+		ConfirmPoiDialog stopInfoDialog = new ConfirmPoiDialog(this);
+		Bundle args = new Bundle();
+		args.putSerializable(ConfirmPoiDialog.ARG_POI, poiObject);
+		stopInfoDialog.setArguments(args);
+		stopInfoDialog.show(getSupportFragmentManager(), "poiselected");
 	}
 
 	@Override
-	public void onBaseDTObjectsTap(List<BaseDTObject> list) {
-		new ConfirmPoiDialog(list.get(0)).show(getSupportFragmentManager(), "me");
+	public void onBaseDTObjectsTap(List<BaseDTObject> poiObjectsList) {
+		ConfirmPoiDialog poiInfoDialog = new ConfirmPoiDialog(this);
+		Bundle args = new Bundle();
+		args.putSerializable(ConfirmPoiDialog.ARG_POIS, (ArrayList<BaseDTObject>) poiObjectsList);
+		poiInfoDialog.setArguments(args);
+		poiInfoDialog.show(getSupportFragmentManager(), "poiselected");
 	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_show_places_layers) {
 			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null).show();
-			// LayerDialogFragment dialogFragment = new
-			// LayerDialogFragment(this);
-			// dialogFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -178,18 +172,18 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	public void setPOICategoriesToLoad(final String... categories) {
 		mItemizedoverlay.clearMarkers();
 
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, mItemizedoverlay,
-				mapView) {
-			@Override
-			protected Collection<? extends BaseDTObject> getObjects() {
-				try {
-					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Collections.emptyList();
-				}
-			}
-		}).execute();
+//		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, mItemizedoverlay,
+//				mapView) {
+//			@Override
+//			protected Collection<? extends BaseDTObject> getObjects() {
+//				try {
+//					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					return Collections.emptyList();
+//				}
+//			}
+//		}).execute();
 	}
 
 	@Override
@@ -197,62 +191,10 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		super.onConfigurationChanged(newConfig);
 	}
 
-	private class ConfirmPoiDialog extends SherlockDialogFragment {
-		private BaseDTObject data;
 
-		public ConfirmPoiDialog(BaseDTObject o) {
-			this.data = o;
-		}
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			getDialog().setTitle(data.getTitle());
-			return inflater.inflate(R.layout.mapconfirmdialog, container, false);
-		}
-
-		public BaseDTObject getData() {
-			return data;
-		}
-
-		@Override
-		public void onStart() {
-			super.onStart();
-			TextView msg = (TextView) getDialog().findViewById(R.id.mapdialog_msg);
-			if (data.getDescription() != null)
-				msg.setText(data.getDescription());
-			else {
-				if (data instanceof POIObject)
-					msg.setText(((POIObject) data).shortAddress());
-				else {
-					POIObject poi = DTHelper.findPOIById(((EventObject) data).getPoiId());
-					msg.setText(poi.shortAddress());
-				}
-			}
-			Button b = (Button) getDialog().findViewById(R.id.mapdialog_cancel);
-			b.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					getDialog().dismiss();
-				}
-			});
-			b = (Button) getDialog().findViewById(R.id.mapdialog_ok);
-			b.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// User clicked OK button
-					Intent data = new Intent();
-					data.putExtra("poi", getData());
-					setResult(RESULT_SELECTED, data);
-					finish();
-					getDialog().dismiss();
-				}
-			});
-
-		}
-	}
-
+	
+	
 	@Override
 	public String getAppToken() {
 		return DTParamsHelper.getAppToken();

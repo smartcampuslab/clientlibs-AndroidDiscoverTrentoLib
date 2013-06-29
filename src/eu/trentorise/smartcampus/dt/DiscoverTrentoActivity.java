@@ -15,9 +15,6 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt;
 
-import java.security.acl.LastOwnerException;
-
-import android.R.bool;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,8 +23,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -44,7 +39,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.github.espiandev.showcaseview.BaseTutorialActivity;
-import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
@@ -54,7 +48,6 @@ import eu.trentorise.smartcampus.dt.custom.TabListener;
 import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
-import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
@@ -84,12 +77,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setUpContent(savedInstanceState != null ? savedInstanceState
 				.getInt("tag") : null);
 
 		initDataManagement(savedInstanceState);
-		MapManager.setMapView(new MapView(this, getResources().getString(
-				R.string.maps_api_key)));
 
 		// DEBUG PURPOSE
 		//DTHelper.getTutorialPreferences(this).edit().clear().commit();
@@ -137,6 +129,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		super.onDestroy();
 	}
 
+
+	
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
 			DTHelper.init(getApplicationContext());
@@ -330,6 +324,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 						}
 					}
 				}).start();
+			}
+			else {
+				setSupportProgressBarIndeterminateVisibility(false);
+
 			}
 
 			Long entityId = getIntent().getLongExtra(
