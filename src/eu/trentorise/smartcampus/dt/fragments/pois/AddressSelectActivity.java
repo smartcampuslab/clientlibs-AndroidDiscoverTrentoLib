@@ -39,6 +39,7 @@ import eu.trentorise.smartcampus.android.map.InfoDialog;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
+import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 
 public class AddressSelectActivity extends FeedbackFragmentActivity implements OnMapLongClickListener {
 
@@ -74,7 +75,7 @@ public class AddressSelectActivity extends FeedbackFragmentActivity implements O
 				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
 						.getLocation().getLongitudeE6() / 1e6);
 			} else {
-				me = new LatLng(46.0696727540531, 11.1212700605392);
+				me = MapManager.DEFAULT_POINT;
 			}
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
 		}
