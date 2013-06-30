@@ -85,8 +85,9 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		storyObject.getCommunityData().setTags(Concept.convertSS(suggestions));
-		((EditText) getView().findViewById(R.id.story_tags)).setText(Concept.toSimpleString(storyObject.getCommunityData()
-				.getTags()));
+		if (getView() != null)
+			((EditText) getView().findViewById(R.id.story_tags)).setText(Concept.toSimpleString(storyObject
+					.getCommunityData().getTags()));
 
 	}
 
@@ -151,8 +152,8 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		list.addHeaderView(headerView);
 		View footerView = View.inflate(context, R.layout.createstoryfooter, null);
 		list.addFooterView(footerView);
-		stepAdapter = new StepAdapter(context, R.layout.steps_row, storyObject.getSteps(), storyObject, fragmentManager,
-				getActivity());
+		stepAdapter = new StepAdapter(context, R.layout.steps_row, storyObject.getSteps(), storyObject,
+				fragmentManager, getActivity());
 		list.setAdapter(stepAdapter);
 
 		// categories
@@ -199,7 +200,8 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			public void onClick(View v) {
 
 				if (Log.isLoggable(TAG, Log.VERBOSE)) {
-					Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment clicked on save button ");
+					Log.v(TAG,
+							"eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment clicked on save button ");
 				}
 
 				// load the new fragment passing the handler manages the step
@@ -234,7 +236,8 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			public void onClick(View v) {
 
 				if (Log.isLoggable(TAG, Log.VERBOSE)) {
-					Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment clicked on cancel button ");
+					Log.v(TAG,
+							"eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment clicked on cancel button ");
 				}
 
 				getSherlockActivity().getSupportFragmentManager().popBackStack();
@@ -317,15 +320,16 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 				Log.v(TAG,
 						"eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment CreateStoryProcessor.handleResult ");
 			}
+			if (getSherlockActivity() != null) {
+				if (result) {
+					Toast.makeText(getSherlockActivity(), R.string.story_create_success, Toast.LENGTH_SHORT).show();
+					getSherlockActivity().getSupportFragmentManager().popBackStack();
 
-			if (result) {
-				Toast.makeText(getSherlockActivity(), R.string.story_create_success, Toast.LENGTH_SHORT).show();
-				getSherlockActivity().getSupportFragmentManager().popBackStack();
+				} else {
+					Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
+					getSherlockActivity().getSupportFragmentManager().popBackStack();
 
-			} else {
-				Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
-				getSherlockActivity().getSupportFragmentManager().popBackStack();
-
+				}
 			}
 		}
 	}
@@ -383,7 +387,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment.validate");
 		}
 
-		if (data.getTitle() == null || data.getTitle().trim().length()==0)
+		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
 			return R.string.create_title;
 		return result;
 	}

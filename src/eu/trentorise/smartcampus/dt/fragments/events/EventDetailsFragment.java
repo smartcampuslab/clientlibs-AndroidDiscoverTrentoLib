@@ -109,8 +109,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		tmp_comments = new TmpComment[0];
 		// tmp_comments = new TmpComment[5];
 		for (int i = 0; i < tmp_comments.length; i++)
-			tmp_comments[i] = new TmpComment("This is a very nice, detailed and lengthy comment about the event", "student",
-					new Date());
+			tmp_comments[i] = new TmpComment("This is a very nice, detailed and lengthy comment about the event",
+					"student", new Date());
 		setFollowByIntent();
 	}
 
@@ -175,8 +175,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-								FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(), mEvent.getTitle(),
-										DTConstants.ENTITY_TYPE_EVENT);
+								FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(),
+										mEvent.getTitle(), DTConstants.ENTITY_TYPE_EVENT);
 								if (mFollowByIntent) {
 									// for MyPeople support
 									followButtonView = buttonView;
@@ -194,8 +194,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 									obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
 									if (obj != null) {
 										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
-														buttonView));
+												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
+														getSherlockActivity(), buttonView));
 										unfollowTask.execute(obj);
 
 									}
@@ -228,8 +228,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						// show dialog box
 						UserRegistration.upgradeuser(getSherlockActivity());
 					} else {
-						new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
-								buttonView)).execute(getEvent().getAttending() == null || getEvent().getAttending().isEmpty());
+						new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(
+								getSherlockActivity(), buttonView)).execute(getEvent().getAttending() == null
+								|| getEvent().getAttending().isEmpty());
 					}
 				}
 			});
@@ -316,8 +317,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			}
 
 			// multimedia
-			((LinearLayout) getView().findViewById(R.id.multimedia_source))
-					.removeView(getView().findViewById(R.id.gallery_btn));
+			((LinearLayout) getView().findViewById(R.id.multimedia_source)).removeView(getView().findViewById(
+					R.id.gallery_btn));
 
 			/*
 			 * ImageButton b = (ImageButton) getView().findViewById(
@@ -390,8 +391,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			} else {
 				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
 						R.id.event_comments));
-				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView()
-						.findViewById(R.id.comments_list));
+				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
+						R.id.comments_list));
 				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
 						R.id.event_comments_separator));
 			}
@@ -409,12 +410,14 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	private void updateAttending() {
 		TextView tv;
-		// attendees
-		tv = (TextView) this.getView().findViewById(R.id.attendees_num);
-		if (getEvent().getAttendees() != null) {
-			tv.setText(getEvent().getAttendees() + " " + getString(R.string.attendees_extended));
-		} else {
-			tv.setText("0 " + getString(R.string.attendees_extended));
+		if (this.getView() != null) {
+			// attendees
+			tv = (TextView) this.getView().findViewById(R.id.attendees_num);
+			if (getEvent().getAttendees() != null) {
+				tv.setText(getEvent().getAttendees() + " " + getString(R.string.attendees_extended));
+			} else {
+				tv.setText("0 " + getString(R.string.attendees_extended));
+			}
 		}
 	}
 
@@ -423,23 +426,25 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	 */
 
 	private void updateRating() {
-		RatingBar rating = (RatingBar) getView().findViewById(R.id.event_rating);
-		if (mEvent.getCommunityData() != null) {
-			CommunityData cd = mEvent.getCommunityData();
+		if (this.getView() != null) {
+			RatingBar rating = (RatingBar) getView().findViewById(R.id.event_rating);
+			if (mEvent.getCommunityData() != null) {
+				CommunityData cd = mEvent.getCommunityData();
 
-			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-				rating.setRating(cd.getRatings().get(0).getValue());
+				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+					rating.setRating(cd.getRatings().get(0).getValue());
+				}
+
+				// user rating
+
+				// total raters
+				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(
+						R.string.ratingtext_raters, cd.getRatingsCount()));
+
+				// averange rating
+				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(
+						R.string.ratingtext_average, cd.getAverageRating()));
 			}
-
-			// user rating
-
-			// total raters
-			((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
-					cd.getRatingsCount()));
-
-			// averange rating
-			((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
-					cd.getAverageRating()));
 		}
 
 	}
@@ -497,7 +502,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.submenu_show_related_poi) {
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+					.beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 			Bundle args = new Bundle();
 			args.putSerializable(PoiDetailsFragment.ARG_POI_ID, getPOI().getId());
@@ -580,7 +586,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
 				// args.putSerializable(CreateEventFragment.ARG_EVENT,
@@ -689,8 +696,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	private void ratingDialog() {
 		float rating = (getEvent() != null && getEvent().getCommunityData() != null && getEvent().getCommunityData()
 				.getAverageRating() > 0) ? getEvent().getCommunityData().getAverageRating() : 2.5f;
-		RatingHelper
-				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_event_dialog_title);
+		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()),
+				R.string.rating_event_dialog_title);
 	}
 
 	/**
@@ -724,7 +731,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			mEvent = null;
 			getEvent();
 			updateRating();
-			Toast.makeText(getSherlockActivity(), R.string.rating_success, Toast.LENGTH_SHORT).show();
+			if (getSherlockActivity() != null)
+				Toast.makeText(getSherlockActivity(), R.string.rating_success, Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
@@ -748,8 +756,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (result) {
 				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
-				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete),
+						Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -780,13 +788,14 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			updateAttending();
 			// getSherlockActivity().invalidateOptionsMenu();
 			EventObject event = getEvent();
-			if (event.getAttending() == null || event.getAttending().isEmpty()) {
-				Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();
-				buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-			} else {
-				Toast.makeText(getSherlockActivity(), R.string.attend_success, Toast.LENGTH_SHORT).show();
-				buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-			}
+			if (getSherlockActivity() != null)
+				if (event.getAttending() == null || event.getAttending().isEmpty()) {
+					Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();
+					buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+				} else {
+					Toast.makeText(getSherlockActivity(), R.string.attend_success, Toast.LENGTH_SHORT).show();
+					buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				}
 		}
 
 	}

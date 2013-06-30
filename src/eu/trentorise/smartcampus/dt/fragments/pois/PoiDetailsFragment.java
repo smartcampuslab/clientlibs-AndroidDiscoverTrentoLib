@@ -128,6 +128,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private void updateRating() {
+		if (getView()!=null){
 		RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
 		if (mPoi.getCommunityData() != null) {
 			CommunityData cd = mPoi.getCommunityData();
@@ -145,6 +146,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			// averange rating
 			((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(R.string.ratingtext_average,
 					cd.getAverageRating()));
+		}
 		}
 	}
 

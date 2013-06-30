@@ -80,7 +80,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 	@Override
 	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
 		poiObject.getCommunityData().setTags(Concept.convertSS(suggestions));
-		((EditText) getView().findViewById(R.id.poi_tags)).setText(Concept.toSimpleString(poiObject.getCommunityData()
+		if (getView()!=null)
+			((EditText) getView().findViewById(R.id.poi_tags)).setText(Concept.toSimpleString(poiObject.getCommunityData()
 				.getTags()));
 	}
 
@@ -307,6 +308,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 
 		@Override
 		public void handleResult(POIObject result) {
+			if (getSherlockActivity()!=null){
 			getSherlockActivity().getSupportFragmentManager().popBackStack();
 			if(result!=null)
 				{
@@ -323,6 +325,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 				Toast.makeText(getSherlockActivity(), R.string.poi_create_success, Toast.LENGTH_SHORT).show();
 					poiHandler.addPoi(poiObject);
 			}
+		}
 		}
 	}
 	
