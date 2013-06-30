@@ -81,7 +81,6 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
-import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
@@ -97,8 +96,8 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 /*
  * Shows the detail of the story and steps, manages the mapview and the refresh of it
  */
-public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements //MapStoryHandler,
-		MapObjectContainer, OnCameraChangeListener, OnMarkerClickListener {
+public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements 
+		OnCameraChangeListener, OnMarkerClickListener {
 
 	private boolean mFollowByIntent;
 	private boolean mStart = true;
@@ -995,27 +994,17 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		
 	}
 
-	@Override
-	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
-		render(objects,-1);
-	}
-
-	private void render(Collection<? extends BaseDTObject> objects, int selection) {
-		getSupportMap().clear();
-		if (objects != null) {
-			int i = 0;
-			for (BaseDTObject object : objects) {
-				getSupportMap().addMarker(MapManager.createStoryStepMarker(getActivity(), object, i+1, selection == i++));
-			}
-		}
-	} 
-
 	private void renderSteps(Collection<StepObject> objects, int selection) {
 		getSupportMap().clear();
 		if (objects != null) {
 			int i = 0;
+			BaseDTObject from = null;
 			for (StepObject object : objects) {
-				getSupportMap().addMarker(MapManager.createStoryStepMarker(getActivity(), object.assignedPoi(), i+1, selection == i++));
+				getSupportMap().addMarker(MapManager.createStoryStepMarker(getSherlockActivity(), object.assignedPoi(), i+1, selection == i++));
+				if (from != null) {
+					getSupportMap().addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, object.assignedPoi()));
+				}
+				from = object.assignedPoi();
 			}
 		}
 	} 

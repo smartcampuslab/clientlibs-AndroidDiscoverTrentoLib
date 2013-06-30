@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
@@ -121,10 +123,17 @@ public class MapManager {
 
 		int markerIcon = selected ? R.drawable.selected_step : R.drawable.step;
 
-		BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnMarker(ctx, markerIcon,
+		BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnStoryMarker(ctx, markerIcon,
 				Integer.toString(pos)));
-		MarkerOptions marker = new MarkerOptions().position(latLng).icon(bd).title(""+pos);
+		MarkerOptions marker = new MarkerOptions().anchor(0.5f,0.5f).position(latLng).icon(bd).title(""+pos);
 		return marker;
+	}
+	
+	public static PolylineOptions createStoryStepLine(Context ctx, BaseDTObject from, BaseDTObject to) {
+		LatLng latLngFrom = getLatLngFromBasicObject(from);
+		LatLng latLngTo= getLatLngFromBasicObject(to);
+		PolylineOptions line = new PolylineOptions().add(latLngFrom, latLngTo).color(Color.parseColor(ctx.getString(R.color.dtappcolor))).width(6);
+		return line;
 	}
 	
 	/*
@@ -369,7 +378,28 @@ public class MapManager {
 
 		return bitmap;
 	}
-	
+
+	private static Bitmap writeOnStoryMarker(Context mContext, int drawableId, String text) {
+		float scale = mContext.getResources().getDisplayMetrics().density;
+
+		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
+		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paint.setTextAlign(Align.CENTER);
+		paint.setTextSize(scale * 14);
+		paint.setAntiAlias(true);
+		paint.setARGB(255, 255, 255, 255);
+
+		Canvas canvas = new Canvas(bitmap);
+		Rect bounds = new Rect();
+		paint.getTextBounds(text, 0, text.length(), bounds);
+		float x = bitmap.getWidth() / 2;
+		float y = bitmap.getHeight() / 2 - ((paint.descent() + paint.ascent()) / 2);
+		
+		canvas.drawText(text, x, y, paint);
+
+		return bitmap;
+	}
+
 
 	private static LatLng getLatLngFromBasicObject(BaseDTObject object) {
 		LatLng latLng = null;
