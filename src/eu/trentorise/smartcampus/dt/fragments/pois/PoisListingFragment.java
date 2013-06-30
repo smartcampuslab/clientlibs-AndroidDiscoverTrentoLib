@@ -730,6 +730,8 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	}
 
 	private void updateList(boolean empty) {
+		if (getView()!=null){
+
 		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 				R.id.poilistcontainer));
 		if (empty) {
@@ -737,6 +739,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 					R.id.poilistcontainer));
 		}
 		hideListItemsMenu(null, false);
+		}
 	}
 
 }

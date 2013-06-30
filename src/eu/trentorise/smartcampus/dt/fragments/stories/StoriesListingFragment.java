@@ -712,6 +712,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	}
 
 	private void updateList(boolean empty) {
+	if (getView()!=null){
+
 		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 				R.id.storylistcontainer));
 		if (empty) {
@@ -720,5 +722,5 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		}
 		hideListItemsMenu(null, false);
 	}
-
+}
 }

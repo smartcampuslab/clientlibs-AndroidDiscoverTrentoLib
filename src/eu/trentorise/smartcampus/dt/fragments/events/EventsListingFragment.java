@@ -887,6 +887,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	}
 
 	private void updateList(boolean empty) {
+		if (getView()!=null){
 		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 				R.id.eventlistcontainer));
 		if (empty) {
@@ -894,6 +895,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					R.id.eventlistcontainer));
 		}
 		hideListItemsMenu(null, false);
+	}
 	}
 
 }
