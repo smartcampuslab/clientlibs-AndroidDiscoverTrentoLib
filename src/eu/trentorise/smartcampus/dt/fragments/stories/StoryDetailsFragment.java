@@ -132,7 +132,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	}
 
 	private StoryObject getStory() {
-		if (mStoryId == null) {
+		if (mStoryId == null || mStory == null) {
 			mStoryId = getArguments().getString(ARG_STORY_ID);
 			mStory = DTHelper.findStoryById(mStoryId);
 			if (mStory != null) {
@@ -219,7 +219,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// follow/unfollow
 			if (mStart) {
 				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
-				if (getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+				if (getStory().getCommunityData().getFollowing() != null && getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
 					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
 					followTbtn.setChecked(true);
 				} else {
