@@ -336,7 +336,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 		getSupportMap().clear();
 		if (objects != null) {
 			List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(
-					getActivity().getApplicationContext(), getSupportMap(),
+					getSherlockActivity().getApplicationContext(), getSupportMap(),
 					objects);
 			MapManager.ClusteringHelper.render(getSupportMap(), cluster);
 		}
