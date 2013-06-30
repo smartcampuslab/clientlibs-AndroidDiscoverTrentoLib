@@ -16,140 +16,94 @@
 package eu.trentorise.smartcampus.dt.fragments.pois;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Locale;
 
-import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 
-import eu.trentorise.smartcampus.dt.DTParamsHelper;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.android.common.SCGeocoder;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
 import eu.trentorise.smartcampus.android.map.InfoDialog;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 
-public class AddressSelectActivity extends FeedbackFragmentActivity {
-	
+public class AddressSelectActivity extends FeedbackFragmentActivity implements OnMapLongClickListener {
+
 	public final static int RESULT_SELECTED = 10;
-
 	protected static final String ARG_POINT = "point";
-	
-	private MapView mapView = null;
+
+	private GoogleMap mMap = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContent();
+		setContentView(R.layout.mapcontainer_dt_v2);
+
+		getSupportActionBar().setDisplayUseLogoEnabled(true); // system logo
+		getSupportActionBar().setDisplayShowTitleEnabled(true); // system title
+		getSupportActionBar().setDisplayShowHomeEnabled(false); // home icon bar
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if (getSupportActionBar().getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
+			getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		}
+
+		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+		mMap.setOnMapLongClickListener(this);
+		mMap.setMyLocationEnabled(true);
+
+		LatLng me = null;
+		Address address = (Address) getIntent().getParcelableExtra(ARG_POINT);
+		if (address != null) {
+			me = new LatLng(address.getLatitude(), address.getLongitude());
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap() + 2));
+		} else {
+			if (DTHelper.getLocationHelper().getLocation() != null) {
+				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
+						.getLocation().getLongitudeE6() / 1e6);
+			} else {
+				me = new LatLng(46.0696727540531, 11.1212700605392);
+			}
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
+		}
+
+		Toast.makeText(this, getString(R.string.address_select_toast), Toast.LENGTH_LONG).show();
+
 		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
 				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
 	}
 
-//	@Override
-//	public boolean onPrepareOptionsMenu(Menu menu) {
-//		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi,
-//				1, R.string.menu_item_addpoi_text);
-//		item.setIcon(R.drawable.ic_addp);
-//		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-//		return true;
-//	}
+	@Override
+	public void onMapLongClick(LatLng point) {
+		Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+		vibrator.vibrate(100);
 
-	private void setContent() {
-		mapView = new MapView(this, getResources().getString(R.string.maps_api_key));
-		setContentView(R.layout.mapcontainer_dt);
+		GeoPoint p = new GeoPoint((int) (point.latitude * 1e6), (int) (point.longitude * 1e6));
+		List<Address> addresses = new SCGeocoder(getApplicationContext()).findAddressesAsync(p);
 
-		ViewGroup view = (ViewGroup)findViewById(R.id.mapcontainer);
-		view.addView(mapView);
-
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayUseLogoEnabled(true); // system logo
-		actionBar.setDisplayShowTitleEnabled(true); // system title
-		actionBar.setDisplayShowHomeEnabled(false); // home icon bar
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD); // tabs bar
-
-		mapView.setClickable(true);
-		mapView.setBuiltInZoomControls(true);
-		mapView.getController().setZoom(15);
-
-		GeoPoint me = null;
-		Address address = (Address) getIntent().getParcelableExtra(ARG_POINT);
-		if (address != null) {
-			me = new GeoPoint((int)(address.getLatitude()*1E6), (int)(address.getLongitude() * 1E6));
-			mapView.getController().setZoom(18);
+		if (addresses != null && !addresses.isEmpty()) {
+			new InfoDialog(AddressSelectActivity.this, addresses.get(0)).show(getSupportFragmentManager(), "me");
 		} else {
-			// TODO uncomment for final version
-			//me = MapManager.requestMyLocation(this);
-//			me = MapManager.DEFAULT_POINT;
+			Address address = new Address(Locale.getDefault());
+			address.setLatitude(point.latitude);
+			address.setLongitude(point.longitude);
+			String addressLine = "LON " + Double.toString(address.getLongitude()) + ", LAT "
+					+ Double.toString(address.getLatitude());
+			address.setAddressLine(0, addressLine);
+			new InfoDialog(AddressSelectActivity.this, addresses.get(0)).show(getSupportFragmentManager(), "me");
 		}
-		if (me == null) {
-			me = new GeoPoint((int) (46.0696727540531 * 1E6), (int) (11.1212700605392 * 1E6));
-		}
-		mapView.getController().animateTo(me);
-
-		TapOverlay mapOverlay = new TapOverlay();
-		List<Overlay> listOfOverlays = mapView.getOverlays();
-		listOfOverlays.add(mapOverlay);
-		
-		Toast.makeText(this, getString(R.string.address_select_toast), Toast.LENGTH_LONG).show();
-	}
-
-//	@Override
-//	protected boolean isRouteDisplayed() {
-//		return false;
-//	}
-
-	private Timer timer = new Timer();
-	private TimerTask task = null;
-	
-	private class TapOverlay extends Overlay {
-
-		@Override
-		public boolean onTouchEvent(MotionEvent event, MapView mapView) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				if (task != null) task.cancel();
-				task = new TimerTask() {
-					
-					@Override
-					public void run() {
-						Vibrator vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-						vibrator.vibrate(100);
-					}
-				};
-				timer.schedule(task, 1000);
-			}
-			if (event.getAction() == MotionEvent.ACTION_UP) {
-				if (task != null) task.cancel();
-				long duration = event.getEventTime() - event.getDownTime();
-				if (duration > 1000) {
-					GeoPoint p = mapView.getProjection().fromPixels(
-							(int) event.getX(), (int) event.getY());
-					List<Address> addresses = new SCGeocoder(mapView.getContext()).findAddressesAsync(p);
-					if (addresses != null && !addresses.isEmpty()) {
-						Intent data = new Intent();
-						new InfoDialog(AddressSelectActivity.this,addresses.get(0)).show(getSupportFragmentManager(), "me");
-
-					}
-				}
-			}
-
-			return false;
-		}
-
 	}
 
 	@Override

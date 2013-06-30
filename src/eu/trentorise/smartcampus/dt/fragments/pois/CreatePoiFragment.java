@@ -178,8 +178,6 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 
 		}
 
-		ImageButton locationBtn = (ImageButton) view.findViewById(R.id.btn_poi_locate);
-
 		EditText notes = (EditText) view.findViewById(R.id.poi_notes);
 		notes.setText(poiObject.getCommunityData().getNotes());
 
@@ -195,9 +193,9 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 				taggingDialog.show();
 			}
 		});
-		
-		ImageButton button = (ImageButton) view.findViewById(R.id.btn_poi_locate);
-		button.setOnClickListener(new View.OnClickListener() {
+
+		ImageButton locationBtn = (ImageButton) view.findViewById(R.id.btn_poi_locate);
+		locationBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), AddressSelectActivity.class);
 				if (mAddress != null) {
