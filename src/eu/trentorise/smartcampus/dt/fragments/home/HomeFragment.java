@@ -81,8 +81,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	public void onStart() {
 		super.onStart();
 		// hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
-				Context.INPUT_METHOD_SERVICE);
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
 		initView();
 	}
@@ -94,16 +93,17 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 				.getDefaultArrayByParams(CategoryHelper.CATEGORY_TYPE_EVENTS);
 		if (eventsDefault != null) {
 			List<String> eventCategory = new ArrayList<String>();
-			for (CategoryDescriptor event: eventsDefault)
-					eventCategory.add(event.category);
-			eventsCategories=  Arrays.asList(eventCategory.toArray()).toArray(new String[eventCategory.toArray().length]);
+			for (CategoryDescriptor event : eventsDefault)
+				eventCategory.add(event.category);
+			eventsCategories = Arrays.asList(eventCategory.toArray()).toArray(
+					new String[eventCategory.toArray().length]);
 		}
 		CategoryDescriptor[] poisDefault = DTParamsHelper.getDefaultArrayByParams(CategoryHelper.CATEGORY_TYPE_POIS);
 		if (poisDefault != null) {
-			List<String> poisCategory= new ArrayList<String>();
-			for (CategoryDescriptor poi: poisDefault)
+			List<String> poisCategory = new ArrayList<String>();
+			for (CategoryDescriptor poi : poisDefault)
 				poisCategory.add(poi.category);
-			poiCategories= Arrays.asList(poisCategory.toArray()).toArray(new String[poisCategory.toArray().length]);
+			poiCategories = Arrays.asList(poisCategory.toArray()).toArray(new String[poisCategory.toArray().length]);
 
 		}
 
@@ -114,7 +114,8 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	 * @return
 	 */
 	protected View initView() {
-		getSupportMap().clear();
+		if (getSupportMap() != null)
+			getSupportMap().clear();
 
 		if (getArguments() != null && getArguments().containsKey(ARG_OBJECTS)) {
 			poiCategories = null;
@@ -125,6 +126,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 				protected List<BaseDTObject> doInBackground(List<BaseDTObject>... params) {
 					return params[0];
 				}
+
 				@Override
 				protected void onPostExecute(List<BaseDTObject> result) {
 					addObjects(result);
@@ -154,9 +156,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			getSupportMap().setMyLocationEnabled(true);
 			getSupportMap().setOnCameraChangeListener(this);
 			getSupportMap().setOnMarkerClickListener(this);
-//			if (objects != null) {
-//				render(objects);
-//			}
+			// if (objects != null) {
+			// render(objects);
+			// }
 		}
 	}
 
@@ -164,6 +166,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	public void onConfigurationChanged(Configuration arg0) {
 		super.onConfigurationChanged(arg0);
 	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -206,16 +209,16 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 	public void setPOICategoriesToLoad(final String... categories) {
 		this.poiCategories = categories;
-		/*actually only event or poi at the same time*/
+		/* actually only event or poi at the same time */
 		this.eventsCategories = null;
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
-				getActivity(),this, getSupportMap()) {
+				getActivity(), this, getSupportMap()) {
 			@Override
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
 					/* check if todays is checked and cat with searchTodayEvents */
-						return DTHelper.getPOIByCategory(0, -1, categories);
+					return DTHelper.getPOIByCategory(0, -1, categories);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return Collections.emptyList();
@@ -260,11 +263,11 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	public void setEventCategoriesToLoad(final String... categories) {
 		this.eventsCategories = categories;
 		this.eventsNotTodayCategories = categories;
-		
-		/*actually only event or poi at the same time*/
+
+		/* actually only event or poi at the same time */
 		this.poiCategories = null;
-		
-//		mItemizedoverlay.clearMarkers();
+
+		// mItemizedoverlay.clearMarkers();
 
 		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(getActivity(), new MapLoadProcessor(
 				getActivity(), this, getSupportMap()) {
@@ -302,14 +305,16 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 					categoriesNotToday.add(eventsCategories[i]);
 
 			}
-		eventsNotTodayCategories =  categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
+		eventsNotTodayCategories = categoriesNotToday.toArray(new String[categoriesNotToday.size()]);
 		return istodayincluded;
 	}
-	
+
 	private GoogleMap getSupportMap() {
 		if (mMap == null) {
+			if (getFragmentManager().findFragmentById(android.R.id.content) !=null && getFragmentManager().findFragmentById(android.R.id.content) instanceof SupportMapFragment)
 			mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(android.R.id.content)).getMap();
-			getSupportMap().moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+			if (mMap != null)
+				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
 
 		}
 		return mMap;
@@ -318,8 +323,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		List<BaseDTObject> list = MapManager.ClusteringHelper.getFromGridId(marker.getTitle());
-		if (list == null || list.isEmpty()) return true;
-		
+		if (list == null || list.isEmpty())
+			return true;
+
 		if (list.size() == 1) {
 			onBaseDTObjectTap(list.get(0));
 		} else if (getSupportMap().getCameraPosition().zoom == getSupportMap().getMaxZoomLevel()) {
@@ -337,21 +343,23 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 	@Override
 	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
+		if (getSupportMap()!= null){
 		this.objects = objects;
 		render(objects);
 		MapManager.fitMapWithOverlays(objects, getSupportMap());
+		}
 	}
 
 	private void render(Collection<? extends BaseDTObject> objects) {
-		getSupportMap().clear();
-		if (objects != null && getSherlockActivity() != null) {
-			List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(
-					getSherlockActivity().getApplicationContext(), getSupportMap(),
-					objects);
-			MapManager.ClusteringHelper.render(getSupportMap(), cluster);
+		if (getSupportMap() != null) {
+			getSupportMap().clear();
+			if (objects != null && getSherlockActivity() != null) {
+				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getSherlockActivity()
+						.getApplicationContext(), getSupportMap(), objects);
+				MapManager.ClusteringHelper.render(getSupportMap(), cluster);
+			}
 		}
 
-	} 
-	
-	
+	}
+
 }

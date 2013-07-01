@@ -60,6 +60,7 @@ public class AddressSelectActivity extends FeedbackFragmentActivity implements O
 		if (getSupportActionBar().getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
 			getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		}
+		if (((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap() != null) {
 
 		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 		mMap.setOnMapLongClickListener(this);
@@ -84,6 +85,7 @@ public class AddressSelectActivity extends FeedbackFragmentActivity implements O
 
 		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
 				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
+		}
 	}
 
 	@Override

@@ -179,13 +179,16 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	 */
 	protected void initCamera() {
 		double[] coords = null;
-		if (getStory() != null && getStory().getSteps() != null && getStory().getSteps().size() > 0 && 
-				getStory().getSteps().get(0).assignedPoi() != null && (coords = getStory().getSteps().get(0).assignedPoi().getLocation()) != null) {
-			getSupportMap().moveCamera(
-					CameraUpdateFactory.newLatLngZoom(new LatLng(coords[0], coords[1]), MapManager.ZOOM_DEFAULT));
-		} else {
-			getSupportMap().moveCamera(
-					CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+		if (getSupportMap() != null) {
+			if (getStory() != null && getStory().getSteps() != null && getStory().getSteps().size() > 0
+					&& getStory().getSteps().get(0).assignedPoi() != null
+					&& (coords = getStory().getSteps().get(0).assignedPoi().getLocation()) != null) {
+				getSupportMap().moveCamera(
+						CameraUpdateFactory.newLatLngZoom(new LatLng(coords[0], coords[1]), MapManager.ZOOM_DEFAULT));
+			} else {
+				getSupportMap().moveCamera(
+						CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+			}
 		}
 	}
 
@@ -1017,7 +1020,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 	private GoogleMap getSupportMap() {
 		if (mMap == null) {
-			mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.my_map_fragment1)).getMap();
+			if (getFragmentManager().findFragmentById(R.id.my_map_fragment1) != null
+					&& getFragmentManager().findFragmentById(R.id.my_map_fragment1) instanceof SupportMapFragment)
+				mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.my_map_fragment1)).getMap();
 		}
 		return mMap;
 	}
@@ -1037,22 +1042,24 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	}
 
 	private void renderSteps(Collection<StepObject> objects, int selection) {
-		getSupportMap().clear();
-		if (objects != null) {
-			int i = 0;
-			BaseDTObject from = null, to = null;
-			for (StepObject object : objects) {
-				to = object.assignedPoi();
-				if (to != null) {
-					getSupportMap().addMarker(
-							MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
-					if (from != null) {
-						getSupportMap().addPolyline(
-								MapManager.createStoryStepLine(getSherlockActivity(), from, to));
+		if (getSupportMap() != null) {
+			getSupportMap().clear();
+			if (objects != null) {
+				int i = 0;
+				BaseDTObject from = null, to = null;
+				for (StepObject object : objects) {
+					to = object.assignedPoi();
+					if (to != null) {
+						getSupportMap().addMarker(
+								MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
+						if (from != null) {
+							getSupportMap()
+									.addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
+						}
 					}
+					from = to;
+					i++;
 				}
-				from = to;
-				i++;
 			}
 		}
 	}

@@ -54,8 +54,9 @@ import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 
-public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,
-		OnDetailsClick, OnMarkerClickListener, MapObjectContainer, OnCameraChangeListener {
+public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler,
+		BaseDTObjectMapItemTapListener, OnDetailsClick, OnMarkerClickListener, MapObjectContainer,
+		OnCameraChangeListener {
 
 	public final static int RESULT_SELECTED = 11;
 
@@ -95,18 +96,21 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		actionBar.setDisplayShowHomeEnabled(false); // home icon bar
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD); // tabs
 																			// bar
-		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-		mMap.setOnMarkerClickListener(this);
-		mMap.setMyLocationEnabled(true);
+		if (((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap() != null) {
 
-		LatLng me = null;
-		if (DTHelper.getLocationHelper().getLocation() != null) {
-			me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
-					.getLocation().getLongitudeE6() / 1e6);
-		} else {
-			me = MapManager.DEFAULT_POINT;
+			mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+			mMap.setOnMarkerClickListener(this);
+			mMap.setMyLocationEnabled(true);
+
+			LatLng me = null;
+			if (DTHelper.getLocationHelper().getLocation() != null) {
+				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper
+						.getLocationHelper().getLocation().getLongitudeE6() / 1e6);
+			} else {
+				me = MapManager.DEFAULT_POINT;
+			}
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
 		}
-		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
 	}
 
 	@Override
@@ -122,7 +126,8 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_show_places_layers) {
-			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null).show();
+			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null)
+					.show();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -157,26 +162,32 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	}
 
 	public void setPOICategoriesToLoad(final String... categories) {
-		mMap.clear();
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, this, mMap) {
-			@Override
-			protected Collection<? extends BaseDTObject> getObjects() {
-				try {
-					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Collections.emptyList();
-				}
-			}
-		}).execute();
+		if (mMap != null) {
+
+			mMap.clear();
+			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this,
+					new MapLoadProcessor(this, this, mMap) {
+						@Override
+						protected Collection<? extends BaseDTObject> getObjects() {
+							try {
+								return DTHelper.getPOIByCategory(0, -1, categories); // TODO
+							} catch (Exception e) {
+								e.printStackTrace();
+								return Collections.emptyList();
+							}
+						}
+					}).execute();
+		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mMap.setMyLocationEnabled(true);
-		mMap.setOnCameraChangeListener(this);
-		mMap.setOnMarkerClickListener(this);
+		if (mMap != null) {
+			mMap.setMyLocationEnabled(true);
+			mMap.setOnCameraChangeListener(this);
+			mMap.setOnMarkerClickListener(this);
+		}
 	}
 
 	@Override
@@ -187,9 +198,12 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	@Override
 	public void onPause() {
 		super.onPause();
-		mMap.setMyLocationEnabled(false);
-		mMap.setOnCameraChangeListener(null);
-		mMap.setOnMarkerClickListener(null);
+		if (mMap != null) {
+
+			mMap.setMyLocationEnabled(false);
+			mMap.setOnCameraChangeListener(null);
+			mMap.setOnMarkerClickListener(null);
+		}
 	}
 
 	@Override
@@ -234,10 +248,14 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	}
 
 	private void render(Collection<? extends BaseDTObject> objects) {
-		mMap.clear();
-		if (objects != null) {
-			List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap, objects);
-			MapManager.ClusteringHelper.render(mMap, cluster);
+		if (mMap != null) {
+
+			mMap.clear();
+			if (objects != null) {
+				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap,
+						objects);
+				MapManager.ClusteringHelper.render(mMap, cluster);
+			}
 		}
 	}
 
