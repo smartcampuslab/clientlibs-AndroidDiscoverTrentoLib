@@ -90,10 +90,10 @@ public class MapManager {
 		return DTHelper.getLocationHelper().getLocation();
 	}
 
-	public static void fitMapWithOverlays(List<BaseDTObject> list, GoogleMap map) {
+	public static void fitMapWithOverlays(Collection<? extends BaseDTObject> objects, GoogleMap map) {
 		double[] ll = null, rr = null;
-		if (list != null) {
-			for (BaseDTObject o : list) {
+		if (objects != null) {
+			for (BaseDTObject o : objects) {
 				double[] location = o.getLocation();
 				if (ll == null) {
 					ll = location;
@@ -107,7 +107,7 @@ public class MapManager {
 				}
 			}
 		}
-		fit(map, ll, rr, list != null && list.size() > 1);
+		fit(map, ll, rr, objects != null && objects.size() > 1);
 	}
 
 	private static void fit(GoogleMap map, double[] ll, double[] rr, boolean zoomIn) {
@@ -328,11 +328,11 @@ public class MapManager {
 
 	}
 
-	public static void switchToMapView(String category, Fragment src) {
+	public static void switchToMapView(String category, String argType, Fragment src) {
 		FragmentTransaction fragmentTransaction = src.getActivity().getSupportFragmentManager().beginTransaction();
 		HomeFragment fragment = new HomeFragment();
 		Bundle args = new Bundle();
-		args.putString(HomeFragment.ARG_POI_CATEGORY, category);
+		args.putString(argType, category);
 		fragment.setArguments(args);
 		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		// fragmentTransaction.detach(src);

@@ -74,6 +74,7 @@ import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
@@ -305,16 +306,21 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
 
 		if (item.getItemId() == R.id.map_view) {
-			ArrayList<BaseDTObject> target = new ArrayList<BaseDTObject>();
-			if (list != null) {
-				for (int i = 0; i < list.getAdapter().getCount(); i++) {
-					BaseDTObject o = (BaseDTObject) list.getAdapter().getItem(i);
-					if (o.getLocation() != null && o.getLocation()[0] != 0 && o.getLocation()[1] != 0) {
-						target.add(o);
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+			if (category != null) {
+				MapManager.switchToMapView(category, HomeFragment.ARG_EVENT_CATEGORY, this);
+			} else {
+				ArrayList<BaseDTObject> target = new ArrayList<BaseDTObject>();
+				if (list != null) {
+					for (int i = 0; i < list.getAdapter().getCount(); i++) {
+						BaseDTObject o = (BaseDTObject) list.getAdapter().getItem(i);
+						if (o.getLocation() != null && o.getLocation()[0] != 0 && o.getLocation()[1] != 0) {
+							target.add(o);
+						}
 					}
 				}
+				MapManager.switchToMapView(target, this);
 			}
-			MapManager.switchToMapView(target, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_item_addevent) {
 			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
