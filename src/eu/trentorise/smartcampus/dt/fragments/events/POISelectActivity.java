@@ -23,25 +23,20 @@ import java.util.List;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.text.method.ScrollingMovementMethod;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
@@ -55,24 +50,24 @@ import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
 
-
-
-
-public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick {
+public class POISelectActivity extends FeedbackFragmentActivity implements 
+MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickListener, MapObjectContainer, OnCameraChangeListener {
 
 	public final static int RESULT_SELECTED = 11;
 
-	private MapView mapView = null;
+	private GoogleMap mMap = null;
 	DTItemizedOverlay mItemizedoverlay = null;
+
+	private Collection<? extends BaseDTObject> objects;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContent();
 		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
 				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
@@ -111,11 +106,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	}
 
 	private void setContent() {
-		mapView = new MapView(this, getResources().getString(R.string.maps_api_key));
-		setContentView(R.layout.mapcontainer_dt);
-
-		ViewGroup view = (ViewGroup) findViewById(R.id.mapcontainer);
-		view.addView(mapView);
+		setContentView(R.layout.mapcontainer_dt_v2);
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayUseLogoEnabled(true); // system logo
@@ -123,22 +114,18 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		actionBar.setDisplayShowHomeEnabled(false); // home icon bar
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD); // tabs
 																			// bar
+		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+		mMap.setOnMarkerClickListener(this);
+		mMap.setMyLocationEnabled(true);
 
-		mapView.setClickable(true);
-		mapView.setBuiltInZoomControls(true);
-		mapView.getController().setZoom(15);
-		// TODO correct for final version
-		// GeoPoint me = MapManager.requestMyLocation(this);
-		// if (me == null) {
-		// me = new GeoPoint((int) (46.0696727540531 * 1E6), (int)
-		// (11.1212700605392 * 1E6));
-		// }
-//		mapView.getController().animateTo(MapManager.DEFAULT_POINT);
-		List<Overlay> listOfOverlays = mapView.getOverlays();
-
-		mItemizedoverlay = new DTItemizedOverlay(this, mapView);
-		mItemizedoverlay.setMapItemTapListener(this);
-		listOfOverlays.add(mItemizedoverlay);
+		LatLng me = null;
+		if (DTHelper.getLocationHelper().getLocation() != null) {
+			me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
+					.getLocation().getLongitudeE6() / 1e6);
+		} else {
+			me = MapManager.DEFAULT_POINT;
+		}
+		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
 	}
 
 
@@ -170,31 +157,41 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	}
 
 	public void setPOICategoriesToLoad(final String... categories) {
-		mItemizedoverlay.clearMarkers();
-
-//		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, mItemizedoverlay,
-//				mapView) {
-//			@Override
-//			protected Collection<? extends BaseDTObject> getObjects() {
-//				try {
-//					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					return Collections.emptyList();
-//				}
-//			}
-//		}).execute();
+		mMap.clear();
+		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, 
+				new MapLoadProcessor(this, this, mMap) {
+			@Override
+			protected Collection<? extends BaseDTObject> getObjects() {
+				try {
+					return DTHelper.getPOIByCategory(0, -1, categories); // TODO
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Collections.emptyList();
+				}
+			}
+		}).execute();
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+	public void onResume() {
+		super.onResume();
+		mMap.setMyLocationEnabled(true);
+		mMap.setOnCameraChangeListener(this);
+		mMap.setOnMarkerClickListener(this);
 	}
 
+	@Override
+	public void onConfigurationChanged(Configuration arg0) {
+		super.onConfigurationChanged(arg0);
+	}
+	@Override
+	public void onPause() {
+		super.onPause();
+		mMap.setMyLocationEnabled(false);
+		mMap.setOnCameraChangeListener(null);
+		mMap.setOnMarkerClickListener(null);
+	}
 
-
-	
-	
 	@Override
 	public String getAppToken() {
 		return DTParamsHelper.getAppToken();
@@ -207,7 +204,40 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 
 	@Override
 	public void setEventCategoriesToLoad(String... categories) {
-		// TODO Auto-generated method stub
-
 	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		List<BaseDTObject> list = MapManager.ClusteringHelper.getFromGridId(marker.getTitle());
+		if (list == null || list.isEmpty()) return true;
+		
+		if (list.size() == 1) {
+			onBaseDTObjectTap(list.get(0));
+		} else if (mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
+			onBaseDTObjectsTap(list);
+		} else {
+			MapManager.fitMapWithOverlays(list, mMap);
+		}
+		return true;
+	}
+
+	@Override
+	public void onCameraChange(CameraPosition position) {
+		render(objects);
+	}
+
+	@Override
+	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
+		this.objects = objects;
+		render(objects);
+	}
+
+	private void render(Collection<? extends BaseDTObject> objects) {
+		mMap.clear();
+		if (objects != null) {
+			List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap, objects);
+			MapManager.ClusteringHelper.render(mMap, cluster);
+		}
+	} 
+
 }
