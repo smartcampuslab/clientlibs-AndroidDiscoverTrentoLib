@@ -62,6 +62,7 @@ import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.maps.GeoPoint;
 
@@ -166,11 +167,25 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			getSupportMap().setMyLocationEnabled(true);
 			getSupportMap().setOnCameraChangeListener(this);
 			getSupportMap().setOnMarkerClickListener(this);
-			getSupportMap().moveCamera(
-					CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+			initCamera();
 			// if (objects != null) {
 			// render(objects);
 			// }
+		}
+	}
+
+	/**
+	 * 
+	 */
+	protected void initCamera() {
+		double[] coords = null;
+		if (getStory() != null && getStory().getSteps() != null && getStory().getSteps().size() > 0 && 
+				getStory().getSteps().get(0).assignedPoi() != null && (coords = getStory().getSteps().get(0).assignedPoi().getLocation()) != null) {
+			getSupportMap().moveCamera(
+					CameraUpdateFactory.newLatLngZoom(new LatLng(coords[0], coords[1]), MapManager.ZOOM_DEFAULT));
+		} else {
+			getSupportMap().moveCamera(
+					CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
 		}
 	}
 
@@ -475,6 +490,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				}
 			}
 			renderSteps(getStory().getSteps(), actualStepPosition);
+			if (actualStepPosition < 0) {
+				initCamera();
+			}
 			getSherlockActivity().invalidateOptionsMenu();
 		}
 	}
@@ -967,6 +985,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				} else {
 					Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
 					getSherlockActivity().getSupportFragmentManager().popBackStack();
+					changeStep(-1);
 				}
 		}
 	}
