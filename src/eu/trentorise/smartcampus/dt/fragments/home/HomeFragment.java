@@ -24,6 +24,7 @@ import java.util.List;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -119,8 +120,16 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			poiCategories = null;
 			eventsCategories = null;
 			List<BaseDTObject> list = (List<BaseDTObject>) getArguments().getSerializable(ARG_OBJECTS);
-			addObjects(list);
-			
+			new AsyncTask<List<BaseDTObject>, Void, List<BaseDTObject>>() {
+				@Override
+				protected List<BaseDTObject> doInBackground(List<BaseDTObject>... params) {
+					return params[0];
+				}
+				@Override
+				protected void onPostExecute(List<BaseDTObject> result) {
+					addObjects(result);
+				}
+			}.execute(list);
 		} else if (getArguments() != null && getArguments().containsKey(ARG_POI_CATEGORY)) {
 			eventsCategories = null;
 			setPOICategoriesToLoad(getArguments().getString(ARG_POI_CATEGORY));
@@ -330,6 +339,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
 		this.objects = objects;
 		render(objects);
+		MapManager.fitMapWithOverlays(objects, getSupportMap());
 	}
 
 	private void render(Collection<? extends BaseDTObject> objects) {
