@@ -96,8 +96,8 @@ public class MapManager {
 			for (BaseDTObject o : objects) {
 				double[] location = o.getLocation();
 				if (ll == null) {
-					ll = location;
-					rr = location.clone();
+					ll = location.clone();
+					rr = ll.clone();
 				} else {
 					ll[0] = Math.min(ll[0], location[0]);
 					ll[1] = Math.max(ll[1], location[1]);
