@@ -73,6 +73,7 @@ import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
+import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
@@ -186,8 +187,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				getSupportMap().moveCamera(
 						CameraUpdateFactory.newLatLngZoom(new LatLng(coords[0], coords[1]), MapManager.ZOOM_DEFAULT));
 			} else {
-				getSupportMap().moveCamera(
-						CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+				getSupportMap()
+						.moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
 			}
 		}
 	}
@@ -224,6 +225,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	public void onStart() {
 		super.onStart();
 
+		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
+
 		this.stepScollView = (ScrollView) getView().findViewById(R.id.step_details);
 
 		if (getStory() != null) {
@@ -252,8 +255,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-								FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(), getStory()
-										.getTitle(), DTConstants.ENTITY_TYPE_STORY);
+								FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(),
+										getStory().getTitle(), DTConstants.ENTITY_TYPE_STORY);
 								if (mFollowByIntent) {
 									followButtonView = buttonView;
 									FollowHelper.follow(StoryDetailsFragment.this, obj, 3000);
@@ -271,8 +274,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 									obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
 									if (obj != null) {
 										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
-														getSherlockActivity(), buttonView));
+												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+														buttonView));
 										unfollowTask.execute(obj);
 									}
 								} catch (Exception e) {
@@ -305,9 +308,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						// show dialog box
 						UserRegistration.upgradeuser(getSherlockActivity());
 					} else {
-						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(
-								getSherlockActivity(), buttonView)).execute(getStory().getAttending() == null
-								|| getStory().getAttending().isEmpty());
+						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
+								buttonView)).execute(getStory().getAttending() == null || getStory().getAttending().isEmpty());
 						resetStory();
 					}
 				}
@@ -403,8 +405,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// reinit the story every time this fragment is loaded
 			changeStep(-1);
 			// hide the keyboard
-			InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
-					Context.INPUT_METHOD_SERVICE);
+			InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(nextButton.getWindowToken(), 0);
 			// changeTheMapConfiguration();
 			// mItemizedoverlay.fithMaptOnTheStory();
@@ -577,8 +578,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	private void ratingDialog() {
 		float rating = (getStory() != null && getStory().getCommunityData() != null && getStory().getCommunityData()
 				.getAverageRating() > 0) ? getStory().getCommunityData().getAverageRating() : 2.5f;
-		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()),
-				R.string.rating_story_dialog_title);
+		RatingHelper
+				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_story_dialog_title);
 	}
 
 	private void updateRating() {
@@ -594,12 +595,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				// user rating
 
 				// total raters
-				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(
-						R.string.ratingtext_raters, cd.getRatingsCount()));
+				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
+						cd.getRatingsCount()));
 
 				// averange rating
-				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(
-						R.string.ratingtext_average, cd.getAverageRating()));
+				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
+						cd.getAverageRating()));
 			}
 		}
 	}
@@ -698,8 +699,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-						.beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
 				args.putSerializable(CreateStoryFragment.ARG_STORY, getStory());
@@ -721,12 +721,10 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				return true;
 			}
 		} else if (item.getItemId() == R.id.related_step_btn) {
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-					.beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 			Bundle args = new Bundle();
-			args.putString(PoiDetailsFragment.ARG_POI_ID, getStory().getSteps().get(actualStepPosition).assignedPoi()
-					.getId());
+			args.putString(PoiDetailsFragment.ARG_POI_ID, getStory().getSteps().get(actualStepPosition).assignedPoi().getId());
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
@@ -750,8 +748,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-						.beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				AddStepToStoryFragment fragment = new AddStepToStoryFragment();
 				Bundle args = new Bundle();
 				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, stepHandler);
@@ -1053,8 +1050,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						getSupportMap().addMarker(
 								MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
 						if (from != null) {
-							getSupportMap()
-									.addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
+							getSupportMap().addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
 						}
 					}
 					from = to;

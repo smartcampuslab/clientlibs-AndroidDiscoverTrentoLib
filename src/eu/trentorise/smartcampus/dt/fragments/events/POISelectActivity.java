@@ -54,9 +54,8 @@ import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 
-public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler,
-		BaseDTObjectMapItemTapListener, OnDetailsClick, OnMarkerClickListener, MapObjectContainer,
-		OnCameraChangeListener {
+public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,
+		OnDetailsClick, OnMarkerClickListener, MapObjectContainer, OnCameraChangeListener {
 
 	public final static int RESULT_SELECTED = 11;
 
@@ -102,10 +101,13 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 			mMap.setOnMarkerClickListener(this);
 			mMap.setMyLocationEnabled(true);
 
+			mMap.getUiSettings().setRotateGesturesEnabled(false);
+			mMap.getUiSettings().setTiltGesturesEnabled(false);
+
 			LatLng me = null;
 			if (DTHelper.getLocationHelper().getLocation() != null) {
-				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper
-						.getLocationHelper().getLocation().getLongitudeE6() / 1e6);
+				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
+						.getLocation().getLongitudeE6() / 1e6);
 			} else {
 				me = MapManager.DEFAULT_POINT;
 			}
@@ -126,8 +128,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_show_places_layers) {
-			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null)
-					.show();
+			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null).show();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -165,18 +166,17 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		if (mMap != null) {
 
 			mMap.clear();
-			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this,
-					new MapLoadProcessor(this, this, mMap) {
-						@Override
-						protected Collection<? extends BaseDTObject> getObjects() {
-							try {
-								return DTHelper.getPOIByCategory(0, -1, categories); // TODO
-							} catch (Exception e) {
-								e.printStackTrace();
-								return Collections.emptyList();
-							}
-						}
-					}).execute();
+			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, this, mMap) {
+				@Override
+				protected Collection<? extends BaseDTObject> getObjects() {
+					try {
+						return DTHelper.getPOIByCategory(0, -1, categories); // TODO
+					} catch (Exception e) {
+						e.printStackTrace();
+						return Collections.emptyList();
+					}
+				}
+			}).execute();
 		}
 	}
 
@@ -252,8 +252,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 
 			mMap.clear();
 			if (objects != null) {
-				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap,
-						objects);
+				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap, objects);
 				MapManager.ClusteringHelper.render(mMap, cluster);
 			}
 		}
