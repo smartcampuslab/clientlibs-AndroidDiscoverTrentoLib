@@ -68,19 +68,7 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			NotificationsHelper.init(getSherlockActivity(), appToken, syncDbName, syncService, authority);
 		}
 
-		List<Notification> notificationsList = NotificationsHelper.getNotifications(getNotificationFilter(), 0, -1, 0);
-
-		TextView listEmptyTextView = (TextView) getView().findViewById(R.id.list_text_empty);
-		if (notificationsList.size() > 0) {
-			for (Notification n : NotificationsHelper.getNotifications(getNotificationFilter(), 0, -1, 0)) {
-				adapter.add(n);
-			}
-			listEmptyTextView.setVisibility(View.GONE);
-		} else {
-			listEmptyTextView.setVisibility(View.VISIBLE);
-		}
-
-		adapter.notifyDataSetChanged();
+		new SCAsyncTask<Void, Void, List<Notification>>(getSherlockActivity(), new NotificationsLoader(getSherlockActivity())).execute();
 	}
 
 	@Override
@@ -216,7 +204,32 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 				fragmentTransaction.commit();
 			}
 		}
-
 	}
 
+	private class NotificationsLoader extends AbstractAsyncTaskProcessor<Void, List<Notification>> {
+
+		public NotificationsLoader(Activity activity) {
+			super(activity);
+		}
+
+		@Override
+		public List<Notification> performAction(Void... params) throws SecurityException, ConnectionException, Exception {
+			return NotificationsHelper.getNotifications(getNotificationFilter(), 0, -1, 0);
+		}
+
+		@Override
+		public void handleResult(List<Notification> notificationsList) {
+			TextView listEmptyTextView = (TextView) getView().findViewById(R.id.list_text_empty);
+			if (notificationsList != null && notificationsList.size() > 0) {
+				for (Notification n : NotificationsHelper.getNotifications(getNotificationFilter(), 0, -1, 0)) {
+					adapter.add(n);
+				}
+				listEmptyTextView.setVisibility(View.GONE);
+			} else {
+				listEmptyTextView.setVisibility(View.VISIBLE);
+			}
+
+			adapter.notifyDataSetChanged();
+		}
+	}
 }
