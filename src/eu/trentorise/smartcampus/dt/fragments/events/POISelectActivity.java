@@ -245,6 +245,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
 		this.objects = objects;
 		render(objects);
+		MapManager.fitMapWithOverlays(objects, mMap);
 	}
 
 	private void render(Collection<? extends BaseDTObject> objects) {
