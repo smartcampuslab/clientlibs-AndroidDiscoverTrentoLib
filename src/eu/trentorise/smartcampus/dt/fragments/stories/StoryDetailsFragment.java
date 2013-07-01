@@ -258,8 +258,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
 													buttonView));
-									followTask.execute(getSherlockActivity().getApplicationContext(),
-											DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+
 								}
 							} else {
 								// UNFOLLOW
