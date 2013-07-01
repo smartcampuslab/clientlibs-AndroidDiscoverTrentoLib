@@ -54,8 +54,8 @@ import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 
-public class POISelectActivity extends FeedbackFragmentActivity implements 
-MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickListener, MapObjectContainer, OnCameraChangeListener {
+public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,
+		OnDetailsClick, OnMarkerClickListener, MapObjectContainer, OnCameraChangeListener {
 
 	public final static int RESULT_SELECTED = 11;
 
@@ -67,15 +67,16 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContent();
-		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
-				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+
+		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
+				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
+
 		MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null).show();
 		// LayerDialogFragment dialogFragment = new LayerDialogFragment(this);
 		// Bundle args = new Bundle();
@@ -83,26 +84,6 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 		// getString(R.string.select_poi_title));
 		// dialogFragment.setArguments(args);
 		// dialogFragment.show(getSupportFragmentManager(), "dialog");
-	}
-	
-	@Override
-	public void OnDialogDetailsClick(BaseDTObject poi) {
-
-		 // User clicked OK button
-		 Intent data = new Intent();
-		 data.putExtra("poi", poi);
-		 setResult(RESULT_SELECTED, data);
-		 finish();
-	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1,
-				R.string.menu_item__places_layers_text);
-		item.setIcon(R.drawable.ic_menu_layers);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		super.onPrepareOptionsMenu(menu);
-		return true;
 	}
 
 	private void setContent() {
@@ -128,6 +109,34 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1,
+				R.string.menu_item__places_layers_text);
+		item.setIcon(R.drawable.ic_menu_layers);
+		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		super.onPrepareOptionsMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_item_show_places_layers) {
+			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null).show();
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void OnDialogDetailsClick(BaseDTObject poi) {
+		// User clicked OK button
+		Intent data = new Intent();
+		data.putExtra("poi", poi);
+		setResult(RESULT_SELECTED, data);
+		finish();
+	}
 
 	@Override
 	public void onBaseDTObjectTap(BaseDTObject poiObject) {
@@ -146,20 +155,10 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 		poiInfoDialog.setArguments(args);
 		poiInfoDialog.show(getSupportFragmentManager(), "poiselected");
 	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menu_item_show_places_layers) {
-			MapLayerDialogHelper.createPOIDialog(this, this, getString(R.string.select_poi_title), (String[]) null).show();
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
 	public void setPOICategoriesToLoad(final String... categories) {
 		mMap.clear();
-		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, 
-				new MapLoadProcessor(this, this, mMap) {
+		new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, this, mMap) {
 			@Override
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
@@ -184,6 +183,7 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 	public void onConfigurationChanged(Configuration arg0) {
 		super.onConfigurationChanged(arg0);
 	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -209,8 +209,9 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		List<BaseDTObject> list = MapManager.ClusteringHelper.getFromGridId(marker.getTitle());
-		if (list == null || list.isEmpty()) return true;
-		
+		if (list == null || list.isEmpty())
+			return true;
+
 		if (list.size() == 1) {
 			onBaseDTObjectTap(list.get(0));
 		} else if (mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
@@ -238,6 +239,6 @@ MapItemsHandler, BaseDTObjectMapItemTapListener,OnDetailsClick, OnMarkerClickLis
 			List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap, objects);
 			MapManager.ClusteringHelper.render(mMap, cluster);
 		}
-	} 
+	}
 
 }
