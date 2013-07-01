@@ -1040,16 +1040,19 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		getSupportMap().clear();
 		if (objects != null) {
 			int i = 0;
-			BaseDTObject from = null;
+			BaseDTObject from = null, to = null;
 			for (StepObject object : objects) {
-				getSupportMap().addMarker(
-						MapManager.createStoryStepMarker(getSherlockActivity(), object.assignedPoi(), i + 1,
-								selection == i++));
-				if (from != null) {
-					getSupportMap().addPolyline(
-							MapManager.createStoryStepLine(getSherlockActivity(), from, object.assignedPoi()));
+				to = object.assignedPoi();
+				if (to != null) {
+					getSupportMap().addMarker(
+							MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
+					if (from != null) {
+						getSupportMap().addPolyline(
+								MapManager.createStoryStepLine(getSherlockActivity(), from, to));
+					}
 				}
-				from = object.assignedPoi();
+				from = to;
+				i++;
 			}
 		}
 	}
