@@ -3,28 +3,17 @@
 <!-- Generated with http://android-holo-colors.com -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <style name="Discovertrento" parent="android:Theme.Holo.Light.DarkActionBar">
-
-    <item name="android:editTextBackground">@drawable/edit_text_holo_light</item>
-
-    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewDiscovertrento</item>
-
-    <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_light</item>
-
-    <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>
-
-    <item name="android:buttonStyle">@style/ButtonDiscovertrento</item>
-
-    <item name="android:imageButtonStyle">@style/ImageButtonDiscovertrento</item>
-
-    <item name="android:dropDownSpinnerStyle">@style/SpinnerDiscovertrento</item>
-
-    <item name="android:buttonStyleToggle">@style/ToggleDiscovertrento</item>
-
-    <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector_holo_light</item>
-
-    <item name="android:activatedBackgroundIndicator">@drawable/activated_background_holo_light</item>
-
-  </style>
+    <style name="Theme.Discovertrento" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:editTextBackground">@drawable/edit_text_holo_light_discovertrento</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewDiscovertrento</item>
+        <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_light_discovertrento</item>
+        <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light_discovertrento</item>
+        <item name="android:buttonStyle">@style/ButtonDiscovertrento</item>
+        <item name="android:imageButtonStyle">@style/ImageButtonDiscovertrento</item>
+        <item name="android:dropDownSpinnerStyle">@style/SpinnerDiscovertrento</item>
+        <item name="android:buttonStyleToggle">@style/ToggleDiscovertrento</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector_holo_light_discovertrento</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/activated_background_holo_light_discovertrento</item>
+    </style>
 
 </resources>

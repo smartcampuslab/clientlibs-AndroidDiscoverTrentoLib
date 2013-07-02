@@ -533,11 +533,14 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE,
 			// R.string.rate);
 
-			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE, R.string.add_my_stories);
-			} else {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE, R.string.delete_my_stories);
-			}
+			// if (getStory().getAttending() == null ||
+			// getStory().getAttending().isEmpty()) {
+			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE,
+			// R.string.add_my_stories);
+			// } else {
+			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE,
+			// R.string.delete_my_stories);
+			// }
 
 			// if
 			// (getStory().getCommunityData().getFollowing().containsKey(userId))
