@@ -76,7 +76,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	int lastStepCount = 0;
 
 	public DTItemizedOverlay(Context mContext, MapView mapView) {
-		super(boundCenterBottom(mContext.getResources().getDrawable(R.drawable.poi)));
+		super(boundCenterBottom(mContext.getResources().getDrawable(R.drawable.ic_menu_pois)));
 		this.mContext = mContext;
 		this.mMapView = mapView;
 		populate();
@@ -113,13 +113,13 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	private Drawable objectCertified(BaseDTObject o) {
 		if ((o instanceof EventObject) && ((Boolean) o.getCustomData().get("certified"))) {
 			/* se ceretificato e evento */
-			return mContext.getResources().getDrawable(R.drawable.marker_event_family_certified);
+			return mContext.getResources().getDrawable(R.drawable.ic_marker_e_family_certified);
 		}
 
 		/* se certificato e poi */
 		String status = (String) o.getCustomData().get("status");
 		if ((o instanceof POIObject) && (("Certificato finale").equals(status) || ("Certificato base").equals(status))) {
-			return mContext.getResources().getDrawable(R.drawable.marker_poi_family_certified);
+			return mContext.getResources().getDrawable(R.drawable.ic_marker_p_family_certified);
 		}
 
 		return mContext.getResources().getDrawable(CategoryHelper.getMapIconByType(o.getType()));
@@ -205,7 +205,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 									}
 									listener.onBaseDTObjectsTap(objects);
 								} else {
-									MapManager.fitMapWithOverlays(list, mMapView);
+//									MapManager.fitMapWithOverlays(list, mMapView);
 								}
 								return super.onTap(index);
 							}
@@ -359,7 +359,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		mapView.getProjection().toPixels(point, ptScreenCoord);
 
 		if (groupMarker == null) {
-			groupMarker = mContext.getResources().getDrawable(R.drawable.marker_poi_generic);
+			groupMarker = mContext.getResources().getDrawable(R.drawable.ic_marker_p_generic);
 			groupMarker.setBounds(-groupMarker.getIntrinsicWidth() / 2, -groupMarker.getIntrinsicHeight(),
 					groupMarker.getIntrinsicWidth() / 2, 0);
 		}
@@ -369,7 +369,8 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
 		Paint paint = new Paint();
 		paint.setTextAlign(Paint.Align.CENTER);
-		paint.setTextSize(20);
+		int scaledTextSize = mContext.getResources().getDimensionPixelSize(R.dimen.mapIconTextSize);
+		paint.setTextSize(scaledTextSize);
 		paint.setAntiAlias(true);
 		paint.setARGB(255, 255, 255, 255);
 		// show text to the right of the icon

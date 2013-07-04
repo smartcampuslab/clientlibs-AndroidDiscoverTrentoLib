@@ -16,30 +16,34 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-<LinearLayout 
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
-    android:orientation="vertical" 
-    android:id="@+id/eventlistcontainer">
+    android:background="@android:color/white" >
 
-    <TextView
-        android:id="@+id/list_title"
+    <LinearLayout
+        android:id="@+id/eventlistcontainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
-        android:layout_marginTop="3dp"
-        android:background="@color/transparent_discovertrento"
-        android:padding="5dp"
-        android:textColor="@color/sc_light_gray" />
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/events_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:cacheColorHint="@android:color/transparent" >
-    </ListView>
+        <TextView
+            android:id="@+id/list_title"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/dtappcolor"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textColor="@android:color/white" />
 
-</LinearLayout>
+        <ListView
+            android:id="@+id/events_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <!--
+         WORKAROUND for the list
+         android:cacheColorHint="@android:color/transparent"
+        -->
+    </LinearLayout>
+
 </RelativeLayout>

@@ -18,118 +18,111 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/createstep_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg"
-        android:gravity="top"
-        android:orientation="vertical" >
+        android:layout_above="@+id/createstep_buttons" >
 
-        <ScrollView
-            android:id="@+id/scrollview"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/createstep_header"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/dtappcolor"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/createstep"
+                android:textColor="@color/sc_light_gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" >
 
                 <TextView
-                    android:id="@+id/textView1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginTop="3dp"
-                    android:background="@color/transparent_discovertrento"
-                    android:padding="5dp"
-                    android:text="@string/createstep"
-                    android:textColor="@color/sc_light_gray" />
-
-                <requestFocus />
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:orientation="horizontal" >
-                </LinearLayout>
+                    android:layout_marginTop="8dp"
+                    android:text="@string/create_place"
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
                     android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/create_place"
-                        android:textColor="@color/sc_light_gray" />
 
                     <AutoCompleteTextView
                         android:id="@+id/step_place"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
+                        android:layout_weight="1"
                         android:ems="10"
-                        android:hint="@string/create_placehint"
-                        android:textColor="@android:color/black"
-                        android:textColorHint="@color/sc_hint" />
+                        android:hint="@string/create_placehint" >
+
+                        <requestFocus />
+                    </AutoCompleteTextView>
 
                     <ImageButton
                         android:id="@+id/btn_step_locate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
+                        android:layout_marginLeft="8dp"
                         android:background="@android:color/transparent"
-                        android:src="@drawable/map" />
+                        android:contentDescription="@string/empty"
+                        android:src="@drawable/ic_menu_map_p" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/create_notes"
-                    android:textColor="@color/sc_light_gray" />
+                    android:textColor="@color/dtappcolor"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/step_tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:hint="@string/create_noteshint"
-                    android:textColorHint="@color/sc_hint" />
+                    android:ems="10"
+                    android:hint="@string/create_noteshint" />
             </LinearLayout>
-        </ScrollView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/btn_createstep_cancel"
-                style="@style/Theme.discovertrento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:padding="3dp"
-                android:text="@android:string/cancel" />
-
-            <Button
-                android:id="@+id/btn_createstep_ok"
-                style="@style/Theme.discovertrento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:padding="3dp"
-                android:text="@android:string/ok" />
         </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/createstep_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_createstep_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@android:string/cancel" />
+
+        <Button
+            android:id="@+id/btn_createstep_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@android:string/ok" />
     </LinearLayout>
 
 </RelativeLayout>

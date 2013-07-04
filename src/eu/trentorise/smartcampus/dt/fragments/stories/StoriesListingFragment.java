@@ -222,6 +222,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
+
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 			// SearchHelper.createSearchMenu(submenu, getActivity(), new
 			// SearchHelper.OnSearchListener() {
@@ -243,7 +244,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			// fragmentTransaction.commit();
 			// }
 			// });
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		} else if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)
 				&& !getArguments().containsKey(SearchFragment.ARG_MY)
 				&& !getArguments().containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
@@ -313,7 +314,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				return true;
 			}
 
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			FragmentTransaction fragmentTransaction;
 			Fragment fragment;
 			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
@@ -376,53 +377,55 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				hideListItemsMenu(v,false);
+				hideListItemsMenu(v, false);
 			}
 		});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				hideListItemsMenu(view,false);
+				hideListItemsMenu(view, false);
 				setStorePoiId(view, position);
 			}
 		});
 
 		// open items menu for that entry
-		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
-				{
-//					//close the old viewSwitcher
-					previousViewSwitcher.showPrevious();
-					storiesAdapter.setElementSelected(-1);
-					previousViewSwitcher=null;
-					hideListItemsMenu(view,true);
+		// list.setOnItemLongClickListener(new
+		// AdapterView.OnItemLongClickListener() {
+		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
+		// position, long id) {
+		// if ((position != postitionSelected) && (previousViewSwitcher !=
+		// null)) {
+		// // //close the old viewSwitcher
+		// previousViewSwitcher.showPrevious();
+		// storiesAdapter.setElementSelected(-1);
+		// previousViewSwitcher = null;
+		// hideListItemsMenu(view, true);
+		//
+		// }
+		// ViewSwitcher vs = (ViewSwitcher)
+		// view.findViewById(R.id.story_viewswitecher);
+		// setupOptionsListeners(vs, position);
+		// vs.showNext();
+		// postitionSelected = position;
+		// storiesAdapter.setElementSelected(position);
+		// previousViewSwitcher = vs;
+		//
+		// return true;
+		// }
+		// });
 
-
-				}
-				ViewSwitcher vs = (ViewSwitcher) view
-						.findViewById(R.id.story_viewswitecher);
-				setupOptionsListeners(vs, position);
-				vs.showNext();
-				postitionSelected=position;
-				storiesAdapter.setElementSelected(position);
-				previousViewSwitcher = vs;
-
-				return true;
-			}
-		});
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
 	}
-	
+
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		super.onScrollStateChanged(view, scrollState);
-		if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
-		{
-		hideListItemsMenu(view,true);
-		
+		if ((postitionSelected != -1) && (scrollState == SCROLL_STATE_TOUCH_SCROLL)) {
+			hideListItemsMenu(view, true);
+
 		}
 	}
+
 	/*
 	 * the contextual menu for every item in the list
 	 */
@@ -512,7 +515,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
 					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-							new FollowAsyncTaskProcessor(getSherlockActivity()));
+							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 				}
@@ -520,7 +523,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		});
 	}
 
-	private void hideListItemsMenu(View v,boolean close) {
+	private void hideListItemsMenu(View v, boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
@@ -528,8 +531,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
 				storiesAdapter.setElementSelected(-1);
-				postitionSelected =-1;
-				previousViewSwitcher=null;
+				postitionSelected = -1;
+				previousViewSwitcher = null;
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
@@ -538,7 +541,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			StoryDetailsFragment fragment = new StoryDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(StoryDetailsFragment.ARG_STORY, ((StoryPlaceholder) v.getTag()).story);
+			args.putString(StoryDetailsFragment.ARG_STORY_ID, ((StoryPlaceholder) v.getTag()).story.getId());
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -689,7 +692,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			if (result) {
 				((StoryAdapter) list.getAdapter()).remove(object);
 				((StoryAdapter) list.getAdapter()).notifyDataSetChanged();
-				hideListItemsMenu(clickedElement,false);
+				hideListItemsMenu(clickedElement, false);
 				updateList(((StoryAdapter) list.getAdapter()).isEmpty());
 			} else {
 				Toast.makeText(getActivity(), R.string.app_failure_cannot_delete, Toast.LENGTH_LONG).show();
@@ -709,13 +712,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	}
 
 	private void updateList(boolean empty) {
+	if (getView()!=null){
+
 		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 				R.id.storylistcontainer));
 		if (empty) {
 			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
 					R.id.storylistcontainer));
 		}
-		hideListItemsMenu(null,false);
+		hideListItemsMenu(null, false);
 	}
-
+}
 }

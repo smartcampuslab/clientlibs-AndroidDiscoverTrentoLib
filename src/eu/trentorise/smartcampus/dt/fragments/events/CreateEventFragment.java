@@ -67,8 +67,8 @@ import eu.trentorise.smartcampus.dt.model.UserEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
-public class CreateEventFragment extends NotificationsSherlockFragmentDT implements TaggingDialog.OnTagsSelectedListener,
-		TaggingDialog.TagProvider {
+public class CreateEventFragment extends NotificationsSherlockFragmentDT implements
+		TaggingDialog.OnTagsSelectedListener, TaggingDialog.TagProvider {
 
 	private POIObject poi = null;
 	private View view = null;
@@ -83,30 +83,10 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	private EventObject eventObject;
 
 	@Override
-	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-		eventObject.getCommunityData().setTags(Concept.convertSS(suggestions));
-		((EditText) getView().findViewById(R.id.event_tags)).setText(Concept.toSimpleString(eventObject.getCommunityData()
-				.getTags()));
-	}
-
-	@Override
 	public void onSaveInstanceState(Bundle arg0) {
 		super.onSaveInstanceState(arg0);
 		// arg0.putSerializable(ARG_EVENT, eventObject);
 		arg0.putString(ARG_EVENT, eventObject.getId());
-	}
-
-	private EventObject getEvent(Bundle savedInstanceState) {
-		if (eventObject == null) {
-			Bundle bundle = this.getArguments();
-			String eventId = bundle.getString(ARG_EVENT);
-			eventObject = DTHelper.findEventById(eventId);
-			if (eventObject != null) {
-				poi = DTHelper.findPOIById(eventObject.getPoiId());
-				eventObject.assignPoi(poi);
-			}
-		}
-		return eventObject;
 	}
 
 	@Override
@@ -132,62 +112,6 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 		if (eventObject.getCommunityData() == null)
 			eventObject.setCommunityData(new CommunityData());
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-
-		// date and time will be returned as tags
-		final EditText dateFromEditText = (EditText) getView().findViewById(R.id.event_date_from);
-		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
-			dateFromEditText.setEnabled(true);
-			dateFromEditText.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DialogFragment f = DatePickerDialogFragment.newInstance((EditText) v);
-					if (dateFromEditText.getText() != null)
-						f.setArguments(DatePickerDialogFragment.prepareData(dateFromEditText.getText().toString()));
-					f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
-				}
-			});
-		} else {
-			dateFromEditText.setEnabled(false);
-		}
-		final EditText dateToEditText = (EditText) getView().findViewById(R.id.event_date_to);
-		// Date tmp = null;
-		// try {
-		// tmp = FORMAT_DATE_UI.parse(dateFromEditText.getText().toString());
-		// Calendar cal = Calendar.getInstance();
-		// cal.setTime(tmp);
-		// cal.add(Calendar.DATE, 1);
-		// dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
-		// } catch (ParseException e) {
-		// Toast.makeText(
-		// getActivity(),
-		// getResources().getString(R.string.toast_incorrect) + " "
-		// + getResources().getString(R.string.createevent_date),
-		// Toast.LENGTH_SHORT).show();
-		// return;
-		// }
-		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
-			dateToEditText.setEnabled(true);
-			dateToEditText.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DialogFragment f = DatePickerDialogFragment.newInstance((EditText) v);
-					if (dateToEditText.getText() != null)
-						f.setArguments(DatePickerDialogFragment.prepareData(dateToEditText.getText().toString()));
-					f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
-				}
-			});
-
-		} else {
-			dateToEditText.setEnabled(false);
-		}
-		if (poi != null)
-			poiField.setText(poi.getTitle());
-
 	}
 
 	@Override
@@ -265,8 +189,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		poiField = (AutoCompleteTextView) view.findViewById(R.id.event_place);
-		ArrayAdapter<String> poiAdapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dd_list, R.id.dd_textview,
-				DTHelper.getAllPOITitles());
+		ArrayAdapter<String> poiAdapter = new ArrayAdapter<String>(getSherlockActivity(), R.layout.dd_list,
+				R.id.dd_textview, DTHelper.getAllPOITitles());
 		poiField.setAdapter(poiAdapter);
 		if (poi != null) {
 			poiField.setText(poi.getTitle());
@@ -295,7 +219,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		locationBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivityForResult(new Intent(getActivity(), POISelectActivity.class), POISelectActivity.RESULT_SELECTED);
+				startActivityForResult(new Intent(getActivity(), POISelectActivity.class),
+						POISelectActivity.RESULT_SELECTED);
 			}
 		});
 
@@ -351,21 +276,60 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		return view;
 	}
 
-	private Integer validate(EventObject data) {
-		Integer result = null;
-		if (data.getTitle() == null || data.getTitle().trim().length()==0)
-			return R.string.create_title;
-		// if (data.getFromTime() == null)
-		// return R.string.createevent_timestart;
-		// if (data.getToTime() == null)
-		// return R.string.createevent_timeend;
-		// if (data.getToTime() <= data.getFromTime())
-		// return R.string.createevent_timeend;
-		if (data.getPoiId() == null)
-			return R.string.create_place;
-		if (data.getType() == null || data.getType().length() == 0)
-			return R.string.create_cat;
-		return result;
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		// date and time will be returned as tags
+		final EditText dateFromEditText = (EditText) getView().findViewById(R.id.event_date_from);
+		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
+			dateFromEditText.setEnabled(true);
+			dateFromEditText.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					DialogFragment f = DatePickerDialogFragment.newInstance((EditText) v);
+					if (dateFromEditText.getText() != null)
+						f.setArguments(DatePickerDialogFragment.prepareData(dateFromEditText.getText().toString()));
+					f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
+				}
+			});
+		} else {
+			dateFromEditText.setEnabled(false);
+		}
+		final EditText dateToEditText = (EditText) getView().findViewById(R.id.event_date_to);
+		// Date tmp = null;
+		// try {
+		// tmp = FORMAT_DATE_UI.parse(dateFromEditText.getText().toString());
+		// Calendar cal = Calendar.getInstance();
+		// cal.setTime(tmp);
+		// cal.add(Calendar.DATE, 1);
+		// dateToEditText.setText(FORMAT_DATE_UI.format(cal.getTime()));
+		// } catch (ParseException e) {
+		// Toast.makeText(
+		// getActivity(),
+		// getResources().getString(R.string.toast_incorrect) + " "
+		// + getResources().getString(R.string.createevent_date),
+		// Toast.LENGTH_SHORT).show();
+		// return;
+		// }
+		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
+			dateToEditText.setEnabled(true);
+			dateToEditText.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					DialogFragment f = DatePickerDialogFragment.newInstance((EditText) v);
+					if (dateToEditText.getText() != null)
+						f.setArguments(DatePickerDialogFragment.prepareData(dateToEditText.getText().toString()));
+					f.show(getSherlockActivity().getSupportFragmentManager(), "datePicker");
+				}
+			});
+
+		} else {
+			dateToEditText.setEnabled(false);
+		}
+		if (poi != null)
+			poiField.setText(poi.getTitle());
+
 	}
 
 	@Override
@@ -384,12 +348,61 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	}
 
 	@Override
+	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
+		eventObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		if (getView() != null)
+			((EditText) getView().findViewById(R.id.event_tags)).setText(Concept.toSimpleString(eventObject
+					.getCommunityData().getTags()));
+	}
+
+	@Override
 	public List<SemanticSuggestion> getTags(CharSequence text) {
 		try {
 			return DTHelper.getSuggestions(text);
 		} catch (Exception e) {
 			return Collections.emptyList();
 		}
+	}
+
+	private EventObject getEvent(Bundle savedInstanceState) {
+		if (eventObject == null) {
+			Bundle bundle = this.getArguments();
+			String eventId = bundle.getString(ARG_EVENT);
+			eventObject = DTHelper.findEventById(eventId);
+			if (eventObject != null) {
+				poi = DTHelper.findPOIById(eventObject.getPoiId());
+				eventObject.assignPoi(poi);
+			}
+		}
+		return eventObject;
+	}
+
+	private Integer validate(EventObject data) {
+		Integer result = null;
+		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
+			return R.string.create_title;
+		// if (data.getFromTime() == null)
+		// return R.string.createevent_timestart;
+		// if (data.getToTime() == null)
+		// return R.string.createevent_timeend;
+		// if (data.getToTime() <= data.getFromTime())
+		// return R.string.createevent_timeend;
+		if (data.getPoiId() == null)
+			return R.string.create_place;
+		if (data.getType() == null || data.getType().length() == 0)
+			return R.string.create_cat;
+		return result;
+	}
+
+	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
+		for (CategoryDescriptor cd : categoryDescriptors) {
+			String catDesc = getSherlockActivity().getApplicationContext().getResources().getString(cd.description);
+			if (catDesc.equalsIgnoreCase(desc)) {
+				return cd;
+			}
+		}
+
+		return null;
 	}
 
 	private class CreateEventProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
@@ -405,14 +418,16 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 		@Override
 		public void handleResult(Boolean result) {
-			getSherlockActivity().getSupportFragmentManager().popBackStack();
-			if (result) {
-				Toast.makeText(getSherlockActivity(), R.string.event_create_success, Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
+			if (getSherlockActivity() != null) {
+				getSherlockActivity().getSupportFragmentManager().popBackStack();
+
+				if (result) {
+					Toast.makeText(getSherlockActivity(), R.string.event_create_success, Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
-
 	}
 
 	private class SaveEvent implements OnClickListener {
@@ -431,8 +446,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			String cat = getCategoryDescriptorByDescription(catString).category;
 
 			AutoCompleteTextView eventPlace = (AutoCompleteTextView) view.findViewById(R.id.event_place);
-			if ((poi == null || !poi.getTitle().equals(eventPlace.getText().toString())) && eventPlace.getText() != null
-					&& eventPlace.getText().length() > 0) {
+			if ((poi == null || !poi.getTitle().equals(eventPlace.getText().toString()))
+					&& eventPlace.getText() != null && eventPlace.getText().length() > 0) {
 				poi = DTHelper.findPOIByTitle(eventPlace.getText().toString());
 			}
 
@@ -441,8 +456,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				Toast.makeText(
 						getActivity(),
 						getActivity().getResources().getString(R.string.createevent_date) + " "
-								+ getActivity().getResources().getString(R.string.msg_field_required), Toast.LENGTH_SHORT)
-						.show();
+								+ getActivity().getResources().getString(R.string.msg_field_required),
+						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			Calendar cal = Calendar.getInstance();
@@ -465,8 +480,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 					Toast.makeText(
 							getActivity(),
 							getActivity().getResources().getString(R.string.createevent_ending_date) + " "
-									+ getActivity().getResources().getString(R.string.msg_field_required), Toast.LENGTH_SHORT)
-							.show();
+									+ getActivity().getResources().getString(R.string.msg_field_required),
+							Toast.LENGTH_SHORT).show();
 					return;
 				} else {
 					Date toDate;
@@ -495,8 +510,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 					Toast.makeText(
 							getActivity(),
 							getActivity().getResources().getString(R.string.createevent_timing) + " "
-									+ getActivity().getResources().getString(R.string.msg_field_required), Toast.LENGTH_SHORT)
-							.show();
+									+ getActivity().getResources().getString(R.string.msg_field_required),
+							Toast.LENGTH_SHORT).show();
 					return;
 				}
 				eventObject.setTiming(timingstr.toString());
@@ -521,17 +536,6 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 					.execute(eventObject);
 		}
 
-	}
-
-	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
-		for (CategoryDescriptor cd : categoryDescriptors) {
-			String catDesc = getSherlockActivity().getApplicationContext().getResources().getString(cd.description);
-			if (catDesc.equalsIgnoreCase(desc)) {
-				return cd;
-			}
-		}
-
-		return null;
 	}
 
 	private class CreatePoiFromEvent implements PoiHandler, Parcelable {

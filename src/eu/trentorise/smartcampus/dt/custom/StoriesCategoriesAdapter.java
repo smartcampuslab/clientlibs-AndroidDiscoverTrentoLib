@@ -15,56 +15,56 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoriesListingFragment;
 
-public class StoriesCategoriesAdapter extends BaseAdapter {
-	private Context context;
+public class StoriesCategoriesAdapter extends ArrayAdapter<CategoryDescriptor> {
+	private Context mContext;
+	private int layoutResourceId;
 	private FragmentManager fragmentManager;
 
-	public StoriesCategoriesAdapter(Context c) {
-		this.context = c;
-	}
-
-	public StoriesCategoriesAdapter(Context applicationContext, FragmentManager fragmentManager) {
+	public StoriesCategoriesAdapter(Context mContext, int layoutResourceId, List<CategoryDescriptor> list,
+			FragmentManager fragmentManager) {
+		super(mContext, layoutResourceId, list);
+		this.mContext = mContext;
+		this.layoutResourceId = layoutResourceId;
 		this.fragmentManager = fragmentManager;
-		this.context = applicationContext;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder = new ViewHolder();
-		CategoryDescriptor cd = CategoryHelper.getStoryCategoryDescriptorsFiltered()[position];
+		CategoryDescriptor cd = getItem(position);
 
-			holder.button = new Button(context);
-			holder.button.setTag(cd);
-			holder.button.setText(context.getResources().getString(cd.description));
-			holder.button.setTextSize(11);
-			holder.button.setTextColor(context.getResources().getColor(R.color.sc_light_gray));
-			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
-					null);
-			holder.button.setOnClickListener(new StoriesCategoriesOnClickListener());
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+		Button button = (Button) inflater.inflate(layoutResourceId, parent, false);
+		button.setTag(cd);
+		button.setText(mContext.getResources().getString(cd.description));
+		button.setCompoundDrawablesWithIntrinsicBounds(null, mContext.getResources().getDrawable(cd.thumbnail), null, null);
+		button.setOnClickListener(new StoriesCategoriesOnClickListener(cd));
 
-		return holder.button;
-	}
-
-	static class ViewHolder {
-		Button button;
+		return button;
 	}
 
 	public class StoriesCategoriesOnClickListener implements OnClickListener {
+
+		private CategoryDescriptor cd;
+
+		public StoriesCategoriesOnClickListener(CategoryDescriptor cd) {
+			this.cd = cd;
+		}
 
 		@Override
 		public void onClick(View v) {
@@ -72,7 +72,13 @@ public class StoriesCategoriesAdapter extends BaseAdapter {
 			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 			StoriesListingFragment fragment = new StoriesListingFragment();
 			Bundle args = new Bundle();
-			args.putString(SearchFragment.ARG_CATEGORY, cat);
+
+			if (CategoryHelper.CATEGORY_MY.equals(cd.category)) {
+				args.putBoolean(SearchFragment.ARG_MY, true);
+			} else {
+				args.putString(SearchFragment.ARG_CATEGORY, cat);
+			}
+
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
@@ -80,21 +86,6 @@ public class StoriesCategoriesAdapter extends BaseAdapter {
 			fragmentTransaction.commit();
 		}
 
-	}
-
-	@Override
-	public int getCount() {
-		return CategoryHelper.getStoryCategoryDescriptorsFiltered().length;
-	}
-
-	@Override
-	public Object getItem(int arg0) {
-		return CategoryHelper.STORY_CATEGORIES[arg0];
-	}
-
-	@Override
-	public long getItemId(int arg0) {
-		return arg0;
 	}
 
 }

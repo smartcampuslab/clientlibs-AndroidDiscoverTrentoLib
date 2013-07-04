@@ -50,7 +50,7 @@
         android:icon="@drawable/ic_launcher_dt"
         android:label="@string/app_name"
         android:logo="@drawable/logo"
-        android:theme="@style/Theme.discovertrento" >
+        android:theme="@style/Theme.Discovertrento" >
         <uses-library android:name="com.google.android.maps" />
 
         <activity
@@ -94,16 +94,16 @@
         <activity
             android:name="eu.trentorise.smartcampus.dt.fragments.pois.AddressSelectActivity"
             android:logo="@drawable/logo"
-            android:theme="@style/Theme.discovertrento" />
+            android:theme="@style/Theme.Discovertrento" />
         <activity
             android:name="eu.trentorise.smartcampus.dt.fragments.events.POISelectActivity"
             android:logo="@drawable/logo"
-            android:theme="@style/Theme.discovertrento" />
+            android:theme="@style/Theme.Discovertrento" />
         
         <activity 
             android:name="eu.trentorise.smartcampus.dt.fragments.stories.MyMapActivity"
             android:logo="@drawable/logo"
-            android:theme="@style/Theme.discovertrento" />
+            android:theme="@style/Theme.Discovertrento" />
         
     	
     </application>

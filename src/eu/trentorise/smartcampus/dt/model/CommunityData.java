@@ -16,16 +16,21 @@
 package eu.trentorise.smartcampus.dt.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class CommunityData implements Serializable{ 
+public class CommunityData implements Serializable {
 	private static final long serialVersionUID = -1161228699881376628L;
-	
+
 	private List<Concept> tags;
 	private String notes;
 	private int averageRating;
 	private List<Rating> ratings;
-	
+	private Map<String, String> following = new HashMap<String, String>();
+	private int ratingsCount;
+	private int followsCount;
+
 	public CommunityData() {
 		super();
 	}
@@ -60,5 +65,29 @@ public class CommunityData implements Serializable{
 
 	public void setRatings(List<Rating> ratings) {
 		this.ratings = ratings;
+	}
+
+	public Map<String, String> getFollowing() {
+		return following;
+	}
+
+	public void setFollowing(Map<String, String> following) {
+		this.following = following;
+	}
+
+	public int getRatingsCount() {
+		return ratingsCount;
+	}
+
+	public void setRatingsCount(int ratingsCount) {
+		this.ratingsCount = ratingsCount;
+	}
+
+	public int getFollowsCount() {
+		return followsCount;
+	}
+
+	public void setFollowsCount(int followsCount) {
+		this.followsCount = followsCount;
 	}
 }

@@ -152,7 +152,7 @@ public class MapLayerDialogHelper {
 
 	private static CategoryDescriptor[] getAllItems() {
 		CategoryDescriptor[] itemsNotToday = CategoryHelper.getEventCategoryDescriptorsFiltered();
-		CategoryDescriptor todaysEvents = CategoryHelper.TODAY_EVENTS;
+		CategoryDescriptor todaysEvents = CategoryHelper.EVENTS_TODAY;
 
 		CategoryDescriptor[] copy = new CategoryDescriptor[itemsNotToday.length + 1];
 

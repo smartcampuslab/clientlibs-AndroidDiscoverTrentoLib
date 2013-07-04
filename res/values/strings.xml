@@ -30,7 +30,7 @@
     <string name="createevent_timestart">Start</string>
     <string name="createevent_timeend">End</string>
     <string name="createevent_timing">Time</string>
-    <string name="createevent_timing_hint">18:00 - 20:00</string>
+    <string name="createevent_timing_hint">18:00&#8211;20:00</string>
     <string name="createevent_timestarthint">12:00</string>
     <string name="createevent_datehint">24/07/2012</string>
     <string name="createevent_timeendhint">18:00</string>
@@ -50,17 +50,19 @@
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Create event</string>
     <string name="menu_item_myevents_text">My events</string>
-    <!-- <string name="menu_item_layers_text">Layers</string> -->
+    <string name="menu_item_layers_text">Categories</string>
     <string name="menu_item__places_layers_text">Places</string>
     <string name="menu_item__events_layers_text">Events</string>
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
     <string name="menu_item_poicategory_text">Place categories</string>
     <string name="related_poi">Related place</string>
-    <string name="related_events">Related events</string>
+    <string name="submenu_related_events">Related events</string>
+    <string name="submenu_tag">Add tags</string>
     <string name="getdir">Directions</string>
     <string name="onmap">View on map</string>
     <string name="poi_select_address_content_description">Select an address on the map</string>
-    <string name="layers_title">What are you looking for?</string>
+    <string name="layers_title_places">Show the selected places</string>
+    <string name="layers_title_events">Show the selected events</string>
     <string name="tmp">Coming soon!</string>
     <string name="search_txt">Search</string>
     <string name="join">Join event</string>
@@ -69,11 +71,13 @@
     <string name="overflow">More</string>
     <string name="rate">Rate</string>
     <string name="attend">Attend</string>
+    <string name="save">Save</string>
     <string name="add_my_stories">Add to My stories</string>
     <string name="delete_my_stories">Remove from My stories</string>
         
     <string name="attend_not">Not attend</string>
     <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="attendees">Attendees</string>
@@ -85,7 +89,9 @@
     <string name="app_failure_operation">OOPS! An error occurred. Please check your connection or try again later</string>
     <string name="app_failure_cannot_delete">Object cannot be deleted.</string>
     <string name="app_failure_obj_not_found">Object not found!</string>
-    <string name="ratingtext">Community rating:</string>
+    <string name="ratingtext_average">Average rating: %s</string>
+    <string name="ratingtext_user">Your rating:</string>
+    <string name="ratingtext_raters">Total rates: %s</string>
     <string name="attendees_extended"> people are attending this event.</string>
     <string name="attendees_story_extended"> people are attending this story.</string>
     <string name="rating_place_dialog_title">Rate this place:</string>
@@ -143,6 +149,8 @@
 	<string name="list_event_tomorrow">Tomorrow</string>    
     <string name="menu_item_todayevent_text">Today\'s Events</string>
     <string name="categories_event_today">Today\'s Events</string>
+    <string name="categories_event_my">My Events</string>
+    <string name="categories_story_my">My Stories</string>
 	
 	<string name="tab_home">Home</string>
 	<string name="tab_places">Places</string>
@@ -171,7 +179,7 @@
 	<string name="categories_poi_drink">Bars</string>
 	<string name="categories_poi_cinema">Cinemas</string>
 	<string name="categories_poi_family">Family</string>
-	<string name="categories_poi_generic">Other</string>
+	<string name="categories_poi_generic">Other places</string>
 	
 	<string name="categories_story_leisure">Amusement</string>
 	<string name="categories_story_offices_and_services">Organisations</string>
@@ -193,7 +201,8 @@
 	<string name="toast_event_saved">Event saved!</string>
 	<string name="toast_poi_shared">Place shared.</string>
 	<string name="toast_follow_ok">OK! You\'re following \"%s\"</string>
-	
+    <string name="toast_unfollow_ok">OK! You\'re not following \"%s\"</string>
+		
 	<string name="notifications_unread">Unread notifications</string>
 	<string name="notifications_list_empty">You have not received notifications yet about the events and the places you are following.</string>
 	<string name="notifications_list_title">Notifications</string>
@@ -205,7 +214,7 @@
     <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
     <string name="notifications_story_at_place_update">Story \"%1$s\" about %2$s is updated</string>
 	
-	<string name="initial_data_load">Loading initial data... (it may take a while this time)</string>
+	<string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
 	
     <!-- String for the searching fragment -->
     <string name="search_what">What: </string>
@@ -235,6 +244,6 @@
     <string name="info_dialog_title_poi">Place Info </string>
     <string name="info_dialog_title_event">Event Info</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
- 
+ 	<string name="choose_poi">Chose a POI</string>
 </resources>   
      

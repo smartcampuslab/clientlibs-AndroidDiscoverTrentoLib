@@ -71,11 +71,12 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		String status = (String) poi.getCustomData().get("status");
 		if (("Certificato finale").equals(status) || ("Certificato base").equals(status)) {
 			/* se ceretificato e evento */
-			return context.getResources().getDrawable(R.drawable.ic_event_family_certified);
+			return context.getResources().getDrawable(R.drawable.ic_e_family_certified);
 		}
 
 		return context.getResources().getDrawable(CategoryHelper.getIconByType(poi.getType()));
 	}
+
 	public int getElementSelected() {
 		return elementSelected;
 	}

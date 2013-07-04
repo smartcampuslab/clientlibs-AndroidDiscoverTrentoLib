@@ -15,86 +15,83 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 
-public class EventsCategoriesAdapter extends BaseAdapter {
+public class EventsCategoriesAdapter extends ArrayAdapter<CategoryDescriptor> {
 
-	private Context context;
+	private Context mContext;
+	private int layoutResourceId;
 	private FragmentManager fragmentManager;
 
-	public EventsCategoriesAdapter(Context c) {
-		this.context = c;
+	public EventsCategoriesAdapter(Context mContext, int layoutResourceId, List<CategoryDescriptor> list,
+			FragmentManager fragmentManager) {
+		super(mContext, layoutResourceId, list);
+		this.mContext = mContext;
+		this.layoutResourceId = layoutResourceId;
+		this.fragmentManager = fragmentManager;
 	}
 
-	public EventsCategoriesAdapter(Context applicationContext, FragmentManager fragmentManager) {
-		this.fragmentManager = fragmentManager;
-		this.context = applicationContext;
-	}
+	// CategoryHelper.getEventCategoryDescriptorsFiltered()
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder = new ViewHolder();
-//		CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
-		CategoryDescriptor cd = CategoryHelper.getEventCategoryDescriptorsFiltered()[position];
-			holder.button = new Button(context);
-			// holder.button.setText(CategoryHelper.EVENT_CATEGORIES[position].description);
-			holder.button.setTag(cd);
-			holder.button.setText(context.getResources().getString(cd.description));
-			holder.button.setTextSize(11);
-			holder.button.setTextColor(context.getResources().getColor(R.color.sc_light_gray));
-			holder.button.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-			holder.button.setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(cd.thumbnail), null,
-					null);
-			holder.button.setOnClickListener(new EventsCategoriesOnClickListener());
+		// CategoryDescriptor cd = CategoryHelper.EVENT_CATEGORIES[position];
+		CategoryDescriptor cd = getItem(position);
 
-		return holder.button;
-	}
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+		Button button = (Button) inflater.inflate(layoutResourceId, parent, false);
+		// button.setText(CategoryHelper.EVENT_CATEGORIES[position].description);
+		button.setTag(cd);
+		button.setText(mContext.getResources().getString(cd.description));
+		button.setCompoundDrawablesWithIntrinsicBounds(null, mContext.getResources().getDrawable(cd.thumbnail), null, null);
+		button.setOnClickListener(new EventsCategoriesOnClickListener(cd));
 
-	static class ViewHolder {
-		Button button;
+		return button;
 	}
 
 	public class EventsCategoriesOnClickListener implements OnClickListener {
+
+		private CategoryDescriptor cd;
+
+		public EventsCategoriesOnClickListener(CategoryDescriptor cd) {
+			this.cd = cd;
+		}
+
 		@Override
 		public void onClick(View v) {
 			String cat = ((CategoryDescriptor) v.getTag()).category;
 			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 			EventsListingFragment fragment = new EventsListingFragment();
 			Bundle args = new Bundle();
-			args.putString(SearchFragment.ARG_CATEGORY, cat);
+
+			if (CategoryHelper.CATEGORY_TODAY.equals(cd.category)) {
+				args.putString(EventsListingFragment.ARG_QUERY_TODAY, "");
+			} else if (CategoryHelper.CATEGORY_MY.equals(cd.category)) {
+				args.putBoolean(SearchFragment.ARG_MY, true);
+			} else {
+				args.putString(SearchFragment.ARG_CATEGORY, cat);
+			}
+
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(android.R.id.content, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
-	}
-
-	@Override
-	public int getCount() {
-		return CategoryHelper.getEventCategoryDescriptorsFiltered().length;
-	}
-
-	@Override
-	public Object getItem(int position) {
-		return null;
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return 0;
 	}
 
 }

@@ -17,10 +17,18 @@ package eu.trentorise.smartcampus.dt;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
+import android.view.View;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -30,15 +38,16 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-import com.google.android.maps.MapView;
+import com.github.espiandev.showcaseview.BaseTutorialActivity;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
+import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
@@ -54,6 +63,10 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
+	private final static int TUTORIAL_REQUEST_CODE = 1;
+	private Tutorial lastShowed;
+	private boolean isLoading;
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -63,11 +76,18 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setUpContent(savedInstanceState != null ? savedInstanceState.getInt("tag") : null);
 
 		initDataManagement(savedInstanceState);
-		MapManager.setMapView(new MapView(this, getResources().getString(R.string.maps_api_key)));
 
+		// DEBUG PURPOSE
+		// DTHelper.getTutorialPreferences(this).edit().clear().commit();
+
+		if (DTHelper.isFirstLaunch(this)) {
+			showTourDialog();
+			DTHelper.disableFirstLaunch(this);
+		}
 	}
 
 	@Override
@@ -78,13 +98,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			onBackPressed();
-			return true;
-		} else
-			return super.onOptionsItemSelected(item);
-
+	protected void onPostResume() {
+		super.onPostResume();
+		if (DTHelper.wantTour(this))
+			showTutorial();
 	}
 
 	@Override
@@ -98,6 +115,52 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	protected void onDestroy() {
 		DTHelper.destroy();
 		super.onDestroy();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.clear();
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.emptymenu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			onBackPressed();
+			return true;
+		} else
+			return super.onOptionsItemSelected(item);
+
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+	
+		if (requestCode == TUTORIAL_REQUEST_CODE) {
+			if (resultCode == RESULT_OK) {
+				String resData = data.getExtras().getString(BaseTutorialActivity.RESULT_DATA);
+				if (resData.equals(BaseTutorialActivity.OK)) {
+					DTHelper.setTutorialAsShowed(this, lastShowed);
+				}
+				if (DTHelper.wantTour(this))
+					showTutorial();
+			}
+		} else {
+			if (resultCode == RESULT_OK) {
+				String token = data.getExtras().getString(AccountManager.KEY_AUTHTOKEN);
+				if (token == null) {
+					Toast.makeText(this, R.string.app_failure_security, Toast.LENGTH_LONG).show();
+					finish();
+				} else {
+					initData(token);
+				}
+			} else if (resultCode == RESULT_CANCELED && requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
+				DTHelper.endAppFailure(this, R.string.token_required);
+			}
+		}
 	}
 
 	private void initDataManagement(Bundle savedInstanceState) {
@@ -153,6 +216,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		actionBar.addTab(tab);
 
 		// Stories
+		// ATTENZIONE se si modifica la posizione di questa tab il tutorial
+		// sballa
+		// bisogna modificare anche alla riga 475 (circa) dove si seleziona la
+		// tab delle storie
 		tab = getSupportActionBar().newTab();
 		tab.setText(R.string.tab_stories);
 		tab.setTabListener(new TabListener<AllStoriesFragment>(this, "stories", AllStoriesFragment.class));
@@ -163,30 +230,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		actionBar.setHomeButtonEnabled(false);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.clear();
-		MenuInflater inflater = getSupportMenuInflater();
-		inflater.inflate(R.menu.emptymenu, menu);
-		return true;
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
-			String token = data.getExtras().getString(AccountManager.KEY_AUTHTOKEN);
-			if (token == null) {
-				Toast.makeText(this, R.string.app_failure_security, Toast.LENGTH_LONG).show();
-				finish();
-			} else {
-				initData(token);
-			}
-		} else if (resultCode == RESULT_CANCELED && requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
-			DTHelper.endAppFailure(this, R.string.token_required);
-		}
 	}
 
 	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
@@ -231,6 +274,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					Toast.makeText(DiscoverTrentoActivity.this, R.string.initial_data_load, Toast.LENGTH_LONG).show();
 				}
 				setSupportProgressBarIndeterminateVisibility(true);
+				isLoading = true;
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -244,12 +288,20 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 									@Override
 									public void run() {
 										currentRootActivity.setSupportProgressBarIndeterminateVisibility(false);
+										if (DiscoverTrentoActivity.this != null)
+											DiscoverTrentoActivity.this.setSupportProgressBarIndeterminateVisibility(false);
+										else
+											Log.e("no", "woman no cry");
+										isLoading = false;
 									}
 								});
 							}
 						}
 					}
 				}).start();
+			} else {
+				setSupportProgressBarIndeterminateVisibility(false);
+
 			}
 
 			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);
@@ -264,15 +316,15 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				Bundle args = new Bundle();
 				if (result instanceof POIObject) {
 					fragment = new PoiDetailsFragment();
-					args.putSerializable(PoiDetailsFragment.ARG_POI, result);
+					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
 					tag = "pois";
 				} else if (result instanceof EventObject) {
 					fragment = new EventDetailsFragment();
-					args.putString(EventDetailsFragment.ARG_EVENT_OBJECT, (result.getId()));
+					args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
 					tag = "events";
 				} else if (result instanceof StoryObject) {
 					fragment = new StoryDetailsFragment();
-					args.putSerializable(StoryDetailsFragment.ARG_STORY, result);
+					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
 					tag = "stories";
 					// } else if (result instanceof StoryObject) {
 					// fragment = new EventDetailsFragment();
@@ -305,42 +357,112 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	}
 
-	/*
-	 * @Override protected void onResume() { super.onResume();
-	 * 
-	 * try { DTHelper.init(getApplicationContext()); String token =
-	 * DTHelper.getAccessProvider().getAuthToken(this, null); if (token != null)
-	 * { initData(token); } } catch (Exception e) { Toast.makeText(this,
-	 * R.string.app_failure_init, Toast.LENGTH_LONG).show(); return; } }
-	 */
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+	private void showTourDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this).setMessage(getString(R.string.dt_first_launch))
+				.setPositiveButton(getString(R.string.begin_tut), new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						DTHelper.setWantTour(DiscoverTrentoActivity.this, true);
+						showTutorial();
+					}
+				}).setNeutralButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						DTHelper.setWantTour(DiscoverTrentoActivity.this, false);
+						dialog.dismiss();
+					}
+				});
+		builder.create().show();
 	}
 
-	// private BroadcastReceiver mTokenInvalidReceiver = new BroadcastReceiver()
-	// {
-	// @Override
-	// public void onReceive(Context context, Intent intent) {
-	// DTHelper.getAccessProvider().invalidateToken(DiscoverTrentoActivity.this,
-	// null);
-	// initDataManagement(null);
-	// }
-	// };
-	//
-	// @Override
-	// protected void onResume() {
-	// IntentFilter filter = new
-	// IntentFilter(SyncStorageService.ACTION_AUTHENTICATION_PROBLEM);
-	// registerReceiver(mTokenInvalidReceiver, filter);
-	// super.onResume();
-	// }
-	//
-	// @Override
-	// protected void onPause() {
-	// unregisterReceiver(mTokenInvalidReceiver);
-	// super.onPause();
-	// }
+	private void showTutorial() {
+		DTHelper.Tutorial t = DTHelper.getLastTutorialNotShowed(this);
+		int id;
+		String title = "Tip!";
+		String msg = "";
+		boolean isLast = false;
+		switch (t) {
+		case NOTIF:
+			id = R.id.menu_item_notifications;
+			title = getString(R.string.notifications_unread);
+			msg = getString(R.string.dt_notif_tut);
+			break;
+		case EVENTS:
+			id = R.id.menu_item_show_events_layers;
+			title = getString(R.string.menu_item__events_layers_text);
+			msg = getString(R.string.dt_events_tut);
+			break;
+		case PLACES:
+			id = R.id.menu_item_show_places_layers;
+			title = getString(R.string.menu_item__places_layers_text);
+			msg = getString(R.string.dt_places_tut);
+			break;
+		case STORIES:
+			id = -3;
+			title = getString(R.string.tab_stories);
+			msg = getString(R.string.dt_stories_tut);
+			isLast = true;
+			break;
+		default:
+			id = -1;
+		}
+		if (t != null) {
+			lastShowed = t;
+			displayShowcaseView(id, title, msg, isLast);
+		} else
+			DTHelper.setWantTour(this, false);
+	}
+
+	private void displayShowcaseView(int id, String title, String msg, boolean isLast) {
+		int[] position = new int[2];
+		int radius = 0;
+		if (id != -3) {
+			View v = findViewById(id);
+			if (v != null) {
+				v.getLocationOnScreen(position);
+				radius = v.getWidth();
+				BaseTutorialActivity.newIstance(this, position, radius, Color.WHITE, null, title, msg, isLast,
+						TUTORIAL_REQUEST_CODE, TutorialActivity.class);
+			}
+		} else {
+			Resources res = getResources();
+
+			if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+				Display d = getWindowManager().getDefaultDisplay();
+				radius = d.getWidth() / 5;
+				position[0] = (int) (d.getWidth() - radius - TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
+						res.getDisplayMetrics()));
+				position[1] = (int) (getSupportActionBar().getHeight() / 2 + TypedValue.applyDimension(
+						TypedValue.COMPLEX_UNIT_DIP, 24, res.getDisplayMetrics()));
+
+			} else {
+
+				try {
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(3));
+				} catch (IllegalStateException e) {
+					// Do nothing because there is nothing to do
+				}
+
+				View v = findViewById(R.id.menu_item_notifications);
+				if (v != null) {
+					v.getLocationOnScreen(position);
+				}
+				if (isLoading) {
+					position[0] -= TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, res.getDisplayMetrics());
+				}
+				position[0] -= TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, res.getDisplayMetrics());
+
+				radius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, title.length() * 12,
+						res.getDisplayMetrics());
+
+			}
+			BaseTutorialActivity.newIstance(this, position, radius, Color.WHITE, null, title, msg, isLast,
+					TUTORIAL_REQUEST_CODE, TutorialActivity.class);
+		}
+
+	}
 
 	@Override
 	public String getAppToken() {
@@ -351,4 +473,5 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
 	}
+
 }

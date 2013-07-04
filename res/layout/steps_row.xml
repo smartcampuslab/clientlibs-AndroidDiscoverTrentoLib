@@ -17,31 +17,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top" >
-
-
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
 
     <TextView
         android:id="@+id/step_placeholder_title"
-        android:layout_width="fill_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_weight="1"
         android:lines="2"
-        android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="@android:color/white"
-        />
-
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageButton
         android:id="@+id/step_placeholder_delete"
-
-        android:padding="5dp"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        
-    android:background="@null"
-          android:src="@drawable/ic_delete" />
-    
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/empty"
+        android:src="@drawable/ic_delete" />
 
 </LinearLayout>
-  

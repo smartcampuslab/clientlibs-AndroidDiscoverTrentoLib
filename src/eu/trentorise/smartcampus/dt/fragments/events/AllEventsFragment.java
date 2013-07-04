@@ -15,6 +15,10 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.events;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,8 +38,8 @@ import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.EventsCategoriesAdapter;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
@@ -58,8 +62,15 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+
+		List<CategoryDescriptor> list = new ArrayList<CategoryDescriptor>();
+		list.add(CategoryHelper.EVENTS_MY);
+		list.add(CategoryHelper.EVENTS_TODAY);
+		list.addAll(Arrays.asList(CategoryHelper.getEventCategoryDescriptorsFiltered()));
+
 		gridview = (GridView) getView().findViewById(R.id.events_gridview);
-		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(), fragmentManager));
+		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
+				list, fragmentManager));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
@@ -72,27 +83,33 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, R.string.menu_item_addevent_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_todayevent, Menu.NONE, R.string.menu_item_todayevent_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_myevents, Menu.NONE, R.string.menu_item_myevents_text);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
-//
-//		SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-//			@Override
-//			public void onSearch(String query) {
-//				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//				EventsListingFragment fragment = new EventsListingFragment();
-//				Bundle args = new Bundle();
-//				args.putString(EventsListingFragment.ARG_QUERY, query);
-//				fragment.setArguments(args);
-//				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//				// fragmentTransaction.detach(currentFragment);
-//				fragmentTransaction.replace(android.R.id.content, fragment, "events");
-//				fragmentTransaction.addToBackStack(fragment.getTag());
-//				fragmentTransaction.commit();
-//			}
-//		});
-		
+
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_todayevent,
+		// Menu.NONE, R.string.menu_item_todayevent_text);
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_myevents, Menu.NONE,
+		// R.string.menu_item_myevents_text);
+
+		// SearchHelper.createSearchMenu(submenu, getActivity(), new
+		// SearchHelper.OnSearchListener() {
+		// @Override
+		// public void onSearch(String query) {
+		// FragmentTransaction fragmentTransaction =
+		// fragmentManager.beginTransaction();
+		// EventsListingFragment fragment = new EventsListingFragment();
+		// Bundle args = new Bundle();
+		// args.putString(EventsListingFragment.ARG_QUERY, query);
+		// fragment.setArguments(args);
+		// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		// // fragmentTransaction.detach(currentFragment);
+		// fragmentTransaction.replace(android.R.id.content, fragment,
+		// "events");
+		// fragmentTransaction.addToBackStack(fragment.getTag());
+		// fragmentTransaction.commit();
+		// }
+		// });
+
 		super.onPrepareOptionsMenu(menu);
 	}
 
@@ -130,31 +147,33 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.commit();
 				return true;
 			}
-		} else if (item.getItemId() == R.id.menu_item_todayevent) {
-			fragmentTransaction = fragmentManager.beginTransaction();
-			fragment = new EventsListingFragment();
-			args = new Bundle();
-			args.putString(EventsListingFragment.ARG_QUERY_TODAY, "");
-			fragment.setArguments(args);
-			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.detach(currentFragment);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
-			fragmentTransaction.addToBackStack(fragment.getTag());
-			fragmentTransaction.commit();
-			return true;
-		} else if (item.getItemId() == R.id.menu_item_myevents) {
-			fragmentTransaction = fragmentManager.beginTransaction();
-			fragment = new EventsListingFragment();
-			args = new Bundle();
-			args.putBoolean(SearchFragment.ARG_MY, true);
-			fragment.setArguments(args);
-			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
-			fragmentTransaction.addToBackStack(fragment.getTag());
-			fragmentTransaction.commit();
-			return true;
-		} else if (item.getItemId() == R.id.search) {
+			// } else if (item.getItemId() == R.id.menu_item_todayevent) {
+			// fragmentTransaction = fragmentManager.beginTransaction();
+			// fragment = new EventsListingFragment();
+			// args = new Bundle();
+			// args.putString(EventsListingFragment.ARG_QUERY_TODAY, "");
+			// fragment.setArguments(args);
+			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// // fragmentTransaction.detach(currentFragment);
+			// fragmentTransaction.replace(android.R.id.content, fragment,
+			// "events");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
+			// fragmentTransaction.commit();
+			// return true;
+			// } else if (item.getItemId() == R.id.menu_item_myevents) {
+			// fragmentTransaction = fragmentManager.beginTransaction();
+			// fragment = new EventsListingFragment();
+			// args = new Bundle();
+			// args.putBoolean(SearchFragment.ARG_MY, true);
+			// fragment.setArguments(args);
+			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// // fragmentTransaction.detach(this);
+			// fragmentTransaction.replace(android.R.id.content, fragment,
+			// "events");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
+			// fragmentTransaction.commit();
+			// return true;
+		} else if (item.getItemId() == R.id.submenu_search) {
 			fragmentTransaction = fragmentManager.beginTransaction();
 			fragment = new SearchFragment();
 			args = new Bundle();

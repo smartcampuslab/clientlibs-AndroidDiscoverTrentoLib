@@ -80,8 +80,7 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 			e.hour = (TextView) row.findViewById(R.id.event_placeholder_hour);
 			e.icon = (ImageView) row.findViewById(R.id.event_placeholder_icon);
 			e.vs = (ViewSwitcher) row.findViewById(R.id.event_viewswitecher);
-			e.separator = (LinearLayout) row.findViewById(R.id.separator);
-			e.dateSeparator = (TextView) row.findViewById(R.id.separator_text);
+			e.dateSeparator = (TextView) row.findViewById(R.id.date_separator);
 			row.setTag(e);
 		} else
 		{
@@ -116,12 +115,12 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 		}
 
 		if (previousEvent == null || previousEvent.get(Calendar.DATE) != currentEvent.get(Calendar.DATE)) {
-			e.separator.setVisibility(View.VISIBLE);
+			e.dateSeparator.setVisibility(View.VISIBLE);
+			// create date
+			e.dateSeparator.setText(setDateString(e));
 		} else {
-			e.separator.setVisibility(View.GONE);
+			e.dateSeparator.setVisibility(View.GONE);
 		}
-		// create Date
-		e.dateSeparator.setText(setDateString(e));
 
 		return row;
 	}
@@ -129,7 +128,7 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 	private Drawable eventCertified(EventObject o) {
 		if (((Boolean) o.getCustomData().get("certified"))) {
 			/* se ceretificato e evento */
-			return context.getResources().getDrawable(R.drawable.ic_event_family_certified);
+			return context.getResources().getDrawable(R.drawable.ic_e_family_certified);
 		}
 
 		return context.getResources().getDrawable(CategoryHelper.getIconByType(o.getType()));

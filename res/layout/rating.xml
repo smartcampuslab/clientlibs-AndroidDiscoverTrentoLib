@@ -20,15 +20,15 @@
     android:orientation="vertical" >
 
     <RatingBar
-    android:layout_gravity="center_horizontal"
         android:id="@+id/ratingBar"
+        style="@style/ratingBarDlg"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:numStars="5"
-        android:stepSize="1.0"
-        android:rating="3.0" 
-        style="@style/ratingBarDlg"/>
-    
+        android:rating="3.0"
+        android:stepSize="1.0" />
+
     <LinearLayout
         android:id="@+id/rating_commands"
         android:layout_width="match_parent"
@@ -49,4 +49,5 @@
             android:layout_weight="1"
             android:text="@android:string/ok" />
     </LinearLayout>
+
 </LinearLayout>

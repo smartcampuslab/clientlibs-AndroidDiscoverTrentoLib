@@ -16,178 +16,239 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:background="@drawable/bg" >
+        android:layout_height="fill_parent" >
 
         <LinearLayout
             android:id="@+id/eventdetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp" >
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" >
 
-                <ImageView
-                    android:id="@+id/banner_certified"
-                    android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/banner_certified"
-                    android:visibility="gone"
-                	android:background="@drawable/banner_repeat"
-                    android:padding="0dp" />
-
+            <ImageView
+                android:id="@+id/banner_certified"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/banner_repeat"
+                android:contentDescription="@string/empty"
+                android:padding="0dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/banner_certified"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/event_details_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
-                android:paddingBottom="10dp"
-                android:textColor="@color/sc_light_gray"
-                android:textSize="26dp" />
+                android:layout_marginTop="8dp"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:textColor="@color/dtappcolor" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/event_details_loc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/event_details_map"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/empty"
+                    android:src="@drawable/ic_menu_map_p" />
+
+                <ImageButton
+                    android:id="@+id/event_details_directions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/empty"
+                    android:src="@drawable/ic_menu_directions_p" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/follow" />
+
+                <ToggleButton
+                    android:id="@+id/event_details_follow_tbtn"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="4dp"
+                    android:text="@string/empty"
+                    android:textOff="@string/empty"
+                    android:textOn="@string/empty" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/attend" />
+
+                <ToggleButton
+                    android:id="@+id/event_details_attend_tbtn"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="4dp"
+                    android:text="@string/empty"
+                    android:textOff="@string/empty"
+                    android:textOn="@string/empty" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/event_timing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/sc_light_gray" />
+                android:layout_marginTop="16dp" />
 
             <TextView
                 android:id="@+id/event_details_descr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:autoLink="web|all"
-                android:background="@android:color/transparent"
-                android:textColor="@color/sc_light_gray" />
-
-            <TextView
-                android:id="@+id/event_details_loc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/sc_light_gray" />
+                android:layout_marginTop="8dp"
+                android:autoLink="web|all" />
 
             <TextView
                 android:id="@+id/event_details_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/sc_light_gray" />
+                android:layout_marginTop="8dp" />
 
             <TextView
                 android:id="@+id/event_details_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:autoLink="web|all"
-                android:background="@android:color/transparent"
-                android:textColor="@color/sc_light_gray" />
+                android:layout_marginTop="8dp"
+                android:autoLink="web|all" />
 
             <TextView
                 android:id="@+id/event_details_tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/sc_light_gray"
+                android:layout_margin="8dp"
                 android:textStyle="italic" />
 
-            <TableRow
-                android:id="@+id/tablerow"
+            <LinearLayout
+                android:id="@+id/multimedia_source"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical" >
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="8dp" >
 
                 <ImageButton
                     android:id="@+id/gallery_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="0"
-                    android:background="@drawable/ic_gallery" />
+                    android:background="@drawable/ic_gallery"
+                    android:contentDescription="@string/empty" />
 
                 <TextView
                     android:id="@+id/event_details_source"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:gravity="right"
-                    android:textColor="@color/sc_light_gray" />
-            </TableRow>
+                    android:gravity="right" />
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_margin="3dp"
-                android:background="@color/sc_light_gray" />
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
-                android:text="@string/ratingtext"
-                android:textColor="@color/sc_light_gray" />
+                android:text="@string/ratingtext_user"
+                android:textColor="@color/dtappcolor"
+                android:textStyle="bold" />
 
-            <RatingBar
-                android:id="@+id/event_rating"
-                style="@style/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:numStars="5" />
-
-            <TableRow
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical" >
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal" >
 
-                <ImageView
-                    android:id="@+id/img_attendees"
+                <RatingBar
+                    android:id="@+id/event_rating"
+                    style="@style/ratingBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/attendees"
-                    android:src="@drawable/ic_attendees" />
+                    android:numStars="5" />
 
-                <TextView
-                    android:id="@+id/attendees_num"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/sc_light_gray" />
-            </TableRow>
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/event_rating_raters"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ratingtext_raters" />
+
+                    <TextView
+                        android:id="@+id/event_rating_average"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ratingtext_average" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/attendees_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_menu_attendees_p"
+                android:gravity="center_vertical" />
 
             <View
                 android:id="@+id/event_comments_separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_margin="3dp"
-                android:background="@color/sc_light_gray" />
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/event_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:background="@android:color/transparent"
                 android:text="@string/comments"
-                android:textColor="@color/sc_light_gray" />
+                android:textColor="@color/dtappcolor"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/comments_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
                 android:orientation="vertical" />
         </LinearLayout>
     </ScrollView>

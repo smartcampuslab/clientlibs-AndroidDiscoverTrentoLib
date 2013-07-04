@@ -83,7 +83,7 @@ public class EventsAdapter extends BaseAdapter {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				addtoarray.addtoarray(isChecked, position);
-
+				checked[position] = isChecked;
 			}
 		});
 

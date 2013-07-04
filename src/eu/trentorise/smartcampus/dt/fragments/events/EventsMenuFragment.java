@@ -42,7 +42,7 @@ public class EventsMenuFragment extends NotificationsSherlockFragmentDT {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.simpleeventsmenu, container, false);
+		return inflater.inflate(R.layout.old_simpleeventsmenu, container, false);
 	}
 
 	// wires the listeners

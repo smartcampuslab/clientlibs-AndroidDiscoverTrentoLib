@@ -45,6 +45,7 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
@@ -79,7 +80,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 	@Override
 	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
 		poiObject.getCommunityData().setTags(Concept.convertSS(suggestions));
-		((EditText) getView().findViewById(R.id.poi_tags)).setText(Concept.toSimpleString(poiObject.getCommunityData()
+		if (getView()!=null)
+			((EditText) getView().findViewById(R.id.poi_tags)).setText(Concept.toSimpleString(poiObject.getCommunityData()
 				.getTags()));
 	}
 
@@ -142,9 +144,12 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 		EditText title = (EditText) view.findViewById(R.id.poi_title);
 		title.setText(poiObject.getTitle());
 
+		List<Double> mapcenter = DTParamsHelper.getCenterMap();
+		double[] refLoc = mapcenter == null? null : new double[]{mapcenter.get(0),mapcenter.get(1)};
+
 		AutoCompleteTextView location = (AutoCompleteTextView) view.findViewById(R.id.poi_place);
 		GeocodingAutocompletionHelper locationAutocompletionHelper = new GeocodingAutocompletionHelper(getSherlockActivity(), location,
-				TN_REGION, TN_COUNTRY, TN_ADM_AREA);
+				TN_REGION, TN_COUNTRY, TN_ADM_AREA, refLoc);
 /*		locationAutocompletionHelper.setOnAddressSelectedListener(new OnAddressSelectedListener() {
 			@Override
 			public void onAddressSelected(Address address) {
@@ -174,8 +179,6 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 
 		}
 
-		ImageButton locationBtn = (ImageButton) view.findViewById(R.id.btn_poi_locate);
-
 		EditText notes = (EditText) view.findViewById(R.id.poi_notes);
 		notes.setText(poiObject.getCommunityData().getNotes());
 
@@ -191,9 +194,9 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 				taggingDialog.show();
 			}
 		});
-		
-		ImageButton button = (ImageButton) view.findViewById(R.id.btn_poi_locate);
-		button.setOnClickListener(new View.OnClickListener() {
+
+		ImageButton locationBtn = (ImageButton) view.findViewById(R.id.btn_poi_locate);
+		locationBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), AddressSelectActivity.class);
 				if (mAddress != null) {
@@ -305,6 +308,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 
 		@Override
 		public void handleResult(POIObject result) {
+			if (getSherlockActivity()!=null){
 			getSherlockActivity().getSupportFragmentManager().popBackStack();
 			if(result!=null)
 				{
@@ -321,6 +325,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT implement
 				Toast.makeText(getSherlockActivity(), R.string.poi_create_success, Toast.LENGTH_SHORT).show();
 					poiHandler.addPoi(poiObject);
 			}
+		}
 		}
 	}
 	

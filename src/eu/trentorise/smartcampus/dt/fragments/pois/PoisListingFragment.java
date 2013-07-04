@@ -71,6 +71,7 @@ import eu.trentorise.smartcampus.dt.custom.PoiPlaceholder;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
+import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
@@ -95,7 +96,6 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	private Boolean reload = false;
 	private Integer postitionSelected = 0;
 	private ViewSwitcher previousViewSwitcher;
-
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -215,7 +215,11 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+
+		if (category == null) {
+			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+		}
+
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_LIST)
 				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 			// SearchHelper.createSearchMenu(submenu, getActivity(), new
@@ -239,10 +243,11 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			// fragmentTransaction.commit();
 			// }
 			// });
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.search, Menu.NONE, R.string.search_txt);
+			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 		}
-		if (category == null)
-			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
+
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
@@ -272,7 +277,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		if (item.getItemId() == R.id.map_view) {
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 			if (category != null) {
-				MapManager.switchToMapView(category, this);
+				MapManager.switchToMapView(category, HomeFragment.ARG_POI_CATEGORY, this);
 			} else {
 				ArrayList<BaseDTObject> target = new ArrayList<BaseDTObject>();
 				for (int i = 0; i < list.getAdapter().getCount(); i++) {
@@ -301,7 +306,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				reload = true;
 				return true;
 			}
-		} else if (item.getItemId() == R.id.search) {
+		} else if (item.getItemId() == R.id.submenu_search) {
 			FragmentTransaction fragmentTransaction;
 			Fragment fragment;
 			fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
@@ -374,51 +379,55 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		// close items menus if open
 		((View) list.getParent()).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				hideListItemsMenu(v,false);
+				hideListItemsMenu(v, false);
 			}
 		});
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				hideListItemsMenu(view,false);
+				hideListItemsMenu(view, false);
 				setStorePoiId(view, position);
 
 			}
 		});
 
 		// open items menu for that entry
-		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				if ((position!=postitionSelected)&&(previousViewSwitcher!=null))
-				{
-//					//close the old viewSwitcher
-					previousViewSwitcher.showPrevious();
-					poiAdapter.setElementSelected(-1);
-					previousViewSwitcher=null;
-					hideListItemsMenu(view,true);
+		// list.setOnItemLongClickListener(new
+		// AdapterView.OnItemLongClickListener() {
+		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
+		// position, long id) {
+		// if ((position != postitionSelected) && (previousViewSwitcher !=
+		// null)) {
+		// // //close the old viewSwitcher
+		// previousViewSwitcher.showPrevious();
+		// poiAdapter.setElementSelected(-1);
+		// previousViewSwitcher = null;
+		// hideListItemsMenu(view, true);
+		//
+		// }
+		// ViewSwitcher vs = (ViewSwitcher)
+		// view.findViewById(R.id.poi_viewswitecher);
+		// setupOptionsListeners(vs, position);
+		// vs.showNext();
+		// postitionSelected = position;
+		// poiAdapter.setElementSelected(position);
+		// previousViewSwitcher = vs;
+		//
+		// return true;
+		// }
+		// });
 
-
-				}
-				ViewSwitcher vs = (ViewSwitcher) view.findViewById(R.id.poi_viewswitecher);
-				setupOptionsListeners(vs, position);
-				vs.showNext();
-				postitionSelected = position;
-				poiAdapter.setElementSelected(position);
-				previousViewSwitcher = vs;
-
-				return true;
-			}
-		});
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
 	}
+
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		super.onScrollStateChanged(view, scrollState);
-		if ((postitionSelected!=-1)&&(scrollState==SCROLL_STATE_TOUCH_SCROLL))
-		{
-		hideListItemsMenu(view,false);
+		if ((postitionSelected != -1) && (scrollState == SCROLL_STATE_TOUCH_SCROLL)) {
+			hideListItemsMenu(view, false);
 		}
 	}
+
 	protected void setupOptionsListeners(final ViewSwitcher vs, final int position) {
 		final POIObject poi = ((PoiPlaceholder) vs.getTag()).poi;
 
@@ -508,7 +517,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
 					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-							new FollowAsyncTaskProcessor(getSherlockActivity()));
+							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 
@@ -517,7 +526,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		});
 	}
 
-	private void hideListItemsMenu(View v,boolean close) {
+	private void hideListItemsMenu(View v, boolean close) {
 		boolean toBeHidden = false;
 		for (int index = 0; index < list.getChildCount(); index++) {
 			View view = list.getChildAt(index);
@@ -525,8 +534,8 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
 				poiAdapter.setElementSelected(-1);
-				postitionSelected =-1;
-				previousViewSwitcher=null;
+				postitionSelected = -1;
+				previousViewSwitcher = null;
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
@@ -535,7 +544,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 
 			Bundle args = new Bundle();
-			args.putSerializable(PoiDetailsFragment.ARG_POI, ((PoiPlaceholder) v.getTag()).poi);
+			args.putString(PoiDetailsFragment.ARG_POI_ID, ((PoiPlaceholder) v.getTag()).poi.getId());
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -722,15 +731,16 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	}
 
 	private void updateList(boolean empty) {
+		if (getView()!=null){
+
 		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 				R.id.poilistcontainer));
 		if (empty) {
 			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
 					R.id.poilistcontainer));
 		}
-		hideListItemsMenu(null,false);
+		hideListItemsMenu(null, false);
+		}
 	}
-
-
 
 }
