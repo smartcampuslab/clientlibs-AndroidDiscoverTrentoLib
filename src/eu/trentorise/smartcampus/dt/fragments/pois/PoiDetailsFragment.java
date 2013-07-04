@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -55,6 +56,7 @@ import com.google.android.maps.GeoPoint;
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
+import eu.trentorise.smartcampus.android.common.Utils;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
@@ -128,25 +130,25 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private void updateRating() {
-		if (getView()!=null){
-		RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
-		if (mPoi.getCommunityData() != null) {
-			CommunityData cd = mPoi.getCommunityData();
+		if (getView() != null) {
+			RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
+			if (mPoi.getCommunityData() != null) {
+				CommunityData cd = mPoi.getCommunityData();
 
-			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-				rating.setRating(cd.getRatings().get(0).getValue());
+				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
+					rating.setRating(cd.getRatings().get(0).getValue());
+				}
+
+				// user rating
+
+				// total raters
+				((TextView) getView().findViewById(R.id.poi_rating_raters)).setText(getString(R.string.ratingtext_raters,
+						cd.getRatingsCount()));
+
+				// averange rating
+				((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(R.string.ratingtext_average,
+						cd.getAverageRating()));
 			}
-
-			// user rating
-
-			// total raters
-			((TextView) getView().findViewById(R.id.poi_rating_raters)).setText(getString(R.string.ratingtext_raters,
-					cd.getRatingsCount()));
-
-			// averange rating
-			((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(R.string.ratingtext_average,
-					cd.getAverageRating()));
-		}
 		}
 	}
 
@@ -417,6 +419,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
 		}
 
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_experience, Menu.NONE, R.string.submenu_experience);
+
 		super.onPrepareOptionsMenu(menu);
 	}
 
@@ -467,6 +471,11 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity())).execute(mPoi);
 				return true;
 			}
+		} else if (item.getItemId() == R.id.submenu_experience) {
+			Intent intent = new Intent("eu.trentorise.smartcampus.EDIT");
+			intent.putExtra("NearMeObject", Utils.convertToJSON(mPoi));
+			startActivity(intent);
+			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}

@@ -53,5 +53,7 @@
     <item name="menu_item_notifications" type="id"/>
     <item name="menu_item_show_places_layers" type="id"/>
     <item name="menu_item_show_events_layers" type="id"/>
+    
+    <item name="submenu_experience" type="id"/>
 
 </resources>
