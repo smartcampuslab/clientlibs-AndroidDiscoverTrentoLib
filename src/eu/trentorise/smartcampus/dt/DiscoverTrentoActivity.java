@@ -20,6 +20,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -378,7 +381,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 	private void showTutorial() {
-		DTHelper.Tutorial t = DTHelper.getLastTutorialNotShowed(this);
+		DTHelper.Tutorial t = getFirstValidTutorial();
 		int id;
 		String title = "Tip!";
 		String msg = "";
@@ -415,6 +418,27 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			DTHelper.setWantTour(this, false);
 	}
 
+	private Tutorial getFirstValidTutorial() {
+		Tutorial t = DTHelper.getLastTutorialNotShowed(this);
+		/*if smartcampus (no notif) salta notifiche (setta a true notif*/
+		ApplicationInfo ai;
+		try {
+			ai = getPackageManager().getApplicationInfo(
+					getPackageName(), PackageManager.GET_META_DATA);
+			Bundle aBundle = ai.metaData;
+			if (aBundle.getBoolean("hidden-notification")&& t.equals(t.NOTIF))
+			{ DTHelper.setTutorialAsShowed(this, t);
+				t =DTHelper.getLastTutorialNotShowed(this);
+
+			}
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return t;
+	}
+	
+	
 	private void displayShowcaseView(int id, String title, String msg, boolean isLast) {
 		int[] position = new int[2];
 		int radius = 0;
