@@ -65,6 +65,7 @@ import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.ExperienceHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -472,9 +473,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_experience) {
-			Intent intent = new Intent("eu.trentorise.smartcampus.EDIT");
-			intent.putExtra("NearMeObject", Utils.convertToJSON(mPoi));
-			startActivity(intent);
+			ExperienceHelper.openExperience(getSherlockActivity(), mPoi);
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
