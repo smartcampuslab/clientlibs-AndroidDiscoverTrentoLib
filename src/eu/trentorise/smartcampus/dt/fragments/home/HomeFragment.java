@@ -90,9 +90,6 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (DTParamsHelper.getInstance() == null) {
-			DTParamsHelper.init(getActivity().getApplicationContext());
-		}
 		CategoryDescriptor[] eventsDefault = DTParamsHelper.getDefaultArrayByParams(CategoryHelper.CATEGORY_TYPE_EVENTS);
 		if (eventsDefault != null) {
 			List<String> eventCategory = new ArrayList<String>();

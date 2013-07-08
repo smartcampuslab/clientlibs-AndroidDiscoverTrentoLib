@@ -149,15 +149,6 @@ public class DTHelper {
 		activateAutoSync();
 	}
 
-	/**
-	 * @return true if the helper has already been initialized
-	 */
-	public static boolean isInitialized() {
-		return instance != null;
-	}
-
-
-	
 	public static SCAccessProvider getAccessProvider() {
 		return accessProvider;
 	}
