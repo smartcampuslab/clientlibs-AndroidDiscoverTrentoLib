@@ -15,6 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.home;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
@@ -39,13 +40,16 @@ import eu.trentorise.smartcampus.dt.model.POIObject;
 
 public class InfoDialog extends SherlockDialogFragment {
 	private BaseDTObject data;
+	private HomeFragment fragment;
 
-	public InfoDialog() {
+	public InfoDialog(HomeFragment homeFragment, BaseDTObject o) {
+		this.data=o;
+		this.fragment =  homeFragment;
 	}
 
-	public InfoDialog(BaseDTObject o) {
-		this.data = o;
-	}
+//	public InfoDialog(BaseDTObject o) {
+//		this.data = o;
+//	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -107,14 +111,14 @@ public class InfoDialog extends SherlockDialogFragment {
 					args.putString(PoiDetailsFragment.ARG_POI_ID, data.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(InfoDialog.this.fragment.getId(), fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				} else if (data instanceof EventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
 					args.putString(EventDetailsFragment.ARG_EVENT_ID, (data.getId()));
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(InfoDialog.this.fragment.getId(), fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				}
 				fragmentTransaction.commit();

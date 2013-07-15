@@ -87,7 +87,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 		list.addAll(Arrays.asList(CategoryHelper.getStoryCategoryDescriptorsFiltered()));
 
 		gridview = (GridView) getView().findViewById(R.id.stories_gridview);
-		gridview.setAdapter(new StoriesCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
+		gridview.setAdapter(new StoriesCategoriesAdapter(this,getSherlockActivity().getApplicationContext(), R.layout.grid_item,
 				list, fragmentManager));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -150,7 +150,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction = fragmentManager.beginTransaction();
 				fragment = new CreateStoryFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(this.getId(), fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -175,7 +175,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(this.getId(), fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

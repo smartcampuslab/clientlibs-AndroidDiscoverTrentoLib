@@ -15,6 +15,9 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom.data;
 
+
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -26,6 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -1558,4 +1564,27 @@ public class DTHelper {
 		return null;
 	}
 
+	public static String[] getImageURLs(String objectId) throws  JsonParseException, JsonMappingException,
+	IOException, ConnectionException, ProtocolException, SecurityException, ParseException {
+		String[] urls = new String[1];
+		
+	List<String> list = new ArrayList<String>();
+
+//	if (objectId != null) {
+//		MessageRequest request = new MessageRequest(
+//				GlobalConfig.getAppUrl(getInstance().mContext),
+//				Constants.SERVICE +"/getgallery/"+objectId);
+//		
+//		request.setMethod(Method.GET);
+//		MessageResponse msg = getInstance().mProtocolCarrier.invokeSync(
+//				request, DTParamsHelper.getAppToken(), getAuthToken());
+//		list= (List<String>) Utils.convertJSONToData(msg.getBody());
+//
+//
+//		}
+//
+//	return list.toArray(urls);
+	return eu.trentorise.smartcampus.dt.multimedia.Constants.IMAGES;
+
+	}
 }

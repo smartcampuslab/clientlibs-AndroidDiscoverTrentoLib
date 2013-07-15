@@ -17,6 +17,7 @@ package eu.trentorise.smartcampus.dt.custom;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 
@@ -34,16 +36,15 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 	private Context mContext;
 	private int layoutResourceId;
 	private FragmentManager fragmentManager;
+	private Fragment fragment;
 
-	public PoisCategoriesAdapter(Context mContext, int layoutResourceId) {
-		this.mContext = mContext;
-		this.layoutResourceId = layoutResourceId;
-	}
 
-	public PoisCategoriesAdapter(Context mContext, int layoutResourceId, FragmentManager fragmentManager) {
+	public PoisCategoriesAdapter(AllPoisFragment allPoisFragment, Context mContext, int layoutResourceId, FragmentManager fragmentManager) {
 		this.mContext = mContext;
 		this.layoutResourceId = layoutResourceId;
 		this.fragmentManager = fragmentManager;
+		this.fragment = allPoisFragment;
+
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class PoisCategoriesAdapter extends BaseAdapter {
 			args.putString(SearchFragment.ARG_CATEGORY, cat);
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.replace(PoisCategoriesAdapter.this.fragment.getId(), fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}

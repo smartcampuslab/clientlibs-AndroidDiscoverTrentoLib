@@ -116,6 +116,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	protected void initView() {
 		if (getSupportMap() != null) {
 			getSupportMap().clear();
+			getSupportMap().setMyLocationEnabled(true);
+			getSupportMap().setOnCameraChangeListener(this);
+			getSupportMap().setOnMarkerClickListener(this);
 		}
 
 		getSupportMap().getUiSettings().setRotateGesturesEnabled(false);
@@ -231,7 +234,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	}
 
 	private void onBaseDTObjectTap(BaseDTObject o) {
-		new InfoDialog(o).show(getActivity().getSupportFragmentManager(), "me");
+		new InfoDialog(this,o).show(getActivity().getSupportFragmentManager(), "me");
 	}
 
 	private void onBaseDTObjectsTap(List<BaseDTObject> list) {
@@ -255,7 +258,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "me");
+			fragmentTransaction.replace(this.getId(), fragment, "me");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
@@ -313,9 +316,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 	private GoogleMap getSupportMap() {
 		if (mMap == null) {
-			if (getFragmentManager().findFragmentById(android.R.id.content) != null
-					&& getFragmentManager().findFragmentById(android.R.id.content) instanceof SupportMapFragment)
-				mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(android.R.id.content)).getMap();
+			if (getFragmentManager().findFragmentByTag(this.getTag()) != null
+					&& getFragmentManager().findFragmentByTag(this.getTag()) instanceof SupportMapFragment)
+				mMap = ((SupportMapFragment) getFragmentManager().findFragmentByTag(this.getTag())).getMap();
 			if (mMap != null)
 				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
 

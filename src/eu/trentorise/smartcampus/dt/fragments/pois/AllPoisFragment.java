@@ -59,7 +59,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	public void onStart() {
 		super.onStart();
 		gridview = (GridView) getView().findViewById(R.id.pois_gridview);
-		gridview.setAdapter(new PoisCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
+		gridview.setAdapter(new PoisCategoriesAdapter(this,getSherlockActivity().getApplicationContext(), R.layout.grid_item,
 				fragmentManager));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -89,7 +89,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				Fragment fragment = new CreatePoiFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.replace(this.getId(), fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -101,7 +101,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.replace(this.getId(), fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

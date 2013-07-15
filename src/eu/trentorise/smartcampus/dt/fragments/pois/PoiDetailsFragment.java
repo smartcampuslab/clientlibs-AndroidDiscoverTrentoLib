@@ -53,6 +53,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
+
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
@@ -80,6 +81,9 @@ import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
+import eu.trentorise.smartcampus.dt.multimedia.Constants;
+import eu.trentorise.smartcampus.dt.multimedia.Constants.Extra;
+import eu.trentorise.smartcampus.dt.multimedia.ImageGridFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
@@ -221,7 +225,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 						}
 					}
 				});
-			}
+			
 
 			// map
 			ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.poidetails_map);
@@ -250,6 +254,20 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 					NavigationHelper.bringMeThere(getActivity(), from, to);
 				}
 			});
+			
+			// directions
+			ImageButton experienceBtn = (ImageButton) getView().findViewById(R.id.poidetails_experience);
+			experienceBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					//get array of images and launch imagegrid
+					new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity())).execute(mPoi);
+
+					
+
+				}
+			});
+
 			/*
 			 * END BUTTONS
 			 */
@@ -366,7 +384,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 						R.id.poi_comments_separator));
 			}
 
-		}
+		}}
 	}
 
 	private boolean isCertified(POIObject poi) {
@@ -553,7 +571,40 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		}
 
 	}
+	
+	private class GetImageProcessor extends AbstractAsyncTaskProcessor<POIObject, String[]> {
+		public GetImageProcessor(Activity activity) {
+			super(activity);
+		}
 
+		@Override
+		public String[] performAction(POIObject... params) throws SecurityException, Exception {
+			return DTHelper.getImageURLs(params[0].getId());
+		}
+
+		@Override
+		public void handleResult(String[] result) {
+			// getSherlockActivity().invalidateOptionsMenu();
+			if (result!=null){
+				FragmentTransaction ft = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				Fragment f = new ImageGridFragment();
+				Bundle args = new Bundle();
+				args.putStringArray(Extra.IMAGES, Constants.IMAGES);
+				f.setArguments(args);
+				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				ft.replace(PoiDetailsFragment.this.getId(), f);
+				ft.addToBackStack(f.getTag());
+				ft.commit();
+			}
+			else {
+				// no images
+				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
+				.show();
+			}
+				
+			}
+		}
+	
 	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
 
 		@Override
