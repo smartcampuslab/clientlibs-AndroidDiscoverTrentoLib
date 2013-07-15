@@ -73,7 +73,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, R.string.menu_item_addpoi_text);
+//		submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, R.string.menu_item_addpoi_text);
 		super.onPrepareOptionsMenu(menu);
 	}
 
