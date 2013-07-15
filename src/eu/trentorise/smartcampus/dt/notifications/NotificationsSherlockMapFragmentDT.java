@@ -37,15 +37,15 @@ public class NotificationsSherlockMapFragmentDT extends SherlockMapFragment {
 	}
 
 	public static void onPrepareOptionsMenuNotifications(Menu menu) {
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_notifications, 0, R.string.notifications_unread);
-		item.setIcon(R.drawable.ic_menu_notifications_w);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		if (mHiddenNotification) {
-
-			if (item != null) {
-				item.setVisible(false);
-			}
-		}
+//		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_notifications, 0, R.string.notifications_unread);
+//		item.setIcon(R.drawable.ic_menu_notifications_w);
+//		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//		if (mHiddenNotification) {
+//
+//			if (item != null) {
+//				item.setVisible(false);
+//			}
+//		}
 	}
 
 	public static boolean onOptionsItemSelectedNotifications(SherlockFragmentActivity activity, MenuItem item) {

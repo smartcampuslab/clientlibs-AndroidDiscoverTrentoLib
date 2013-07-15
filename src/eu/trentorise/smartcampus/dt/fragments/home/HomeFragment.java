@@ -186,13 +186,13 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1,
-				R.string.menu_item__places_layers_text);
-		item.setIcon(R.drawable.ic_menu_pois);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_events_layers, 1, R.string.menu_item__events_layers_text);
-		item.setIcon(R.drawable.ic_menu_events);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_places_layers, 1,
+//				R.string.menu_item__places_layers_text);
+//		item.setIcon(R.drawable.ic_menu_pois);
+//		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//		item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_show_events_layers, 1, R.string.menu_item__events_layers_text);
+//		item.setIcon(R.drawable.ic_menu_events);
+//		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		super.onPrepareOptionsMenu(menu);
 	}
 
