@@ -15,7 +15,6 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.stories;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -1098,7 +1097,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 	}
 
-	private void renderSteps(Collection<StepObject> objects, int selection) {
+	private void renderSteps(List<StepObject> objects, int selection) {
 		if (getSupportMap() != null) {
 			getSupportMap().clear();
 			if (objects != null) {
@@ -1107,14 +1106,26 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				for (StepObject object : objects) {
 					to = object.assignedPoi();
 					if (to != null) {
-						getSupportMap().addMarker(
+						Marker marker = getSupportMap().addMarker(
 								MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
+
+						// workaround for the Z-index
+						if (selection == i) {
+							marker.showInfoWindow();
+						}
+
 						if (from != null) {
 							getSupportMap().addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
 						}
 					}
 					from = to;
 					i++;
+				}
+
+				if (selection > -1) {
+					getSupportMap().animateCamera(
+							CameraUpdateFactory.newLatLng(new LatLng(objects.get(selection).assignedPoi().getLocation()[0],
+									objects.get(selection).assignedPoi().getLocation()[1])));
 				}
 			}
 		}
