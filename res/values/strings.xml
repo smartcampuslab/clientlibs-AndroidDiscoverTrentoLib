@@ -58,8 +58,8 @@
     <string name="related_poi">Related place</string>
     <string name="submenu_related_events">Related events</string>
     <string name="submenu_tag">Add tags</string>
-    <string name="getdir">Directions</string>
-    <string name="onmap">View on map</string>
+    <string name="submenu_getdir">Directions</string>
+    <string name="submenu_onmap">View on map</string>
     <string name="poi_select_address_content_description">Select an address on the map</string>
     <string name="layers_title_places">Show the selected places</string>
     <string name="layers_title_events">Show the selected events</string>
@@ -246,6 +246,9 @@
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
  	<string name="choose_poi">Chose a POI</string>
  	
- 	<string name="submenu_experience">Experience</string>
+ 	<string name="submenu_map">Mappa</string>
+    <string name="submenu_gallery">Galleria</string>
+    <string name="submenu_experience">Inserisci</string>
+    <string name="submenu_directions">Indicazioni</string>
 </resources>   
      

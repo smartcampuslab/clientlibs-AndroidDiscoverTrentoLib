@@ -563,7 +563,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// POI visualization
 			if (getStory().getSteps().get(actualStepPosition).assignedPoi() != null) {
 				submenu.add(Menu.CATEGORY_SYSTEM, R.id.related_step_btn, Menu.NONE, R.string.related_poi);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn, Menu.NONE, R.string.getdir);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn, Menu.NONE, R.string.submenu_getdir);
 
 			}
 			// CAN EDIT AND DELETE STEPS ONLY IN OWN STORIES

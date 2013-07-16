@@ -58,8 +58,8 @@
     <string name="related_poi">Luogo dell\'evento</string>
     <string name="submenu_related_events">Eventi in programma</string>
     <string name="submenu_tag">Aggiungi tag</string>
-    <string name="getdir">Indicazioni stradali</string>
-    <string name="onmap">Mostra sulla mappa</string>
+    <string name="submenu_getdir">Indicazioni stradali</string>
+    <string name="submenu_onmap">Mostra sulla mappa</string>
     <string name="poi_select_address_content_description">Seleziona un indirizzo sulla mappa</string>
     <string name="layers_title_places">Mostra i luoghi selezionati</string>
     <string name="layers_title_events">Mostra gli eventi selezionati</string>
@@ -218,8 +218,6 @@
     <string name="notifications_list_title">Notifiche</string>
 
     <string name="initial_data_load">Caricamenti iniziale... (questa volta può richiedere alcuni secondi)</string>
-    
-
 	
 	<!-- 	String for the searching fragment -->
     <string name="search_what">Cosa: </string>
@@ -249,8 +247,11 @@
     <string name="info_dialog_title_event">Informazioni evento</string>   
     <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.
     <string name="choose_poi">Chose a POI</string>
-        
-    <string name="submenu_experience">Esperienza</string>
+
+    <string name="submenu_map">Mappa</string>
+    <string name="submenu_gallery">Galleria</string>
+    <string name="submenu_experience">Inserisci</string>
+    <string name="submenu_directions">Indicazioni</string>
 </string>
     
 </resources>

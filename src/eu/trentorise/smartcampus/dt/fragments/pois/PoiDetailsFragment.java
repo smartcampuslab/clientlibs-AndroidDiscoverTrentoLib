@@ -228,9 +228,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				mapBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-						list.add(mPoi);
-						MapManager.switchToMapView(list, mFragment);
+						actionViewOnMap();
 					}
 				});
 
@@ -239,9 +237,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				galleryBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// get array of images and launch imagegrid
-						new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity()))
-								.execute(mPoi);
+						actionViewGallery();
 					}
 				});
 
@@ -259,15 +255,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				directionsBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Address to = mPoi.asGoogleAddress();
-						Address from = null;
-						GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
-						if (mylocation != null) {
-							from = new Address(Locale.getDefault());
-							from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-							from.setLongitude(mylocation.getLongitudeE6() / 1E6);
-						}
-						NavigationHelper.bringMeThere(getActivity(), from, to);
+						actionGetDirections();
 					}
 				});
 
@@ -435,16 +423,27 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		// submenu.add(Menu.NONE, R.id.submenu_see_on_map, Menu.NONE,
 		// R.string.onmap);
 
-		submenu.add(Menu.NONE, R.id.submenu_show_related_events, Menu.NONE, R.string.submenu_related_events);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
+		// submenu.add(Menu.NONE, R.id.submenu_show_related_events, Menu.NONE,
+		// R.string.submenu_related_events);
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE,
+		// R.string.submenu_tag);
 
 		// ONLY THE OWNER CAN EDIT AND DELETE OBJECTS
-		if (DTHelper.isOwnedObject(getPOI())) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
-		}
+		// if (DTHelper.isOwnedObject(getPOI())) {
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE,
+		// R.string.edit);
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE,
+		// R.string.delete);
+		// }
 
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_experience, Menu.NONE, R.string.submenu_experience);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_see_on_map, Menu.NONE, R.string.submenu_map).setIcon(
+				R.drawable.ic_menu_map_p);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_gallery, Menu.NONE, R.string.submenu_gallery).setIcon(
+				R.drawable.ic_menu_gallery);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_experience, Menu.NONE, R.string.submenu_experience).setIcon(
+				R.drawable.ic_menu_experience);
+		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_get_dir, Menu.NONE, R.string.submenu_directions).setIcon(
+				R.drawable.ic_menu_planjourneys);
 
 		super.onPrepareOptionsMenu(menu);
 	}
@@ -496,8 +495,17 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity())).execute(mPoi);
 				return true;
 			}
+		} else if (item.getItemId() == R.id.submenu_see_on_map) {
+			actionViewOnMap();
+			return true;
+		} else if (item.getItemId() == R.id.submenu_gallery) {
+			actionViewGallery();
+			return true;
 		} else if (item.getItemId() == R.id.submenu_experience) {
 			ExperienceHelper.openExperience(getSherlockActivity(), mPoi);
+			return true;
+		} else if (item.getItemId() == R.id.submenu_get_dir) {
+			actionGetDirections();
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -527,6 +535,29 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				.getCommunityData().getAverageRating() : 2.5f;
 		RatingHelper
 				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_place_dialog_title);
+	}
+
+	private void actionGetDirections() {
+		Address to = mPoi.asGoogleAddress();
+		Address from = null;
+		GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+		if (mylocation != null) {
+			from = new Address(Locale.getDefault());
+			from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+			from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+		}
+		NavigationHelper.bringMeThere(getActivity(), from, to);
+	}
+
+	private void actionViewOnMap() {
+		ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+		list.add(mPoi);
+		MapManager.switchToMapView(list, mFragment);
+	}
+
+	private void actionViewGallery() {
+		// get array of images and launch imagegrid
+		new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity())).execute(mPoi);
 	}
 
 	/*
