@@ -1109,10 +1109,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						Marker marker = getSupportMap().addMarker(
 								MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
 
-						// workaround for the Z-index
-						if (selection == i) {
-							marker.showInfoWindow();
-						}
+
 
 						if (from != null) {
 							getSupportMap().addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
