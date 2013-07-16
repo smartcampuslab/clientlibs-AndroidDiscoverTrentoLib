@@ -163,7 +163,7 @@
                     android:id="@+id/gallery_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ic_gallery"
+                    android:background="@drawable/ic_menu_camera_w"
                     android:contentDescription="@string/empty" />
 
                 <TextView

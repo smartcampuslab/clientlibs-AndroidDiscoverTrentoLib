@@ -53,6 +53,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal" >
 
@@ -60,7 +61,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="4dp"
-                    android:text="@string/follow" />
+                    android:text="@string/follow"
+                    android:visibility="gone" />
 
                 <ToggleButton
                     android:id="@+id/poidetails_follow_tbtn"
@@ -69,7 +71,8 @@
                     android:layout_marginRight="8dp"
                     android:text="@string/empty"
                     android:textOff="@string/empty"
-                    android:textOn="@string/empty" />
+                    android:textOn="@string/empty"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/poidetails_map"
@@ -80,19 +83,47 @@
                     android:src="@drawable/ic_menu_map_p" />
 
                 <ImageButton
-                    android:id="@+id/poidetails_directions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/poidetails_gallery"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="16dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/empty"
-                    android:src="@drawable/ic_menu_directions_p" />
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_menu_gallery" />
+
                 <ImageButton
                     android:id="@+id/poidetails_experience"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="16dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/empty"
-                    android:src="@drawable/ic_menu_directions_p" />
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_menu_experience" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/poidetails_directions"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/empty"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_menu_planjourneys" />
+
+                <TextView
+                    android:id="@+id/poi_details_loc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp" />
             </LinearLayout>
 
             <TextView
@@ -101,12 +132,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:autoLink="web|all" />
-
-            <TextView
-                android:id="@+id/poi_details_loc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" />
 
             <TextView
                 android:id="@+id/poi_details_hours"
@@ -147,7 +172,7 @@
                     android:id="@+id/gallery_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ic_gallery"
+                    android:background="@drawable/ic_menu_camera_w"
                     android:contentDescription="@string/empty" />
 
                 <TextView

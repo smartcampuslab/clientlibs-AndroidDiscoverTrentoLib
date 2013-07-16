@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -53,11 +52,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
-
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
-import eu.trentorise.smartcampus.android.common.Utils;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
@@ -225,166 +222,167 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 						}
 					}
 				});
-			
 
-			// map
-			ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.poidetails_map);
-			mapBtn.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-					list.add(mPoi);
-					MapManager.switchToMapView(list, mFragment);
-				}
-			});
-
-			// directions
-			ImageButton directionsBtn = (ImageButton) getView().findViewById(R.id.poidetails_directions);
-			directionsBtn.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Address to = mPoi.asGoogleAddress();
-					Address from = null;
-					GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
-					if (mylocation != null) {
-						from = new Address(Locale.getDefault());
-						from.setLatitude(mylocation.getLatitudeE6() / 1E6);
-						from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+				// map
+				ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.poidetails_map);
+				mapBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+						list.add(mPoi);
+						MapManager.switchToMapView(list, mFragment);
 					}
-					NavigationHelper.bringMeThere(getActivity(), from, to);
-				}
-			});
-			
-			// directions
-			ImageButton experienceBtn = (ImageButton) getView().findViewById(R.id.poidetails_experience);
-			experienceBtn.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					//get array of images and launch imagegrid
-					new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity())).execute(mPoi);
+				});
 
-					
-
-				}
-			});
-
-			/*
-			 * END BUTTONS
-			 */
-
-			// description, optional
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_descr);
-			if (mPoi.getDescription() != null && mPoi.getDescription().length() > 0) {
-				tv.setText(mPoi.getDescription());
-			} else {
-				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
-			}
-
-			// notes
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
-			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null
-					&& mPoi.getCommunityData().getNotes().length() > 0) {
-				tv.setText(mPoi.getCommunityData().getNotes());
-			} else {
-				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
-			}
-
-			// location
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_loc);
-			tv.setText(Html.fromHtml("<a href=\"\">" + mPoi.shortAddress() + "</a> "));
-			tv.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-					list.add(mPoi);
-					MapManager.switchToMapView(list, PoiDetailsFragment.this);
-				}
-			});
-
-			// tags
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_tags);
-			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getTags() != null
-					&& mPoi.getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(mPoi.getCommunityData().getTags()));
-			} else {
-				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
-			}
-
-			// multimedia
-			((LinearLayout) getView().findViewById(R.id.multimedia_source))
-					.removeView(getView().findViewById(R.id.gallery_btn));
-
-			/*
-			 * ImageButton b = (ImageButton) getView().findViewById(
-			 * R.id.gallery_btn); if (hasMultimediaAttached())
-			 * b.setOnClickListener(new OnClickListener() {
-			 * 
-			 * @Override public void onClick(View v) { FragmentTransaction
-			 * fragmentTransaction = getSherlockActivity()
-			 * .getSupportFragmentManager().beginTransaction(); GalleryFragment
-			 * fragment = new GalleryFragment(); Bundle args = new Bundle(); //
-			 * add args args.putString("title", poi.getTitle());
-			 * fragment.setArguments(args); fragmentTransaction
-			 * .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			 * fragmentTransaction.replace(android.R.id.content, fragment,
-			 * "gallery");
-			 * fragmentTransaction.addToBackStack(fragment.getTag());
-			 * fragmentTransaction.commit(); } }); else ((LinearLayout)
-			 * this.getView().findViewById(R.id.tablerow)) .removeView(b);
-			 */
-			// source
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_source);
-			if (mPoi.getSource() != null && mPoi.getSource().length() > 0) {
-				/* Source is "ou" sometimes O_o */
-				tv.setText(mPoi.getSource());
-			} else if (mPoi.createdByUser()) {
-				tv.setText(getString(R.string.source_smartcampus));
-			} else {
-				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
-			}
-
-			// rating
-			RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
-			rating.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-							// show dialog box
-							UserRegistration.upgradeuser(getSherlockActivity());
-							return false;
-						} else {
-							ratingDialog();
+				// directions
+				ImageButton directionsBtn = (ImageButton) getView().findViewById(R.id.poidetails_directions);
+				directionsBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Address to = mPoi.asGoogleAddress();
+						Address from = null;
+						GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+						if (mylocation != null) {
+							from = new Address(Locale.getDefault());
+							from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+							from.setLongitude(mylocation.getLongitudeE6() / 1E6);
 						}
+						NavigationHelper.bringMeThere(getActivity(), from, to);
 					}
-					return true;
-				}
-			});
+				});
 
-			updateRating();
-			if (tmp_comments.length > 0) {
-				// Comments
-				LinearLayout commentsList = (LinearLayout) getView().findViewById(R.id.comments_list);
-				for (int i = 0; i < tmp_comments.length; i++) {
-					View entry = getLayoutInflater(this.getArguments()).inflate(R.layout.comment_row, null);
+				// experience
+				ImageButton experienceBtn = (ImageButton) getView().findViewById(R.id.poidetails_experience);
+				experienceBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// get array of images and launch imagegrid
+						new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity()))
+								.execute(mPoi);
+					}
+				});
 
-					TextView tmp = (TextView) entry.findViewById(R.id.comment_text);
-					tmp.setText(tmp_comments[i].getText());
-					tmp = (TextView) entry.findViewById(R.id.comment_author);
-					tmp.setText(tmp_comments[i].getAuthor());
-					tmp = (TextView) entry.findViewById(R.id.comment_date);
-					tmp.setText(tmp_comments[i].getDate());
-					commentsList.addView(entry);
+				/*
+				 * END BUTTONS
+				 */
+
+				// description, optional
+				tv = (TextView) this.getView().findViewById(R.id.poi_details_descr);
+				if (mPoi.getDescription() != null && mPoi.getDescription().length() > 0) {
+					tv.setText(mPoi.getDescription());
+				} else {
+					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 				}
-			} else {
-				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(R.id.poi_comments));
-				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(R.id.comments_list));
-				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
-						R.id.poi_comments_separator));
+
+				// notes
+				tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
+				if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null
+						&& mPoi.getCommunityData().getNotes().length() > 0) {
+					tv.setText(mPoi.getCommunityData().getNotes());
+				} else {
+					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
+				}
+
+				// location
+				tv = (TextView) this.getView().findViewById(R.id.poi_details_loc);
+				tv.setText(Html.fromHtml("<a href=\"\">" + mPoi.shortAddress() + "</a> "));
+				tv.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+						list.add(mPoi);
+						MapManager.switchToMapView(list, PoiDetailsFragment.this);
+					}
+				});
+
+				// tags
+				tv = (TextView) this.getView().findViewById(R.id.poi_details_tags);
+				if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getTags() != null
+						&& mPoi.getCommunityData().getTags().size() > 0) {
+					tv.setText(Concept.toSimpleString(mPoi.getCommunityData().getTags()));
+				} else {
+					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
+				}
+
+				// multimedia
+				((LinearLayout) getView().findViewById(R.id.multimedia_source)).removeView(getView().findViewById(
+						R.id.gallery_btn));
+
+				/*
+				 * ImageButton b = (ImageButton) getView().findViewById(
+				 * R.id.gallery_btn); if (hasMultimediaAttached())
+				 * b.setOnClickListener(new OnClickListener() {
+				 * 
+				 * @Override public void onClick(View v) { FragmentTransaction
+				 * fragmentTransaction = getSherlockActivity()
+				 * .getSupportFragmentManager().beginTransaction();
+				 * GalleryFragment fragment = new GalleryFragment(); Bundle args
+				 * = new Bundle(); // add args args.putString("title",
+				 * poi.getTitle()); fragment.setArguments(args);
+				 * fragmentTransaction
+				 * .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				 * fragmentTransaction.replace(android.R.id.content, fragment,
+				 * "gallery");
+				 * fragmentTransaction.addToBackStack(fragment.getTag());
+				 * fragmentTransaction.commit(); } }); else ((LinearLayout)
+				 * this.getView().findViewById(R.id.tablerow)) .removeView(b);
+				 */
+				// source
+				tv = (TextView) this.getView().findViewById(R.id.poi_details_source);
+				if (mPoi.getSource() != null && mPoi.getSource().length() > 0) {
+					/* Source is "ou" sometimes O_o */
+					tv.setText(mPoi.getSource());
+				} else if (mPoi.createdByUser()) {
+					tv.setText(getString(R.string.source_smartcampus));
+				} else {
+					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
+				}
+
+				// rating
+				RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
+				rating.setOnTouchListener(new View.OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						if (event.getAction() == MotionEvent.ACTION_UP) {
+							if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+								// show dialog box
+								UserRegistration.upgradeuser(getSherlockActivity());
+								return false;
+							} else {
+								ratingDialog();
+							}
+						}
+						return true;
+					}
+				});
+
+				updateRating();
+				if (tmp_comments.length > 0) {
+					// Comments
+					LinearLayout commentsList = (LinearLayout) getView().findViewById(R.id.comments_list);
+					for (int i = 0; i < tmp_comments.length; i++) {
+						View entry = getLayoutInflater(this.getArguments()).inflate(R.layout.comment_row, null);
+
+						TextView tmp = (TextView) entry.findViewById(R.id.comment_text);
+						tmp.setText(tmp_comments[i].getText());
+						tmp = (TextView) entry.findViewById(R.id.comment_author);
+						tmp.setText(tmp_comments[i].getAuthor());
+						tmp = (TextView) entry.findViewById(R.id.comment_date);
+						tmp.setText(tmp_comments[i].getDate());
+						commentsList.addView(entry);
+					}
+				} else {
+					((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
+							R.id.poi_comments));
+					((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
+							R.id.comments_list));
+					((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
+							R.id.poi_comments_separator));
+				}
+
 			}
-
-		}}
+		}
 	}
 
 	private boolean isCertified(POIObject poi) {
@@ -571,7 +569,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		}
 
 	}
-	
+
 	private class GetImageProcessor extends AbstractAsyncTaskProcessor<POIObject, String[]> {
 		public GetImageProcessor(Activity activity) {
 			super(activity);
@@ -585,7 +583,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		@Override
 		public void handleResult(String[] result) {
 			// getSherlockActivity().invalidateOptionsMenu();
-			if (result!=null){
+			if (result != null) {
 				FragmentTransaction ft = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment f = new ImageGridFragment();
 				Bundle args = new Bundle();
@@ -595,16 +593,15 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				ft.replace(PoiDetailsFragment.this.getId(), f);
 				ft.addToBackStack(f.getTag());
 				ft.commit();
-			}
-			else {
+			} else {
 				// no images
 				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
-				.show();
+						.show();
 			}
-				
-			}
+
 		}
-	
+	}
+
 	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
 
 		@Override
