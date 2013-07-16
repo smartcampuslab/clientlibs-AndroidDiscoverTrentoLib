@@ -234,6 +234,26 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 					}
 				});
 
+				// gallery
+				ImageButton galleryBtn = (ImageButton) getView().findViewById(R.id.poidetails_gallery);
+				galleryBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// get array of images and launch imagegrid
+						new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity()))
+								.execute(mPoi);
+					}
+				});
+
+				// experience
+				ImageButton experienceBtn = (ImageButton) getView().findViewById(R.id.poidetails_experience);
+				experienceBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						ExperienceHelper.openExperience(getSherlockActivity(), mPoi);
+					}
+				});
+
 				// directions
 				ImageButton directionsBtn = (ImageButton) getView().findViewById(R.id.poidetails_directions);
 				directionsBtn.setOnClickListener(new OnClickListener() {
@@ -251,21 +271,9 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 					}
 				});
 
-				// experience
-				ImageButton experienceBtn = (ImageButton) getView().findViewById(R.id.poidetails_experience);
-				experienceBtn.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// get array of images and launch imagegrid
-						new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity()))
-								.execute(mPoi);
-					}
-				});
-
 				/*
 				 * END BUTTONS
 				 */
-
 				// description, optional
 				tv = (TextView) this.getView().findViewById(R.id.poi_details_descr);
 				if (mPoi.getDescription() != null && mPoi.getDescription().length() > 0) {
