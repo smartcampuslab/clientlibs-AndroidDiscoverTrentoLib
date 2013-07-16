@@ -46,6 +46,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
@@ -77,10 +78,12 @@ import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.ExperienceHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.data.GetImageProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
@@ -146,7 +149,6 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					Log.e(getClass().getName(), "Error reading story places: " + e.getMessage());
 				}
 			}
-
 		}
 
 		return mStory;
@@ -358,8 +360,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			buttonStep.setVisibility(View.GONE);
 
 			// start button
-			final LinearLayout buttonSart = (LinearLayout) this.getView().findViewById(R.id.start_buttons);
-			buttonSart.setVisibility(View.VISIBLE);
+			final LinearLayout buttonStart = (LinearLayout) this.getView().findViewById(R.id.start_buttons);
+			buttonStart.setVisibility(View.VISIBLE);
 			final Button startStory = (Button) this.getView().findViewById(R.id.btn_story_start);
 			startStory.setOnClickListener(new OnClickListener() {
 				@Override
@@ -370,7 +372,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					changeStep(actualStepPosition + 1);
 					detailStep.setVisibility(View.VISIBLE);
 					buttonStep.setVisibility(View.VISIBLE);
-					buttonSart.setVisibility(View.GONE);
+					buttonStart.setVisibility(View.GONE);
 					detailStory.setVisibility(View.GONE);
 					// mItemizedoverlay.changeElementsonMap(actualStepPosition,
 					// mStory);
@@ -459,7 +461,6 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			else {
 				// change layout
 				if (getStory().getSteps().get(actualStepPosition) != null) {
-
 					detailStory.setVisibility(View.GONE);
 					startStory.setVisibility(View.GONE);
 					detailStep.setVisibility(View.VISIBLE);
@@ -467,12 +468,51 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					// number of the step
 					TextView numberOfStepText = (TextView) this.getView().findViewById(R.id.number_of_step);
 					numberOfStepText.setText(String.valueOf(actualStepPosition + 1));
+
 					// name of the step (if the POI hasn't been erased)
 					TextView nameOfStepText = (TextView) this.getView().findViewById(R.id.step_details_name);
-					if (getStory().getSteps().get(actualStepPosition).assignedPoi() != null)
+
+					// BUTTONS
+					// gallery
+					ImageButton galleryBtn = (ImageButton) this.getView().findViewById(R.id.step_details_gallery);
+					galleryBtn.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							actionViewGallery(getStory().getSteps().get(actualStepPosition).assignedPoi());
+						}
+					});
+
+					ImageButton directionsBtn = (ImageButton) this.getView().findViewById(R.id.step_details_directions);
+					ImageButton experienceBtn = (ImageButton) this.getView().findViewById(R.id.step_details_experience);
+
+					if (getStory().getSteps().get(actualStepPosition).assignedPoi() != null) {
 						nameOfStepText.setText(getStory().getSteps().get(actualStepPosition).assignedPoi().getTitle());
-					else
+
+						// directions
+						directionsBtn.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								actionGetDirections(getStory().getSteps().get(actualStepPosition).assignedPoi());
+							}
+						});
+
+						// experience
+						experienceBtn.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								ExperienceHelper.openExperience(getActivity(), getStory().getSteps().get(actualStepPosition)
+										.assignedPoi());
+							}
+						});
+
+						directionsBtn.setVisibility(View.VISIBLE);
+						experienceBtn.setVisibility(View.VISIBLE);
+					} else {
 						nameOfStepText.setText(getString(R.string.poi_erased));
+						directionsBtn.setVisibility(View.VISIBLE);
+						experienceBtn.setVisibility(View.VISIBLE);
+					}
+
 					// notes of the step
 					TextView noteOfStepText = (TextView) this.getView().findViewById(R.id.step_details_note);
 					// if
@@ -487,10 +527,11 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					Button nextStep = (Button) this.getView().findViewById(R.id.btn_story_next);
 
 					// If it is at the end of the story, hides the "next" button
-					if (actualStepPosition == getStory().getSteps().size() - 1)
+					if (actualStepPosition == getStory().getSteps().size() - 1) {
 						nextStep.setVisibility(View.GONE);
-					else
+					} else {
 						nextStep.setVisibility(View.VISIBLE);
+					}
 				}
 			}
 			renderSteps(getStory().getSteps(), actualStepPosition);
@@ -842,13 +883,29 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	//
 	// }
 
+	private void actionGetDirections(POIObject poi) {
+		Address to = poi.asGoogleAddress();
+		Address from = null;
+		GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+		if (mylocation != null) {
+			from = new Address(Locale.getDefault());
+			from.setLatitude(mylocation.getLatitudeE6() / 1E6);
+			from.setLongitude(mylocation.getLongitudeE6() / 1E6);
+		}
+		NavigationHelper.bringMeThere(getActivity(), from, to);
+	}
+
+	private void actionViewGallery(POIObject poi) {
+		// get array of images and launch imagegrid
+		new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity(),
+				StoryDetailsFragment.this.getId())).execute(poi);
+	}
+
 	/*
 	 * class passsed to the AddStepToStoryFragment and implements two method
 	 * used in it.
 	 */
 	private class AddStep implements StepHandler, Parcelable {
-		private static final long serialVersionUID = 16774297617446649L;
-
 		/*
 		 * add the step to my story and refresh the overlay items(non-Javadoc)
 		 */

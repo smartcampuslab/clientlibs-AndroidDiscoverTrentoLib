@@ -68,6 +68,7 @@ import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.data.GetImageProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
@@ -78,9 +79,6 @@ import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
-import eu.trentorise.smartcampus.dt.multimedia.Constants;
-import eu.trentorise.smartcampus.dt.multimedia.Constants.Extra;
-import eu.trentorise.smartcampus.dt.multimedia.ImageGridFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 
@@ -228,7 +226,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				mapBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						actionViewOnMap();
+						actionViewOnMap(mPoi);
 					}
 				});
 
@@ -237,7 +235,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				galleryBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						actionViewGallery();
+						actionViewGallery(mPoi);
 					}
 				});
 
@@ -255,7 +253,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				directionsBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						actionGetDirections();
+						actionGetDirections(mPoi);
 					}
 				});
 
@@ -496,16 +494,16 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_see_on_map) {
-			actionViewOnMap();
+			actionViewOnMap(mPoi);
 			return true;
 		} else if (item.getItemId() == R.id.submenu_gallery) {
-			actionViewGallery();
+			actionViewGallery(mPoi);
 			return true;
 		} else if (item.getItemId() == R.id.submenu_experience) {
 			ExperienceHelper.openExperience(getSherlockActivity(), mPoi);
 			return true;
 		} else if (item.getItemId() == R.id.submenu_get_dir) {
-			actionGetDirections();
+			actionGetDirections(mPoi);
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -537,8 +535,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_place_dialog_title);
 	}
 
-	private void actionGetDirections() {
-		Address to = mPoi.asGoogleAddress();
+	private void actionGetDirections(POIObject poi) {
+		Address to = poi.asGoogleAddress();
 		Address from = null;
 		GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 		if (mylocation != null) {
@@ -549,15 +547,16 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		NavigationHelper.bringMeThere(getActivity(), from, to);
 	}
 
-	private void actionViewOnMap() {
+	private void actionViewOnMap(POIObject poi) {
 		ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-		list.add(mPoi);
+		list.add(poi);
 		MapManager.switchToMapView(list, mFragment);
 	}
 
-	private void actionViewGallery() {
+	private void actionViewGallery(POIObject poi) {
 		// get array of images and launch imagegrid
-		new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity())).execute(mPoi);
+		new SCAsyncTask<POIObject, Void, String[]>(getActivity(), new GetImageProcessor(getActivity(),
+				PoiDetailsFragment.this.getId())).execute(poi);
 	}
 
 	/*
@@ -609,37 +608,41 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	}
 
-	private class GetImageProcessor extends AbstractAsyncTaskProcessor<POIObject, String[]> {
-		public GetImageProcessor(Activity activity) {
-			super(activity);
-		}
-
-		@Override
-		public String[] performAction(POIObject... params) throws SecurityException, Exception {
-			return DTHelper.getImageURLs(params[0].getId());
-		}
-
-		@Override
-		public void handleResult(String[] result) {
-			// getSherlockActivity().invalidateOptionsMenu();
-			if (result != null) {
-				FragmentTransaction ft = getSherlockActivity().getSupportFragmentManager().beginTransaction();
-				Fragment f = new ImageGridFragment();
-				Bundle args = new Bundle();
-				args.putStringArray(Extra.IMAGES, Constants.IMAGES);
-				f.setArguments(args);
-				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				ft.replace(PoiDetailsFragment.this.getId(), f);
-				ft.addToBackStack(f.getTag());
-				ft.commit();
-			} else {
-				// no images
-				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
-						.show();
-			}
-
-		}
-	}
+	// private class GetImageProcessor extends
+	// AbstractAsyncTaskProcessor<POIObject, String[]> {
+	// public GetImageProcessor(Activity activity) {
+	// super(activity);
+	// }
+	//
+	// @Override
+	// public String[] performAction(POIObject... params) throws
+	// SecurityException, Exception {
+	// return DTHelper.getImageURLs(params[0].getId());
+	// }
+	//
+	// @Override
+	// public void handleResult(String[] result) {
+	// // getSherlockActivity().invalidateOptionsMenu();
+	// if (result != null) {
+	// FragmentTransaction ft =
+	// getSherlockActivity().getSupportFragmentManager().beginTransaction();
+	// Fragment f = new ImageGridFragment();
+	// Bundle args = new Bundle();
+	// args.putStringArray(Extra.IMAGES, Constants.IMAGES);
+	// f.setArguments(args);
+	// ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+	// ft.replace(PoiDetailsFragment.this.getId(), f);
+	// ft.addToBackStack(f.getTag());
+	// ft.commit();
+	// } else {
+	// // no images
+	// Toast.makeText(getActivity(),
+	// getActivity().getString(R.string.app_failure_cannot_delete),
+	// Toast.LENGTH_LONG)
+	// .show();
+	// }
+	// }
+	// }
 
 	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
 
