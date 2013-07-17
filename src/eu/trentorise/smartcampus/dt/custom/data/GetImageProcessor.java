@@ -29,7 +29,7 @@ public class GetImageProcessor extends AbstractAsyncTaskProcessor<POIObject, Str
 
 	@Override
 	public String[] performAction(POIObject... params) throws SecurityException, Exception {
-		return DTHelper.getImageURLs(params[0].getId());
+		return DTHelper.getImageURLs(params[0].getEntityId());
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class GetImageProcessor extends AbstractAsyncTaskProcessor<POIObject, Str
 			ft.commit();
 		} else {
 			// no images
-			Toast.makeText(mActivity, mActivity.getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG).show();
+			Toast.makeText(mActivity, mActivity.getString(R.string.app_failure_no_gallery_found), Toast.LENGTH_LONG).show();
 		}
 
 	}

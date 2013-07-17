@@ -246,9 +246,11 @@
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
  	<string name="choose_poi">Chose a POI</string>
  	
- 	<string name="submenu_map">Mappa</string>
-    <string name="submenu_gallery">Galleria</string>
-    <string name="submenu_experience">Inserisci</string>
-    <string name="submenu_directions">Indicazioni</string>
+ 	<string name="submenu_map">Map</string>
+    <string name="submenu_gallery">Gallery</string>
+    <string name="submenu_experience">Insert</string>
+    <string name="submenu_directions">Get direction</string>
+    
+    <string name="app_failure_no_gallery_found">No gallery found</string>
 </resources>   
      

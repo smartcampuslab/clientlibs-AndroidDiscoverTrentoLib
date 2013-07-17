@@ -26,6 +26,7 @@ public class Constants {
 	public static final String DT_SYNC_AUTHORITY = "dt-sync-authority";
 
 //	public static final String APP_TOKEN = "discovertrento";
+	public static final String EBSERVICE="/smartcampus.vas.experiencebuster.web";
 	public static final String SERVICE = "/smartcampus.vas.discovertrento.web";
 	public static final String SYNC_SERVICE = "/smartcampus.vas.discovertrento.web/sync";
 	public static final int SYNC_INTERVAL = 5;

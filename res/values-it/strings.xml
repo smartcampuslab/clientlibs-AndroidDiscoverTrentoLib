@@ -252,6 +252,9 @@
     <string name="submenu_gallery">Galleria</string>
     <string name="submenu_experience">Inserisci</string>
     <string name="submenu_directions">Indicazioni</string>
+    
+        <string name="app_failure_no_gallery_found">Nessuna galleria trovata</string>
+    
 </string>
     
 </resources>
