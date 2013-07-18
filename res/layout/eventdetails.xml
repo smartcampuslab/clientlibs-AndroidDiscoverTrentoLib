@@ -49,13 +49,15 @@
                 android:layout_marginTop="8dp"
                 android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@color/dtappcolor" />
-                        <LinearLayout
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal" >
-	                <ImageButton
+
+                <ImageButton
                     android:id="@+id/event_details_map"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,7 +73,8 @@
                     android:contentDescription="@string/empty"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_menu_planjourneys" />
-                </LinearLayout>
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,8 +87,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
-
-
             </LinearLayout>
 
             <TextView
@@ -99,7 +100,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:autoLink="web|all" />
+                android:autoLink="web" />
+
+            <TextView
+                android:id="@+id/event_details_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/event_details_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/empty" />
 
             <TextView
                 android:id="@+id/event_details_date"

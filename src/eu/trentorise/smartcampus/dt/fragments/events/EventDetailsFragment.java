@@ -15,9 +15,18 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.events;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -27,11 +36,15 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,14 +52,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -56,26 +67,18 @@ import com.google.android.maps.GeoPoint;
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
-import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
-import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.custom.ExperienceHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
@@ -110,8 +113,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		tmp_comments = new TmpComment[0];
 		// tmp_comments = new TmpComment[5];
 		for (int i = 0; i < tmp_comments.length; i++)
-			tmp_comments[i] = new TmpComment("This is a very nice, detailed and lengthy comment about the event",
-					"student", new Date());
+			tmp_comments[i] = new TmpComment("This is a very nice, detailed and lengthy comment about the event", "student",
+					new Date());
 		setFollowByIntent();
 	}
 
@@ -161,80 +164,98 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			 */
 			// follow/unfollow
 			if (mStart) {
-//				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.event_details_follow_tbtn);
-//				if (getEvent().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
-//					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-//					followTbtn.setChecked(true);
-//				} else {
-//					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-//					followTbtn.setChecked(false);
-//				}
-//
-//				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-//					@Override
-//					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//						if (!mCanceledFollow) {
-//							if (isChecked) {
-//								// FOLLOW
-//								FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(),
-//										mEvent.getTitle(), DTConstants.ENTITY_TYPE_EVENT);
-//								if (mFollowByIntent) {
-//									// for MyPeople support
-//									followButtonView = buttonView;
-//									FollowHelper.follow(mFragment, obj, 3000);
-//								} else {
-//									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-//											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
-//													buttonView));
-//									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
-//								}
-//							} else {
-//								// UNFOLLOW
-//								BaseDTObject obj;
-//								try {
-//									obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
-//									if (obj != null) {
-//										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-//												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
-//														getSherlockActivity(), buttonView));
-//										unfollowTask.execute(obj);
-//
-//									}
-//								} catch (Exception e) {
-//									Log.e(EventDetailsFragment.class.getName(),
-//											String.format("Error unfollowing event %s", getEvent().getEntityId()));
-//								}
-//							}
-//						} else {
-//							mCanceledFollow = false;
-//						}
-//					}
-//				});
+				// ToggleButton followTbtn = (ToggleButton)
+				// this.getView().findViewById(R.id.event_details_follow_tbtn);
+				// if
+				// (getEvent().getCommunityData().getFollowing().containsKey(DTHelper.getUserId()))
+				// {
+				// followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				// followTbtn.setChecked(true);
+				// } else {
+				// followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+				// followTbtn.setChecked(false);
+				// }
+				//
+				// followTbtn.setOnCheckedChangeListener(new
+				// OnCheckedChangeListener() {
+				// @Override
+				// public void onCheckedChanged(CompoundButton buttonView,
+				// boolean isChecked) {
+				// if (!mCanceledFollow) {
+				// if (isChecked) {
+				// // FOLLOW
+				// FollowEntityObject obj = new
+				// FollowEntityObject(mEvent.getEntityId(),
+				// mEvent.getTitle(), DTConstants.ENTITY_TYPE_EVENT);
+				// if (mFollowByIntent) {
+				// // for MyPeople support
+				// followButtonView = buttonView;
+				// FollowHelper.follow(mFragment, obj, 3000);
+				// } else {
+				// SCAsyncTask<Object, Void, Topic> followTask = new
+				// SCAsyncTask<Object, Void, Topic>(
+				// getSherlockActivity(), new
+				// FollowAsyncTaskProcessor(getSherlockActivity(),
+				// buttonView));
+				// followTask.execute(DTParamsHelper.getAppToken(),
+				// DTHelper.getAuthToken(), obj);
+				// }
+				// } else {
+				// // UNFOLLOW
+				// BaseDTObject obj;
+				// try {
+				// obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
+				// if (obj != null) {
+				// SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask =
+				// new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+				// getSherlockActivity(), new UnfollowAsyncTaskProcessor(
+				// getSherlockActivity(), buttonView));
+				// unfollowTask.execute(obj);
+				//
+				// }
+				// } catch (Exception e) {
+				// Log.e(EventDetailsFragment.class.getName(),
+				// String.format("Error unfollowing event %s",
+				// getEvent().getEntityId()));
+				// }
+				// }
+				// } else {
+				// mCanceledFollow = false;
+				// }
+				// }
+				// });
 			}
 
 			// attend
-//			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.event_details_attend_tbtn);
-//			if (getEvent().getAttending() == null || getEvent().getAttending().isEmpty()) {
-//				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-//				attendTbtn.setChecked(false);
-//			} else {
-//				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-//				attendTbtn.setChecked(true);
-//			}
-//
-//			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-//				@Override
-//				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-//						// show dialog box
-//						UserRegistration.upgradeuser(getSherlockActivity());
-//					} else {
-//						new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(
-//								getSherlockActivity(), buttonView)).execute(getEvent().getAttending() == null
-//								|| getEvent().getAttending().isEmpty());
-//					}
-//				}
-//			});
+			// ToggleButton attendTbtn = (ToggleButton)
+			// this.getView().findViewById(R.id.event_details_attend_tbtn);
+			// if (getEvent().getAttending() == null ||
+			// getEvent().getAttending().isEmpty()) {
+			// attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+			// attendTbtn.setChecked(false);
+			// } else {
+			// attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+			// attendTbtn.setChecked(true);
+			// }
+			//
+			// attendTbtn.setOnCheckedChangeListener(new
+			// OnCheckedChangeListener() {
+			// @Override
+			// public void onCheckedChanged(CompoundButton buttonView, boolean
+			// isChecked) {
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// } else {
+			// new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new
+			// AttendProcessor(
+			// getSherlockActivity(),
+			// buttonView)).execute(getEvent().getAttending() == null
+			// || getEvent().getAttending().isEmpty());
+			// }
+			// }
+			// });
 
 			// map
 			ImageButton mapBtn = (ImageButton) getView().findViewById(R.id.event_details_map);
@@ -317,9 +338,50 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				tv.setText("");
 			}
 
+			// link
+			TextView linkTv = (TextView) this.getView().findViewById(R.id.event_details_link);
+			if (("Muse").equals(mEvent.getType()) && ("Muse").equals(mEvent.getSource())) {
+				// MUSE artworks
+				String link = (String) mEvent.getCustomData().get("link");
+
+				// // temp
+				// // find Website link
+				// int start = mEvent.getDescription().indexOf("<a href=");
+				// int end = mEvent.getDescription().indexOf("</a>");
+				// String extractedLink =
+				// mEvent.getDescription().substring(start, end);
+				// extractedLink =
+				// extractedLink.substring(extractedLink.indexOf("\"") + 1,
+				// extractedLink.lastIndexOf("\""));
+				// if (link == null || link.length() <= 0) {
+				// link = extractedLink;
+				// }
+				// // /temp
+
+				if (link != null && link.length() > 0) {
+					link = "<a href=\"" + link + "\">Website</a>";
+					linkTv.setText(Html.fromHtml(link));
+					linkTv.setMovementMethod(LinkMovementMethod.getInstance());
+					linkTv.setVisibility(View.VISIBLE);
+				}
+			} else {
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(linkTv);
+			}
+
+			// image
+			ImageView imageView = (ImageView) this.getView().findViewById(R.id.event_details_image);
+			if (("Muse").equals(mEvent.getType()) && ("Muse").equals(mEvent.getSource())
+					&& mEvent.getCustomData().get("image") != null) {
+				String imageLink = (String) mEvent.getCustomData().get("image");
+				imageView.setTag(imageLink);
+				new DownloadImageTask().execute(imageView);
+			} else {
+				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(imageView);
+			}
+
 			// multimedia
-			((LinearLayout) getView().findViewById(R.id.multimedia_source)).removeView(getView().findViewById(
-					R.id.gallery_btn));
+			((LinearLayout) getView().findViewById(R.id.multimedia_source))
+					.removeView(getView().findViewById(R.id.gallery_btn));
 
 			/*
 			 * ImageButton b = (ImageButton) getView().findViewById(
@@ -392,8 +454,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			} else {
 				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
 						R.id.event_comments));
-				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
-						R.id.comments_list));
+				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView()
+						.findViewById(R.id.comments_list));
 				((LinearLayout) getView().findViewById(R.id.eventdetails)).removeView(getView().findViewById(
 						R.id.event_comments_separator));
 			}
@@ -439,12 +501,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				// user rating
 
 				// total raters
-				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(
-						R.string.ratingtext_raters, cd.getRatingsCount()));
+				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
+						cd.getRatingsCount()));
 
 				// averange rating
-				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(
-						R.string.ratingtext_average, cd.getAverageRating()));
+				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
+						cd.getAverageRating()));
 			}
 		}
 
@@ -489,13 +551,16 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		// Menu.NONE, R.string.getdir);
 		// }
 
-//		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
-//
-//		// CAN DELETE ONLY OWN OBJECTS
-//		if (DTHelper.isOwnedObject(getEvent())) {
-//			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
-//			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
-//		}
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE,
+		// R.string.submenu_tag);
+		//
+		// // CAN DELETE ONLY OWN OBJECTS
+		// if (DTHelper.isOwnedObject(getEvent())) {
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE,
+		// R.string.edit);
+		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE,
+		// R.string.delete);
+		// }
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_see_on_map, Menu.NONE, R.string.submenu_map).setIcon(
 				R.drawable.ic_menu_map_p);
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_get_dir, Menu.NONE, R.string.submenu_directions).setIcon(
@@ -507,8 +572,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.submenu_show_related_poi) {
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-					.beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			PoiDetailsFragment fragment = new PoiDetailsFragment();
 			Bundle args = new Bundle();
 			args.putSerializable(PoiDetailsFragment.ARG_POI_ID, getPOI().getId());
@@ -591,8 +655,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-						.beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				Bundle args = new Bundle();
 				// args.putSerializable(CreateEventFragment.ARG_EVENT,
@@ -616,7 +679,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						.execute(getEvent());
 				return true;
 			}
-		}else if (item.getItemId() == R.id.submenu_see_on_map) {
+		} else if (item.getItemId() == R.id.submenu_see_on_map) {
 			ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
 			getEvent().setLocation(mPoi.getLocation());
 			list.add(getEvent());
@@ -710,8 +773,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	private void ratingDialog() {
 		float rating = (getEvent() != null && getEvent().getCommunityData() != null && getEvent().getCommunityData()
 				.getAverageRating() > 0) ? getEvent().getCommunityData().getAverageRating() : 2.5f;
-		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()),
-				R.string.rating_event_dialog_title);
+		RatingHelper
+				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_event_dialog_title);
 	}
 
 	/**
@@ -770,8 +833,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (result) {
 				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
-				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete),
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
+						.show();
 			}
 		}
 
@@ -815,7 +878,6 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	class FollowAsyncTask extends AsyncTask<String, Void, Void> {
-
 		@Override
 		protected Void doInBackground(String... params) {
 			String topicId = params[0];
@@ -836,6 +898,69 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			}
 			mStart = true;
 		}
-
 	}
+
+	private class DownloadImageTask extends AsyncTask<ImageView, Void, Bitmap> {
+
+		ImageView imageView = null;
+
+		@Override
+		protected Bitmap doInBackground(ImageView... imageViews) {
+			this.imageView = imageViews[0];
+
+			Bitmap bm = DTHelper.eventsImagesCache.get((String) imageView.getTag());
+			if (bm == null) {
+				bm = downloadImage((String) imageView.getTag());
+				if (bm != null) {
+					DTHelper.eventsImagesCache.put((String) imageView.getTag(), bm);
+				}
+			}
+
+			return bm;
+		}
+
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			if (result != null) {
+				imageView.setImageBitmap(result);
+			}
+		}
+
+		private Bitmap downloadImage(String url) {
+			Bitmap bm = null;
+
+			try {
+				// URL aURL = new URL(url);
+				// URLConnection conn = aURL.openConnection();
+				// conn.connect();
+				// InputStream is = conn.getInputStream();
+				// BufferedInputStream bis = new BufferedInputStream(is);
+
+				String bau = getString(R.string.bau);
+				String bap = getString(R.string.bap);
+
+				if (bau == null || bau.length() <= 0 || bap == null || bap.length() <= 0) {
+					return null;
+				}
+
+				DefaultHttpClient client = new DefaultHttpClient();
+				client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+						new UsernamePasswordCredentials(bau, bap));
+				HttpGet request = new HttpGet(url);
+				HttpResponse response = client.execute(request);
+				HttpEntity entity = response.getEntity();
+				InputStream bis = entity.getContent();
+
+				bm = BitmapFactory.decodeStream(bis);
+
+				// bis.close();
+				// is.close();
+			} catch (IOException e) {
+				Log.e(getClass().getSimpleName(), "Error getting the image from server: " + e.getMessage().toString());
+			}
+
+			return bm;
+		}
+	}
+
 }

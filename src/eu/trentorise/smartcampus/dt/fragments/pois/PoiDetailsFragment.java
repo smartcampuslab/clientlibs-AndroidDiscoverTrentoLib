@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -268,6 +269,20 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 				}
 
+				// link
+				TextView linkTv = (TextView) this.getView().findViewById(R.id.poi_details_link);
+				if (("Muse").equals(mPoi.getType()) && ("Muse").equals(mPoi.getSource())) {
+					String link = (String) mPoi.getCustomData().get("link");
+					if (link != null && link.length() > 0) {
+						link = "<a href=\"" + link + "\">Website</a>";
+						linkTv.setText(Html.fromHtml(link));
+						linkTv.setMovementMethod(LinkMovementMethod.getInstance());
+						linkTv.setVisibility(View.VISIBLE);
+					}
+				} else {
+					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(linkTv);
+				}
+				
 				// notes
 				tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
 				if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null
