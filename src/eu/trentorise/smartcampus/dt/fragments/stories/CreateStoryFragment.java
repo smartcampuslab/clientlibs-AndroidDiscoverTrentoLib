@@ -211,7 +211,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, stepHandler);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(CreateStoryFragment.this.getId(), fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}

@@ -169,6 +169,7 @@
     <string name="categories_event_exhibition">Mostre</string>
     <string name="categories_event_family">Famiglia</string>
     <string name="categories_event_generic">Altri eventi</string>
+    <string name="categories_event_muse">Muse</string>
     
     <string name="categories_poi_museum">Musei</string>
     <string name="categories_poi_mobility">Mobilità</string>
@@ -183,12 +184,14 @@
     <string name="categories_poi_cinema">Cinema</string>
     <string name="categories_poi_family">Famiglia</string>
     <string name="categories_poi_generic">Altri luoghi</string>
+    <string name="categories_poi_muse">Muse</string>
     
     <string name="categories_story_leisure">Intrattenimento</string>
     <string name="categories_story_offices_and_services">Enti e servizi</string>
     <string name="categories_story_university">Università</string>
     <string name="categories_story_culture">Cultura</string>
     <string name="categories_story_generic">Altre storie</string>
+    <string name="categories_story_muse">Muse</string>
     
     <string name="search_for">Cerca</string>
     <string name="search_in_category">nella categoria</string>

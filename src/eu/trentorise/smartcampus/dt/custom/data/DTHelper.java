@@ -31,6 +31,7 @@ import java.util.SortedMap;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -1412,7 +1413,8 @@ public class DTHelper {
 			request.setMethod(Method.GET);
 			MessageResponse msg = getInstance().mProtocolCarrier.invokeSync(request, DTParamsHelper.getAppToken(),
 					getAuthToken());
-			list = (List<String>) Utils.convertJSONToData(msg.getBody());
+			ObjectMapper mapper = new ObjectMapper();
+			list = mapper.readValue(msg.getBody(), List.class);
 
 		}
 		if (list != null)

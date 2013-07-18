@@ -43,13 +43,13 @@ public class InfoDialog extends SherlockDialogFragment {
 	private HomeFragment fragment;
 
 	public InfoDialog(HomeFragment homeFragment, BaseDTObject o) {
-		this.data=o;
-		this.fragment =  homeFragment;
+		this.data = o;
+		this.fragment = homeFragment;
 	}
 
-//	public InfoDialog(BaseDTObject o) {
-//		this.data = o;
-//	}
+	// public InfoDialog(BaseDTObject o) {
+	// this.data = o;
+	// }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,7 +82,8 @@ public class InfoDialog extends SherlockDialogFragment {
 						CategoryHelper.CATEGORY_TYPE_EVENTS, event.getType()).description);
 				msgText += "</p><br/>";
 			}
-			msgText += "<p>" + event.getTiming() + "</p>";
+			if (event.getTiming() != null)
+				msgText += "<p>" + event.getTiming() + "</p>";
 			if (poi != null) {
 				msgText += "<p>" + poi.shortAddress() + "</p>";
 			}
@@ -103,7 +104,8 @@ public class InfoDialog extends SherlockDialogFragment {
 		b.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Bundle args = new Bundle();
 
 				if (data instanceof POIObject) {

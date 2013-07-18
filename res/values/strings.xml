@@ -166,7 +166,8 @@
 	<string name="categories_event_exhibition">Exhibitions</string>
 	<string name="categories_event_family">Family</string>	
 	<string name="categories_event_generic">Other</string>
-	
+	<string name="categories_event_muse">Muse</string>
+		
 	<string name="categories_poi_museum">Museums</string>
 	<string name="categories_poi_mobility">Mobility</string>
 	<string name="categories_poi_parking">Parking</string>
@@ -180,13 +181,15 @@
 	<string name="categories_poi_cinema">Cinemas</string>
 	<string name="categories_poi_family">Family</string>
 	<string name="categories_poi_generic">Other places</string>
-	
+	<string name="categories_poi_muse">Muse</string>
+
 	<string name="categories_story_leisure">Amusement</string>
 	<string name="categories_story_offices_and_services">Organisations</string>
 	<string name="categories_story_university">University</string>
 	<string name="categories_story_culture">Art &amp; Tourism</string>
 	<string name="categories_story_generic">Other</string>
-	
+	<string name="categories_story_muse">Muse</string>
+		
 	<string name="search_for">Search for</string>
 	<string name="search_in_category">in category</string>
 	<string name="search_today_events">Search today\'s events</string>

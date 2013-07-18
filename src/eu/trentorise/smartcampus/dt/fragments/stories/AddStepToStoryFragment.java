@@ -129,7 +129,7 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 		locationBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivityForResult(new Intent(getActivity(), POISelectActivity.class), POISelectActivity.RESULT_SELECTED);
+				startActivityForResult(new Intent(getSherlockActivity(), POISelectActivity.class), POISelectActivity.RESULT_SELECTED);
 			}
 		});
 

@@ -147,7 +147,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
-			Log.e(StoriesListingFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
+			Log.e(StoriesListingFragment.class.getName(),
+					"you should set the follow-by-intent metadata in app manifest");
 		}
 
 	}
@@ -259,7 +260,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					args.putBoolean(SearchFragment.ARG_MY, true);
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+					fragmentTransaction.replace(StoriesListingFragment.this.getId(), fragment, "stories");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}
@@ -269,10 +270,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		if (category == null)
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		if (category != null) {
+			CategoryDescriptor cat =CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+					CategoryHelper.CATEGORY_TYPE_STORIES, category);
+			int stringa = CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+					CategoryHelper.CATEGORY_TYPE_STORIES, category).description;
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_STORIES,
-							category).description) + " " + getString(R.string.story);
+					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+							CategoryHelper.CATEGORY_TYPE_STORIES, category).description) + " "
+					+ getString(R.string.story);
 			if (Locale.getDefault().equals(Locale.ITALY))
 				addString = getString(R.string.add)
 						+ " "
@@ -300,14 +306,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
 				args.putString(SearchFragment.ARG_CATEGORY, category);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(StoriesListingFragment.this.getId(), fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				reload = true;
@@ -327,7 +334,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(StoriesListingFragment.this.getId(), fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			/* add category to bundle */
@@ -350,7 +357,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		Bundle bundle = this.getArguments();
 		String category = (bundle != null) ? bundle.getString(SearchFragment.ARG_CATEGORY) : null;
 		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategoryFiltered("stories", category);
-		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
+		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description)
+				: null;
 
 		// list = (ListView)
 		// getSherlockActivity().findViewById(R.id.stories_list);
@@ -448,8 +456,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 						// show dialog box
 						UserRegistration.upgradeuser(getSherlockActivity());
 					} else {
-						new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
-								.execute(story);
+						new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(
+								getActivity())).execute(story);
 					}
 				}
 			});
@@ -474,7 +482,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					args.putSerializable(CreateStoryFragment.ARG_STORY, story);
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+					fragmentTransaction.replace(StoriesListingFragment.this.getId(), fragment, "stories");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}
@@ -490,14 +498,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					// show dialog box
 					UserRegistration.upgradeuser(getSherlockActivity());
 				} else {
-					TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
+					TaggingDialog taggingDialog = new TaggingDialog(getActivity(),
+							new TaggingDialog.OnTagsSelectedListener() {
 
-						@SuppressWarnings("unchecked")
-						@Override
-						public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-							new TaggingAsyncTask(story).execute(Concept.convertSS(suggestions));
-						}
-					}, StoriesListingFragment.this, Concept.convertToSS(story.getCommunityData().getTags()));
+								@SuppressWarnings("unchecked")
+								@Override
+								public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
+									new TaggingAsyncTask(story).execute(Concept.convertSS(suggestions));
+								}
+							}, StoriesListingFragment.this, Concept.convertToSS(story.getCommunityData().getTags()));
 					taggingDialog.show();
 				}
 
@@ -514,8 +523,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				if (mFollowByIntent) {
 					FollowHelper.follow(getSherlockActivity(), obj);
 				} else {
-					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
+					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+							getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 							DTHelper.getAuthToken(), obj);
 				}
@@ -537,7 +546,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
 			// no items needed to be flipped, fill and open details page
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+					.beginTransaction();
 			StoryDetailsFragment fragment = new StoryDetailsFragment();
 
 			Bundle args = new Bundle();
@@ -584,29 +594,30 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			// params[0].size, bundle.getString(SearchFragment.ARG_QUERY));
 			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
 			sort.put("title", 1);
-			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)
+					&& (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class, sort,
-						categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class,
+						sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
 
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class, sort,
-						categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class,
+						sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
 
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class, sort,
-						categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class,
+						sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
 				result = (List<StoryObject>) bundle.get(SearchFragment.ARG_LIST);
@@ -627,15 +638,16 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	/*
 	 * Asynchtask that get all the stories
 	 */
-	private class StoryLoader extends AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<StoryObject>> {
+	private class StoryLoader extends
+			AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<StoryObject>> {
 
 		public StoryLoader(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public List<StoryObject> performAction(AbstractLstingFragment.ListingRequest... params) throws SecurityException,
-				Exception {
+		public List<StoryObject> performAction(AbstractLstingFragment.ListingRequest... params)
+				throws SecurityException, Exception {
 			return getStories(params);
 		}
 
@@ -712,15 +724,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	}
 
 	private void updateList(boolean empty) {
-	if (getView()!=null){
+		if (getView() != null) {
 
-		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
-				R.id.storylistcontainer));
-		if (empty) {
-			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+			eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 					R.id.storylistcontainer));
+			if (empty) {
+				eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+						R.id.storylistcontainer));
+			}
+			hideListItemsMenu(null, false);
 		}
-		hideListItemsMenu(null, false);
 	}
-}
 }

@@ -39,7 +39,7 @@ public class GetImageProcessor extends AbstractAsyncTaskProcessor<POIObject, Str
 			FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
 			Fragment f = new ImageGridFragment();
 			Bundle args = new Bundle();
-			args.putStringArray(Extra.IMAGES, Constants.IMAGES);
+			args.putStringArray(Extra.IMAGES, result);
 			f.setArguments(args);
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.replace(mFragmentId, f);
