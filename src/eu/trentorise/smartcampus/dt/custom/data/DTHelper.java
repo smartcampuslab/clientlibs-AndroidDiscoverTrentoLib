@@ -1392,7 +1392,7 @@ public class DTHelper {
 			list = mapper.readValue(msg.getBody(), List.class);
 
 		}
-		if (list != null)
+		if (list != null && list.size()!=0)
 			return list.toArray(urls);
 		else
 			return null;
