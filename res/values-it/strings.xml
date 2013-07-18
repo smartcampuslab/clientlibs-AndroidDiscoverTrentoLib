@@ -220,7 +220,7 @@
     <string name="notifications_list_empty">Non hai ancora ricevuto notifiche\nriguardanti gli eventi e i luoghi\nche stai seguendo.</string>
     <string name="notifications_list_title">Notifiche</string>
 
-    <string name="initial_data_load">Caricamenti iniziale... (questa volta può richiedere alcuni secondi)</string>
+    <string name="initial_data_load">Caricamento iniziale&#8230; (questa volta può richiedere alcuni secondi)</string>
 	
 	<!-- 	String for the searching fragment -->
     <string name="search_what">Cosa: </string>
