@@ -239,82 +239,82 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			 * BUTTONS
 			 */
 			// follow/unfollow
-			if (mStart) {
-				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
-				if (getStory().getCommunityData().getFollowing() != null
-						&& getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
-					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-					followTbtn.setChecked(true);
-				} else {
-					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-					followTbtn.setChecked(false);
-				}
-
-				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if (!mCanceledFollow) {
-							if (isChecked) {
-								// FOLLOW
-								FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(),
-										getStory().getTitle(), DTConstants.ENTITY_TYPE_STORY);
-								if (mFollowByIntent) {
-									followButtonView = buttonView;
-									FollowHelper.follow(StoryDetailsFragment.this, obj, 3000);
-								} else {
-									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
-											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
-													buttonView));
-									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
-
-								}
-							} else {
-								// UNFOLLOW
-								BaseDTObject obj;
-								try {
-									obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
-									if (obj != null) {
-										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
-														buttonView));
-										unfollowTask.execute(obj);
-									}
-								} catch (Exception e) {
-									Log.e(EventDetailsFragment.class.getName(),
-											String.format("Error unfollowing event %s", getStory().getEntityId()));
-								}
-							}
-						} else {
-							mCanceledFollow = false;
-						}
-						resetStory();
-					}
-				});
-			}
+//			if (mStart) {
+////				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
+////				if (getStory().getCommunityData().getFollowing() != null
+////						&& getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+////					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+////					followTbtn.setChecked(true);
+////				} else {
+////					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+////					followTbtn.setChecked(false);
+////				}
+////
+////				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+////					@Override
+////					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+////						if (!mCanceledFollow) {
+////							if (isChecked) {
+////								// FOLLOW
+////								FollowEntityObject obj = new FollowEntityObject(getStory().getEntityId(),
+////										getStory().getTitle(), DTConstants.ENTITY_TYPE_STORY);
+////								if (mFollowByIntent) {
+////									followButtonView = buttonView;
+////									FollowHelper.follow(StoryDetailsFragment.this, obj, 3000);
+////								} else {
+////									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+////											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
+////													buttonView));
+////									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+////
+////								}
+////							} else {
+////								// UNFOLLOW
+////								BaseDTObject obj;
+////								try {
+////									obj = DTHelper.findStoryByEntityId(getStory().getEntityId());
+////									if (obj != null) {
+////										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+////												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+////														buttonView));
+////										unfollowTask.execute(obj);
+////									}
+////								} catch (Exception e) {
+////									Log.e(EventDetailsFragment.class.getName(),
+////											String.format("Error unfollowing event %s", getStory().getEntityId()));
+////								}
+////							}
+////						} else {
+////							mCanceledFollow = false;
+////						}
+////						resetStory();
+////					}
+////				});
+//			}
 
 			// attend
-			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_attend_tbtn);
-			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
-				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-				attendTbtn.setChecked(false);
-			} else {
-				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-				attendTbtn.setChecked(true);
-			}
-
-			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
-						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
-								buttonView)).execute(getStory().getAttending() == null || getStory().getAttending().isEmpty());
-						resetStory();
-					}
-				}
-			});
+//			ToggleButton attendTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_attend_tbtn);
+//			if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
+//				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+//				attendTbtn.setChecked(false);
+//			} else {
+//				attendTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+//				attendTbtn.setChecked(true);
+//			}
+//
+//			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//				@Override
+//				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//						// show dialog box
+//						UserRegistration.upgradeuser(getSherlockActivity());
+//					} else {
+//						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
+//								buttonView)).execute(getStory().getAttending() == null || getStory().getAttending().isEmpty());
+//						resetStory();
+//					}
+//				}
+//			});
 			/*
 			 * END BUTTONS
 			 */
@@ -338,7 +338,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			});
 
 			updateRating();
-			updateAttending();
+//			updateAttending();
 
 			// description, optional
 			titleText = (TextView) this.getView().findViewById(R.id.story_details_descr);
@@ -415,18 +415,18 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		}
 	}
 
-	private void updateAttending() {
-		TextView tv;
-		// attendees
-		if (getView() != null) {
-			tv = (TextView) this.getView().findViewById(R.id.attendees_num);
-			if (getStory().getAttendees() != null) {
-				tv.setText(getStory().getAttendees() + " ");
-			} else {
-				tv.setText(" 0 ");
-			}
-		}
-	}
+//	private void updateAttending() {
+//		TextView tv;
+//		// attendees
+//		if (getView() != null) {
+//			tv = (TextView) this.getView().findViewById(R.id.attendees_num);
+//			if (getStory().getAttendees() != null) {
+//				tv.setText(getStory().getAttendees() + " ");
+//			} else {
+//				tv.setText(" 0 ");
+//			}
+//		}
+//	}
 
 	/*
 	 * Method used to change all the element in the fragment (except the Map) if
@@ -453,6 +453,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			if (actualStepPosition == -1) {
 				detailStory.setVisibility(View.VISIBLE);
 				startStory.setVisibility(View.VISIBLE);
+				detailStory.smoothScrollTo(0,0);
 				detailStep.setVisibility(View.GONE);
 				buttonStep.setVisibility(View.GONE);
 			}
@@ -463,6 +464,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					detailStory.setVisibility(View.GONE);
 					startStory.setVisibility(View.GONE);
 					detailStep.setVisibility(View.VISIBLE);
+					detailStep.smoothScrollTo(0,0);
 					buttonStep.setVisibility(View.VISIBLE);
 					// number of the step
 					TextView numberOfStepText = (TextView) this.getView().findViewById(R.id.number_of_step);
@@ -532,6 +534,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						nextStep.setVisibility(View.VISIBLE);
 					}
 				}
+
+
+
 			}
 			renderSteps(getStory().getSteps(), actualStepPosition);
 			if (actualStepPosition < 0) {
@@ -1006,7 +1011,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		@Override
 		public void handleResult(StoryObject result) {
 			resetStory();
-			updateAttending();
+//			updateAttending();
 			// changeTheMapConfiguration();
 			// getSherlockActivity().invalidateOptionsMenu();
 			if (getSherlockActivity() != null)
