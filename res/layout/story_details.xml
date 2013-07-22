@@ -57,32 +57,31 @@
                     android:textColor="@color/dtappcolor"
                     android:textStyle="bold" />
 
-
-                
-
-               
-
-<!--                 <TextView -->
-<!--                     android:id="@+id/attendees_num" -->
-<!--                     android:layout_width="wrap_content" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:drawableLeft="@drawable/ic_menu_attendees_p" -->
-<!--                     android:gravity="center_vertical" -->
-<!--                     android:textAppearance="@android:style/TextAppearance.Large" /> -->
+                <!-- <TextView -->
+                <!-- android:id="@+id/attendees_num" -->
+                <!-- android:layout_width="wrap_content" -->
+                <!-- android:layout_height="wrap_content" -->
+                <!-- android:drawableLeft="@drawable/ic_menu_attendees_p" -->
+                <!-- android:gravity="center_vertical" -->
+                <!-- android:textAppearance="@android:style/TextAppearance.Large" /> -->
 
                 <TextView
                     android:id="@+id/story_details_descr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoLink="web|all" />
+
                 <TextView
+                    android:id="@+id/story_rating_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/ratingtext_user"
                     android:textColor="@color/dtappcolor"
                     android:textStyle="bold" />
-                 <LinearLayout
+
+                <LinearLayout
+                    android:id="@+id/story_rating_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -205,8 +204,8 @@
                     android:id="@+id/step_details_note"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
         </ScrollView>
 

@@ -42,6 +42,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -320,6 +321,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			 */
 
 			// rating
+			if (!DTHelper.isOwnedObject(getStory())){
 			RatingBar rating = (RatingBar) getView().findViewById(R.id.story_details_rating);
 			rating.setOnTouchListener(new View.OnTouchListener() {
 				@Override
@@ -336,7 +338,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 					return true;
 				}
 			});
-
+			} else {
+				TextView rateText = (TextView) getView().findViewById(R.id.story_rating_text);
+				rateText.setVisibility(View.GONE);
+				LinearLayout rateLayout = (LinearLayout) getView().findViewById(R.id.story_rating_layout);
+				rateLayout.setVisibility(View.GONE);
+			}
 			updateRating();
 //			updateAttending();
 

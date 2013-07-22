@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.model.StoryObject;
 
 public class StoryAdapter extends ArrayAdapter<StoryObject> {
@@ -59,6 +60,8 @@ public class StoryAdapter extends ArrayAdapter<StoryObject> {
 		
 		s.story = getItem(position);
 		s.title.setText(s.story.getTitle());
+		if (DTHelper.isOwnedObject(s.story))
+			s.rating.setVisibility(View.GONE);
 		s.rating.setRating(s.story.getCommunityData().getAverageRating());
 		s.descritpion.setText(s.story.getDescription());
 		s.icon.setImageDrawable(context.getResources().getDrawable(CategoryHelper.getIconByType(s.story.getType())));

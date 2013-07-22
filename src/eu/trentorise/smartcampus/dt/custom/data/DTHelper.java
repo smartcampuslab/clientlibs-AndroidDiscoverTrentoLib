@@ -103,6 +103,7 @@ public class DTHelper {
 	private static final String TUT_PREFS = "dt_tut_prefs";
 	private static final String TOUR_PREFS = "dt_wantTour";
 	private static final String FIRST_LAUNCH_PREFS = "dt_firstLaunch";
+	private static final String MUSE_ID = "158";
 
 	public static enum Tutorial {
 		NOTIF("notifTut"), PLACES("placesTut"), EVENTS("eventsTut"), STORIES("storyTut"), MENU("menuTut"), RATING("ratingTut");
@@ -1113,6 +1114,15 @@ public class DTHelper {
 			return p.getUserId().equals(obj.getCreatorId());
 		return false;
 	}
+	
+	public static boolean isMuseObject(BaseDTObject obj) {
+		if (obj.getId() == null)
+			return true;
+		if (obj.getCreatorId().equals(MUSE_ID))
+			return true;
+		return false;
+
+	}
 
 	public static <T extends BaseDTObject> Collection<T> searchInGeneral(int position, int size, String what,
 			WhereForSearch distance, WhenForSearch when, boolean my, Class<T> cls, SortedMap<String, Integer> sort,
@@ -1152,8 +1162,8 @@ public class DTHelper {
 				else
 					where = addWhenToWhere(where, getCurrentDateTimeForSearching(), 0);
 			}
-			if (my)
-				where = addMyEventToWhere(where);
+//			if (my)
+//				where = addMyEventToWhere(where);
 			if (args != null)
 				argsArray = args.toArray(new String[args.size()]);
 			/*
@@ -1162,36 +1172,34 @@ public class DTHelper {
 			 */
 			if (EventObject.class.getCanonicalName().equals(cls.getCanonicalName())) {
 				return getInstance().storage.query(cls, where, argsArray, position, size, "fromTime ASC");
+			} else if (StoryObject.class.getCanonicalName().equals(cls.getCanonicalName())){
+				Collection<T> returnObj = new ArrayList<T>();
+				Collection<T> tmpObj = getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
+
+					
+				if (my){
+					//prendo solo i miei
+					for (T a:tmpObj)
+					{
+						if (DTHelper.isOwnedObject(a))
+							returnObj.add(a);
+					}
+				}
+				else{
+					//non prendo i miei
+					for (T a:tmpObj)
+					{
+						if (DTHelper.isMuseObject(a))
+							returnObj.add(a);
+					}
+				}
+				
+				 return returnObj;
 			} else {
 				return getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
 			}
-			// } else {
-			// /* if not sync... (not used anymore) */
-			// ArrayList<T> result = new ArrayList<T>();
-			// for (String category : inCategories) {
-			// ObjectFilter filter = new ObjectFilter();
-			// if (what != null) {
-			// Map<String, Object> criteria = new HashMap<String, Object>(1);
-			// criteria.put("text", what);
-			// filter.setCriteria(criteria);
-			// }
-			// if (when != null) {
-			// filter.setFromTime(when.getFrom());
-			// filter.setToTime(when.getTo());
-			// }
-			// if (category != null) {
-			// Arrays.asList(categories);
-			// }
-			// if (my)
-			// filter.setMyObjects(true);
-			//
-			// filter.setSkip(position);
-			// filter.setLimit(size);
-			// result.addAll(getRemote(instance.mContext,
-			// getAuthToken()).searchObjects(filter, cls));
-			// }
-			// return result;
-			// }
+			
+				
 
 		}
 
