@@ -247,7 +247,7 @@
     <string name="info_dialog_title_poi">Place Info </string>
     <string name="info_dialog_title_event">Event Info</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
- 	<string name="choose_poi">Chose a POI</string>
+ 	<string name="choose_poi">Choose a POI</string>
  	
  	<string name="submenu_map">Map</string>
     <string name="submenu_gallery">Gallery</string>
