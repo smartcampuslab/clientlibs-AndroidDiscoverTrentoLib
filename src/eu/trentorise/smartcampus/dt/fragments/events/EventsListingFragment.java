@@ -275,25 +275,25 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 
-		if (category == null) {
+	/*	if (category == null) {
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		}
 
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_EVENTS,
-							category).description) + " " + getString(R.string.event);
+					+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_EVENTS, category).description)
+					+ " " + getString(R.string.event);
 			if (Locale.getDefault().equals(Locale.ITALY))
 				addString = getString(R.string.add)
 						+ " "
 						+ getString(R.string.event)
 						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_EVENTS,
+						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_EVENTS,
 								category).description);
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, addString);
-		}
+		}*/
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
 
@@ -381,7 +381,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		String category = bundle.getString(SearchFragment.ARG_CATEGORY);
-		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategoryFiltered("events", category);
+		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("events", category);
 		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
 
 		if (bundle != null && bundle.containsKey(SearchFragment.ARG_QUERY)
@@ -893,15 +893,15 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	}
 
 	private void updateList(boolean empty) {
-		if (getView()!=null){
-		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
-				R.id.eventlistcontainer));
-		if (empty) {
-			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+		if (getView() != null) {
+			eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 					R.id.eventlistcontainer));
+			if (empty) {
+				eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+						R.id.eventlistcontainer));
+			}
+			hideListItemsMenu(null, false);
 		}
-		hideListItemsMenu(null, false);
-	}
 	}
 
 }
