@@ -275,7 +275,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 
-		if (category == null) {
+	/*	if (category == null) {
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		}
 
@@ -293,7 +293,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 								category).description);
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, addString);
-		}
+		}*/
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
 

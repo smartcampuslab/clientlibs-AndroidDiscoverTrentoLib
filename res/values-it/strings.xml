@@ -45,7 +45,7 @@
     <string name="create_noteshint">Descrizione</string>
     <string name="menu_item_addpoi_text">Aggiungi luogo</string>
     <string name="menu_item_addstory_text">Crea un percorso</string>
-    <string name="menu_item_mystories_text">Le mie storie</string>
+    <string name="menu_item_mystories_text">I miei percorsi</string>
     <string name="createpoi">Crea luogo</string>
     <string name="createstory">Crea storia</string>
     <string name="createpoi_ot">Orari di apertura</string>
@@ -249,14 +249,14 @@
     <string name="info_dialog_title_poi">Informazioni luogo</string>
     <string name="info_dialog_title_event">Informazioni evento</string>   
     <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.
-    <string name="choose_poi">Chose a POI</string>
+    <string name="choose_poi">Scegli un luogo</string>
 
     <string name="submenu_map">Mappa</string>
     <string name="submenu_gallery">Galleria</string>
     <string name="submenu_experience">Inserisci</string>
     <string name="submenu_directions">Indicazioni</string>
     
-        <string name="app_failure_no_gallery_found">Nessuna galleria trovata</string>
+    <string name="app_failure_no_gallery_found">Nessuna galleria trovata</string>
     
 </string>
     
