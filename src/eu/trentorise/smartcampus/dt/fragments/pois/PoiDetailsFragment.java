@@ -70,6 +70,7 @@ import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.GetImageProcessor;
+import eu.trentorise.smartcampus.dt.custom.data.ImageDownloaderTask;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
@@ -282,7 +283,23 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				} else {
 					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(linkTv);
 				}
-				
+
+				// image
+				ImageView imageView = (ImageView) this.getView().findViewById(R.id.poi_details_image);
+				if (("Muse").equals(mPoi.getType()) && ("Muse").equals(mPoi.getSource())
+						&& mPoi.getCustomData().get("image") != null) {
+					String imageLink = (String) mPoi.getCustomData().get("image");
+
+					ImageDownloaderTask idt = new ImageDownloaderTask(imageView);
+					if (getString(R.string.bau) != null && getString(R.string.bau).length() > 0
+							&& getString(R.string.bap) != null && getString(R.string.bap).length() > 0) {
+						idt.setCredentials(getString(R.string.bau), getString(R.string.bap));
+					}
+					idt.execute(imageLink);
+				} else {
+					((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(imageView);
+				}
+
 				// notes
 				tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
 				if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null

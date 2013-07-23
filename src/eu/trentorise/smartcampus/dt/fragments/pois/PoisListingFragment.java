@@ -251,14 +251,14 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		if (category != null) {
 			String addString = getString(R.string.add)
 					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_POIS,
+					+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS,
 							category).description) + " " + getString(R.string.place);
 			if (Locale.getDefault().equals(Locale.ITALY))
 				addString = getString(R.string.add)
 						+ " "
 						+ getString(R.string.place)
 						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_POIS,
+						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS,
 								category).description);
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, addString);
@@ -352,7 +352,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		}
 		Bundle bundle = this.getArguments();
 		String category = (bundle != null) ? bundle.getString(SearchFragment.ARG_CATEGORY) : null;
-		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategoryFiltered("pois", category);
+		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategory("pois", category);
 		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
 
 		// set title
@@ -633,9 +633,9 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			// }
 			//
 			// });
-			for (POIObject poi : sorted) {
-				Log.e("lista", poi.getTitle());
-			}
+			// for (POIObject poi : sorted) {
+			// Log.e("lista", poi.getTitle());
+			// }
 			return sorted;
 		} catch (Exception e) {
 			Log.e(PoisListingFragment.class.getName(), e.getMessage());
@@ -731,15 +731,15 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	}
 
 	private void updateList(boolean empty) {
-		if (getView()!=null){
+		if (getView() != null) {
 
-		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
-				R.id.poilistcontainer));
-		if (empty) {
-			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+			eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 					R.id.poilistcontainer));
-		}
-		hideListItemsMenu(null, false);
+			if (empty) {
+				eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+						R.id.poilistcontainer));
+			}
+			hideListItemsMenu(null, false);
 		}
 	}
 

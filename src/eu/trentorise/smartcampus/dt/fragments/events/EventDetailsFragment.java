@@ -15,18 +15,9 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.events;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -36,8 +27,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -74,6 +63,7 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
+import eu.trentorise.smartcampus.dt.custom.data.ImageDownloaderTask;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
@@ -373,8 +363,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (("Muse").equals(mEvent.getType()) && ("Muse").equals(mEvent.getSource())
 					&& mEvent.getCustomData().get("image") != null) {
 				String imageLink = (String) mEvent.getCustomData().get("image");
-				imageView.setTag(imageLink);
-				new DownloadImageTask().execute(imageView);
+
+				ImageDownloaderTask idt = new ImageDownloaderTask(imageView);
+				if (getString(R.string.bau) != null && getString(R.string.bau).length() > 0 && getString(R.string.bap) != null
+						&& getString(R.string.bap).length() > 0) {
+					idt.setCredentials(getString(R.string.bau), getString(R.string.bap));
+				}
+				idt.execute(imageLink);
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(imageView);
 			}
@@ -897,69 +892,6 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				followButtonView = null;
 			}
 			mStart = true;
-		}
-	}
-
-	private class DownloadImageTask extends AsyncTask<ImageView, Void, Bitmap> {
-
-		ImageView imageView = null;
-
-		@Override
-		protected Bitmap doInBackground(ImageView... imageViews) {
-			this.imageView = imageViews[0];
-
-			Bitmap bm = DTHelper.eventsImagesCache.get((String) imageView.getTag());
-			if (bm == null) {
-				bm = downloadImage((String) imageView.getTag());
-				if (bm != null) {
-					DTHelper.eventsImagesCache.put((String) imageView.getTag(), bm);
-				}
-			}
-
-			return bm;
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			if (result != null) {
-				imageView.setImageBitmap(result);
-			}
-		}
-
-		private Bitmap downloadImage(String url) {
-			Bitmap bm = null;
-
-			try {
-				// URL aURL = new URL(url);
-				// URLConnection conn = aURL.openConnection();
-				// conn.connect();
-				// InputStream is = conn.getInputStream();
-				// BufferedInputStream bis = new BufferedInputStream(is);
-
-				String bau = getString(R.string.bau);
-				String bap = getString(R.string.bap);
-
-				if (bau == null || bau.length() <= 0 || bap == null || bap.length() <= 0) {
-					return null;
-				}
-
-				DefaultHttpClient client = new DefaultHttpClient();
-				client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-						new UsernamePasswordCredentials(bau, bap));
-				HttpGet request = new HttpGet(url);
-				HttpResponse response = client.execute(request);
-				HttpEntity entity = response.getEntity();
-				InputStream bis = entity.getContent();
-
-				bm = BitmapFactory.decodeStream(bis);
-
-				// bis.close();
-				// is.close();
-			} catch (IOException e) {
-				Log.e(getClass().getSimpleName(), "Error getting the image from server: " + e.getMessage().toString());
-			}
-
-			return bm;
 		}
 	}
 
