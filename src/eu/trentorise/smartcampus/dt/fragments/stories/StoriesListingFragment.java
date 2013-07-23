@@ -652,12 +652,13 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		@Override
 		public List<StoryObject> performAction(AbstractLstingFragment.ListingRequest... params) throws SecurityException,
 				Exception {
-
-//			if (DTHelper.getAuthToken() != null && DTHelper.getAuthToken().length() > 0) {
-//				DTHelper.synchronize();
-//			}
-
 			data = getStories(params);
+
+			if ((data == null || data.size() == 0) && (DTHelper.getAuthToken() != null && DTHelper.getAuthToken().length() > 0)) {
+				DTHelper.synchronize();
+				data = getStories(params);
+			}
+
 			return data;
 		}
 
