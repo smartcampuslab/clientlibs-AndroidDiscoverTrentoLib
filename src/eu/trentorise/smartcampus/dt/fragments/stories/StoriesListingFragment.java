@@ -249,10 +249,11 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
+		MenuItem tmp;
+	/*	getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
-		submenu.clear();
+		submenu.clear(); */
 
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 			// SearchHelper.createSearchMenu(submenu, getActivity(), new
@@ -275,11 +276,17 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			// fragmentTransaction.commit();
 			// }
 			// });
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+			
+			//submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+			tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+			tmp.setIcon(R.drawable.search);
+			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			
 		} else if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)
 				&& !getArguments().containsKey(SearchFragment.ARG_MY)
 				&& !getArguments().containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
-			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
+			//SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
+			SearchHelper.createSearchMenu(menu, getActivity(), new SearchHelper.OnSearchListener() {
 				@Override
 				public void onSearch(String query) {
 					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
@@ -315,7 +322,10 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_STORIES,
 								category).description);
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
+			//submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
+			tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
+			tmp.setIcon(R.drawable.ic_menu_add_w);
+			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		}
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
@@ -653,10 +663,10 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				Exception {
 			data = getStories(params);
 
-			if ((data == null || data.size() == 0) && (DTHelper.getAuthToken() != null && DTHelper.getAuthToken().length() > 0)) {
-				DTHelper.synchronize();
-				data = getStories(params);
-			}
+//			if ((data == null || data.size() == 0) && (DTHelper.getAuthToken() != null && DTHelper.getAuthToken().length() > 0)) {
+//				DTHelper.synchronize();
+//				data = getStories(params);
+//			}
 
 			return data;
 		}

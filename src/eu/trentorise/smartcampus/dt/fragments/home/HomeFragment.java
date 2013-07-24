@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentTransaction;
 import android.view.inputmethod.InputMethodManager;
 
@@ -42,11 +43,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
+import eu.trentorise.smartcampus.android.common.params.ParamsHelper;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
@@ -60,6 +63,12 @@ import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockMapFragmentDT;
+import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
+import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
+import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.storage.DataException;
+import eu.trentorise.smartcampus.storage.StorageConfigurationException;
+import eu.trentorise.smartcampus.storage.sync.Utils;
 
 public class HomeFragment extends NotificationsSherlockMapFragmentDT implements MapItemsHandler, OnCameraChangeListener,
 		OnMarkerClickListener, MapObjectContainer {
@@ -82,9 +91,21 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
 
-		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
+	//	FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
 		initView();
+		try {
+		CategoryDescriptor[]cd =CategoryHelper.getPOICategoryDescriptorsFiltered();
+		String[] cat = new String[cd.length] ;
+		for (int i=0; i < cd.length;i++){
+			cat[i]=cd[i].category;
+		}
+		if (Utils.getObjectVersion(getSherlockActivity(), DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) <= 0) {
+				DTHelper.synchronize();
+			} 
+		}catch (Exception e) {
+			e.printStackTrace();
+		} 
 	}
 
 	@Override
@@ -280,7 +301,11 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			protected Collection<? extends BaseDTObject> getObjects() {
 				try {
 					/* check if todays is checked and cat with searchTodayEvents */
-
+//					Collection<EventObject> data = DTHelper.getEventsByCategories(0, -1, categories);
+//					if ((data == null || data.size() == 0) && (DTHelper.getAuthToken() != null && DTHelper.getAuthToken().length() > 0)) {
+//						DTHelper.synchronize();
+//						data = DTHelper.getEventsByCategories(0, -1, categories);
+//					}
 					if (isTodayIncluded()) {
 						List<EventObject> newList = new ArrayList<EventObject>();
 						newList.addAll(DTHelper.searchTodayEvents(0, -1, ""));
