@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -47,7 +46,6 @@ import android.widget.ViewSwitcher;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
@@ -204,18 +202,14 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	}
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		/*
-		 * menu.clear(); MenuItem item = menu.add(Menu.CATEGORY_SYSTEM,
-		 * R.id.map_view, Menu.NONE, R.string.map_view);
-		 * item.setIcon(R.drawable.ic_map);
-		 * item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		 */
+	public void onPrepareOptionsMenu(Menu menu) {	 
 		menu.clear();
+		MenuItem item; 
+		/*		
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
-
+		*/
 		if (category == null) {
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		}
@@ -243,10 +237,17 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			// fragmentTransaction.commit();
 			// }
 			// });
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+		
+			item = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+			item.setIcon(R.drawable.search);
+			item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			/*submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);*/
 		}
-
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+		
+		item = menu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+		item.setIcon(R.drawable.ic_menu_map_w);
+		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+	/*	submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 
 		if (category != null) {
 			String addString = getString(R.string.add)
@@ -262,7 +263,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 								category).description);
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, addString);
-		}
+		}*/
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
 

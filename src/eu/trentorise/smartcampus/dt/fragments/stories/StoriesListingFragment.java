@@ -279,7 +279,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			
 			//submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 			tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
-			tmp.setIcon(R.drawable.ic_search);
+			tmp.setIcon(R.drawable.search);
 			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			
 		} else if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)

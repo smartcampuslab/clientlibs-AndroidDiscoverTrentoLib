@@ -103,7 +103,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 
 		menu.clear();
 		MenuItem tmp = menu.add(Menu.CATEGORY_SYSTEM,R.id.submenu_search,Menu.NONE, R.string.search_txt);
-		tmp.setIcon(R.drawable.ic_search);
+		tmp.setIcon(R.drawable.search);
 		tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		tmp =  menu.add(Menu.CATEGORY_SYSTEM,R.id.menu_item_addstory,Menu.NONE, R.string.menu_item_addstory_text);
 		tmp.setIcon(R.drawable.ic_menu_add_w);

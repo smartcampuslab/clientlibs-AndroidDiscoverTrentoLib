@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -50,7 +49,6 @@ import android.widget.ViewSwitcher;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
@@ -273,7 +271,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
 	//		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 			tmp = menu.add(Menu.CATEGORY_SYSTEM,R.id.submenu_search,Menu.NONE,R.string.search_txt);
-			tmp.setIcon(R.drawable.ic_search);
+			tmp.setIcon(R.drawable.search);
 			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		}
 
