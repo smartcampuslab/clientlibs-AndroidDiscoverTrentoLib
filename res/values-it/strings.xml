@@ -24,7 +24,7 @@
     <string name="allpois">Tutti i luoghi</string>
     <string name="createevent">Crea evento</string>
     <string name="myevents">I miei eventi</string>
-    <string name="mystory">La mia storia</string>
+    <string name="mystory">I miei percorsi</string>
     <string name="create_title">Nome</string>
     <string name="create_description">Descrizione</string>
     <string name="createevent_date">Data</string>
@@ -251,12 +251,11 @@
     <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.
     <string name="choose_poi">Scegli un luogo</string>
 
-    <string name="submenu_map">Mappa</string>
-    <string name="submenu_gallery">Galleria</string>
-    <string name="submenu_experience">Inserisci</string>
+   	<string name="submenu_map">Mappa</string>
+    <string name="submenu_gallery">Foto</string>
+    <string name="submenu_experience">Esperienza</string>
     <string name="submenu_directions">Indicazioni</string>
-    
-    <string name="app_failure_no_gallery_found">Nessuna galleria trovata</string>
+    <string name="app_failure_no_gallery_found">Nessuna foto disponibile</string>
     
 </string>
     

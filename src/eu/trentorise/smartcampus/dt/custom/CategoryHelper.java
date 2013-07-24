@@ -148,6 +148,7 @@ public class CategoryHelper {
 		categoryMapping.put("musica", "Theater");
 		categoryMapping.put("universita", "University");
 		categoryMapping.put("bar", "Drink");
+		categoryMapping.put("barmuse", "Drink");
 		categoryMapping.put("ristorante", "Food");
 		categoryMapping.put("Lodging", "Accomodation");
 		categoryMapping.put("Other", POI_NONCATEGORIZED);

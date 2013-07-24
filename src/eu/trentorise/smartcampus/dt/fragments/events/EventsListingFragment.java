@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -50,7 +49,6 @@ import android.widget.ViewSwitcher;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 
 import eu.trentorise.smartcampus.ac.UserRegistration;
 import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
@@ -262,18 +260,22 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		 * item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		 */
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
+		MenuItem tmp;
+	/*	getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
-		submenu.clear();
+		submenu.clear();*/
 
 		if (getArguments() == null || !getArguments().containsKey(ARG_POI)
 				&& !getArguments().containsKey(SearchFragment.ARG_LIST) && !getArguments().containsKey(ARG_QUERY_TODAY)
 				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+	//		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
+			tmp = menu.add(Menu.CATEGORY_SYSTEM,R.id.submenu_search,Menu.NONE,R.string.search_txt);
+			tmp.setIcon(R.drawable.search);
+			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		}
 
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
+	//	submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 
 	/*	if (category == null) {
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
@@ -292,9 +294,12 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_EVENTS,
 								category).description);
 
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, addString);
-		}*/
-
+		//	submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, addString);
+			tmp = menu.add(Menu.CATEGORY_SYSTEM,R.id.menu_item_addevent,Menu.NONE,addString);
+			tmp.setIcon(R.drawable.ic_menu_add_w);
+			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		}
+*/
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
 
 		super.onPrepareOptionsMenu(menu);
