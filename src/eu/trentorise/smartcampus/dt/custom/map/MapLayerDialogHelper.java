@@ -39,8 +39,7 @@ public class MapLayerDialogHelper {
 			selectedSet.addAll(Arrays.asList(selected));
 		}
 
-		final CategoryDescriptor[] items = CategoryHelper.getPOICategoryDescriptorsFiltered();
-
+		final CategoryDescriptor[] items = CategoryHelper.getPOICategoryDescriptorsFilteredForMap();
 		final String[] itemsDescriptions = new String[items.length];
 		for (int i = 0; i < items.length; i++) {
 			itemsDescriptions[i] = ctx.getResources().getString(items[i].description);

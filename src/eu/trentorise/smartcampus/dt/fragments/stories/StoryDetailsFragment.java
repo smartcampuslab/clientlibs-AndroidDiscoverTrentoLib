@@ -109,6 +109,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	private boolean mCanceledFollow = false;
 
 	public static final String ARG_STORY_ID = "story_id";
+	public static final String ARG_STATE = "actualStepPosition";
+
 	private StoryObject mStory = null;
 	private String mStoryId;
 	private int actualStepPosition = -1;
@@ -135,6 +137,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		setFollowByIntent();
 	}
 
+	
 	private StoryObject getStory() {
 		if (mStoryId == null || mStory == null) {
 			mStoryId = getArguments().getString(ARG_STORY_ID);
@@ -160,6 +163,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		 if ((savedInstanceState != null)&& (savedInstanceState.getSerializable(ARG_STATE) != null)) {
+				 actualStepPosition = savedInstanceState.getInt(ARG_STATE,-1);
+		 }
 		return inflater.inflate(R.layout.story_details, container, false);
 	}
 
@@ -222,6 +228,13 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		}
 
 	}
+@Override
+public void onSaveInstanceState(Bundle outState) {
+	super.onSaveInstanceState(outState);
+    outState.putInt(ARG_STATE, actualStepPosition);
+
+}
+
 
 	@Override
 	public void onStart() {
@@ -411,7 +424,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				}
 			});
 			// reinit the story every time this fragment is loaded
-			changeStep(-1);
+//			changeStep(-1);
+			changeStep(actualStepPosition);
 			// hide the keyboard
 			InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(nextButton.getWindowToken(), 0);

@@ -24,6 +24,7 @@ import java.util.Set;
 
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 
 public class CategoryHelper {
 	private final static String TAG = "CategoryHelper";
@@ -318,6 +319,16 @@ public class CategoryHelper {
 		}
 
 		return null;
+	}
+
+	public static CategoryDescriptor[] getPOICategoryDescriptorsFilteredForMap() {
+		CategoryDescriptor[] cd = DTParamsHelper.getInstance().getFilteredArrayByParams(POI_CATEGORIES, CATEGORY_TYPE_POIS);
+		CategoryDescriptor[] cdMuse= new CategoryDescriptor[cd.length+1];
+		for (int i=0;i<cd.length;i++){
+			cdMuse[i]=cd[i];
+		}
+		cdMuse[cdMuse.length-1]= getCategoryDescriptorByCategory(CATEGORY_TYPE_POIS, "Muse");
+		return cdMuse;
 	}
 
 }
