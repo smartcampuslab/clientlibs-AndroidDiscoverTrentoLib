@@ -571,12 +571,11 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	 */
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-
 		menu.clear();
-		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
-
+		MenuItem tmp;
+		/*getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
-		submenu.clear();
+		submenu.clear();*/
 
 		if (actualStepPosition == -1 || getStory().getSteps() == null || getStory().getSteps().size() == 0) {
 			// story visualization
@@ -603,27 +602,40 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_follow, Menu.NONE,
 			// R.string.follow);
 			// }
-
 	//		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
 
 			// CAN EDIT OR DELETE ONLY OWN STORY
 			if (DTHelper.isOwnedObject(getStory())) {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
+			/*	submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);*/
+				tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
+				tmp.setIcon(R.drawable.ic_edit);
+				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+				tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
+				tmp.setIcon(R.drawable.ic_delete);
+				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			}
 		} else {
 			// POI visualization
 			if (getStory().getSteps().get(actualStepPosition).assignedPoi() != null) {
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.related_step_btn, Menu.NONE, R.string.related_poi);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn, Menu.NONE, R.string.submenu_getdir);
-
+			/*	submenu.add(Menu.CATEGORY_SYSTEM, R.id.related_step_btn, Menu.NONE, R.string.related_poi);
+				submenu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn, Menu.NONE, R.string.submenu_getdir);*/
+				tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.related_step_btn, Menu.NONE, R.string.related_poi);
+				tmp.setIcon(R.drawable.ic_menu_pois);
+				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+				tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.direction_step_btn, Menu.NONE, R.string.submenu_getdir);
+				tmp.setIcon(R.drawable.ic_menu_directions_w);
+				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			}
 			// CAN EDIT AND DELETE STEPS ONLY IN OWN STORIES
 			if (DTHelper.isOwnedObject(getStory())) {
 				// TODO implement the step cancellation!!!!
 				// submenu.add(Menu.CATEGORY_SYSTEM, R.id.delete_step_btn,
 				// Menu.NONE, R.string.delete);
-				submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_step_btn, Menu.NONE, R.string.edit);
+			/*	submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_step_btn, Menu.NONE, R.string.edit);*/
+				tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_edit, Menu.NONE, R.string.edit);
+				tmp.setIcon(R.drawable.ic_edit);
+				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			}
 
 		}
@@ -653,7 +665,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				((TextView) getView().findViewById(R.id.event_rating_raters)).setText(getString(R.string.ratingtext_raters,
 						cd.getRatingsCount()));
 
-				// averange rating
+				// average rating
 				((TextView) getView().findViewById(R.id.event_rating_average)).setText(getString(R.string.ratingtext_average,
 						cd.getAverageRating()));
 			}

@@ -82,7 +82,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
 
-		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
+	//	FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
 		initView();
 	}
