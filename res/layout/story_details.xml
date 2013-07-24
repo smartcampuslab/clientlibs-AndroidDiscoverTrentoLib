@@ -227,6 +227,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/next_step" />
+             <Button
+                android:id="@+id/btn_story_end"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/end_step" />
         </LinearLayout>
     </LinearLayout>
 

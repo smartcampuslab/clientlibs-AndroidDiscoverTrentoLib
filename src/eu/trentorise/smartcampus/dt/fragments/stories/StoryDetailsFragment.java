@@ -423,6 +423,18 @@ public void onSaveInstanceState(Bundle outState) {
 					stepScollView.scrollTo(0, stepScollView.getTop());
 				}
 			});
+			// next button
+			final Button endButton = (Button) this.getView().findViewById(R.id.btn_story_end);
+			endButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// mItemizedoverlay.fithMaptOnTheStory();
+					changeStep(-1);
+					// mItemizedoverlay.changeElementsonMap(actualStepPosition,
+					// mStory);
+					stepScollView.scrollTo(0, stepScollView.getTop());
+				}
+			});
 			// reinit the story every time this fragment is loaded
 //			changeStep(-1);
 			changeStep(actualStepPosition);
@@ -547,12 +559,16 @@ public void onSaveInstanceState(Bundle outState) {
 					// noteOfStepText.setText(" ");
 					noteOfStepText.setText(getStory().getSteps().get(actualStepPosition).getNote());
 					Button nextStep = (Button) this.getView().findViewById(R.id.btn_story_next);
+					Button endStep = (Button) this.getView().findViewById(R.id.btn_story_end);
 
 					// If it is at the end of the story, hides the "next" button
 					if (actualStepPosition == getStory().getSteps().size() - 1) {
 						nextStep.setVisibility(View.GONE);
+						endStep.setVisibility(View.VISIBLE);
 					} else {
 						nextStep.setVisibility(View.VISIBLE);
+						endStep.setVisibility(View.GONE);
+
 					}
 				}
 

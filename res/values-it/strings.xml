@@ -134,7 +134,8 @@
     <string name="prev_step">Precedente</string>
     <string name="poi_erased">Luogo eliminato dall\'utente</string>
     <string name="next_step">Successivo</string>
-
+    <string name="end_step">Fine</string>
+    
     <string name="empty_step_title">Il luogo non può essere vuoto</string>
     <string name="sure_delete_step">Si vuole davvero eliminare questa tappa?</string>
 
