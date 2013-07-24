@@ -2,4 +2,4 @@
 /bin
 /build.gradle
 /.gitignore
-/project.properties
+project.properties
