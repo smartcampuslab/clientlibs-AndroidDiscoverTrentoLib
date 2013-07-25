@@ -153,7 +153,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		View footerView = View.inflate(context, R.layout.createstoryfooter, null);
 		list.addFooterView(footerView);
 		stepAdapter = new StepAdapter(context, R.layout.steps_row, storyObject.getSteps(), storyObject,
-				fragmentManager, getActivity());
+				fragmentManager, getActivity(),this);
 		list.setAdapter(stepAdapter);
 
 		// categories

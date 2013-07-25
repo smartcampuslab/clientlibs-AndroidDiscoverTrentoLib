@@ -36,6 +36,7 @@ import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment;
+import eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
 import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.StepObject;
@@ -53,10 +54,11 @@ public class StepAdapter extends ArrayAdapter<StepObject> {
 	private AddStep stepHandler = new AddStep();
 	private StoryObject storyObject = null;
 	private Activity activity;
+	private CreateStoryFragment fragment;
 
 	public StepAdapter(Context context, int layoutResourceId,
 			List<StepObject> data, StoryObject story,
-			FragmentManager fragmentManager, Activity activity) {
+			FragmentManager fragmentManager, Activity activity, CreateStoryFragment fragment) {
 		super(context, layoutResourceId, data);
 		this.context = context;
 		this.layoutResourceId = layoutResourceId;
@@ -64,6 +66,7 @@ public class StepAdapter extends ArrayAdapter<StepObject> {
 		this.storyObject = story;
 		this.fragmentManager = fragmentManager;
 		this.activity = activity;
+		this.fragment = fragment;
 	}
 
 	@Override
@@ -117,7 +120,7 @@ public class StepAdapter extends ArrayAdapter<StepObject> {
 					fragment.setArguments(args);
 					fragmentTransaction
 							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment,
+					fragmentTransaction.replace(StepAdapter.this.fragment.getId(), fragment,
 							"stories");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
