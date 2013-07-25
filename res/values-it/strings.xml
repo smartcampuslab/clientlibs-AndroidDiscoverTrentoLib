@@ -138,7 +138,8 @@
     
     <string name="empty_step_title">Il luogo non può essere vuoto</string>
     <string name="sure_delete_step">Si vuole davvero eliminare questa tappa?</string>
-
+    <string name="sure_delete_story">Si vuole davvero eliminare questo percorso?</string>
+    
     <string name="msg_field_required"> richiesto.</string>
     
     <string name="sure_change">Sovrascrivere i dati precedenti?</string>

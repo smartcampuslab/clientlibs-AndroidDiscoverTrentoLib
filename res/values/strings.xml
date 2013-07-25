@@ -138,7 +138,8 @@
 
     <string name="empty_step_title">The Place must not be empty</string>
     <string name="sure_delete_step">Are you sure you want to delete this step?</string>
-
+    <string name="sure_delete_story">Are you sure you want to delete this story?</string>
+    
     <string name="msg_field_required"> is required.</string>
     
     <string name="sure_change">Overwrite previous data?</string>

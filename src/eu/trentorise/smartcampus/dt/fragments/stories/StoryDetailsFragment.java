@@ -813,7 +813,7 @@ public void onSaveInstanceState(Bundle outState) {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity()).setMessage(getString(R.string.sure_delete_step))
+				AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity()).setMessage(getString(R.string.sure_delete_story))
 						.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 
 							@Override
