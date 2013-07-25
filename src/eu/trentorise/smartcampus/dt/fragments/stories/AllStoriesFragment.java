@@ -105,9 +105,9 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 		MenuItem tmp = menu.add(Menu.CATEGORY_SYSTEM,R.id.submenu_search,Menu.NONE, R.string.search_txt);
 		tmp.setIcon(R.drawable.search);
 		tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		tmp =  menu.add(Menu.CATEGORY_SYSTEM,R.id.menu_item_addstory,Menu.NONE, R.string.menu_item_addstory_text);
-		tmp.setIcon(R.drawable.ic_menu_add_w);
-		tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//		tmp =  menu.add(Menu.CATEGORY_SYSTEM,R.id.menu_item_addstory,Menu.NONE, R.string.menu_item_addstory_text);
+//		tmp.setIcon(R.drawable.ic_menu_add_w);
+//		tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		/*getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();

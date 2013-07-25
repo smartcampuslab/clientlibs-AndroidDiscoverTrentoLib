@@ -250,34 +250,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	public void onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		MenuItem tmp;
-	/*	getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
-
-		SubMenu submenu = menu.getItem(0).getSubMenu();
-		submenu.clear(); */
 
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
-			// SearchHelper.createSearchMenu(submenu, getActivity(), new
-			// SearchHelper.OnSearchListener() {
-			// @Override
-			// public void onSearch(String query) {
-			// FragmentTransaction fragmentTransaction =
-			// getSherlockActivity().getSupportFragmentManager().beginTransaction();
-			// StoriesListingFragment fragment = new StoriesListingFragment();
-			// Bundle args = new Bundle();
-			// args.putString(SearchFragment.ARG_QUERY, query);
-			// String category = (getArguments() != null) ?
-			// getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
-			// args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
-			// fragment.setArguments(args);
-			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.replace(android.R.id.content, fragment,
-			// "stories");
-			// fragmentTransaction.addToBackStack(fragment.getTag());
-			// fragmentTransaction.commit();
-			// }
-			// });
-			
-			//submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 			tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 			tmp.setIcon(R.drawable.search);
 			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -302,6 +276,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					fragmentTransaction.commit();
 				}
 			});
+
 		}
 
 		if (category == null)
@@ -323,13 +298,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 								category).description);
 
 			//submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
-			tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
-			tmp.setIcon(R.drawable.ic_menu_add_w);
-			tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
 		}
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
-
+		if (getArguments().containsKey(SearchFragment.ARG_MY)){
+		tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, R.string.menu_item_addstory_text);
+		tmp.setIcon(R.drawable.ic_menu_add_w);
+		tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		}
 		super.onPrepareOptionsMenu(menu);
 	}
 
