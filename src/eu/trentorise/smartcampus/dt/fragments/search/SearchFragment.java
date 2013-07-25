@@ -152,7 +152,7 @@ public class SearchFragment extends NotificationsSherlockFragmentDT {
 
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, type);
+				fragmentTransaction.replace(SearchFragment.this.getId(), fragment, type);
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}
