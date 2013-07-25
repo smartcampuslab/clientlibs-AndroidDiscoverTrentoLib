@@ -216,27 +216,6 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_LIST)
 				&& !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
-			// SearchHelper.createSearchMenu(submenu, getActivity(), new
-			// SearchHelper.OnSearchListener() {
-			// @Override
-			// public void onSearch(String query) {
-			// FragmentTransaction fragmentTransaction =
-			// getSherlockActivity().getSupportFragmentManager()
-			// .beginTransaction();
-			// PoisListingFragment fragment = new PoisListingFragment();
-			// Bundle args = new Bundle();
-			// args.putString(SearchFragment.ARG_QUERY, query);
-			// String category = (getArguments() != null) ?
-			// getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
-			// args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
-			// fragment.setArguments(args);
-			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.replace(android.R.id.content, fragment,
-			// "pois");
-			// fragmentTransaction.addToBackStack(fragment.getTag());
-			// fragmentTransaction.commit();
-			// }
-			// });
 		
 			item = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
 			item.setIcon(R.drawable.search);
@@ -247,23 +226,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		item = menu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 		item.setIcon(R.drawable.ic_menu_map_w);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-	/*	submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 
-		if (category != null) {
-			String addString = getString(R.string.add)
-					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS,
-							category).description) + " " + getString(R.string.place);
-			if (Locale.getDefault().equals(Locale.ITALY))
-				addString = getString(R.string.add)
-						+ " "
-						+ getString(R.string.place)
-						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategory(CategoryHelper.CATEGORY_TYPE_POIS,
-								category).description);
-
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, addString);
-		}*/
 
 		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
 
@@ -320,7 +283,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.replace(PoisListingFragment.this.getId(), fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			/* add category to bundle */
