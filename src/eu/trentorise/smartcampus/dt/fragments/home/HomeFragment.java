@@ -94,18 +94,18 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	//	FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
 		initView();
-		try {
-		CategoryDescriptor[]cd =CategoryHelper.getPOICategoryDescriptorsFiltered();
-		String[] cat = new String[cd.length] ;
-		for (int i=0; i < cd.length;i++){
-			cat[i]=cd[i].category;
-		}
-		if (Utils.getObjectVersion(getSherlockActivity(), DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) <= 0) {
-				DTHelper.synchronize();
-			} 
-		}catch (Exception e) {
-			e.printStackTrace();
-		} 
+//		try {
+////		CategoryDescriptor[]cd =CategoryHelper.getPOICategoryDescriptorsFiltered();
+////		String[] cat = new String[cd.length] ;
+////		for (int i=0; i < cd.length;i++){
+////			cat[i]=cd[i].category;
+////		}
+//		if (Utils.getObjectVersion(getSherlockActivity(), DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) <= 0) {
+//				DTHelper.synchronize();
+//			} 
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		} 
 	}
 
 	@Override
