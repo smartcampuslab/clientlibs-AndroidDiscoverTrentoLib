@@ -325,15 +325,17 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 					
 					Toast.makeText(getSherlockActivity(), R.string.story_create_success, Toast.LENGTH_SHORT).show();
 					getSherlockActivity().getSupportFragmentManager().popBackStack();
-					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-					StoriesListingFragment fragment = new StoriesListingFragment();
-					Bundle args = new Bundle();
-					args.putBoolean(SearchFragment.ARG_MY, true);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(CreateStoryFragment.this.getId(), fragment, "stories");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
+
+//					getSherlockActivity().getSupportFragmentManager().popBackStack();
+//					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//					StoriesListingFragment fragment = new StoriesListingFragment();
+//					Bundle args = new Bundle();
+//					args.putBoolean(SearchFragment.ARG_MY, true);
+//					fragment.setArguments(args);
+//					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//					fragmentTransaction.replace(CreateStoryFragment.this.getId(), fragment, "stories");
+//					fragmentTransaction.addToBackStack(fragment.getTag());
+//					fragmentTransaction.commit();
 
 				} else {
 					Toast.makeText(getSherlockActivity(), R.string.update_success, Toast.LENGTH_SHORT).show();
