@@ -140,10 +140,11 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			getSupportMap().setMyLocationEnabled(true);
 			getSupportMap().setOnCameraChangeListener(this);
 			getSupportMap().setOnMarkerClickListener(this);
+			getSupportMap().getUiSettings().setRotateGesturesEnabled(false);
+			getSupportMap().getUiSettings().setTiltGesturesEnabled(false);
 		}
 
-		getSupportMap().getUiSettings().setRotateGesturesEnabled(false);
-		getSupportMap().getUiSettings().setTiltGesturesEnabled(false);
+
 
 		if (getArguments() != null && getArguments().containsKey(ARG_OBJECTS)) {
 			poiCategories = null;
