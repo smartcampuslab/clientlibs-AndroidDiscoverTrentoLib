@@ -642,7 +642,7 @@ public void onSaveInstanceState(Bundle outState) {
 				tmp.setIcon(R.drawable.ic_edit);
 				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 				tmp = menu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_delete, Menu.NONE, R.string.delete);
-				tmp.setIcon(R.drawable.ic_delete);
+				tmp.setIcon(R.drawable.ic_delete_white);
 				tmp.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			}
 		} else {
@@ -813,8 +813,23 @@ public void onSaveInstanceState(Bundle outState) {
 				UserRegistration.upgradeuser(getSherlockActivity());
 				return false;
 			} else {
-				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
-						.execute(getStory());
+				AlertDialog.Builder builder = new AlertDialog.Builder(getSherlockActivity()).setMessage(getString(R.string.sure_delete_step))
+						.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
+								.execute(getStory());
+							}
+						}).setNeutralButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+				builder.create().show();
+
 				return true;
 			}
 		} else if (item.getItemId() == R.id.related_step_btn) {
