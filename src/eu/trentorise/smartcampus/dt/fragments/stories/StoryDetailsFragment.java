@@ -1188,7 +1188,7 @@ public void onSaveInstanceState(Bundle outState) {
 					i++;
 				}
 
-				if (selection > -1) {
+				if (selection > -1 && objects.size() > selection) {
 					getSupportMap().animateCamera(
 							CameraUpdateFactory.newLatLng(new LatLng(objects.get(selection).assignedPoi().getLocation()[0],
 									objects.get(selection).assignedPoi().getLocation()[1])));
