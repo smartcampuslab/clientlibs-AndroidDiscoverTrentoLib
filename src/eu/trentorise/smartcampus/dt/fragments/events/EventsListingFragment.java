@@ -179,7 +179,6 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	private void insertEvent(EventObject event, Integer indexAdapter2) {
 
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(System.currentTimeMillis());
 		calToDate(cal);
 		biggerFromTime = cal.getTimeInMillis();
 		// add in the right place
@@ -766,21 +765,22 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(result.get(result.size() - 1).getFromTime());
 		calToDate(cal);
-		biggerFromTime = cal.getTimeInMillis();
+		//biggerFromTime = cal.getTimeInMillis();
 
 		for (EventObject event : result) {
+			if (event.getToTime() == null || event.getToTime() == 0) {
+				event.setToTime(event.getFromTime());
+			}
 			/*
 			 * if an event has toTime null o equal to toTime, it is only for
 			 * that day
 			 */
+			
+			
 			if ((event.getToTime() != null) && (event.getFromTime() != null) && (event.getToTime() != event.getFromTime())) {
 				long eventFromTime = event.getFromTime();
-				long eventToTime = 0;
-				if (event.getToTime() == 0) {
-					eventToTime = event.getFromTime();
-				} else {
-					eventToTime = event.getToTime();
-				}
+				long eventToTime = event.getToTime();
+
 				Calendar calFromTime = Calendar.getInstance();
 				Calendar calToTime = Calendar.getInstance();
 
@@ -802,7 +802,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					 * X)
 					 */
 					dayFromTime = Math.max(dayFromTime, lessFromTime);
-					dayToTime = Math.min(dayToTime, biggerFromTime);
+					//dayToTime = Math.min(dayToTime, biggerFromTime);
 					long dayTmpTime = dayFromTime;
 
 					while (dayTmpTime <= dayToTime) {
