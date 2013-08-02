@@ -829,10 +829,9 @@ public class DTHelper {
 
 		if (Utils.getObjectVersion(instance.mContext,
 				DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
-			return getInstance().storage.query(EventObject.class,
-					" fromTime > " + getCurrentDateTimeForSearching()
-							+ " AND fromTime < " + tomorrow.getTime(), null,
-					position, size, "fromTime ASC");
+			return getInstance().storage.query(EventObject.class, "( toTime > " +  getCurrentDateTimeForSearching()
+			+ " AND fromTime < " + tomorrow.getTime() + " ) ", null,
+			position, size, "fromTime ASC");
 		} else {
 			ObjectFilter filter = new ObjectFilter();
 			Map<String, Object> criteria = new HashMap<String, Object>(1);

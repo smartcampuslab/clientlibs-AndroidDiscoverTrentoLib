@@ -401,7 +401,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private boolean isCertified(EventObject event) {
-		if ((Boolean) event.getCustomData().get("certified"))
+		if (event.getCustomData()!=null && (Boolean) event.getCustomData().get("certified"))
 			return true;
 		else
 			return false;

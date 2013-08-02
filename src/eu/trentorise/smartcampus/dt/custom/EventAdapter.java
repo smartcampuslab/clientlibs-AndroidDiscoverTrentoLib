@@ -126,7 +126,8 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 	}
 
 	private Drawable eventCertified(EventObject o) {
-		if (((Boolean) o.getCustomData().get("certified"))) {
+		
+		if (o.getCustomData()!=null && ((Boolean) o.getCustomData().get("certified"))) {
 			/* se ceretificato e evento */
 			return context.getResources().getDrawable(R.drawable.ic_e_family_certified);
 		}
