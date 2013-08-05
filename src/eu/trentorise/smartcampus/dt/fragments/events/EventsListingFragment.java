@@ -694,7 +694,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 //			}
 			if (sorted.size() > 0) {
 //				listEvents.addAll(postProcForRecurrentEvents(sorted, biggerFromTime));
-				return postProcForRecurrentEvents(sorted, biggerFromTime, result.size() == 0);
+				return postProcForRecurrentEvents(sorted, biggerFromTime, result.size() == 0 || result.size() < getSize());
 			} else
 				return sorted;
 		} catch (Exception e) {
