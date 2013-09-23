@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.app.SherlockMapFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -47,16 +48,22 @@ import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.TabListener;
 import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
+import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
+import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
+import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
+import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
+import eu.trentorise.smartcampus.dt.fragments.stories.StoriesListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.EventObject;
@@ -90,6 +97,114 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		if (DTHelper.isFirstLaunch(this)) {
 			showTourDialog();
 			DTHelper.disableFirstLaunch(this);
+		}
+		String action = getIntent().getAction();
+		Bundle extras = getIntent().getExtras();
+		if (action == null) {
+			return;
+		} else
+			manageWidgetIntent(action, extras);
+	}
+
+	private void manageWidgetIntent(String action, Bundle extras) {
+		String categoryName = null; 
+		if (extras!=null)
+			categoryName= extras.getString("CATEGORY");
+
+		if (action != null) {
+			if (categoryName != null) {
+				// open the correctfragment
+				SherlockFragment fragment = null;
+				FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				Bundle args = new Bundle();
+
+
+				if (getString(R.string.events_intent_action).equals(action)) {
+					fragment = new EventsListingFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "events");
+					if (CategoryHelper.CATEGORY_TODAY.equals(categoryName)) {
+						args.putString(EventsListingFragment.ARG_QUERY_TODAY, "");
+					} else if (CategoryHelper.CATEGORY_MY.equals(categoryName)) {
+						args.putBoolean(SearchFragment.ARG_MY, true);
+					} else {
+						args.putString(SearchFragment.ARG_CATEGORY, categoryName);
+					}
+
+					fragment.setArguments(args);
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.replace(android.R.id.content, fragment, "events");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(2));
+
+				} else if (getString(R.string.places_intent_action).equals(action)) {
+					fragment = new PoisListingFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(1));
+					args.putString(SearchFragment.ARG_CATEGORY, categoryName);
+					fragment.setArguments(args);
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+
+				} else if (getString(R.string.stories_intent_action).equals(action)) {
+					fragment = new StoriesListingFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(3));
+					args.putString(SearchFragment.ARG_CATEGORY, categoryName);
+					fragment.setArguments(args);
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+
+				} else if (getString(R.string.map_intent_action).equals(action)) {
+					SherlockMapFragment mapFragment = new HomeFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "map");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(0));
+					fragmentTransaction.addToBackStack(mapFragment.getTag());
+					fragmentTransaction.commit();
+					return;
+				}
+				
+				
+				
+
+
+
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
+			} else {
+				//grid
+				SherlockFragment fragment = null;
+				FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+
+				if (getString(R.string.events_intent_action).equals(action)) {
+					fragment = new AllEventsFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "events");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(2));
+
+				} else if (getString(R.string.places_intent_action).equals(action)) {
+					fragment = new AllPoisFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "places");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(1));
+
+
+				} else if (getString(R.string.stories_intent_action).equals(action)) {
+					fragment = new AllStoriesFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(3));
+
+
+				} else if (getString(R.string.map_intent_action).equals(action)) {
+					SherlockMapFragment mapFragment = new HomeFragment();
+					fragmentTransaction.replace(android.R.id.content, fragment, "map");
+					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(0));
+					fragmentTransaction.addToBackStack(mapFragment.getTag());
+					fragmentTransaction.commit();
+					return;
+				}
+
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
+			}
 		}
 	}
 
@@ -141,7 +256,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-	
+
 		if (requestCode == TUTORIAL_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				String resData = data.getExtras().getString(BaseTutorialActivity.RESULT_DATA);
@@ -292,7 +407,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 									public void run() {
 										currentRootActivity.setSupportProgressBarIndeterminateVisibility(false);
 										if (DiscoverTrentoActivity.this != null)
-											DiscoverTrentoActivity.this.setSupportProgressBarIndeterminateVisibility(false);
+											DiscoverTrentoActivity.this
+													.setSupportProgressBarIndeterminateVisibility(false);
 										else
 											Log.e("no", "woman no cry");
 										isLoading = false;
@@ -310,7 +426,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);
 			if (entityId > 0) {
 				if (result == null) {
-					Toast.makeText(DiscoverTrentoActivity.this, R.string.app_failure_obj_not_found, Toast.LENGTH_LONG).show();
+					Toast.makeText(DiscoverTrentoActivity.this, R.string.app_failure_obj_not_found, Toast.LENGTH_LONG)
+							.show();
 					return;
 				}
 
@@ -420,15 +537,14 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private Tutorial getFirstValidTutorial() {
 		Tutorial t = DTHelper.getLastTutorialNotShowed(this);
-		/*if smartcampus (no notif) salta notifiche (setta a true notif*/
+		/* if smartcampus (no notif) salta notifiche (setta a true notif */
 		ApplicationInfo ai;
 		try {
-			ai = getPackageManager().getApplicationInfo(
-					getPackageName(), PackageManager.GET_META_DATA);
+			ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
-			if (aBundle.getBoolean("hidden-notification")&& t.equals(t.NOTIF))
-			{ DTHelper.setTutorialAsShowed(this, t);
-				t =DTHelper.getLastTutorialNotShowed(this);
+			if (aBundle.getBoolean("hidden-notification") && t.equals(t.NOTIF)) {
+				DTHelper.setTutorialAsShowed(this, t);
+				t = DTHelper.getLastTutorialNotShowed(this);
 
 			}
 		} catch (NameNotFoundException e) {
@@ -437,8 +553,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		}
 		return t;
 	}
-	
-	
+
 	private void displayShowcaseView(int id, String title, String msg, boolean isLast) {
 		int[] position = new int[2];
 		int radius = 0;
