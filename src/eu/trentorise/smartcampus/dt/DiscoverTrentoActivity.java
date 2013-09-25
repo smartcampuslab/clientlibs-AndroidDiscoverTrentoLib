@@ -120,7 +120,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				Bundle args = new Bundle();
 
 
-				if (getString(R.string.events_intent_action).equals(action)) {
+				if ("eu.trentorise.smartcampus.widget.EVENTS".equals(action)) {
 					fragment = new EventsListingFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "events");
 					if (CategoryHelper.CATEGORY_TODAY.equals(categoryName)) {
@@ -136,7 +136,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					fragmentTransaction.replace(android.R.id.content, fragment, "events");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(2));
 
-				} else if (getString(R.string.places_intent_action).equals(action)) {
+				} else if ("eu.trentorise.smartcampus.widget.PLACES".equals(action)) {
 					fragment = new PoisListingFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(1));
@@ -145,7 +145,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
 
-				} else if (getString(R.string.stories_intent_action).equals(action)) {
+				} else if ("eu.trentorise.smartcampus.widget.STORIES".equals(action)) {
 					fragment = new StoriesListingFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(3));
@@ -154,7 +154,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					fragmentTransaction.replace(android.R.id.content, fragment, "pois");
 
-				} else if (getString(R.string.map_intent_action).equals(action)) {
+				} else if ("eu.trentorise.smartcampus.widget.MAP".equals(action)) {
 					SherlockMapFragment mapFragment = new HomeFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "map");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(0));
@@ -176,24 +176,24 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 
-				if (getString(R.string.events_intent_action).equals(action)) {
+				if ("eu.trentorise.smartcampus.widget.EVENTS".equals(action)) {
 					fragment = new AllEventsFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "events");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(2));
 
-				} else if (getString(R.string.places_intent_action).equals(action)) {
+				} else if ("eu.trentorise.smartcampus.widget.PLACES".equals(action)) {
 					fragment = new AllPoisFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "places");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(1));
 
 
-				} else if (getString(R.string.stories_intent_action).equals(action)) {
+				} else if ("eu.trentorise.smartcampus.widget.STORIES".equals(action)) {
 					fragment = new AllStoriesFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(3));
 
 
-				} else if (getString(R.string.map_intent_action).equals(action)) {
+				} else if ("eu.trentorise.smartcampus.widget.MAP".equals(action)) {
 					SherlockMapFragment mapFragment = new HomeFragment();
 					fragmentTransaction.replace(android.R.id.content, fragment, "map");
 					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(0));
