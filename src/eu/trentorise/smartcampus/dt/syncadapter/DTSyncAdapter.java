@@ -83,23 +83,24 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     
 	public void handleSecurityProblem() {
-        Intent i = new Intent("eu.trentorise.smartcampus.START");
-        i.setPackage(mContext.getPackageName());
-
+        boolean anonymous = DTHelper.getAccessProvider().isUserAnonymous(mContext);
         DTHelper.getAccessProvider().invalidateToken(mContext, null);
-        
-        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        
-        int icon = R.drawable.stat_notify_error;
-        CharSequence tickerText = mContext.getString(R.string.token_expired);
-        long when = System.currentTimeMillis();
-        CharSequence contentText = mContext.getString(R.string.token_required);
-        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, i, 0);
+        if (!anonymous) {
+            Intent i = new Intent("eu.trentorise.smartcampus.START");
+            i.setPackage(mContext.getPackageName());
+            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            
+            int icon = R.drawable.stat_notify_error;
+            CharSequence tickerText = mContext.getString(R.string.token_expired);
+            long when = System.currentTimeMillis();
+            CharSequence contentText = mContext.getString(R.string.token_required);
+            PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, i, 0);
 
-        Notification notification = new Notification(icon, tickerText, when);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.setLatestEventInfo(mContext, tickerText, contentText, contentIntent);
-        
-        mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
+            Notification notification = new Notification(icon, tickerText, when);
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            notification.setLatestEventInfo(mContext, tickerText, contentText, contentIntent);
+            
+            mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
+        }
 	}
 }
