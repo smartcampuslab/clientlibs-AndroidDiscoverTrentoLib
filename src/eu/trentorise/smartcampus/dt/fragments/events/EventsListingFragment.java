@@ -52,8 +52,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
@@ -324,11 +323,12 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 			}
 			return true;
 		} else if (item.getItemId() == R.id.menu_item_addevent) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 						.beginTransaction();
 				Fragment fragment = new CreateEventFragment();
@@ -535,10 +535,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 				@Override
 				public void onClick(View v) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
+//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//						// show dialog box
+//						UserRegistration.upgradeuser(getSherlockActivity());
+//					} else 
+					{
 						new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(
 								getActivity())).execute(event);
 						hideListItemsMenu(vs, false);
@@ -553,10 +554,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+//				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//					// show dialog box
+//					UserRegistration.upgradeuser(getSherlockActivity());
+//				} else 
+				{
 					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 							.beginTransaction();
 					Fragment fragment = new CreateEventFragment();
@@ -590,10 +592,11 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+//				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//					// show dialog box
+//					UserRegistration.upgradeuser(getSherlockActivity());
+//				} else 
+				{
 					TaggingDialog taggingDialog = new TaggingDialog(getActivity(),
 							new TaggingDialog.OnTagsSelectedListener() {
 

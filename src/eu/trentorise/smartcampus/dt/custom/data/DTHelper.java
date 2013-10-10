@@ -38,6 +38,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -46,9 +47,9 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.android.maps.GeoPoint;
 
+import eu.trentorise.smartcampus.ac.AACException;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
-import eu.trentorise.smartcampus.ac.model.UserData;
+import eu.trentorise.smartcampus.ac.embedded.EmbeddedSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.android.common.LocationHelper;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
@@ -67,6 +68,8 @@ import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.dt.model.UserEventObject;
 import eu.trentorise.smartcampus.dt.model.UserPOIObject;
 import eu.trentorise.smartcampus.dt.model.UserStoryObject;
+import eu.trentorise.smartcampus.profileservice.BasicProfileService;
+import eu.trentorise.smartcampus.profileservice.model.BasicProfile;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
 import eu.trentorise.smartcampus.protocolcarrier.common.Constants.Method;
 import eu.trentorise.smartcampus.protocolcarrier.custom.MessageRequest;
@@ -125,10 +128,10 @@ public class DTHelper {
 
 	private static DTHelper instance = null;
 
-	private static SCAccessProvider accessProvider = new AMSCAccessProvider();
+	private static SCAccessProvider accessProvider = new EmbeddedSCAccessProvider();
 
 	// private SyncManager mSyncManager;
-	private Context mContext;
+	private static Context mContext;
 	private StorageConfiguration config = null;
 	// private SyncStorageConfiguration config = null;
 	private SyncStorageWithPaging storage = null;
@@ -140,28 +143,50 @@ public class DTHelper {
 
 	private boolean syncInProgress = false;
 	private SherlockFragmentActivity rootActivity = null;
-
+	static BasicProfile bp = null;
+	
+//	private String myToken = null;
 	// private UserProfile userProfile = null;
 
-	public static void init(Context mContext) {
+	public static void init(final Context mContext) {
 		if (instance == null)
 			instance = new DTHelper(mContext);
 		activateAutoSync();
+		
+		new AsyncTask<Void, Void, BasicProfile>() {
+			@Override
+			protected BasicProfile doInBackground(Void... params) {
+				try {
+					String token = SCAccessProvider.getInstance(mContext).readToken(mContext);
+					BasicProfileService service = new BasicProfileService("https://vas-dev.smartcampuslab.it/aac");
+					bp = service.getBasicProfile(token);
+					return bp;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}.execute();
 	}
 
+	
 	public static SCAccessProvider getAccessProvider() {
 		return accessProvider;
 	}
 
 	public static String getAuthToken() {
-		return getAccessProvider().readToken(instance.mContext, null);
+		try {
+			return SCAccessProvider.getInstance(mContext).readToken(mContext);
+		} catch (AACException e) {
+			return null; 
+		}
 	}
 
 	public static String getUserId() {
-		UserData data = getAccessProvider().readUserData(instance.mContext,
-				null);
-		if (data != null) {
-			return data.getUserId();
+//		UserData data = getAccessProvider().readUserData(instance.mContext,
+//				null);
+		if (bp != null) {
+			return bp.getUserId();
 		}
 		return null;
 	}
@@ -1262,14 +1287,14 @@ public class DTHelper {
 	public static boolean isOwnedObject(BaseDTObject obj) {
 		if (obj.getId() == null)
 			return true;
-		UserData p = null;
-		try {
-			p = accessProvider.readUserData(getInstance().mContext, null);
-		} catch (DataException e) {
-
-		}
-		if (p != null)
-			return p.getUserId().equals(obj.getCreatorId());
+//		UserData p = null;
+//		try {
+//			p = accessProvider.readUserData(getInstance().mContext, null);
+//		} catch (DataException e) {
+//
+//		}
+		if (bp != null)
+			return bp.getUserId().equals(obj.getCreatorId());
 		return false;
 	}
 

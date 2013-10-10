@@ -53,8 +53,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
@@ -224,10 +223,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
+//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//						// show dialog box
+//						UserRegistration.upgradeuser(getSherlockActivity());
+//					} else 
+					{
 						new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(
 								getSherlockActivity(), buttonView)).execute(getEvent().getAttending() == null
 								|| getEvent().getAttending().isEmpty());
@@ -359,11 +359,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-							// show dialog box
-							UserRegistration.upgradeuser(getSherlockActivity());
-							return false;
-						} else {
+//						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//							// show dialog box
+//							UserRegistration.upgradeuser(getSherlockActivity());
+//							return false;
+//						} else 
+						{
 							ratingDialog();
 						}
 					}
@@ -581,11 +582,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			// return true;
 			// }
 		} else if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 						.beginTransaction();
 				Fragment fragment = new CreateEventFragment();
@@ -602,11 +604,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_delete) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(getActivity()))
 						.execute(getEvent());
 				return true;

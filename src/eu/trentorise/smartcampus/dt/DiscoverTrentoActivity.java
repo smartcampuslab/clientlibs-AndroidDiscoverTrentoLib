@@ -169,7 +169,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private void initDataManagement(Bundle savedInstanceState) {
 		try {
 			DTHelper.init(getApplicationContext());
-			String token = DTHelper.getAccessProvider().getAuthToken(this, null);
+			String token = DTHelper.getAuthToken();
 			if (token != null) {
 				initData(token);
 			}
@@ -352,7 +352,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onNewIntent(Intent intent) {
 		try {
-			DTHelper.getAccessProvider().getAuthToken(this, null);
+			DTHelper.getAuthToken();
 		} catch (Exception e) {
 			Toast.makeText(this, R.string.app_failure_init, Toast.LENGTH_LONG).show();
 			return;

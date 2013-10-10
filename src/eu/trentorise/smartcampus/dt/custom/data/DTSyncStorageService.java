@@ -20,20 +20,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import eu.trentorise.smartcampus.ac.AACException;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.storage.sync.service.SyncStorageService;
 
 public class DTSyncStorageService extends SyncStorageService {
-
+	private static final int ACCOUNT_NOTIFICATION_ID = 1;
 	@SuppressWarnings("deprecation")
 	@Override
 	public void handleSecurityProblem(String appToken, String dbName) {
         Intent i = new Intent("eu.trentorise.smartcampus.START");
         i.setPackage(this.getPackageName());
 
-        DTHelper.getAccessProvider().invalidateToken(this, null);
-        
+//        DTHelper.getAccessProvider().invalidateToken(this, null);
+        try {
+			DTHelper.getAccessProvider().logout(this);
+		} catch (AACException e) {
+		}
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         
         int icon = R.drawable.stat_notify_error;
@@ -46,6 +50,7 @@ public class DTSyncStorageService extends SyncStorageService {
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notification.setLatestEventInfo(this, tickerText, contentText, contentIntent);
         
-        mNotificationManager.notify(Constants.ACCOUNT_NOTIFICATION_ID, notification);
+        //disable for now
+        mNotificationManager.notify(ACCOUNT_NOTIFICATION_ID, notification);
 	}
 }
