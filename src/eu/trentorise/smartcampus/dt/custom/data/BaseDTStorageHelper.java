@@ -21,10 +21,9 @@ import java.util.Map;
 import android.content.ContentValues;
 import android.database.Cursor;
 import eu.trentorise.smartcampus.android.common.Utils;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.Rating;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
 
 public class BaseDTStorageHelper {
 
@@ -38,18 +37,16 @@ public class BaseDTStorageHelper {
 		o.setType(cursor.getString(cursor.getColumnIndex("type")));
 		o.setCreatorId(cursor.getString(cursor.getColumnIndex("creatorId")));
 		o.setCreatorName(cursor.getString(cursor.getColumnIndex("creatorName")));
-		o.setEntityId(cursor.getLong(cursor.getColumnIndex("entityId")));
+		o.setEntityId(cursor.getString(cursor.getColumnIndex("entityId")));
 		o.setLocation(new double[] { cursor.getDouble(cursor.getColumnIndex("latitude")),
 				cursor.getDouble(cursor.getColumnIndex("longitude")) });
 
-		o.setTypeUserDefined(cursor.getInt(cursor.getColumnIndex("typeUserDefined")) > 0);
 		o.setCommunityData(new CommunityData());
 		o.getCommunityData().setAverageRating(cursor.getInt(cursor.getColumnIndex("averageRating")));
-		o.getCommunityData().setNotes(cursor.getString(cursor.getColumnIndex("notes")));
 		o.getCommunityData().setFollowing(
 				Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("following")), Map.class));
-		o.getCommunityData().setRatings(
-				Utils.convertJSONToObjects(cursor.getString(cursor.getColumnIndex("ratings")), Rating.class));
+		o.getCommunityData().setRating(
+				Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("ratings")), Map.class));
 		o.getCommunityData().setRatingsCount(cursor.getInt(cursor.getColumnIndex("ratingsCount")));
 		o.getCommunityData().setFollowsCount(cursor.getInt(cursor.getColumnIndex("followsCount")));
 		o.getCommunityData()
@@ -78,14 +75,11 @@ public class BaseDTStorageHelper {
 			values.put("longitude", bean.getLocation()[1]);
 		}
 
-		values.put("typeUserDefined", bean.isTypeUserDefined() ? 1 : 0);
-
 		if (bean.getCommunityData() != null) {
 			values.put("averageRating", bean.getCommunityData().getAverageRating());
 			values.put("following", Utils.convertToJSON(bean.getCommunityData().getFollowing()));
-			values.put("notes", bean.getCommunityData().getNotes());
-			if (bean.getCommunityData().getRatings() != null) {
-				values.put("ratings", Utils.convertToJSON(bean.getCommunityData().getRatings()));
+			if (bean.getCommunityData().getRating() != null) {
+				values.put("ratings", Utils.convertToJSON(bean.getCommunityData().getRating()));
 			}
 			values.put("ratingsCount", bean.getCommunityData().getRatingsCount());
 			values.put("followsCount", bean.getCommunityData().getFollowsCount());
@@ -112,9 +106,7 @@ public class BaseDTStorageHelper {
 		defs.put("creatorName", "TEXT");
 		defs.put("latitude", "DOUBLE");
 		defs.put("longitude", "DOUBLE");
-		defs.put("entityId", "INTEGER");
-		defs.put("typeUserDefined", "INTEGER");
-		defs.put("notes", "TEXT");
+		defs.put("entityId", "STRING");
 		defs.put("tags", "TEXT");
 		defs.put("following", "TEXT");
 		defs.put("customData", "TEXT");

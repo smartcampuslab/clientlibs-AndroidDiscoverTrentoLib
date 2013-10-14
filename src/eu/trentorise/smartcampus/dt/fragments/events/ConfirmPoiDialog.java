@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class ConfirmPoiDialog extends SherlockDialogFragment {
 

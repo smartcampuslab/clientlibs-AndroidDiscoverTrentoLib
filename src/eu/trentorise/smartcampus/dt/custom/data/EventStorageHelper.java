@@ -20,8 +20,8 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import eu.trentorise.smartcampus.dt.model.EventObject;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 
 public class EventStorageHelper implements BeanStorageHelper<EventObject> {
 
@@ -38,9 +38,9 @@ public class EventStorageHelper implements BeanStorageHelper<EventObject> {
 		String attending = cursor.getString(cursor.getColumnIndex("attending"));
 		event.setAttending(attending == null ? Collections.<String>emptyList() : Collections.singletonList(attending));
 
-		event.setPoiIdUserDefined(cursor.getInt(cursor.getColumnIndex("poiIdUserDefined")) > 0);
-		event.setFromTimeUserDefined(cursor.getInt(cursor.getColumnIndex("fromTimeUserDefined")) > 0);
-		event.setToTimeUserDefined(cursor.getInt(cursor.getColumnIndex("toTimeUserDefined")) > 0);
+//		event.setPoiIdUserDefined(cursor.getInt(cursor.getColumnIndex("poiIdUserDefined")) > 0);
+//		event.setFromTimeUserDefined(cursor.getInt(cursor.getColumnIndex("fromTimeUserDefined")) > 0);
+//		event.setToTimeUserDefined(cursor.getInt(cursor.getColumnIndex("toTimeUserDefined")) > 0);
 		
 		return event;
 	}
@@ -52,12 +52,13 @@ public class EventStorageHelper implements BeanStorageHelper<EventObject> {
 		values.put("poiId", bean.getPoiId());
 		values.put("fromTime", bean.getFromTime());
 		values.put("toTime", bean.getToTime());
-		values.put("timing", bean.getTimingFormatted());
+//		values.put("timing", bean.getTimingFormatted());
+		values.put("timing", bean.getTiming());
 		values.put("attendees", bean.getAttendees());
 		values.put("attending", bean.getAttending() != null && ! bean.getAttending().isEmpty() ? bean.getAttending().get(0) : null);
-		values.put("poiIdUserDefined", bean.isPoiIdUserDefined() ? 1 : 0);
-		values.put("fromTimeUserDefined", bean.isFromTimeUserDefined() ? 1 : 0);
-		values.put("toTimeUserDefined", bean.isToTimeUserDefined() ? 1 : 0);
+//		values.put("poiIdUserDefined", bean.isPoiIdUserDefined() ? 1 : 0);
+//		values.put("fromTimeUserDefined", bean.isFromTimeUserDefined() ? 1 : 0);
+//		values.put("toTimeUserDefined", bean.isToTimeUserDefined() ? 1 : 0);
 		
 		return values;
 	}

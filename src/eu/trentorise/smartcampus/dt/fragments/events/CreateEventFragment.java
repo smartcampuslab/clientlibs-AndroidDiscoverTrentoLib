@@ -59,13 +59,12 @@ import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment.PoiHandler;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.UserEventObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class CreateEventFragment extends NotificationsSherlockFragmentDT implements
 		TaggingDialog.OnTagsSelectedListener, TaggingDialog.TagProvider {
@@ -80,7 +79,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	public static final SimpleDateFormat FORMAT_DATE_UI = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 	private CategoryDescriptor[] categoryDescriptors;
 
-	private EventObject eventObject;
+	private LocalEventObject eventObject;
 
 	@Override
 	public void onSaveInstanceState(Bundle arg0) {
@@ -101,7 +100,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				&& getArguments().getSerializable(ARG_EVENT) != null) {
 			eventObject = getEvent(savedInstanceState);
 		} else {
-			eventObject = new UserEventObject();
+			eventObject = new LocalEventObject();
 			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
 				eventObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
@@ -225,7 +224,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		});
 
 		EditText notes = (EditText) view.findViewById(R.id.event_notes);
-		notes.setText(eventObject.getCommunityData().getNotes());
+//		notes.setText(eventObject.getCommunityData().getNotes());
+		notes.setText(eventObject.getDescription());
 
 		// Cannot edit title, date, poi, category, and notes for ServiceEvent
 		// and non-owned UserEvent
@@ -364,7 +364,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 	}
 
-	private EventObject getEvent(Bundle savedInstanceState) {
+	private LocalEventObject getEvent(Bundle savedInstanceState) {
 		if (eventObject == null) {
 			Bundle bundle = this.getArguments();
 			String eventId = bundle.getString(ARG_EVENT);
@@ -377,7 +377,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		return eventObject;
 	}
 
-	private Integer validate(EventObject data) {
+	private Integer validate(LocalEventObject data) {
 		Integer result = null;
 		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
 			return R.string.create_title;
@@ -405,14 +405,14 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		return null;
 	}
 
-	private class CreateEventProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
+	private class CreateEventProcessor extends AbstractAsyncTaskProcessor<LocalEventObject, Boolean> {
 
 		public CreateEventProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(EventObject... params) throws SecurityException, Exception {
+		public Boolean performAction(LocalEventObject... params) throws SecurityException, Exception {
 			return DTHelper.saveEvent(params[0]);
 		}
 
@@ -435,7 +435,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		public void onClick(View v) {
 			CharSequence desc = ((EditText) view.findViewById(R.id.event_notes)).getText();
 			if (desc != null) {
-				eventObject.getCommunityData().setNotes(desc.toString());
+//				eventObject.getCommunityData().setNotes(desc.toString());
+				eventObject.setDescription(desc.toString());
 			}
 			CharSequence title = ((EditText) view.findViewById(R.id.event_title)).getText();
 			if (title != null) {
@@ -532,7 +533,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				return;
 			}
 
-			new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new CreateEventProcessor(getActivity()))
+			new SCAsyncTask<LocalEventObject, Void, Boolean>(getActivity(), new CreateEventProcessor(getActivity()))
 					.execute(eventObject);
 		}
 

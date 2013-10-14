@@ -29,13 +29,13 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.notifications.NotificationsHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 // SherlockListFragment
 public class NotificationsFragmentListDT extends SherlockListFragment {
@@ -149,10 +149,10 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			EntityObject entityObject = params[0];
 
 			if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_EVENT)) {
-				EventObject eo = (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+				LocalEventObject eo = (LocalEventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
 				if (eo == null) {
 					DTHelper.synchronize();
-					eo = (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					eo = (LocalEventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
 				}
 				return eo;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_LOCATION)) {
@@ -184,7 +184,7 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			SherlockFragment fragment = null;
 			Bundle args = new Bundle();
 
-			if (result instanceof EventObject) {
+			if (result instanceof LocalEventObject) {
 				fragment = new EventDetailsFragment();
 				args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
 			} else if (result instanceof POIObject) {

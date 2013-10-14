@@ -58,11 +58,11 @@ import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 

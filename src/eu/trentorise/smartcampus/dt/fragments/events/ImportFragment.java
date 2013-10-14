@@ -29,10 +29,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class ImportFragment extends NotificationsSherlockFragmentDT {
 	private AlertDialog self;
@@ -65,16 +65,16 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 			@Override
 			public void onClick(View v) {
 				// to be replaced with list of events parsed from file
-				List<EventObject> list = new LinkedList<EventObject>();
-				list.add(new EventObject());
-				list.add(new EventObject());
+				List<LocalEventObject> list = new LinkedList<LocalEventObject>();
+				list.add(new LocalEventObject());
+				list.add(new LocalEventObject());
 				onParsingCompleted(list);
 			}
 		});
 	}
 
-	private void onParsingCompleted(List<EventObject> list) {
-		for (EventObject e : list) {
+	private void onParsingCompleted(List<LocalEventObject> list) {
+		for (LocalEventObject e : list) {
 			AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(
 					getActivity().getLayoutInflater().inflate(R.layout.import_dialog, null)).create();
 			dialog.setTitle("Event found:");
@@ -116,9 +116,9 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 				et.setText(e.getType());
 			}
 			// notes
-			if (e.getCommunityData().getNotes() != null) {
+			if (e.getDescription() != null) {
 				et = (EditText) dialog.findViewById(R.id.import_notes);
-				et.setText(e.getCommunityData().getNotes());
+				et.setText(e.getDescription());
 			}
 
 			b = (Button) dialog.findViewById(R.id.btn_import_ok);

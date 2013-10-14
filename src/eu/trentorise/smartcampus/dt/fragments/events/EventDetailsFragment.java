@@ -53,7 +53,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
-
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
@@ -70,15 +69,15 @@ import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	public static final String ARG_EVENT_ID = "event_id";
@@ -88,7 +87,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	private boolean mCanceledFollow = false;
 
 	private POIObject mPoi = null;
-	private EventObject mEvent = null;
+	private LocalEventObject mEvent = null;
 	private TmpComment tmp_comments[];
 	private String mEventId;
 
@@ -125,7 +124,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		return mPoi;
 	}
 
-	private EventObject getEvent() {
+	private LocalEventObject getEvent() {
 		if (mEventId == null) {
 			mEventId = getArguments().getString(ARG_EVENT_ID);
 		}
@@ -228,7 +227,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 //						UserRegistration.upgradeuser(getSherlockActivity());
 //					} else 
 					{
-						new SCAsyncTask<Boolean, Void, EventObject>(getActivity(), new AttendProcessor(
+						new SCAsyncTask<Boolean, Void, LocalEventObject>(getActivity(), new AttendProcessor(
 								getSherlockActivity(), buttonView)).execute(getEvent().getAttending() == null
 								|| getEvent().getAttending().isEmpty());
 					}
@@ -286,12 +285,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// notes
 			tv = (TextView) this.getView().findViewById(R.id.event_details_notes);
-			if (mEvent.getCommunityData() != null && mEvent.getCommunityData().getNotes() != null
-					&& mEvent.getCommunityData().getNotes().length() > 0) {
-				tv.setText(mEvent.getCommunityData().getNotes());
-			} else {
+//			if (mEvent.getCommunityData() != null && mEvent.getCommunityData().getNotes() != null
+//					&& mEvent.getCommunityData().getNotes().length() > 0) {
+//				tv.setText(mEvent.getCommunityData().getNotes());
+			
+//			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
-			}
+//			}
 
 			// tags
 			tv = (TextView) this.getView().findViewById(R.id.event_details_tags);
@@ -401,7 +401,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	}
 
-	private boolean isCertified(EventObject event) {
+	private boolean isCertified(LocalEventObject event) {
 		if (event.getCustomData()!=null && (Boolean) event.getCustomData().get("certified"))
 			return true;
 		else
@@ -455,7 +455,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		menu.clear();
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
 		// String userId = DTHelper.getUserId();
-		EventObject event = getEvent();
+		LocalEventObject event = getEvent();
 
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
@@ -610,7 +610,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 //				return false;
 //			} else 
 			{
-				new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(getActivity()))
+				new SCAsyncTask<LocalEventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(getActivity()))
 						.execute(getEvent());
 				return true;
 			}
@@ -623,7 +623,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 3000) {
 			if (resultCode == Activity.RESULT_OK) {
-				eu.trentorise.smartcampus.cm.model.Topic topic = (eu.trentorise.smartcampus.cm.model.Topic) data
+				Topic topic = (Topic) data
 						.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
@@ -643,7 +643,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		super.onResume();
 	}
 
-	private void bringMeThere(EventObject eventObject) {
+	private void bringMeThere(LocalEventObject eventObject) {
 		AlertDialog.Builder builder;
 
 		builder = new AlertDialog.Builder(getSherlockActivity());
@@ -744,13 +744,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		}
 	}
 
-	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
+	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<LocalEventObject, Boolean> {
 		public EventDeleteProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(EventObject... params) throws SecurityException, Exception {
+		public Boolean performAction(LocalEventObject... params) throws SecurityException, Exception {
 			return DTHelper.deleteEvent(params[0]);
 		}
 
@@ -766,7 +766,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	}
 
-	private class AttendProcessor extends AbstractAsyncTaskProcessor<Boolean, EventObject> {
+	private class AttendProcessor extends AbstractAsyncTaskProcessor<Boolean, LocalEventObject> {
 
 		private CompoundButton buttonView;
 		private Boolean attend;
@@ -777,7 +777,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		}
 
 		@Override
-		public EventObject performAction(Boolean... params) throws SecurityException, Exception {
+		public LocalEventObject performAction(Boolean... params) throws SecurityException, Exception {
 			attend = params[0];
 			if (attend) {
 				return DTHelper.attend(getEvent());
@@ -786,11 +786,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		}
 
 		@Override
-		public void handleResult(EventObject result) {
+		public void handleResult(LocalEventObject result) {
 			mEvent = result;
 			updateAttending();
 			// getSherlockActivity().invalidateOptionsMenu();
-			EventObject event = getEvent();
+			LocalEventObject event = getEvent();
 			if (getSherlockActivity() != null)
 				if (event.getAttending() == null || event.getAttending().isEmpty()) {
 					Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();

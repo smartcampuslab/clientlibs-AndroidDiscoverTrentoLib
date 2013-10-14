@@ -52,7 +52,7 @@ import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,
 		OnDetailsClick, OnMarkerClickListener, MapObjectContainer, OnCameraChangeListener {

@@ -27,8 +27,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -55,13 +55,12 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.POIData;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.UserPOIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 		implements OnTagsSelectedListener, TagProvider {

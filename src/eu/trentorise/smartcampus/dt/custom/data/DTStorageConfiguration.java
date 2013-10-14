@@ -15,19 +15,20 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom.data;
 
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.storage.BasicObject;
 import eu.trentorise.smartcampus.storage.StorageConfigurationException;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
 import eu.trentorise.smartcampus.storage.db.StorageConfiguration;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DTStorageConfiguration implements StorageConfiguration {
 	private static final long serialVersionUID = 906503482979452854L;
 
 	@SuppressWarnings("unchecked")
-	private static Class<? extends BasicObject>[] classes = (Class<? extends BasicObject>[])new Class<?>[]{POIObject.class, EventObject.class,StoryObject.class};
+	private static Class<? extends BasicObject>[] classes = (Class<? extends BasicObject>[])new Class<?>[]{POIObject.class, LocalEventObject.class,StoryObject.class};
 	private static BeanStorageHelper<POIObject> poiHelper = new POIStorageHelper();
 	private static BeanStorageHelper<EventObject> eventHelper = new EventStorageHelper();
 	private static BeanStorageHelper<StoryObject> storyHelper = new StoryStorageHelper();
@@ -42,7 +43,7 @@ public class DTStorageConfiguration implements StorageConfiguration {
 		if (cls.equals(POIObject.class)) {
 			return "pois";
 		}
-		if (cls.equals(EventObject.class)) {
+		if (cls.equals(LocalEventObject.class)) {
 			return "events";
 		}
 		if (cls.equals(StoryObject.class)) {

@@ -40,8 +40,9 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.custom.Utils;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
@@ -137,7 +138,7 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 						for (int i = 0; i < story.getSteps().size(); i++) {
 							// se ho il poi non nullo allora lo disegno sulla
 							// mappa
-							if (story.getSteps().get(i).assignedPoi() != null) {
+							if (Utils.getPoiFromStory(story) != null) {
 								// se e' quello corrente lo faccio red,
 								// altrimenti blu
 								// if

@@ -29,6 +29,7 @@ import android.content.SyncResult;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
+import eu.trentorise.smartcampus.ac.AACException;
 import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
@@ -83,9 +84,14 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     
 	public void handleSecurityProblem() {
-        boolean anonymous = DTHelper.getAccessProvider().isUserAnonymous(mContext);
-        DTHelper.getAccessProvider().invalidateToken(mContext, null);
-        if (!anonymous) {
+//        boolean anonymous = DTHelper.getAccessProvider().isUserAnonymous(mContext);
+//        DTHelper.getAccessProvider().invalidateToken(mContext, null);
+        try {
+			DTHelper.getAccessProvider().logout(mContext);
+		} catch (AACException e) {
+			e.printStackTrace();
+		}
+//        if (!anonymous) {
             Intent i = new Intent("eu.trentorise.smartcampus.START");
             i.setPackage(mContext.getPackageName());
             NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -100,7 +106,9 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
             notification.setLatestEventInfo(mContext, tickerText, contentText, contentIntent);
             
-            mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
-        }
+//            mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
+            mNotificationManager.notify(1, notification);
+
+//        }
 	}
 }

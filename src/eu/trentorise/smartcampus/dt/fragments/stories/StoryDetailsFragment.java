@@ -66,8 +66,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.maps.GeoPoint;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
@@ -86,14 +84,14 @@ import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Shows the detail of the story and steps, manages the mapview and the refresh of it
@@ -304,10 +302,11 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
+//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//						// show dialog box
+//						UserRegistration.upgradeuser(getSherlockActivity());
+//					} else 
+					{
 						new SCAsyncTask<Boolean, Void, StoryObject>(getActivity(), new AttendProcessor(getSherlockActivity(),
 								buttonView)).execute(getStory().getAttending() == null || getStory().getAttending().isEmpty());
 						resetStory();
@@ -324,11 +323,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-							// show dialog box
-							UserRegistration.upgradeuser(getSherlockActivity());
-							return false;
-						} else {
+//						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//							// show dialog box
+//							UserRegistration.upgradeuser(getSherlockActivity());
+//							return false;
+//						} else 
+						{
 							ratingDialog();
 						}
 					}
@@ -697,11 +697,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		// }
 		// return true;
 		if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
@@ -714,11 +715,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_delete) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
 						.execute(getStory());
 				return true;
@@ -746,11 +748,12 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			NavigationHelper.bringMeThere(getActivity(), from, to);
 			return true;
 		} else if (item.getItemId() == R.id.edit_step_btn) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				AddStepToStoryFragment fragment = new AddStepToStoryFragment();
 				Bundle args = new Bundle();
@@ -853,7 +856,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		 * add the step to my story and refresh the overlay items(non-Javadoc)
 		 */
 		@Override
-		public void addStep(StepObject step) {
+		public void addStep(LocalStepObject step) {
 			getStory().getSteps().add(step);
 			// TODO ?
 		}
@@ -872,7 +875,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 		 * update the step, if the user confirms in the dialog box
 		 */
 		@Override
-		public void updateStep(final StepObject step, final Integer position) {
+		public void updateStep(final LocalStepObject step, final Integer position) {
 			// generate dialog box for confirming the update
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			// Add the buttons
@@ -1041,13 +1044,13 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 	}
 
-	private void renderSteps(Collection<StepObject> objects, int selection) {
+	private void renderSteps(Collection<LocalStepObject> objects, int selection) {
 		if (getSupportMap() != null) {
 			getSupportMap().clear();
 			if (objects != null) {
 				int i = 0;
 				BaseDTObject from = null, to = null;
-				for (StepObject object : objects) {
+				for (LocalStepObject object : objects) {
 					to = object.assignedPoi();
 					if (to != null) {
 						getSupportMap().addMarker(

@@ -17,10 +17,10 @@ package eu.trentorise.smartcampus.dt.custom;
 
 import android.app.Activity;
 import android.util.Log;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.HandleExceptionHelper;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
+import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 
 public abstract class AbstractAsyncTaskProcessor<Params, Result> implements SCAsyncTaskProcessor<Params, Result>{

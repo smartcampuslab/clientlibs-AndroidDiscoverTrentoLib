@@ -37,25 +37,25 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * The adapter composed by number, name and button for deleting
  */
-public class StepAdapter extends ArrayAdapter<StepObject> {
+public class StepAdapter extends ArrayAdapter<LocalStepObject> {
 
 	private Context context;
 	private int layoutResourceId;
-	private List<StepObject> data;
+	private List<LocalStepObject> data;
 	private FragmentManager fragmentManager;
 	private AddStep stepHandler = new AddStep();
 	private StoryObject storyObject = null;
 	private Activity activity;
 
 	public StepAdapter(Context context, int layoutResourceId,
-			List<StepObject> data, StoryObject story,
+			List<LocalStepObject> data, StoryObject story,
 			FragmentManager fragmentManager, Activity activity) {
 		super(context, layoutResourceId, data);
 		this.context = context;
@@ -85,7 +85,7 @@ public class StepAdapter extends ArrayAdapter<StepObject> {
 		if (s.title == null)
 			s.title = (TextView) row.findViewById(R.id.step_placeholder_title);
 		if (s.step.assignedPoi() == null) {
-			StepObject step = storyObject.getSteps().get(position);
+			LocalStepObject step = (LocalStepObject) storyObject.getSteps().get(position);
 			if (step != null) {
 				POIObject poi = DTHelper.findPOIById(step.getPoiId());
 				if (poi != null) {
@@ -165,7 +165,7 @@ public class StepAdapter extends ArrayAdapter<StepObject> {
 	private class AddStep implements StepHandler, Parcelable {
 
 		@Override
-		public void addStep(StepObject step) {
+		public void addStep(LocalStepObject step) {
 			// TODO Auto-generated method stub
 			// aggiungi lo step al mio gruppo e segnala che e' modificato
 			storyObject.getSteps().add(step);
@@ -184,7 +184,7 @@ public class StepAdapter extends ArrayAdapter<StepObject> {
 		}
 
 		@Override
-		public void updateStep(StepObject step, Integer position) {
+		public void updateStep(LocalStepObject step, Integer position) {
 			storyObject.getSteps().set(position, step);
 			StepAdapter.this.notifyDataSetChanged();
 			fragmentManager.popBackStack();

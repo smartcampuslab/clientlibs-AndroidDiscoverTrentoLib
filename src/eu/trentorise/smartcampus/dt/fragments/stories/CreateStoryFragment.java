@@ -51,13 +51,13 @@ import eu.trentorise.smartcampus.dt.custom.StepAdapter;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
-import eu.trentorise.smartcampus.dt.model.UserStoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.StepObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Fragment for the creation of the story: title, description, category, tags and the set of steps
@@ -126,7 +126,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 				&& getArguments().getSerializable(ARG_STORY) != null) {
 			storyObject = (StoryObject) getArguments().getSerializable(ARG_STORY);
 		} else {
-			storyObject = new UserStoryObject();
+			storyObject = new StoryObject();
 			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
 				storyObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
@@ -358,7 +358,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 			storyObject.setType(cat);
 			for (int i = 0; i < storyObject.getSteps().size(); i++) {
-				StepObject step = storyObject.getSteps().get(i);
+				LocalStepObject step = storyObject.getSteps().get(i);
 				if ((step != null) && (step.assignedPoi() != null)) {
 					storyObject.getSteps().get(i).setId((step.assignedPoi().getId()));
 
@@ -410,7 +410,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 	private class AddStep implements StepHandler, Parcelable {
 
 		@Override
-		public void addStep(StepObject step) {
+		public void addStep(LocalStepObject step) {
 
 			if (Log.isLoggable(TAG, Log.VERBOSE)) {
 				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment AddStep.addStep");
@@ -433,7 +433,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		@Override
-		public void updateStep(StepObject step, Integer position) {
+		public void updateStep(LocalStepObject step, Integer position) {
 
 			if (Log.isLoggable(TAG, Log.VERBOSE)) {
 				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment AddStep.updateStep");

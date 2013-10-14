@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class StoryAdapter extends ArrayAdapter<StoryObject> {
 

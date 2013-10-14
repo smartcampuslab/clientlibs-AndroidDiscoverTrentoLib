@@ -39,9 +39,9 @@ import com.google.android.maps.Projection;
 
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
@@ -111,7 +111,7 @@ public class DTItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	private Drawable objectCertified(BaseDTObject o) {
-		if ((o instanceof EventObject) && ((Boolean) o.getCustomData().get("certified"))) {
+		if ((o instanceof LocalEventObject) && ((Boolean) o.getCustomData().get("certified"))) {
 			/* se ceretificato e evento */
 			return mContext.getResources().getDrawable(R.drawable.ic_marker_e_family_certified);
 		}

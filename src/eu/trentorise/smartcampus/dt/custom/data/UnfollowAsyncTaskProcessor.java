@@ -6,9 +6,9 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class UnfollowAsyncTaskProcessor extends AbstractAsyncTaskProcessor<BaseDTObject, BaseDTObject> {
 	private Context mContext;

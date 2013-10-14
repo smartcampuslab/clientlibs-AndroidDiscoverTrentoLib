@@ -49,8 +49,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
@@ -75,12 +73,12 @@ import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class PoisListingFragment extends AbstractLstingFragment<POIObject> implements TagProvider {
 
@@ -288,11 +286,12 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			}
 			return true;
 		} else if (item.getItemId() == R.id.menu_item_addpoi) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreatePoiFragment();
 				Bundle args = new Bundle();
@@ -438,10 +437,11 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			b.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
+//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//						// show dialog box
+//						UserRegistration.upgradeuser(getSherlockActivity());
+//					} else 
+					{
 						new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
 								.execute(poi);
 					}
@@ -456,10 +456,11 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+//				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//					// show dialog box
+//					UserRegistration.upgradeuser(getSherlockActivity());
+//				} else 
+				{
 					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 							.beginTransaction();
 					Fragment fragment = new CreatePoiFragment();
@@ -490,10 +491,11 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+//				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//					// show dialog box
+//					UserRegistration.upgradeuser(getSherlockActivity());
+//				} else 
+				{
 					TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
 
 						@SuppressWarnings("unchecked")

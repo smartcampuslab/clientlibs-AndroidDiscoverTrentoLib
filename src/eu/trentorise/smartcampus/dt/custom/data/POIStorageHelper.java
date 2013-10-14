@@ -19,9 +19,9 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import eu.trentorise.smartcampus.dt.model.POIData;
-import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
+import eu.trentorise.smartcampus.territoryservice.model.POIData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class POIStorageHelper implements BeanStorageHelper<POIObject> {
 

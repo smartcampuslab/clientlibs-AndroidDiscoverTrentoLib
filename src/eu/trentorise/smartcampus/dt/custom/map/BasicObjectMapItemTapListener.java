@@ -15,8 +15,8 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom.map;
 
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.storage.BasicObject;
+
 
 public interface BasicObjectMapItemTapListener {
 

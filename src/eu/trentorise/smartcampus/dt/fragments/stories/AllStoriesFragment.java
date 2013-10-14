@@ -35,8 +35,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+//import eu.trentorise.smartcampus.ac.UserRegistration;
+//import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
@@ -142,11 +142,12 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 		}
 
 		if (item.getItemId() == R.id.menu_item_addstory) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				fragmentTransaction = fragmentManager.beginTransaction();
 				fragment = new CreateStoryFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

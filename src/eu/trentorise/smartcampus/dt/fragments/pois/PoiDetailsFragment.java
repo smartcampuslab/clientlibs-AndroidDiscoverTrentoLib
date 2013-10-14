@@ -52,8 +52,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
 import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
@@ -71,14 +69,14 @@ import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
@@ -329,11 +327,12 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-							// show dialog box
-							UserRegistration.upgradeuser(getSherlockActivity());
-							return false;
-						} else {
+//						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//							// show dialog box
+//							UserRegistration.upgradeuser(getSherlockActivity());
+//							return false;
+//						} else 
+						{
 							ratingDialog();
 						}
 					}
@@ -441,11 +440,12 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreatePoiFragment();
 				Bundle args = new Bundle();
@@ -459,11 +459,12 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_delete) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity())).execute(mPoi);
 				return true;
 			}

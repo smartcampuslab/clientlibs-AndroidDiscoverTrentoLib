@@ -59,15 +59,7 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.ObjectFilter;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
-import eu.trentorise.smartcampus.dt.model.UserEventObject;
-import eu.trentorise.smartcampus.dt.model.UserPOIObject;
-import eu.trentorise.smartcampus.dt.model.UserStoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.profileservice.BasicProfileService;
 import eu.trentorise.smartcampus.profileservice.model.BasicProfile;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
@@ -85,6 +77,13 @@ import eu.trentorise.smartcampus.storage.remote.RemoteStorage;
 import eu.trentorise.smartcampus.storage.sync.SyncStorage;
 import eu.trentorise.smartcampus.storage.sync.SyncStorageWithPaging;
 import eu.trentorise.smartcampus.storage.sync.Utils;
+import eu.trentorise.smartcampus.territoryservice.TerritoryService;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.ObjectFilter;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StepObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DTHelper {
 
@@ -99,6 +98,7 @@ public class DTHelper {
 	private static final String TUT_PREFS= "dt_tut_prefs";
 	private static final String TOUR_PREFS= "dt_wantTour";
 	private static final String FIRST_LAUNCH_PREFS= "dt_firstLaunch";
+	private static TerritoryService tService ;
 
 	public static enum Tutorial {
 		NOTIF("notifTut"),
@@ -160,6 +160,7 @@ public class DTHelper {
 					String token = SCAccessProvider.getInstance(mContext).readToken(mContext);
 					BasicProfileService service = new BasicProfileService("https://vas-dev.smartcampuslab.it/aac");
 					bp = service.getBasicProfile(token);
+					tService = new TerritoryService("https://vas-dev.smartcampuslab.it/core.territory");
 					return bp;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -347,6 +348,7 @@ public class DTHelper {
 	// }
 	// }
 	public static String[] getAllPOITitles() {
+
 		Cursor cursor = null;
 		try {
 			cursor = getInstance().storage.rawQuery("select title from pois",
@@ -375,6 +377,8 @@ public class DTHelper {
 
 	public static POIObject findPOIByTitle(String text) {
 		try {
+			
+			/*need conversion*/
 			Collection<POIObject> poiCollection = getInstance().storage.query(
 					POIObject.class, "title = ?", new String[] { text });
 			if (poiCollection.size() > 0)
@@ -446,6 +450,8 @@ public class DTHelper {
 	public static POIObject savePOI(POIObject poi) throws DataException,
 			ConnectionException, ProtocolException, SecurityException,
 			RemoteException, StorageConfigurationException {
+		poi = tService.createPOI(poi, getAuthToken());	
+
 		String requestService = null;
 		Method method = null;
 		POIObject poiReturn = null;
@@ -987,7 +993,7 @@ public class DTHelper {
 		synchronize();
 	}
 
-	public static EventObject attend(BaseDTObject event)
+	public static LocalEventObject attend(BaseDTObject event)
 			throws ConnectionException, ProtocolException, SecurityException,
 			DataException, RemoteException, StorageConfigurationException {
 		MessageRequest request = new MessageRequest(
@@ -1002,7 +1008,7 @@ public class DTHelper {
 		return result;
 	}
 
-	public static EventObject notAttend(BaseDTObject event)
+	public static LocalEventObject notAttend(BaseDTObject event)
 			throws ConnectionException, ProtocolException, SecurityException,
 			DataException, RemoteException, StorageConfigurationException {
 		MessageRequest request = new MessageRequest(
@@ -1523,7 +1529,7 @@ public class DTHelper {
 		}
 	}
 
-	public static EventObject findEventById(String eventId) {
+	public static LocalEventObject findEventById(String eventId) {
 
 		try {
 			EventObject event = getInstance().storage.getObjectById(eventId,
@@ -1580,6 +1586,10 @@ public class DTHelper {
 				return t;
 		}
 		return null;
+	}
+	
+	public static String poiGetShortAddress(POIObject poi) {
+		return poi.getTitle() + (poi.getPoi().getStreet()==null || poi.getPoi().getStreet().length()==0? "": (", "+poi.getPoi().getStreet()));
 	}
 
 }

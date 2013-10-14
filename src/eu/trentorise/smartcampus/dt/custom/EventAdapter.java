@@ -27,14 +27,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.model.EventObject;
+import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 
 // in EventsListingFragment
-public class EventAdapter extends ArrayAdapter<EventObject> {
+public class EventAdapter extends ArrayAdapter<LocalEventObject> {
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private static final DateFormat extDateFormat = new SimpleDateFormat("EEEEEE dd/MM/yyyy");
@@ -91,7 +91,7 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 		e.title.setText(e.event.getTitle());
 		// e.description.setText(data[position].getDescription());
 		if (e.event.assignedPoi() != null) {
-			e.location.setText(e.event.assignedPoi().shortAddress());
+			e.location.setText(DTHelper.poiGetShortAddress(e.event.assignedPoi()));
 		} else {
 			e.location.setText(null);
 		}
@@ -102,7 +102,7 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 			drawable = eventCertified(e.event);
 		e.icon.setImageDrawable(drawable);
 		// Choose if show the separator or not
-		EventObject event = getItem(position);
+		LocalEventObject event = getItem(position);
 
 		Calendar previousEvent = null;
 		Calendar currentEvent = Calendar.getInstance();
@@ -125,7 +125,7 @@ public class EventAdapter extends ArrayAdapter<EventObject> {
 		return row;
 	}
 
-	private Drawable eventCertified(EventObject o) {
+	private Drawable eventCertified(LocalEventObject o) {
 		
 		if (o.getCustomData()!=null && ((Boolean) o.getCustomData().get("certified"))) {
 			/* se ceretificato e evento */

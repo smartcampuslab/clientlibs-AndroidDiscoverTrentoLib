@@ -15,10 +15,6 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom.map;
 
-import java.util.ArrayList;
-
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
 
 public interface MapItemsHandler {
 

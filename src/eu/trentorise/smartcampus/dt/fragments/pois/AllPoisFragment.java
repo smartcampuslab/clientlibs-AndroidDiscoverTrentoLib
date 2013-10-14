@@ -30,8 +30,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+//import eu.trentorise.smartcampus.ac.UserRegistration;
+//import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.PoisCategoriesAdapter;
@@ -80,11 +80,12 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_addpoi) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 				Fragment fragment = new CreatePoiFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

@@ -33,9 +33,9 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class InfoDialog extends SherlockDialogFragment {
 	private BaseDTObject data;
@@ -51,7 +51,7 @@ public class InfoDialog extends SherlockDialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		if (data instanceof POIObject) {
 			getDialog().setTitle(getString(R.string.info_dialog_title_poi));
-		} else if (data instanceof EventObject) {
+		} else if (data instanceof LocalEventObject) {
 			getDialog().setTitle(R.string.info_dialog_title_event);
 		}
 		return inflater.inflate(R.layout.mapdialog, container, false);
@@ -65,8 +65,8 @@ public class InfoDialog extends SherlockDialogFragment {
 		if (data instanceof POIObject) {
 			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle() + "</h2><br/><p>"
 					+ ((POIObject) data).shortAddress() + "</p>"));
-		} else if (data instanceof EventObject) {
-			EventObject event = (EventObject) data;
+		} else if (data instanceof LocalEventObject) {
+			LocalEventObject event = (LocalEventObject) data;
 			POIObject poi = DTHelper.findPOIById(event.getPoiId());
 			String msgText = "";
 			msgText += "<h2>";
@@ -109,7 +109,7 @@ public class InfoDialog extends SherlockDialogFragment {
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					fragmentTransaction.replace(android.R.id.content, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
-				} else if (data instanceof EventObject) {
+				} else if (data instanceof LocalEventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
 					args.putString(EventDetailsFragment.ARG_EVENT_ID, (data.getId()));
 					fragment.setArguments(args);

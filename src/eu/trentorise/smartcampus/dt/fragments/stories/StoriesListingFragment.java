@@ -49,8 +49,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
@@ -74,11 +72,11 @@ import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
-import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Fragment lists the stories of a category, my stories or the searched ones
@@ -295,11 +293,12 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
 
 		if (item.getItemId() == R.id.menu_item_addstory) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
@@ -444,10 +443,11 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			b.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
+//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//						// show dialog box
+//						UserRegistration.upgradeuser(getSherlockActivity());
+//					} else 
+					{
 						new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
 								.execute(story);
 					}
@@ -462,10 +462,11 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+//				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//					// show dialog box
+//					UserRegistration.upgradeuser(getSherlockActivity());
+//				} else 
+				{
 					// load pois of the story
 					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 							.beginTransaction();
@@ -486,10 +487,11 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+//				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//					// show dialog box
+//					UserRegistration.upgradeuser(getSherlockActivity());
+//				} else
+				{
 					TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
 
 						@SuppressWarnings("unchecked")

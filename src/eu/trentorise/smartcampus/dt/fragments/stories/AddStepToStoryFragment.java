@@ -40,10 +40,10 @@ import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvide
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.POISelectActivity;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Fragment that manages a single step of a story with the POI and the note
@@ -56,7 +56,7 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 	public static String ARG_STEP_POSITION = "position";
 	private View view = null;
 	private POIObject poi = null;
-	private StepObject step = null;
+	private LocalStepObject step = null;
 	private StepHandler stepHandler = null;
 	private StoryObject storyObject = null;
 	private Integer position = null;
@@ -166,7 +166,7 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 				TextView notePlace = (TextView) view.findViewById(R.id.step_tags);
 
 				if (stepPlace.getText() != null && stepPlace.getText().length() > 0) {
-					step = new StepObject(DTHelper.findPOIByTitle(stepPlace.getText().toString()), notePlace.getText()
+					step = new LocalStepObject(DTHelper.findPOIByTitle(stepPlace.getText().toString()), notePlace.getText()
 							.toString());
 					if (stepHandler != null) {
 						if ((storyObject != null) && (position != null))
@@ -232,9 +232,9 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 	}
 
 	public interface StepHandler {
-		public void addStep(StepObject step);
+		public void addStep(LocalStepObject step);
 
-		public void updateStep(StepObject step, Integer position);
+		public void updateStep(LocalStepObject step, Integer position);
 	}
 
 }

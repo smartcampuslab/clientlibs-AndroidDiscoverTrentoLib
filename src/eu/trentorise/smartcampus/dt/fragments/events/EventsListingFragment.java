@@ -52,7 +52,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
 import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
@@ -77,16 +76,16 @@ import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.Concept;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 // to be used for event listing both in categories and in My Events
-public class EventsListingFragment extends AbstractLstingFragment<EventObject> implements TagProvider {
+public class EventsListingFragment extends AbstractLstingFragment<LocalEventObject> implements TagProvider {
 	private ListView list;
 	private Context context;
 
@@ -111,7 +110,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	private Boolean reload = false;
 	private Integer postitionSelected = -1;
 	private ViewSwitcher previousViewSwitcher;
-	private List<EventObject> listEvents = new ArrayList<EventObject>();
+	private List<LocalEventObject> listEvents = new ArrayList<LocalEventObject>();
 	
 	@Override
 	public void onActivityCreated(Bundle arg0) {
@@ -136,7 +135,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		super.onResume();
 		if (!idEvent.equals("")) {
 			// get info of the event
-			EventObject event = DTHelper.findEventById(idEvent);
+			LocalEventObject event = DTHelper.findEventById(idEvent);
 			POIObject poi = null;
 			if (event != null) {
 				poi = DTHelper.findPOIById(event.getPoiId());
@@ -166,7 +165,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 	}
 
-	private void restoreElement(EventAdapter eventsAdapter2, Integer indexAdapter2, EventObject event) {
+	private void restoreElement(EventAdapter eventsAdapter2, Integer indexAdapter2, LocalEventObject event) {
 		removeEvent(eventsAdapter, indexAdapter);
 		insertEvent(event, indexAdapter);
 
@@ -176,13 +175,13 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	 * insert in the same adapter the new itemsdo the post proc if they are
 	 * multiday events
 	 */
-	private void insertEvent(EventObject event, Integer indexAdapter2) {
+	private void insertEvent(LocalEventObject event, Integer indexAdapter2) {
 
 		Calendar cal = Calendar.getInstance();
 		calToDate(cal);
 		long biggerFromTime = cal.getTimeInMillis();
 		// add in the right place
-		List<EventObject> returnList = new ArrayList<EventObject>();
+		List<LocalEventObject> returnList = new ArrayList<LocalEventObject>();
 		int i = 0;
 		int j = 0;
 		while (i < eventsAdapter.getCount() + 1) {
@@ -198,7 +197,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 		// post proc for multidays
 		i = 0;
-		List<EventObject> newList = postProcForRecurrentEvents(returnList, biggerFromTime, false);
+		List<LocalEventObject> newList = postProcForRecurrentEvents(returnList, biggerFromTime, false);
 		while (i < newList.size()) {
 			eventsAdapter.insert(newList.get(i), i);
 			i++;
@@ -207,7 +206,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 	/* clean the adapter from the items modified or erased */
 	private void removeEvent(EventAdapter eventsAdapter, Integer indexAdapter) {
-		EventObject objectToRemove = eventsAdapter.getItem(indexAdapter);
+		LocalEventObject objectToRemove = eventsAdapter.getItem(indexAdapter);
 		int i = 0;
 		while (i < eventsAdapter.getCount()) {
 			if (eventsAdapter.getItem(i).getEntityId() == objectToRemove.getEntityId())
@@ -475,7 +474,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	}
 
 	private void setStoreEventId(View v, int position) {
-		final EventObject event = ((EventPlaceholder) v.getTag()).event;
+		final LocalEventObject event = ((EventPlaceholder) v.getTag()).event;
 		idEvent = event.getId();
 		indexAdapter = position;
 	}
@@ -527,7 +526,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	}
 
 	protected void setupOptionsListeners(final ViewSwitcher vs, final int position) {
-		final EventObject event = ((EventPlaceholder) ((View) vs.getParent()).getTag()).event;
+		final LocalEventObject event = ((EventPlaceholder) ((View) vs.getParent()).getTag()).event;
 		ImageButton b = (ImageButton) vs.findViewById(R.id.delete_btn);
 		if (DTHelper.isOwnedObject(event)) {
 			b.setVisibility(View.VISIBLE);
@@ -540,7 +539,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 //						UserRegistration.upgradeuser(getSherlockActivity());
 //					} else 
 					{
-						new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(
+						new SCAsyncTask<LocalEventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(
 								getActivity())).execute(event);
 						hideListItemsMenu(vs, false);
 					}
@@ -630,9 +629,9 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		});
 	}
 
-	private List<EventObject> getEvents(AbstractLstingFragment.ListingRequest... params) {
+	private List<LocalEventObject> getEvents(AbstractLstingFragment.ListingRequest... params) {
 		try {
-			Collection<EventObject> result = null;
+			Collection<LocalEventObject> result = null;
 			Bundle bundle = getArguments();
 			boolean my = false;
 
@@ -650,7 +649,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class,
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, LocalEventObject.class,
 						sort, categories);
 
 			} else if (bundle.containsKey(ARG_POI) && (bundle.getString(ARG_POI) != null)) {
@@ -660,7 +659,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class,
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, LocalEventObject.class,
 						sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
@@ -668,22 +667,22 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObject.class,
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, LocalEventObject.class,
 						sort, categories);
 
 			} else if (bundle.containsKey(ARG_QUERY_TODAY)) {
 				result = DTHelper.searchTodayEvents(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY));
 			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-				result = (List<EventObject>) bundle.get(SearchFragment.ARG_LIST);
+				result = (List<LocalEventObject>) bundle.get(SearchFragment.ARG_LIST);
 			} else {
 				return Collections.emptyList();
 			}
 
 			listEvents.addAll(result);
 			
-			List<EventObject> sorted = new ArrayList<EventObject>(listEvents);
-			for (EventObject eventObject : sorted) {
+			List<LocalEventObject> sorted = new ArrayList<LocalEventObject>(listEvents);
+			for (LocalEventObject eventObject : sorted) {
 				if (eventObject.getPoiId() != null) {
 					eventObject.assignPoi(DTHelper.findPOIById(eventObject.getPoiId()));
 				}
@@ -726,7 +725,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 	private class TaggingAsyncTask extends SCAsyncTask<List<Concept>, Void, Void> {
 
-		public TaggingAsyncTask(final EventObject p) {
+		public TaggingAsyncTask(final LocalEventObject p) {
 			super(getSherlockActivity(), new AbstractAsyncTaskProcessor<List<Concept>, Void>(getSherlockActivity()) {
 				@Override
 				public Void performAction(List<Concept>... params) throws SecurityException, Exception {
@@ -745,7 +744,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	}
 
 	private class EventLoader extends
-			AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<EventObject>> {
+			AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<LocalEventObject>> {
 
 		public EventLoader(Activity activity) {
 			super(activity);
@@ -753,14 +752,14 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 		// fetches the events
 		@Override
-		public List<EventObject> performAction(AbstractLstingFragment.ListingRequest... params)
+		public List<LocalEventObject> performAction(AbstractLstingFragment.ListingRequest... params)
 				throws SecurityException, Exception {
 			return getEvents(params);
 		}
 
 		// populates the listview with the events
 		@Override
-		public void handleResult(List<EventObject> result) {
+		public void handleResult(List<LocalEventObject> result) {
 			// Bundle bundle = getArguments();
 			// if (bundle != null && bundle.containsKey(ARG_CATEGORY) && (result
 			// == null || result.size() == 0) && getListView().getCount() == 0)
@@ -776,8 +775,8 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		}
 	}
 
-	private List<EventObject> postProcForRecurrentEvents(List<EventObject> result, long lessFromTime, boolean endReached) {
-		List<EventObject> returnList = new ArrayList<EventObject>();
+	private List<LocalEventObject> postProcForRecurrentEvents(List<LocalEventObject> result, long lessFromTime, boolean endReached) {
+		List<LocalEventObject> returnList = new ArrayList<LocalEventObject>();
 		EventComparator r = new EventComparator();
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(result.get(result.size() - 1).getFromTime());
@@ -785,7 +784,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		long biggerFromTime = cal.getTimeInMillis();
 		if (biggerFromTime < lessFromTime )
 			biggerFromTime = lessFromTime;
-		for (EventObject event : result) {
+		for (LocalEventObject event : result) {
 			if (event.getToTime() == null || event.getToTime() == 0) {
 				event.setToTime(event.getFromTime());
 			}
@@ -826,7 +825,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 					long dayTmpTime = dayFromTime;
 
 					while (dayTmpTime <= dayToTime) {
-						EventObject newEvent = event.copy();
+						LocalEventObject newEvent = event.copy();
 						newEvent.setFromTime(dayTmpTime);
 						newEvent.setToTime(dayTmpTime);
 						Calendar caltmp = Calendar.getInstance();
@@ -851,8 +850,8 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 
 	}
 
-	private static class EventComparator implements Comparator<EventObject> {
-		public int compare(EventObject c1, EventObject c2) {
+	private static class EventComparator implements Comparator<LocalEventObject> {
+		public int compare(LocalEventObject c1, LocalEventObject c2) {
 			if (c1.getFromTime() == c2.getFromTime())
 				return 0;
 			if (c1.getFromTime() < c2.getFromTime())
@@ -863,15 +862,15 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 		}
 	}
 
-	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
-		private EventObject object = null;
+	private class EventDeleteProcessor extends AbstractAsyncTaskProcessor<LocalEventObject, Boolean> {
+		private LocalEventObject object = null;
 
 		public EventDeleteProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(EventObject... params) throws SecurityException, Exception {
+		public Boolean performAction(LocalEventObject... params) throws SecurityException, Exception {
 			object = params[0];
 			return DTHelper.deleteEvent(params[0]);
 		}
@@ -885,7 +884,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 				 */
 				int i = 0;
 				while (i < list.getAdapter().getCount()) {
-					EventObject event = (EventObject) list.getAdapter().getItem(i);
+					LocalEventObject event = (LocalEventObject) list.getAdapter().getItem(i);
 					if (object.getId() == event.getId()) {
 						((EventAdapter) list.getAdapter()).remove(event);
 						updateList(list == null || list.getAdapter().isEmpty());
@@ -905,7 +904,7 @@ public class EventsListingFragment extends AbstractLstingFragment<EventObject> i
 	}
 
 	@Override
-	protected SCAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<EventObject>> getLoader() {
+	protected SCAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<LocalEventObject>> getLoader() {
 		return new EventLoader(getActivity());
 	}
 

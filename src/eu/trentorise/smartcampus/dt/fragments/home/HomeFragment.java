@@ -56,10 +56,10 @@ import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockMapFragmentDT;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class HomeFragment extends NotificationsSherlockMapFragmentDT implements MapItemsHandler, OnCameraChangeListener,
 		OnMarkerClickListener, MapObjectContainer {
@@ -244,7 +244,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		SherlockFragment fragment = null;
 		Bundle args = new Bundle();
-		if (list.get(0) instanceof EventObject) {
+		if (list.get(0) instanceof LocalEventObject) {
 			fragment = new EventsListingFragment();
 			args.putSerializable(SearchFragment.ARG_LIST, new ArrayList(list));
 		} else if (list.get(0) instanceof POIObject) {
@@ -279,7 +279,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 					/* check if todays is checked and cat with searchTodayEvents */
 
 					if (isTodayIncluded()) {
-						List<EventObject> newList = new ArrayList<EventObject>();
+						List<LocalEventObject> newList = new ArrayList<LocalEventObject>();
 						newList.addAll(DTHelper.searchTodayEvents(0, -1, ""));
 						if (categories != null)
 							newList.addAll(DTHelper.getEventsByCategories(0, -1, eventsNotTodayCategories));

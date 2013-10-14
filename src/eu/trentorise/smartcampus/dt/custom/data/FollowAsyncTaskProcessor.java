@@ -10,10 +10,10 @@ import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class FollowAsyncTaskProcessor extends AbstractAsyncTaskProcessor<Object, Topic> {
 	private Context mContext;

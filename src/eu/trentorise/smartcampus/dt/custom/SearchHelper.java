@@ -16,9 +16,7 @@
 package eu.trentorise.smartcampus.dt.custom;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
