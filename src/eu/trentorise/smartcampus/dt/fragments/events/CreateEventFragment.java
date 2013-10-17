@@ -54,6 +54,7 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.DatePickerDialogFragment;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment.PoiHandler;
@@ -249,14 +250,14 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		EditText tagsEdit = (EditText) view.findViewById(R.id.event_tags);
-		tagsEdit.setText(Concept.toSimpleString(eventObject.getCommunityData().getTags()));
+		tagsEdit.setText(Utils.conceptToSimpleString(eventObject.getCommunityData().getTags()));
 		tagsEdit.setClickable(true);
 		tagsEdit.setFocusableInTouchMode(false);
 		tagsEdit.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				TaggingDialog taggingDialog = new TaggingDialog(getActivity(), CreateEventFragment.this,
-						CreateEventFragment.this, Concept.convertToSS(eventObject.getCommunityData().getTags()));
+						CreateEventFragment.this, Utils.conceptConvertToSS(eventObject.getCommunityData().getTags()));
 				taggingDialog.show();
 			}
 		});
@@ -349,9 +350,9 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 	@Override
 	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-		eventObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		eventObject.getCommunityData().setTags(Utils.conceptConvertSS(suggestions));
 		if (getView() != null)
-			((EditText) getView().findViewById(R.id.event_tags)).setText(Concept.toSimpleString(eventObject
+			((EditText) getView().findViewById(R.id.event_tags)).setText(Utils.conceptToSimpleString(eventObject
 					.getCommunityData().getTags()));
 	}
 

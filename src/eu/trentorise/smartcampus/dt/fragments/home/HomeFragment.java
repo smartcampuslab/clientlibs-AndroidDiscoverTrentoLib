@@ -231,7 +231,11 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	}
 
 	private void onBaseDTObjectTap(BaseDTObject o) {
-		new InfoDialog(o).show(getActivity().getSupportFragmentManager(), "me");
+		Bundle args = new Bundle();
+		args.putLong(InfoDialog.PARAM, 0);
+		InfoDialog dtoTap=new InfoDialog();
+		dtoTap.setArguments(args);
+		dtoTap.show(getActivity().getSupportFragmentManager(), "me");
 	}
 
 	private void onBaseDTObjectsTap(List<BaseDTObject> list) {

@@ -52,6 +52,7 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
@@ -81,10 +82,9 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 
 	@Override
 	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-		poiObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		poiObject.getCommunityData().setTags(Utils.conceptConvertSS(suggestions));
 		if (getView() != null)
-			((EditText) getView().findViewById(R.id.poi_tags)).setText(Concept
-					.toSimpleString(poiObject.getCommunityData().getTags()));
+			((EditText) getView().findViewById(R.id.poi_tags)).setText(Utils.conceptToSimpleString(poiObject.getCommunityData().getTags()));
 	}
 
 	@Override
@@ -112,7 +112,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				&& getArguments().getSerializable(ARG_POI) != null) {
 			poiObject = (POIObject) getArguments().getSerializable(ARG_POI);
 		} else {
-			poiObject = new UserPOIObject();
+//			poiObject = new UserPOIObject();
+			poiObject= new POIObject();
 			if (getArguments() != null
 					&& getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
 				poiObject.setType(getArguments().getString(
@@ -199,10 +200,10 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 		}
 
 		EditText notes = (EditText) view.findViewById(R.id.poi_notes);
-		notes.setText(poiObject.getCommunityData().getNotes());
-
+//		notes.setText(poiObject.getCommunityData().getNotes());
+		notes.setText(poiObject.getDescription());
 		EditText tagsEdit = (EditText) view.findViewById(R.id.poi_tags);
-		tagsEdit.setText(Concept.toSimpleString(poiObject.getCommunityData()
+		tagsEdit.setText(Utils.conceptToSimpleString(poiObject.getCommunityData()
 				.getTags()));
 		tagsEdit.setClickable(true);
 		tagsEdit.setFocusableInTouchMode(false);
@@ -210,8 +211,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			@Override
 			public void onClick(View v) {
 				TaggingDialog taggingDialog = new TaggingDialog(getActivity(),
-						CreatePoiFragment.this, CreatePoiFragment.this, Concept
-								.convertToSS(poiObject.getCommunityData()
+						CreatePoiFragment.this, CreatePoiFragment.this, Utils.conceptConvertToSS(poiObject.getCommunityData()
 										.getTags()));
 				taggingDialog.show();
 			}
@@ -378,7 +378,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			CharSequence desc = ((EditText) view.findViewById(R.id.poi_notes))
 					.getText();
 			if (desc != null) {
-				poiObject.getCommunityData().setNotes(desc.toString());
+//				poiObject.getCommunityData().setNotes(desc.toString());
+				poiObject.setDescription(desc.toString());
 			}
 			CharSequence title = ((EditText) view.findViewById(R.id.poi_title))
 					.getText();

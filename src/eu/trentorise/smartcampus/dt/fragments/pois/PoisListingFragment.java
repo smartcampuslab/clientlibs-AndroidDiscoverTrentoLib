@@ -66,6 +66,7 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.PoiAdapter;
 import eu.trentorise.smartcampus.dt.custom.PoiPlaceholder;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
@@ -74,11 +75,14 @@ import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
+import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
+import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class PoisListingFragment extends AbstractLstingFragment<POIObject> implements TagProvider {
 
@@ -501,9 +505,9 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 						@SuppressWarnings("unchecked")
 						@Override
 						public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-							new TaggingAsyncTask(poi).execute(Concept.convertSS(suggestions));
+							new TaggingAsyncTask(poi).execute(Utils.conceptConvertSS(suggestions));
 						}
-					}, PoisListingFragment.this, Concept.convertToSS(poi.getCommunityData().getTags()));
+					}, PoisListingFragment.this, Utils.conceptConvertToSS(poi.getCommunityData().getTags()));
 					taggingDialog.show();
 				}
 			}
@@ -514,16 +518,16 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 			@Override
 			public void onClick(View v) {
 
-				FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(), DTConstants.ENTITY_TYPE_POI);
-				if (mFollowByIntent) {
-					FollowHelper.follow(getSherlockActivity(), obj);
-				} else {
-					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
+//				FollowEntityObject obj = new FollowEntityObject(poi.getEntityId(), poi.getTitle(), DTConstants.ENTITY_TYPE_POI);
+//				if (mFollowByIntent) {
+//					FollowHelper.follow(getSherlockActivity(), obj);
+//				} else {
+					SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(getSherlockActivity(),
 							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
-							DTHelper.getAuthToken(), obj);
+							DTHelper.getAuthToken(), poi);
 
-				}
+//				}
 			}
 		});
 	}
@@ -565,36 +569,14 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 
 	private List<POIObject> getPOIs(AbstractLstingFragment.ListingRequest... params) {
 		try {
-			Collection<POIObject> result = null;
+			Collection<PoiObjectForBean> result = null;
+			List<POIObject> returnArray = new ArrayList<POIObject>();
 			Bundle bundle = getArguments();
 			boolean my = false;
 			if (bundle.getBoolean(SearchFragment.ARG_MY))
 				my = true;
 			String categories = bundle.getString(SearchFragment.ARG_CATEGORY);
-			// if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
-			// result = DTHelper.getPOIByCategory(params[0].position,
-			// params[0].size, bundle.getString(SearchFragment.ARG_CATEGORY));
-			// } else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
-			// if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
-			// // result = DTHelper.searchPOIsByCategory(params[0].position,
-			// params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
-			// // bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH));
-			// result = DTHelper.searchInGeneral(position, lastSize,
-			// bundle.getString(SearchFragment.ARG_QUERY),
-			// (WhereForSearch)
-			// bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-			// (WhenForSearch)
-			// bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,
-			// POIObject.class, categories);
-			// } else
-			// result = DTHelper.searchPOIs(params[0].position, params[0].size,
-			// bundle.getString(SearchFragment.ARG_QUERY));
-			// } else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-			// result = (List<POIObject>)
-			// bundle.getSerializable(SearchFragment.ARG_LIST);
-			// } else {
-			// return Collections.emptyList();
-			// }
+
 			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
 			sort.put("title", 1);
 			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
@@ -602,7 +584,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class, sort,
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, PoiObjectForBean.class, sort,
 						categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
@@ -610,7 +592,7 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class, sort,
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, PoiObjectForBean.class, sort,
 						categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
@@ -618,27 +600,25 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, POIObject.class, sort,
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, PoiObjectForBean.class, sort,
 						categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-				result = (List<POIObject>) bundle.get(SearchFragment.ARG_LIST);
+				List<PoiObjectForBean> results = (List<PoiObjectForBean>) bundle.get(SearchFragment.ARG_LIST);
+				for (PoiObjectForBean storyBean : results) {
+					returnArray.add(storyBean.getObjectForBean());
+				}
+				return returnArray;
 			} else {
 				return Collections.emptyList();
 			}
 
-			List<POIObject> sorted = new ArrayList<POIObject>(result);
-			// Collections.sort(sorted, new Comparator<POIObject>() {
-			// @Override
-			// public int compare(POIObject lhs, POIObject rhs) {
-			// return lhs.getTitle().compareTo(rhs.getTitle());
-			// }
-			//
-			// });
-			for (POIObject poi : sorted) {
-				Log.e("lista", poi.getTitle());
+
+			for (PoiObjectForBean storyBean : result) {
+				returnArray.add(storyBean.getObjectForBean());
 			}
-			return sorted;
+			return returnArray;
+			
 		} catch (Exception e) {
 			Log.e(PoisListingFragment.class.getName(), e.getMessage());
 			e.printStackTrace();

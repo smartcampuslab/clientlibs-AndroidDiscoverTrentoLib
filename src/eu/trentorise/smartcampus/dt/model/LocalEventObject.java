@@ -6,6 +6,7 @@ import java.util.Date;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class LocalEventObject extends eu.trentorise.smartcampus.territoryservice.model.EventObject {
@@ -52,6 +53,34 @@ public class LocalEventObject extends eu.trentorise.smartcampus.territoryservice
 		return true;
 	}
 	
+	public void setEventFromEventObjectForBean(EventObjectForBean event){
+		setAttendees(event.getObjectForBean().getAttendees());
+		setAttending(event.getObjectForBean().getAttending());
+		setCommunityData(event.getObjectForBean().getCommunityData());
+		setCommunityData(event.getObjectForBean().getCommunityData());
+		setCreatorId(event.getObjectForBean().getCreatorId());
+		setCreatorName(event.getObjectForBean().getCreatorName());
+		setCustomData(event.getObjectForBean().getCustomData());
+		setDescription(event.getObjectForBean().getDescription());
+		setDomainId(event.getObjectForBean().getDomainId());
+		setDomainType(event.getObjectForBean().getDomainType());
+		setEntityId(event.getObjectForBean().getEntityId());
+		setFromTime(event.getObjectForBean().getFromTime());
+//		setFromTimeUserDefined(isFromTimeUserDefined());
+		setId(event.getObjectForBean().getId());
+		setLocation(event.getObjectForBean().getLocation());
+		setPoiId(event.getObjectForBean().getPoiId());
+		setSource(event.getObjectForBean().getSource());
+		setTiming(event.getObjectForBean().getTiming());
+		setTitle(event.getObjectForBean().getTitle());
+		setToTime(event.getObjectForBean().getToTime());
+//		setToTimeUserDefined(isToTimeUserDefined());
+		setType(event.getObjectForBean().getType());
+//		setTypeUserDefined(isToTimeUserDefined());
+		setUpdateTime(event.getObjectForBean().getUpdateTime());
+		setVersion(event.getObjectForBean().getVersion());
+		assignPoi(DTHelper.findPOIById(event.getObjectForBean().getPoiId()));
+	}
 	public LocalEventObject copy() {
 		LocalEventObject o = new LocalEventObject();
 		o.setAttendees(getAttendees());

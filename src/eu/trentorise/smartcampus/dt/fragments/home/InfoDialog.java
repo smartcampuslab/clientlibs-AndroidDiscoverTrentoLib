@@ -30,6 +30,7 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
@@ -38,17 +39,22 @@ import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class InfoDialog extends SherlockDialogFragment {
+	public static final String PARAM = "DTO_OBJECT";
 	private BaseDTObject data;
 
-	public InfoDialog() {
-	}
+	//
+	// public InfoDialog() {
+	// }
 
-	public InfoDialog(BaseDTObject o) {
-		this.data = o;
-	}
+	// public InfoDialog(BaseDTObject o) {
+	// this.data = o;
+	// }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if (this.data != null) {
+			this.data = (BaseDTObject) getArguments().getSerializable(PARAM);
+		}
 		if (data instanceof POIObject) {
 			getDialog().setTitle(getString(R.string.info_dialog_title_poi));
 		} else if (data instanceof LocalEventObject) {
@@ -64,7 +70,7 @@ public class InfoDialog extends SherlockDialogFragment {
 
 		if (data instanceof POIObject) {
 			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle() + "</h2><br/><p>"
-					+ ((POIObject) data).shortAddress() + "</p>"));
+					+ Utils.getPOIshortAddress(((POIObject) data)) + "</p>"));
 		} else if (data instanceof LocalEventObject) {
 			LocalEventObject event = (LocalEventObject) data;
 			POIObject poi = DTHelper.findPOIById(event.getPoiId());
@@ -80,7 +86,7 @@ public class InfoDialog extends SherlockDialogFragment {
 			}
 			msgText += "<p>" + event.getTiming() + "</p>";
 			if (poi != null) {
-				msgText += "<p>" + poi.shortAddress() + "</p>";
+				msgText += "<p>" + Utils.getPOIshortAddress(poi) + "</p>";
 			}
 			msg.setText(Html.fromHtml(msgText));
 		}
@@ -99,7 +105,8 @@ public class InfoDialog extends SherlockDialogFragment {
 		b.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Bundle args = new Bundle();
 
 				if (data instanceof POIObject) {

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.stories;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,7 @@ import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvide
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.StepAdapter;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -56,6 +58,7 @@ import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentD
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StepObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
@@ -84,9 +87,9 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment.onTagsSelected ");
 		}
 
-		storyObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		storyObject.getCommunityData().setTags(Utils.conceptConvertSS(suggestions));
 		if (getView() != null)
-			((EditText) getView().findViewById(R.id.story_tags)).setText(Concept.toSimpleString(storyObject
+			((EditText) getView().findViewById(R.id.story_tags)).setText(Utils.conceptToSimpleString(storyObject
 					.getCommunityData().getTags()));
 
 	}
@@ -152,7 +155,15 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		list.addHeaderView(headerView);
 		View footerView = View.inflate(context, R.layout.createstoryfooter, null);
 		list.addFooterView(footerView);
-		stepAdapter = new StepAdapter(context, R.layout.steps_row, storyObject.getSteps(), storyObject,
+		/*
+		 * make list of LocalStepObject	
+		 */
+		List<LocalStepObject> steps = new ArrayList<LocalStepObject>();
+		for (StepObject step:storyObject.getSteps())
+		{
+			steps.add(Utils.getLocalStepFromStep(step));
+		}
+		stepAdapter = new StepAdapter(context, R.layout.steps_row, steps, storyObject,
 				fragmentManager, getActivity());
 		list.setAdapter(stepAdapter);
 
@@ -182,14 +193,14 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 		// tags
 		EditText tagsEdit = (EditText) view.findViewById(R.id.story_tags);
-		tagsEdit.setText(Concept.toSimpleString(storyObject.getCommunityData().getTags()));
+		tagsEdit.setText(Utils.conceptToSimpleString(storyObject.getCommunityData().getTags()));
 		tagsEdit.setClickable(true);
 		tagsEdit.setFocusableInTouchMode(false);
 		tagsEdit.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				TaggingDialog taggingDialog = new TaggingDialog(getActivity(), CreateStoryFragment.this,
-						CreateStoryFragment.this, Concept.convertToSS(storyObject.getCommunityData().getTags()));
+						CreateStoryFragment.this, Utils.conceptConvertToSS(storyObject.getCommunityData().getTags()));
 				taggingDialog.show();
 			}
 		});
@@ -358,9 +369,10 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 			storyObject.setType(cat);
 			for (int i = 0; i < storyObject.getSteps().size(); i++) {
-				LocalStepObject step = storyObject.getSteps().get(i);
+				LocalStepObject step = Utils.getLocalStepFromStep(storyObject.getSteps().get(i));
 				if ((step != null) && (step.assignedPoi() != null)) {
-					storyObject.getSteps().get(i).setId((step.assignedPoi().getId()));
+//					storyObject.getSteps().get(i).setId((step.assignedPoi().getId()));
+					Utils.getLocalStepFromStep(storyObject.getSteps().get(i)).assignPoi(step.assignedPoi());
 
 				}
 			}

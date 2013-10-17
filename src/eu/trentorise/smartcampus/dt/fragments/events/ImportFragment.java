@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
@@ -102,13 +103,13 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 				POIObject poi = DTHelper.findPOIById(e.getPoiId());
 				if (poi != null) {
 					et = (EditText) dialog.findViewById(R.id.import_place);
-					et.setText(poi.shortAddress());
+					et.setText(Utils.getPOIshortAddress(poi));
 				}
 			}
 			// tags
 			if (e.getCommunityData().getTags() != null) {
 				et = (EditText) dialog.findViewById(R.id.import_tags);
-				et.setText(Concept.toSimpleString(e.getCommunityData().getTags()));
+				et.setText(Utils.conceptToSimpleString(e.getCommunityData().getTags()));
 			}
 			// categories
 			if (e.getType() != null) {

@@ -38,6 +38,7 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.POISelectActivity;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
@@ -117,7 +118,7 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 		if (poi != null) {
 			poiField.setText(poi.getTitle());
 		} else if ((storyObject != null) && (position != null)) {
-			step = storyObject.getSteps().get(position);
+			step = Utils.getLocalStepFromStep(storyObject.getSteps().get(position));
 			poi = step.assignedPoi();
 			if (poi != null)
 				poiField.setText(poi.getTitle());

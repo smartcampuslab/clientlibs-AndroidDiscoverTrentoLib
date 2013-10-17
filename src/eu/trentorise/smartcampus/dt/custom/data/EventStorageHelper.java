@@ -20,13 +20,18 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
+import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
 import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
-public class EventStorageHelper implements BeanStorageHelper<EventObject> {
+public class EventStorageHelper implements BeanStorageHelper<EventObjectForBean> {
 
 	@Override
-	public EventObject toBean(Cursor cursor) {
+	public EventObjectForBean toBean(Cursor cursor) {
+		
+		EventObjectForBean returnEventObjectForBean = new EventObjectForBean();
 		EventObject event = new EventObject();
 		BaseDTStorageHelper.setCommonFields(cursor, event);
 		
@@ -41,21 +46,23 @@ public class EventStorageHelper implements BeanStorageHelper<EventObject> {
 //		event.setPoiIdUserDefined(cursor.getInt(cursor.getColumnIndex("poiIdUserDefined")) > 0);
 //		event.setFromTimeUserDefined(cursor.getInt(cursor.getColumnIndex("fromTimeUserDefined")) > 0);
 //		event.setToTimeUserDefined(cursor.getInt(cursor.getColumnIndex("toTimeUserDefined")) > 0);
-		
-		return event;
+		returnEventObjectForBean.setObjectForBean(event);
+		return returnEventObjectForBean;
 	}
 
 	@Override
-	public ContentValues toContent(EventObject bean) {
-		ContentValues values = BaseDTStorageHelper.toCommonContent(bean);
+	public ContentValues toContent(EventObjectForBean bean) {
+		EventObject event = bean.getObjectForBean();
+
+		ContentValues values = BaseDTStorageHelper.toCommonContent(event);
 		
-		values.put("poiId", bean.getPoiId());
-		values.put("fromTime", bean.getFromTime());
-		values.put("toTime", bean.getToTime());
+		values.put("poiId", event.getPoiId());
+		values.put("fromTime", event.getFromTime());
+		values.put("toTime", event.getToTime());
 //		values.put("timing", bean.getTimingFormatted());
-		values.put("timing", bean.getTiming());
-		values.put("attendees", bean.getAttendees());
-		values.put("attending", bean.getAttending() != null && ! bean.getAttending().isEmpty() ? bean.getAttending().get(0) : null);
+		values.put("timing", event.getTiming());
+		values.put("attendees", event.getAttendees());
+		values.put("attending", event.getAttending() != null && ! event.getAttending().isEmpty() ? event.getAttending().get(0) : null);
 //		values.put("poiIdUserDefined", bean.isPoiIdUserDefined() ? 1 : 0);
 //		values.put("fromTimeUserDefined", bean.isFromTimeUserDefined() ? 1 : 0);
 //		values.put("toTimeUserDefined", bean.isToTimeUserDefined() ? 1 : 0);

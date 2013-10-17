@@ -64,6 +64,7 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
@@ -173,17 +174,18 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-								FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(),
-										mEvent.getTitle(), DTConstants.ENTITY_TYPE_EVENT);
-								if (mFollowByIntent) {
-									// for MyPeople support
-									followButtonView = buttonView;
-									FollowHelper.follow(mFragment, obj, 3000);
-								} else {
-									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+//								FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(),
+//										mEvent.getTitle(), DTConstants.ENTITY_TYPE_EVENT);
+//								if (mFollowByIntent) {
+//									// for MyPeople support
+//									followButtonView = buttonView;
+//									FollowHelper.follow(mFragment, obj, 3000);
+//								} else 
+								{
+									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
 													buttonView));
-									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), mEvent);
 								}
 							} else {
 								// UNFOLLOW
@@ -262,7 +264,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			tv = (TextView) this.getView().findViewById(R.id.event_details_loc);
 			POIObject poi = getPOI();
 			if (poi != null) {
-				tv.setText(poi.shortAddress());
+				tv.setText(Utils.getPOIshortAddress(poi));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
@@ -297,7 +299,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			tv = (TextView) this.getView().findViewById(R.id.event_details_tags);
 			if (mEvent.getCommunityData() != null && mEvent.getCommunityData().getTags() != null
 					&& mEvent.getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(mEvent.getCommunityData().getTags()));
+				tv.setText(Utils.conceptToSimpleString(mEvent.getCommunityData().getTags()));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
@@ -432,8 +434,8 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (mEvent.getCommunityData() != null) {
 				CommunityData cd = mEvent.getCommunityData();
 
-				if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-					rating.setRating(cd.getRatings().get(0).getValue());
+				if (cd.getRating() != null && !cd.getRating().isEmpty()) {
+					rating.setRating(cd.getRating().get(0));
 				}
 
 				// user rating
@@ -707,7 +709,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	 * 
 	 */
 	protected void callBringMeThere() {
-		Address to = getPOI().asGoogleAddress();
+		Address to = Utils.getPOIasGoogleAddress(getPOI());
 		Address from = null;
 		GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 		if (mylocation != null) {
@@ -809,7 +811,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		protected Void doInBackground(String... params) {
 			String topicId = params[0];
 			try {
-				DTHelper.follow(DTHelper.findEventById(mEventId), topicId);
+				DTHelper.follow(mEvent);
 			} catch (Exception e) {
 				Log.e(FollowAsyncTask.class.getName(), String.format("Exception following event %s", mEventId));
 			}

@@ -19,14 +19,16 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
 import eu.trentorise.smartcampus.territoryservice.model.POIData;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
-public class POIStorageHelper implements BeanStorageHelper<POIObject> {
+public class POIStorageHelper implements BeanStorageHelper<PoiObjectForBean> {
 
 	@Override
-	public POIObject toBean(Cursor cursor) {
+	public PoiObjectForBean toBean(Cursor cursor) {
+		PoiObjectForBean returnPoiObjectForBean = new PoiObjectForBean();
 		POIObject poi = new POIObject();
 		BaseDTStorageHelper.setCommonFields(cursor, poi);
 		
@@ -42,20 +44,21 @@ public class POIStorageHelper implements BeanStorageHelper<POIObject> {
 		poidata.setStreet(cursor.getString(cursor.getColumnIndex("street")));
 		
 		poi.setPoi(poidata);
-		
-		return poi;
+		returnPoiObjectForBean.setObjectForBean(poi);
+		return returnPoiObjectForBean;
 	}
 
 	@Override
-	public ContentValues toContent(POIObject bean) {
-		ContentValues values = BaseDTStorageHelper.toCommonContent(bean);
+	public ContentValues toContent(PoiObjectForBean bean) {
+		POIObject poi = bean.getObjectForBean();
+		ContentValues values = BaseDTStorageHelper.toCommonContent(poi);
 
-		values.put("poiId", bean.getPoi().getPoiId());
-		values.put("city", bean.getPoi().getCity());
-		values.put("country", bean.getPoi().getCountry());
-		values.put("postalCode", bean.getPoi().getPostalCode());
-		values.put("state", bean.getPoi().getState());
-		values.put("street", bean.getPoi().getStreet());
+		values.put("poiId", poi.getPoi().getPoiId());
+		values.put("city", poi.getPoi().getCity());
+		values.put("country", poi.getPoi().getCountry());
+		values.put("postalCode", poi.getPoi().getPostalCode());
+		values.put("state", poi.getPoi().getState());
+		values.put("street", poi.getPoi().getStreet());
 		return values;
 	}
 

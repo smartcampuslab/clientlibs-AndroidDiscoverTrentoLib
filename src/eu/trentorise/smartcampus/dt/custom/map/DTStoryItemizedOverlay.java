@@ -41,6 +41,7 @@ import com.google.android.maps.Projection;
 
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.Utils;
+import eu.trentorise.smartcampus.dt.model.GenericObjectForBean;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
@@ -50,7 +51,7 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	private static int densityY = 10;
 
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-	private ArrayList<BaseDTObject> mObjects = new ArrayList<BaseDTObject>();
+	private ArrayList<GenericObjectForBean> mObjects = new ArrayList<GenericObjectForBean>();
 	private Set<OverlayItem> mGeneric = new HashSet<OverlayItem>();
 
 	private SparseArray<int[]> item2group = new SparseArray<int[]>();
@@ -91,10 +92,10 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		this.listener = listener;
 	}
 
-	public void addOverlay(BaseDTObject o, String string) {
-		if ((o != null) && (o.getLocation() != null)) {
-			GeoPoint point = new GeoPoint((int) (o.getLocation()[0] * 1E6), (int) (o.getLocation()[1] * 1E6));
-			OverlayItem overlayitem = new OverlayItem(point, o.getTitle(), o.getDescription());
+	public void addOverlay(GenericObjectForBean o, String string) {
+		if ((o != null) && (o.getObjectForBean().getLocation() != null)) {
+			GeoPoint point = new GeoPoint((int) (o.getObjectForBean().getLocation()[0] * 1E6), (int) (o.getObjectForBean().getLocation()[1] * 1E6));
+			OverlayItem overlayitem = new OverlayItem(point, o.getObjectForBean().getTitle(), o.getObjectForBean().getDescription());
 			overlayitem.setMarker(writeOnDrawable(R.drawable.step, "" + string));
 			mOverlays.add(overlayitem);
 			mObjects.add(o);
@@ -129,7 +130,7 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	public boolean changeElementsonMap(int index, StoryObject story) {
 		myStory = story;
 		if ((listener != null) && (index != -1)) {
-			if (/* mObjects.size() > index && mObjects.get(index) != null && */(myStory.getSteps().get(index).assignedPoi() != null)) {
+			if (/* mObjects.size() > index && mObjects.get(index) != null && */(Utils.getLocalStepFromStep(myStory.getSteps().get(index)).assignedPoi() != null)) {
 				// if (item2group.get(index) != null) {
 				// int[] coords = item2group.get(index);
 				try {
@@ -138,7 +139,7 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 						for (int i = 0; i < story.getSteps().size(); i++) {
 							// se ho il poi non nullo allora lo disegno sulla
 							// mappa
-							if (Utils.getPoiFromStory(story) != null) {
+							if (Utils.getLocalStepFromStep(story.getSteps().get(i)).assignedPoi() != null) {
 								// se e' quello corrente lo faccio red,
 								// altrimenti blu
 								// if
@@ -161,11 +162,11 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 				// return true;
 			}
 		}
-		if ((index == -1) || myStory.getSteps().get(index).assignedPoi() == null) {
+		if ((index == -1) || Utils.getLocalStepFromStep(myStory.getSteps().get(index)).assignedPoi() == null) {
 			int k = 0;
 			selectedOverlay = null;
 			for (int i = 0; i < story.getSteps().size(); i++)
-				if (story.getSteps().get(i).assignedPoi() != null) {
+				if (Utils.getLocalStepFromStep(story.getSteps().get(i)).assignedPoi() != null) {
 					mOverlays.get(k).setMarker(writeOnDrawable(R.drawable.step, "" + (i + 1)));
 					k++;
 				}
@@ -177,8 +178,8 @@ public class DTStoryItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	protected boolean onTap(int index) {
 		// lancio non con index del layer ma con index del poi
 		for (int i = 0; i < myStory.getSteps().size(); i++) {
-			if (myStory.getSteps().get(i).assignedPoi() != null
-					&& mObjects.get(index).getId().equals(myStory.getSteps().get(i).assignedPoi().getId())) {
+			if (Utils.getLocalStepFromStep(myStory.getSteps().get(i)).assignedPoi() != null
+					&& mObjects.get(index).getId().equals(Utils.getLocalStepFromStep(myStory.getSteps().get(i)).assignedPoi().getId())) {
 				boolean returnValue = changeElementsonMap(i, myStory);
 				listener.onBasicObjectTap(mObjects.get(index));
 				return returnValue;

@@ -63,6 +63,7 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
@@ -131,8 +132,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		if (mPoi.getCommunityData() != null) {
 			CommunityData cd = mPoi.getCommunityData();
 
-			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-				rating.setRating(cd.getRatings().get(0).getValue());
+			if (cd.getRating() != null && !cd.getRating().isEmpty()) {
+				rating.setRating(cd.getRating().get(0));
 			}
 
 			// user rating
@@ -182,23 +183,23 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-								FollowEntityObject obj = new FollowEntityObject(mPoi.getEntityId(), mPoi.getTitle(),
-										DTConstants.ENTITY_TYPE_POI);
-								if (mFollowByIntent) {
-									// for MyPeople support
-									followButtonView = buttonView;
-									FollowHelper.follow(mFragment, obj, 3000);
-								} else {
-									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+//								FollowEntityObject obj = new FollowEntityObject(mPoi.getEntityId(), mPoi.getTitle(),
+//										DTConstants.ENTITY_TYPE_POI);
+//								if (mFollowByIntent) {
+//									// for MyPeople support
+//									followButtonView = buttonView;
+//									FollowHelper.follow(mFragment, obj, 3000);
+//								} else {
+									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
 													buttonView));
-									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
-								}
+									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), mPoi);
+//								}
 							} else {
 								// UNFOLLOW
 								BaseDTObject obj;
 								try {
-									obj = DTHelper.findPOIByEntityId(mPoi.getEntityId());
+									obj = DTHelper.findPOIByEntityId(Long.valueOf(mPoi.getEntityId())).getObjectForBean();
 									if (obj != null) {
 										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
 												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
@@ -234,7 +235,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			directionsBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Address to = mPoi.asGoogleAddress();
+					Address to = Utils.getPOIasGoogleAddress(mPoi);
 					Address from = null;
 					GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 					if (mylocation != null) {
@@ -259,16 +260,19 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// notes
 			tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
-			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null
-					&& mPoi.getCommunityData().getNotes().length() > 0) {
-				tv.setText(mPoi.getCommunityData().getNotes());
+//			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null
+//					&& mPoi.getCommunityData().getNotes().length() > 0) {
+//				tv.setText(mPoi.getCommunityData().getNotes());
+			if (mPoi.getCommunityData() != null && mPoi.getDescription() != null
+					&& mPoi.getDescription().length() > 0) {
+				tv.setText(mPoi.getDescription());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 			}
 
 			// location
 			tv = (TextView) this.getView().findViewById(R.id.poi_details_loc);
-			tv.setText(Html.fromHtml("<a href=\"\">" + mPoi.shortAddress() + "</a> "));
+			tv.setText(Html.fromHtml("<a href=\"\">" + Utils.getPOIshortAddress(mPoi) + "</a> "));
 			tv.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -283,7 +287,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			tv = (TextView) this.getView().findViewById(R.id.poi_details_tags);
 			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getTags() != null
 					&& mPoi.getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(mPoi.getCommunityData().getTags()));
+				tv.setText(Utils.conceptToSimpleString(mPoi.getCommunityData().getTags()));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 			}
@@ -315,7 +319,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (mPoi.getSource() != null && mPoi.getSource().length() > 0) {
 				/* Source is "ou" sometimes O_o */
 				tv.setText(mPoi.getSource());
-			} else if (mPoi.createdByUser()) {
+			} else if (Utils.isCreatedByUser(mPoi)) {
 				tv.setText(getString(R.string.source_smartcampus));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
@@ -478,7 +482,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		if (requestCode == 3000) {
 			if (resultCode == Activity.RESULT_OK) {
 				mStart = false;
-				eu.trentorise.smartcampus.cm.model.Topic topic = (eu.trentorise.smartcampus.cm.model.Topic) data
+				Topic topic =  (Topic) data
 						.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
@@ -553,7 +557,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		protected Void doInBackground(String... params) {
 			String topicId = params[0];
 			try {
-				DTHelper.follow(DTHelper.findPOIById(mPoiId), topicId);
+				DTHelper.follow(DTHelper.findPOIById(mPoiId));
 			} catch (Exception e) {
 				Log.e(FollowAsyncTask.class.getName(), String.format("Exception following event %s", mPoiId));
 			}

@@ -69,6 +69,7 @@ import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.EventAdapter;
 import eu.trentorise.smartcampus.dt.custom.EventPlaceholder;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
@@ -602,9 +603,9 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 								@SuppressWarnings("unchecked")
 								@Override
 								public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-									new TaggingAsyncTask(event).execute(Concept.convertSS(suggestions));
+									new TaggingAsyncTask(event).execute(Utils.conceptConvertSS(suggestions));
 								}
-							}, EventsListingFragment.this, Concept.convertToSS(event.getCommunityData().getTags()));
+							}, EventsListingFragment.this, Utils.conceptConvertToSS(event.getCommunityData().getTags()));
 					taggingDialog.show();
 				}
 			}
@@ -615,15 +616,16 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			@Override
 			public void onClick(View v) {
 
-				FollowEntityObject obj = new FollowEntityObject(event.getEntityId(), event.getTitle(),
-						DTConstants.ENTITY_TYPE_EVENT);
-				if (mFollowByIntent) {
-					FollowHelper.follow(getSherlockActivity(), obj);
-				} else {
-					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+//				FollowEntityObject obj = new FollowEntityObject(event.getEntityId(), event.getTitle(),
+//						DTConstants.ENTITY_TYPE_EVENT);
+//				if (mFollowByIntent) {
+//					FollowHelper.follow(getSherlockActivity(), obj);
+//				} else 
+				{
+					SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 							getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
-							DTHelper.getAuthToken(), obj);
+							DTHelper.getAuthToken(), event);
 				}
 			}
 		});

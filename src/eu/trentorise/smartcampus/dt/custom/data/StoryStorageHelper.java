@@ -21,14 +21,18 @@ import java.util.Map;
 import android.content.ContentValues;
 import android.database.Cursor;
 import eu.trentorise.smartcampus.android.common.Utils;
+import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
+import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StepObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
-public class StoryStorageHelper implements BeanStorageHelper<StoryObject> {
+public class StoryStorageHelper implements BeanStorageHelper<StoryObjectForBean> {
 
 	@Override
-	public StoryObject toBean(Cursor cursor) {
+	public StoryObjectForBean toBean(Cursor cursor) {
+		StoryObjectForBean returnStoryObjectForBean = new StoryObjectForBean();
 		StoryObject story = new StoryObject();
 		BaseDTStorageHelper.setCommonFields(cursor, story);
 		
@@ -38,17 +42,20 @@ public class StoryStorageHelper implements BeanStorageHelper<StoryObject> {
 		story.setAttending(attending == null ? Collections.<String>emptyList() : Collections.singletonList(attending));
 		story.setSteps(Utils.convertJSONToObjects(cursor.getString(cursor.getColumnIndex("steps")), StepObject.class));
 
+		returnStoryObjectForBean.setObjectForBean(story);
 	
-		return story;
+		return returnStoryObjectForBean;
 	}
 
 	@Override
-	public ContentValues toContent(StoryObject bean) {
-		ContentValues values = BaseDTStorageHelper.toCommonContent(bean);
-		values.put("attendees", bean.getAttendees());
-		values.put("attending", bean.getAttending() != null && ! bean.getAttending().isEmpty() ? bean.getAttending().get(0) : null);
-		if (bean.getSteps() != null) {
-			values.put("steps", Utils.convertToJSON(bean.getSteps()));
+	public ContentValues toContent(StoryObjectForBean bean) {
+		StoryObject story = bean.getObjectForBean();
+
+		ContentValues values = BaseDTStorageHelper.toCommonContent(story);
+		values.put("attendees", story.getAttendees());
+		values.put("attending", story.getAttending() != null && ! story.getAttending().isEmpty() ? story.getAttending().get(0) : null);
+		if (story.getSteps() != null) {
+			values.put("steps", Utils.convertToJSON(story.getSteps()));
 		}
 		return values;
 	}

@@ -259,11 +259,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 			if (entityId > 0 && type != null) {
 				if ("event".equals(type))
-					return DTHelper.findEventByEntityId(entityId);
+					return DTHelper.findEventByEntityId(entityId).getObjectForBean();
 				else if ("location".equals(type))
-					return DTHelper.findPOIByEntityId(entityId);
+					return DTHelper.findPOIByEntityId(entityId).getObjectForBean();
 				else if ("narrative".equals(type))
-					return DTHelper.findStoryByEntityId(entityId);
+					return DTHelper.findStoryByEntityId(entityId).getObjectForBean();
 			} else if (res != null) {
 				throw res;
 			}
