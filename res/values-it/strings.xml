@@ -248,8 +248,10 @@
     <string name="info_dialog_title_poi">Informazioni luogo</string>
     <string name="info_dialog_title_event">Informazioni evento</string>   
     <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.
-    <string name="choose_poi">Chose a POI</string>
-        
+    <string name="choose_poi">Seleziona luogo</string>
+
+    <string name="poi_step_not_exist">Luogo specificato non è trovato</string>
+    
 </string>
     
 </resources>

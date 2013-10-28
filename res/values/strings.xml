@@ -245,5 +245,7 @@
     <string name="info_dialog_title_event">Event Info</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
  	<string name="choose_poi">Chose a POI</string>
+ 	
+ 	<string name="poi_step_not_exist">No matching place found</string>
 </resources>   
      
