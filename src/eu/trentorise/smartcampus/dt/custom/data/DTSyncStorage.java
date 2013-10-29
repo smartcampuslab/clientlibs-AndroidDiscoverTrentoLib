@@ -15,14 +15,23 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom.data;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.renderscript.BaseObj;
+import android.util.Log;
+import eu.trentorise.smartcampus.android.common.Utils;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
+import eu.trentorise.smartcampus.dt.model.GenericObjectForBean;
+import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
+import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
@@ -30,10 +39,17 @@ import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.storage.DataException;
 import eu.trentorise.smartcampus.storage.StorageConfigurationException;
 import eu.trentorise.smartcampus.storage.db.StorageConfiguration;
+import eu.trentorise.smartcampus.storage.sync.ISynchronizer;
 import eu.trentorise.smartcampus.storage.sync.SyncData;
 import eu.trentorise.smartcampus.storage.sync.SyncStorageHelper;
 import eu.trentorise.smartcampus.storage.sync.SyncStorageHelperWithPaging;
 import eu.trentorise.smartcampus.storage.sync.SyncStorageWithPaging;
+import eu.trentorise.smartcampus.territoryservice.TerritoryService;
+import eu.trentorise.smartcampus.territoryservice.TerritoryServiceException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /**
  * Specific storage that deletes the old data upon sync complete
@@ -42,8 +58,17 @@ import eu.trentorise.smartcampus.storage.sync.SyncStorageWithPaging;
  */
 public class DTSyncStorage extends SyncStorageWithPaging {
 
+	private static final Map<String, Object> exclude = new HashMap<String, Object>();
+	private static final Map<String, Object> include = new HashMap<String, Object>();
+
 	public DTSyncStorage(Context context, String appToken, String dbName, int dbVersion, StorageConfiguration config) {
 		super(context, appToken, dbName, dbVersion, config);
+		Map<String, Object> map = null;
+		map = DTParamsHelper.getExcludeArray();
+		if (map !=null) exclude.putAll(map);
+
+		map = DTParamsHelper.getIncludeArray();
+		if (map !=null) include.putAll(map);
 	}
 
 	
@@ -53,12 +78,137 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 		return new DTSyncStorageHelper(context, dbName, dbVersion, config);
 	}
 
+	public void synchronize(final String token, final TerritoryService tService) throws StorageConfigurationException, DataException, SecurityException, ConnectionException, ProtocolException {
+		synchronize(new ISynchronizer() {
+			
+			@Override
+			public SyncData fetchSyncData(Long version, SyncData in) throws SecurityException, ConnectionException, ProtocolException {
+				try {
+//					Log.e("DTSyncStorage", String.valueOf(System.nanoTime()));
+					eu.trentorise.smartcampus.territoryservice.model.SyncData data = tService.synchronize(version, include, exclude, token);
+//					Log.e("DTSyncStorage", String.valueOf(System.nanoTime()));
+
+					SyncData dbData = new SyncData();
+					dbData.setVersion(data.getVersion());
+
+					dbData.setInclude(data.getInclude());
+//					Log.e("DTSyncStorage->aftersetinclude", String.valueOf(System.nanoTime()));
+
+					dbData.setExclude(data.getExclude());
+//					Log.e("DTSyncStorage->aftersetexclude", String.valueOf(System.nanoTime()));
+
+					dbData.setDeleted(convertToBasicObjectDeleted(data.getDeleted()));
+//					Log.e("DTSyncStorage->aftersetdeleted", String.valueOf(System.nanoTime()));
+
+					dbData.setUpdated(convertToBasicObject(data.getUpdated()));
+//					Log.e("DTSyncStorage->aftersetupdated", String.valueOf(System.nanoTime()));
+
+					((DTSyncStorageHelper)helper).removeOld();
+					return dbData;
+				} catch (TerritoryServiceException e) {
+					throw new ProtocolException(e.getMessage());
+				}
+			}
+		}) ;
+			
+	}
+
+	protected Map<String, List<String>> convertToBasicObjectDeleted(Map<String, List<String>> deleted) {
+		Map<String,List<String>> returnDTOObjects = new HashMap<String, List<String>>();
+		   Iterator it = deleted.entrySet().iterator();
+		    while (it.hasNext()) {
+		    	//for every map element iterate the entire list
+		    	{
+		    		 Map.Entry pairs = (Map.Entry)it.next();
+		    		String key = (String) pairs.getKey();
+		    		Class<? extends GenericObjectForBean> cls = null;
+	    			if ("eu.trentorise.smartcampus.dt.model.POIObject".equals(key)){
+	    				cls = PoiObjectForBean.class;
+	    			} else if ("eu.trentorise.smartcampus.dt.model.EventObject".equals(key)) {
+	    				cls = EventObjectForBean.class;
+	    				
+	    			} else if ("eu.trentorise.smartcampus.dt.model.StoryObject".equals(key)){ 
+	    				cls = StoryObjectForBean.class;
+	    			}
+		    		
+		    		List<String> dtoObjects = (List<String>) pairs.getValue();
+//		    		List<Object> basicobjects = new ArrayList<Object>();
+//		    		for (Object object: dtoObjects)
+//		    		{
+//		    			GenericObjectForBean newObject = null;
+//		    			if (PoiObjectForBean.class.equals(cls)){
+//			    			newObject = new PoiObjectForBean();
+//		    				newObject.setObjectForBean(Utils.convertObjectToData(POIObject.class, object));
+//		    			} else if (EventObjectForBean.class.equals(key)) {
+//			    			newObject = new EventObjectForBean();
+//		    				newObject.setObjectForBean(Utils.convertObjectToData(EventObject.class, object));
+//		    			} else if (StoryObjectForBean.class.equals(key)) {
+//			    			newObject = new StoryObjectForBean();
+//		    				newObject.setObjectForBean( Utils.convertObjectToData(StoryObject.class, object));
+//		    			}
+//		    			//convert the single element
+//		    			basicobjects.add(newObject);
+//		    			//add the element to the return list
+//		    		}
+		    		//add the list to the return map
+		    		//key or the new one???
+		    		returnDTOObjects.put(cls.getCanonicalName(), dtoObjects);
+		    	}
+//		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		    }
+		return returnDTOObjects;
+	}
+
+
+	protected Map<String, List<Object>> convertToBasicObject(Map<String, List<Object>> map) {
+		Map<String,List<Object>> returnDTOObjects = new HashMap<String, List<Object>>();
+		   Iterator it = map.entrySet().iterator();
+		    while (it.hasNext()) {
+		    	//for every map element iterate the entire list
+		    	{
+		    		 Map.Entry pairs = (Map.Entry)it.next();
+		    		String key = (String) pairs.getKey();
+		    		Class<? extends GenericObjectForBean> cls = null;
+	    			if ("eu.trentorise.smartcampus.dt.model.POIObject".equals(key)){
+	    				cls = PoiObjectForBean.class;
+	    			} else if ("eu.trentorise.smartcampus.dt.model.EventObject".equals(key)) {
+	    				cls = EventObjectForBean.class;
+	    				
+	    			} else if ("eu.trentorise.smartcampus.dt.model.StoryObject".equals(key)){ 
+	    				cls = StoryObjectForBean.class;
+	    			}
+		    		
+		    		List<Object> dtoObjects = (List<Object>) pairs.getValue();
+		    		List<Object> basicobjects = new ArrayList<Object>();
+		    		for (Object object: dtoObjects)
+		    		{
+		    			GenericObjectForBean newObject = null;
+		    			if (PoiObjectForBean.class.equals(cls)){
+			    			newObject = new PoiObjectForBean();
+		    				newObject.setObjectForBean(Utils.convertObjectToData(POIObject.class, object));
+		    			} else if (EventObjectForBean.class.equals(cls)) {
+			    			newObject = new EventObjectForBean();
+		    				newObject.setObjectForBean(Utils.convertObjectToData(EventObject.class, object));
+		    			} else if (StoryObjectForBean.class.equals(cls)) {
+			    			newObject = new StoryObjectForBean();
+		    				newObject.setObjectForBean( Utils.convertObjectToData(StoryObject.class, object));
+		    			}
+		    			//convert the single element
+		    			basicobjects.add(newObject);
+		    			//add the element to the return list
+		    		}
+		    		//add the list to the return map
+		    		//key or the new one???
+		    		returnDTOObjects.put(cls.getCanonicalName(), basicobjects);
+		    	}
+//		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		    }
+		return returnDTOObjects;
+	}
 
 	private static class DTSyncStorageHelper extends SyncStorageHelperWithPaging {
 
 		// sync filtering: exclude transit stops
-		private static final Map<String, Object> exclude = new HashMap<String, Object>();
-		private static final Map<String, Object> include = new HashMap<String, Object>();
 
 //		static {
 //			exclude.put("source", "smartplanner-transitstops");
@@ -71,48 +221,9 @@ public class DTSyncStorage extends SyncStorageWithPaging {
 		@Override
 		public SyncData getDataToSync(long version) throws StorageConfigurationException {
 			SyncData data = super.getDataToSync(version);
-			Map<String, Object> excludeFromParam = null;
-			Map<String, Object> includeFromPAram = null;
-
-				excludeFromParam = DTParamsHelper.getExcludeArray();
-				if (excludeFromParam !=null)
-					exclude.putAll(excludeFromParam);
-				data.setExclude(exclude);
-				
-				includeFromPAram = DTParamsHelper.getIncludeArray();
-				if (includeFromPAram !=null)
-					include.putAll(includeFromPAram);
-				data.setInclude(include);
-
-
+			data.setExclude(exclude);
+			data.setInclude(include);
 			return data;
-		}
-
-
-
-		@Override
-		public synchronized SyncData synchronize(Context ctx, ProtocolCarrier mProtocolCarrier, String authToken, String appToken, String host, String service)
-				throws SecurityException, ConnectionException, DataException, ProtocolException, StorageConfigurationException 
-		{
-			SyncData data = super.synchronize(ctx, mProtocolCarrier, authToken, appToken, host, service);
-			removeOld();
-			// old versions: remove stored objects that should be filtered out
-			removeIrrelevant();
-			return data;
-		}
-		
-		/**
-		 * 
-		 */
-		private void removeIrrelevant() {
-			SQLiteDatabase db = helper.getWritableDatabase();
-			db.beginTransaction();
-			try {
-				db.delete("pois", "source = 'smartplanner-transitstops'", null);
-				db.setTransactionSuccessful();
-			} finally {
-				db.endTransaction();
-			}
 		}
 
 		private void removeOld() {

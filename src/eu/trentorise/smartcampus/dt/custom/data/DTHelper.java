@@ -67,8 +67,6 @@ import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
 import eu.trentorise.smartcampus.profileservice.BasicProfileService;
 import eu.trentorise.smartcampus.profileservice.model.BasicProfile;
 import eu.trentorise.smartcampus.protocolcarrier.ProtocolCarrier;
-import eu.trentorise.smartcampus.protocolcarrier.common.Constants.Method;
-import eu.trentorise.smartcampus.protocolcarrier.custom.MessageRequest;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ProtocolException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
@@ -77,8 +75,6 @@ import eu.trentorise.smartcampus.storage.DataException;
 import eu.trentorise.smartcampus.storage.StorageConfigurationException;
 import eu.trentorise.smartcampus.storage.db.StorageConfiguration;
 import eu.trentorise.smartcampus.storage.remote.RemoteStorage;
-import eu.trentorise.smartcampus.storage.sync.SyncStorage;
-import eu.trentorise.smartcampus.storage.sync.SyncStorageWithPaging;
 import eu.trentorise.smartcampus.storage.sync.Utils;
 import eu.trentorise.smartcampus.territoryservice.TerritoryService;
 import eu.trentorise.smartcampus.territoryservice.TerritoryServiceException;
@@ -102,6 +98,7 @@ public class DTHelper {
 	private static final String TUT_PREFS = "dt_tut_prefs";
 	private static final String TOUR_PREFS = "dt_wantTour";
 	private static final String FIRST_LAUNCH_PREFS = "dt_firstLaunch";
+	private static SCAccessProvider accessProvider = null; 
 	private static TerritoryService tService;
 
 	public static TerritoryService gettService() {
@@ -133,13 +130,13 @@ public class DTHelper {
 
 	private static DTHelper instance = null;
 
-	private static SCAccessProvider accessProvider = new EmbeddedSCAccessProvider();
+//	private static SCAccessProvider accessProvider = new EmbeddedSCAccessProvider();
 
 	// private SyncManager mSyncManager;
 	private static Context mContext;
 	private StorageConfiguration config = null;
 	// private SyncStorageConfiguration config = null;
-	private SyncStorageWithPaging storage = null;
+	private DTSyncStorage storage = null;
 	private static RemoteStorage remoteStorage = null;
 
 	private ProtocolCarrier mProtocolCarrier = null;
@@ -157,15 +154,15 @@ public class DTHelper {
 		if (instance == null)
 			instance = new DTHelper(mContext);
 		activateAutoSync();
+		tService = new TerritoryService(getAppUrl() + "core.territory");
 
 		new AsyncTask<Void, Void, BasicProfile>() {
 			@Override
 			protected BasicProfile doInBackground(Void... params) {
 				try {
 					String token = SCAccessProvider.getInstance(mContext).readToken(mContext);
-					BasicProfileService service = new BasicProfileService("https://vas-dev.smartcampuslab.it/aac");
+					BasicProfileService service = new BasicProfileService(getAppUrl() + "aac");
 					bp = service.getBasicProfile(token);
-					tService = new TerritoryService("https://vas-dev.smartcampuslab.it/core.territory");
 					return bp;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -175,17 +172,44 @@ public class DTHelper {
 		}.execute();
 	}
 
-	public static SCAccessProvider getAccessProvider() {
-		return accessProvider;
+	private static String getAppUrl() {
+		String returnAppUrl = "";
+		try {
+			returnAppUrl= GlobalConfig.getAppUrl(mContext);
+			if (!returnAppUrl.endsWith("/"))
+				returnAppUrl=returnAppUrl.concat("/");
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		}
+		return returnAppUrl;
 	}
 
+	public static SCAccessProvider getAccessProvider() {
+        if(accessProvider == null)
+                accessProvider = SCAccessProvider.getInstance(mContext);
+        return accessProvider;
+}
+
+	
 	public static String getAuthToken() {
-		try {
-			return SCAccessProvider.getInstance(mContext).readToken(mContext);
+        String mToken = null;
+        try {
+			mToken = getAccessProvider().readToken(
+			                mContext);
 		} catch (AACException e) {
-			return null;
+			e.printStackTrace();
 		}
-	}
+        return mToken; 
+}
+
+//	public static String getAuthToken() {
+//		try {
+//			return SCAccessProvider.getInstance(mContext).readToken(mContext);
+//		} 
+//		catch (AACException e) {
+//			return null;
+//		}
+//	}
 
 	public static String getUserId() {
 		// UserData data = getAccessProvider().readUserData(instance.mContext,
@@ -205,7 +229,7 @@ public class DTHelper {
 	protected DTHelper(Context mContext) {
 		super();
 		this.mContext = mContext;
-
+		this.accessProvider = SCAccessProvider.getInstance(mContext);
 		DTParamsHelper.init(mContext);
 		MapManager.initWithParam();
 		// this.mSyncManager = new SyncManager(mContext,
@@ -283,7 +307,7 @@ public class DTHelper {
 
 	public static SherlockFragmentActivity start(SherlockFragmentActivity activity) throws RemoteException,
 			DataException, StorageConfigurationException, SecurityException, ConnectionException, ProtocolException,
-			NameNotFoundException {
+			NameNotFoundException, AACException {
 		getInstance().rootActivity = activity;
 		try {
 			if (getInstance().syncInProgress)
@@ -295,8 +319,10 @@ public class DTHelper {
 			}
 
 			getInstance().syncInProgress = true;
-			getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext),
-					Constants.SYNC_SERVICE);
+			getInstance().storage.synchronize(getAuthToken(), tService);
+
+//			getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext),
+//					Constants.SYNC_SERVICE);
 
 		} finally {
 			getInstance().syncInProgress = false;
@@ -305,9 +331,11 @@ public class DTHelper {
 	}
 
 	public static void synchronize() throws RemoteException, DataException, StorageConfigurationException,
-			SecurityException, ConnectionException, ProtocolException {
-		getInstance().storage.synchronize(getAuthToken(), GlobalConfig.getAppUrl(getInstance().mContext),
-				Constants.SYNC_SERVICE);
+			SecurityException, ConnectionException, ProtocolException, AACException {
+		getInstance().storage.synchronize(getAuthToken(), tService);
+		// getInstance().storage.synchronize(getAuthToken(),
+		// GlobalConfig.getAppUrl(getInstance().mContext),
+		// Constants.SYNC_SERVICE);
 		// ContentResolver.requestSync(new
 		// Account(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NAME,
 		// eu.trentorise.smartcampus.ac.Constants.ACCOUNT_TYPE),
@@ -385,6 +413,7 @@ public class DTHelper {
 			PoiObjectForBean poi = getInstance().storage.getObjectById(poiId, PoiObjectForBean.class);
 			return poi.getObjectForBean();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -436,10 +465,11 @@ public class DTHelper {
 	 * @throws RemoteException
 	 * @throws StorageConfigurationException
 	 * @throws TerritoryServiceException
+	 * @throws AACException 
 	 */
 
 	public static POIObject savePOI(POIObject poi) throws DataException, ConnectionException, ProtocolException,
-			SecurityException, RemoteException, StorageConfigurationException, TerritoryServiceException {
+			SecurityException, RemoteException, StorageConfigurationException, TerritoryServiceException, AACException {
 		if (poi.getId() == null)
 			poi = tService.createPOI(poi, getAuthToken());
 		else
@@ -460,14 +490,19 @@ public class DTHelper {
 	 * @throws ProtocolException
 	 * @throws SecurityException
 	 * @throws TerritoryServiceException
+	 * @throws AACException 
 	 */
-	public static EventObject saveEvent(EventObject event) throws RemoteException, DataException,
+	public static Boolean saveEvent(EventObject event) throws RemoteException, DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
-			TerritoryServiceException {
-		if (event.getId() == null)
+			TerritoryServiceException, AACException {
+		Boolean result = null;
+		if (event.getId() == null) {
 			event = tService.createEvent(event, getAuthToken());
-		else
+			result = true;
+		} else {
 			event = tService.updateEvent(event.getId(), event, getAuthToken());
+			result = false;
+		}
 		// String requestService = null;
 		// Method method = null;
 		// Boolean result = null;
@@ -508,11 +543,11 @@ public class DTHelper {
 		// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObject(msg.getBody(),
 		// EventObject.class);
 		synchronize();
-		return event;
+		return result;
 	}
 
 	public static Collection<BaseDTObject> getMostPopular() throws DataException, StorageConfigurationException,
-			ConnectionException, ProtocolException, SecurityException, TerritoryServiceException {
+			ConnectionException, ProtocolException, SecurityException, TerritoryServiceException, AACException {
 		ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
 		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
 			Collection<PoiObjectForBean> pois = getInstance().storage.getObjects(PoiObjectForBean.class);
@@ -526,7 +561,7 @@ public class DTHelper {
 		} else {
 			ObjectFilter filter = new ObjectFilter();
 			filter.setLimit(20);
-			List<POIObject> pois = tService.getPOIs(filter, "token");
+			List<POIObject> pois = tService.getPOIs(filter, getAuthToken());
 			for (POIObject poiObject : pois) {
 				list.add(poiObject);
 			}
@@ -536,7 +571,7 @@ public class DTHelper {
 
 	public static Collection<POIObject> getPOIByCategory(int position, int size, String... inCategories)
 			throws DataException, StorageConfigurationException, ConnectionException, ProtocolException,
-			SecurityException, TerritoryServiceException {
+			SecurityException, TerritoryServiceException, AACException {
 		ArrayList<POIObject> returnlist = new ArrayList<POIObject>();
 
 		if (inCategories == null || inCategories.length == 0)
@@ -570,7 +605,7 @@ public class DTHelper {
 				filter.setSkip(position);
 				filter.setLimit(size);
 				filter.setTypes(Arrays.asList(categories));
-				returnlist.addAll(tService.getPOIs(filter, "token"));
+				returnlist.addAll(tService.getPOIs(filter,getAuthToken()));
 			}
 			return returnlist;
 		}
@@ -578,7 +613,7 @@ public class DTHelper {
 
 	public static Collection<POIObject> searchPOIs(int position, int size, String text) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
-			TerritoryServiceException {
+			TerritoryServiceException, AACException {
 		ArrayList<POIObject> returnlist = new ArrayList<POIObject>();
 
 		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
@@ -609,7 +644,7 @@ public class DTHelper {
 
 	public static Collection<POIObject> searchPOIsByCategory(int position, int size, String text,
 			String... inCategories) throws DataException, StorageConfigurationException, ConnectionException,
-			ProtocolException, SecurityException, TerritoryServiceException {
+			ProtocolException, SecurityException, TerritoryServiceException, AACException {
 		ArrayList<POIObject> returnlist = new ArrayList<POIObject>();
 
 		if (inCategories == null || inCategories.length == 0)
@@ -660,7 +695,7 @@ public class DTHelper {
 
 	public static Collection<EventObject> searchEventsByCategory(int position, int size, String text,
 			String... inCategories) throws DataException, StorageConfigurationException, ConnectionException,
-			ProtocolException, SecurityException, TerritoryServiceException {
+			ProtocolException, SecurityException, TerritoryServiceException, AACException {
 		ArrayList<EventObject> returnlist = new ArrayList<EventObject>();
 
 		if (inCategories == null || inCategories.length == 0)
@@ -718,7 +753,7 @@ public class DTHelper {
 
 	public static Collection<StoryObject> searchStoriesByCategory(int position, int size, String text,
 			String... inCategories) throws DataException, StorageConfigurationException, ConnectionException,
-			ProtocolException, SecurityException, TerritoryServiceException {
+			ProtocolException, SecurityException, TerritoryServiceException, AACException {
 		ArrayList<StoryObject> returnlist = new ArrayList<StoryObject>();
 
 		if (inCategories == null || inCategories.length == 0)
@@ -769,7 +804,7 @@ public class DTHelper {
 
 	public static Collection<LocalEventObject> getEventsByCategories(int position, int size, String... inCategories)
 			throws DataException, StorageConfigurationException, ConnectionException, ProtocolException,
-			SecurityException, TerritoryServiceException {
+			SecurityException, TerritoryServiceException, AACException {
 		ArrayList<LocalEventObject> returnlist = new ArrayList<LocalEventObject>();
 
 		if (inCategories == null || inCategories.length == 0)
@@ -796,12 +831,12 @@ public class DTHelper {
 			where += "AND fromTime > " + getCurrentDateTimeForSearching();
 			Collection<EventObjectForBean> events = getInstance().storage.query(EventObjectForBean.class, where,
 					nonNullCategories.toArray(new String[nonNullCategories.size()]), position, size, "fromTime ASC");
-				for (EventObjectForBean eventBean : events) {
-					LocalEventObject event = new LocalEventObject();
-					event.setEventFromEventObjectForBean(eventBean);
-					returnlist.add(event);
-				}
-				return returnlist;
+			for (EventObjectForBean eventBean : events) {
+				LocalEventObject event = new LocalEventObject();
+				event.setEventFromEventObjectForBean(eventBean);
+				returnlist.add(event);
+			}
+			return returnlist;
 		} else {
 			for (int c = 0; c < categories.length; c++) {
 				ObjectFilter filter = new ObjectFilter();
@@ -809,17 +844,19 @@ public class DTHelper {
 				filter.setSkip(position);
 				filter.setLimit(size);
 				List<EventObject> events = tService.getEvents(filter, getAuthToken());
-				for (EventObject eventBean : events) {
-					returnlist.add((LocalEventObject) eventBean);
+				returnlist.addAll(eu.trentorise.smartcampus.dt.custom.Utils.convertToLocalEvent(events));
+				
 				}
-			}
 			return returnlist;
+
+			
+	
 		}
 	}
 
-	public static Collection<LocalEventObject> searchTodayEvents(int position, int size, String text) throws DataException,
-			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
-			TerritoryServiceException {
+	public static Collection<LocalEventObject> searchTodayEvents(int position, int size, String text)
+			throws DataException, StorageConfigurationException, ConnectionException, ProtocolException,
+			SecurityException, TerritoryServiceException, AACException {
 		ArrayList<LocalEventObject> returnlist = new ArrayList<LocalEventObject>();
 
 		// Date now = new Date();
@@ -837,7 +874,7 @@ public class DTHelper {
 			Collection<EventObjectForBean> events = getInstance().storage.query(EventObjectForBean.class, "( toTime > "
 					+ getCurrentDateTimeForSearching() + " AND fromTime < " + tomorrow.getTime() + " ) ", null,
 					position, size, "fromTime ASC");
-			/*convert from eventobj to localeventobj*/
+			/* convert from eventobj to localeventobj */
 			for (EventObjectForBean eventBean : events) {
 				LocalEventObject event = new LocalEventObject();
 				event.setEventFromEventObjectForBean(eventBean);
@@ -851,17 +888,15 @@ public class DTHelper {
 			filter.setCriteria(criteria);
 			filter.setSkip(position);
 			filter.setLimit(size);
-			Collection<EventObject> events = tService.getEvents(filter, getAuthToken());
-			for (EventObject eventBean : events) {
-				returnlist.add((LocalEventObject) eventBean);
-			}
+			List<EventObject> events = tService.getEvents(filter, getAuthToken());
+			returnlist.addAll(eu.trentorise.smartcampus.dt.custom.Utils.convertToLocalEvent(events));
 			return returnlist;
 		}
 	}
 
 	public static Collection<EventObject> getEventsByPOI(int position, int size, String poiId) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
-			TerritoryServiceException {
+			TerritoryServiceException, AACException {
 		ArrayList<EventObject> returnlist = new ArrayList<EventObject>();
 
 		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
@@ -884,7 +919,7 @@ public class DTHelper {
 	}
 
 	public static List<SemanticSuggestion> getSuggestions(CharSequence suggest) throws ConnectionException,
-			ProtocolException, SecurityException, DataException {
+			ProtocolException, SecurityException, DataException, AACException {
 		return SuggestionHelper.getSuggestions(suggest, getInstance().mContext,
 				GlobalConfig.getAppUrl(getInstance().mContext), getAuthToken(), DTParamsHelper.getAppToken());
 	}
@@ -907,7 +942,7 @@ public class DTHelper {
 	}
 
 	public static boolean deleteEvent(EventObject eventObject) throws DataException, ConnectionException,
-			ProtocolException, SecurityException, RemoteException, StorageConfigurationException {
+			ProtocolException, SecurityException, RemoteException, StorageConfigurationException, AACException {
 
 		if (eu.trentorise.smartcampus.dt.custom.Utils.isCreatedByUser(eventObject)) {
 			getRemote(instance.mContext, getAuthToken()).delete(eventObject.getId(), EventObjectForBean.class);
@@ -918,7 +953,7 @@ public class DTHelper {
 	}
 
 	public static boolean deletePOI(POIObject poiObject) throws DataException, ConnectionException, ProtocolException,
-			SecurityException, RemoteException, StorageConfigurationException {
+			SecurityException, RemoteException, StorageConfigurationException, AACException {
 		if (eu.trentorise.smartcampus.dt.custom.Utils.isCreatedByUser(poiObject)) {
 			getRemote(instance.mContext, getAuthToken()).delete(poiObject.getId(), PoiObjectForBean.class);
 			synchronize();
@@ -928,7 +963,7 @@ public class DTHelper {
 	}
 
 	public static int rate(BaseDTObject event, int rating) throws ConnectionException, ProtocolException,
-			SecurityException, DataException, RemoteException, StorageConfigurationException, TerritoryServiceException {
+			SecurityException, DataException, RemoteException, StorageConfigurationException, TerritoryServiceException, AACException {
 		int returnValue = tService.rate(event.getId(), rating, getAuthToken());
 		// MessageRequest request = new
 		// MessageRequest(GlobalConfig.getAppUrl(getInstance().mContext),
@@ -945,7 +980,7 @@ public class DTHelper {
 	}
 
 	public static BaseDTObject follow(BaseDTObject object) throws ConnectionException, ProtocolException,
-			SecurityException, DataException, RemoteException, StorageConfigurationException {
+			SecurityException, DataException, RemoteException, StorageConfigurationException, AACException {
 		BaseDTObject returnObj = null;
 
 		try {
@@ -976,7 +1011,7 @@ public class DTHelper {
 	}
 
 	public static void unfollow(BaseDTObject object) throws ConnectionException, ProtocolException, SecurityException,
-			DataException, RemoteException, StorageConfigurationException {
+			DataException, RemoteException, StorageConfigurationException, AACException {
 		try {
 			if (object instanceof POIObject) {
 
@@ -1003,50 +1038,32 @@ public class DTHelper {
 	}
 
 	public static LocalEventObject attend(BaseDTObject event) throws ConnectionException, ProtocolException,
-			SecurityException, DataException, RemoteException, StorageConfigurationException {
+			SecurityException, DataException, RemoteException, StorageConfigurationException, TerritoryServiceException, AACException {
 		LocalEventObject returnEvent = new LocalEventObject();
-		// tService.a
-		// MessageRequest request = new
-		// MessageRequest(GlobalConfig.getAppUrl(getInstance().mContext),
-		// Constants.SERVICE
-		// + "/objects/" + event.getId() + "/attend");
-		// request.setMethod(Method.PUT);
-		// String response = getInstance().mProtocolCarrier.invokeSync(request,
-		// DTParamsHelper.getAppToken(),
-		// getAuthToken()).getBody();
-		// synchronize();
-		// EventObject result =
-		// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObject(response,
-		// EventObject.class);
+		EventObject newEvent = tService.myEvent(event.getId(), true, getAuthToken());
+		EventObjectForBean newEventBean = new EventObjectForBean();
+		newEventBean.setObjectForBean(newEvent);
+		returnEvent.setEventFromEventObjectForBean(newEventBean);
 		return returnEvent;
 	}
 
 	public static LocalEventObject notAttend(BaseDTObject event) throws ConnectionException, ProtocolException,
-			SecurityException, DataException, RemoteException, StorageConfigurationException {
+			SecurityException, DataException, RemoteException, StorageConfigurationException, TerritoryServiceException, AACException {
 		LocalEventObject returnEvent = new LocalEventObject();
-
-		// MessageRequest request = new
-		// MessageRequest(GlobalConfig.getAppUrl(getInstance().mContext),
-		// Constants.SERVICE
-		// + "/objects/" + event.getId() + "/notAttend");
-		// request.setMethod(Method.PUT);
-		// String response = getInstance().mProtocolCarrier.invokeSync(request,
-		// DTParamsHelper.getAppToken(),
-		// getAuthToken()).getBody();
-		// synchronize();
-		// EventObject result =
-		// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObject(response,
-		// EventObject.class);
+		EventObject newEvent = tService.myEvent(event.getId(), false, getAuthToken());
+		EventObjectForBean newEventBean = new EventObjectForBean();
+		newEventBean.setObjectForBean(newEvent);
+		returnEvent.setEventFromEventObjectForBean(newEventBean);
 		return returnEvent;
 	}
 
-	public static GenericObjectForBean findEventByEntityId(Long entityId) throws DataException, StorageConfigurationException,
-			ConnectionException, ProtocolException, SecurityException {
+	public static GenericObjectForBean findEventByEntityId(Long entityId) throws DataException,
+			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
 		return findDTObjectByEntityId(EventObjectForBean.class, entityId);
 	}
 
-	public static GenericObjectForBean findPOIByEntityId(Long entityId) throws DataException, StorageConfigurationException,
-			ConnectionException, ProtocolException, SecurityException {
+	public static GenericObjectForBean findPOIByEntityId(Long entityId) throws DataException,
+			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
 		return findDTObjectByEntityId(PoiObjectForBean.class, entityId);
 	}
 
@@ -1064,7 +1081,8 @@ public class DTHelper {
 
 	}
 
-	private static GenericObjectForBean findLocalDTOObjectByEntityId(Class<? extends GenericObjectForBean> cls, Long entityId) {
+	private static GenericObjectForBean findLocalDTOObjectByEntityId(Class<? extends GenericObjectForBean> cls,
+			Long entityId) {
 		try {
 			DTHelper.synchronize();
 			GenericObjectForBean returnObject = null;
@@ -1081,17 +1099,14 @@ public class DTHelper {
 
 	public static Boolean saveStory(StoryObject storyObject) throws RemoteException, DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
-			TerritoryServiceException {
+			TerritoryServiceException, AACException {
 		boolean returnvalue = true;
-		if (storyObject.getId() == null)
-		{
+		if (storyObject.getId() == null) {
 			tService.createStory(storyObject, getAuthToken());
-			returnvalue= true;
-		}
-		else
-		{
+			returnvalue = true;
+		} else {
 			storyObject = tService.updateStory(storyObject.getId(), storyObject, getAuthToken());
-			returnvalue=false;
+			returnvalue = false;
 		}
 		// String requestService = null;
 		// Method method = null;
@@ -1127,7 +1142,7 @@ public class DTHelper {
 
 	public static Collection<StoryObject> getStoryByCategory(int position, int size, String... inCategories)
 			throws DataException, StorageConfigurationException, ConnectionException, ProtocolException,
-			SecurityException, TerritoryServiceException {
+			SecurityException, TerritoryServiceException, AACException {
 		ArrayList<StoryObject> returnlist = new ArrayList<StoryObject>();
 
 		if (inCategories == null || inCategories.length == 0)
@@ -1172,7 +1187,7 @@ public class DTHelper {
 
 	public static Collection<StoryObject> searchStories(int position, int size, String text) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
-			TerritoryServiceException {
+			TerritoryServiceException, AACException {
 		ArrayList<StoryObject> returnlist = new ArrayList<StoryObject>();
 
 		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
@@ -1202,25 +1217,32 @@ public class DTHelper {
 
 	public static Boolean deleteStory(StoryObject storyObject) throws DataException, ConnectionException,
 			ProtocolException, SecurityException, RemoteException, StorageConfigurationException,
-			TerritoryServiceException {
+			TerritoryServiceException, AACException {
 		tService.deleteStory(storyObject.getId(), getAuthToken());
 		synchronize();
 		return true;
 	}
 
-	public static GenericObjectForBean findStoryByEntityId(Long storyId) throws DataException, StorageConfigurationException,
-			ConnectionException, ProtocolException, SecurityException {
+	public static GenericObjectForBean findStoryByEntityId(Long storyId) throws DataException,
+			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
 		return findDTObjectByEntityId(StoryObjectForBean.class, storyId);
 	}
 
 	public static StoryObject findStoryById(String storyId) {
-		try {
-			StoryObject story = tService.getStory(storyId, getAuthToken());
-			return story;
-		} catch (Exception e) {
-			return null;
+			try {
+				StoryObjectForBean story = getInstance().storage.getObjectById(storyId, StoryObjectForBean.class);
+				return story.getObjectForBean();
+			} catch (Exception e) {
+				return null;
+			}
 		}
-	}
+//		try {
+//			StoryObject story = tService.getStory(storyId, getAuthToken());
+//			return story;
+//		} catch (Exception e) {
+//			return null;
+//		}
+	
 
 	public static ArrayList<POIObject> getPOIBySteps(List<StepObject> steps) throws DataException,
 			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException {
@@ -1237,41 +1259,34 @@ public class DTHelper {
 	}
 
 	public static StoryObject addToMyStories(BaseDTObject story) throws ConnectionException, ProtocolException,
-			SecurityException, DataException, RemoteException, StorageConfigurationException {
-		StoryObject returnObject = new StoryObject();
-//		MessageRequest request = new MessageRequest(GlobalConfig.getAppUrl(getInstance().mContext), Constants.SERVICE
-//				+ "/objects/" + story.getId() + "/attend");
-//		request.setMethod(Method.PUT);
-//		String response = getInstance().mProtocolCarrier.invokeSync(request, DTParamsHelper.getAppToken(),
-//				getAuthToken()).getBody();
-//		synchronize();
-//		StoryObject result = eu.trentorise.smartcampus.android.common.Utils.convertJSONToObject(response,
-//				StoryObject.class);
+			SecurityException, DataException, RemoteException, StorageConfigurationException, TerritoryServiceException, AACException {
+//		LocalEventObject returnEvent = new LocalEventObject();
+//		EventObject newEvent = tService.myEvent(event.getId(), true, getAuthToken());
+//		EventObjectForBean newEventBean = new EventObjectForBean();
+//		newEventBean.setObjectForBean(newEvent);
+//		returnEvent.setEventFromEventObjectForBean(newEventBean);
+//		return returnEvent;
+		
+		StoryObject returnObject = tService.myStory(story.getCreatorId(), true, getAuthToken());
+		
 		return returnObject;
 	}
 
 	public static StoryObject removeFromMyStories(BaseDTObject story) throws ConnectionException, ProtocolException,
-			SecurityException, DataException, RemoteException, StorageConfigurationException {
-		StoryObject returnObject = new StoryObject();
-//
-//		MessageRequest request = new MessageRequest(GlobalConfig.getAppUrl(getInstance().mContext), Constants.SERVICE
-//				+ "/objects/" + story.getId() + "/notAttend");
-//		request.setMethod(Method.PUT);
-//		String response = getInstance().mProtocolCarrier.invokeSync(request, DTParamsHelper.getAppToken(),
-//				getAuthToken()).getBody();
-//		synchronize();
-//		StoryObject result = eu.trentorise.smartcampus.android.common.Utils.convertJSONToObject(response,
-//				StoryObject.class);
+			SecurityException, DataException, RemoteException, StorageConfigurationException, TerritoryServiceException, AACException {
+		StoryObject returnObject = tService.myStory(story.getCreatorId(), false, getAuthToken());
+	
 		return returnObject;
 	}
 
 	public static Collection<StoryObject> getMyStories(int position, int size) throws DataException,
-			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException, TerritoryServiceException {
+			StorageConfigurationException, ConnectionException, ProtocolException, SecurityException,
+			TerritoryServiceException, AACException {
 		ArrayList<StoryObject> returnlist = new ArrayList<StoryObject>();
 
 		if (Utils.getObjectVersion(instance.mContext, DTParamsHelper.getAppToken(), Constants.SYNC_DB_NAME) > 0) {
-			Collection<StoryObjectForBean> stories = getInstance().storage.query(StoryObjectForBean.class, "attending IS NOT NULL", null, position, size,
-					"title ASC");
+			Collection<StoryObjectForBean> stories = getInstance().storage.query(StoryObjectForBean.class,
+					"attending IS NOT NULL", null, position, size, "title ASC");
 			for (StoryObjectForBean storyBean : stories) {
 				returnlist.add(storyBean.getObjectForBean());
 			}
@@ -1311,7 +1326,7 @@ public class DTHelper {
 		}
 	}
 
-	public static SyncStorage getSyncStorage() throws DataException {
+	public static DTSyncStorage getSyncStorage() throws DataException {
 		return getInstance().storage;
 	}
 
@@ -1441,7 +1456,7 @@ public class DTHelper {
 			}
 			filter.setSkip(position);
 			filter.setLimit(size);
-//			filter.setClassName(cls.getCanonicalName());
+			// filter.setClassName(cls.getCanonicalName());
 			if (sort != null)
 				filter.setSort(sort);
 			Collection<T> result = getRemote(instance.mContext, getAuthToken()).searchObjects(filter, cls);
@@ -1449,7 +1464,6 @@ public class DTHelper {
 				synchronize();
 			}
 			return result;
-
 
 		} catch (Exception e) {
 			return null;
@@ -1528,11 +1542,12 @@ public class DTHelper {
 		}
 	}
 
-	public static EventObject findEventById(String eventId) {
-
+	public static LocalEventObject findEventById(String eventId) {
+		LocalEventObject returnEvent = new LocalEventObject();
 		try {
 			EventObjectForBean event = getInstance().storage.getObjectById(eventId, EventObjectForBean.class);
-			return event.getObjectForBean();
+			returnEvent.setEventFromEventObjectForBean(event);
+			return returnEvent;
 		} catch (Exception e) {
 			return null;
 		}

@@ -17,8 +17,8 @@ import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class FollowAsyncTaskProcessor extends AbstractAsyncTaskProcessor<Object, BaseDTObject> {
 	private Context mContext;
-	private String appToken;
-	private String authToken;
+//	private String appToken;
+//	private String authToken;
 	// private FollowEntityObject feo;
 	// private Activity activity;
 
@@ -33,9 +33,9 @@ public class FollowAsyncTaskProcessor extends AbstractAsyncTaskProcessor<Object,
 
 	@Override
 	public BaseDTObject performAction(Object... params) throws SecurityException, ConnectionException, Exception {
-		appToken = (String) params[0];
-		authToken = (String) params[1];
-		BaseDTObject obj = (BaseDTObject) params[2];
+//		appToken = (String) params[0];
+//		authToken = (String) params[1];
+		BaseDTObject obj = (BaseDTObject) params[0];
 		// feo = (FollowEntityObject) params[2];
 		// Topic topic = FollowHelper.follow(mContext, appToken, authToken,
 		// feo);

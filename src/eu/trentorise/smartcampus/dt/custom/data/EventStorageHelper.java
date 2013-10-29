@@ -20,6 +20,7 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
 import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
@@ -31,6 +32,10 @@ public class EventStorageHelper implements BeanStorageHelper<EventObjectForBean>
 	@Override
 	public EventObjectForBean toBean(Cursor cursor) {
 		
+//		for (int i = 0; i < cursor.getCount(); i++) {
+//			Log.e("helper",cursor.getString(cursor.getColumnIndex("title")));
+//			cursor.moveToNext();
+//		}
 		EventObjectForBean returnEventObjectForBean = new EventObjectForBean();
 		EventObject event = new EventObject();
 		BaseDTStorageHelper.setCommonFields(cursor, event);

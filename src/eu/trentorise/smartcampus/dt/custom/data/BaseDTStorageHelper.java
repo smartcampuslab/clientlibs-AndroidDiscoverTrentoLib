@@ -28,34 +28,38 @@ import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
 public class BaseDTStorageHelper {
 
 	public static void setCommonFields(Cursor cursor, BaseDTObject o) {
-		o.setId(cursor.getString(cursor.getColumnIndex("id")));
-		o.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-		o.setDescription(cursor.getString(cursor.getColumnIndex("description")));
-		o.setDomainType(cursor.getString(cursor.getColumnIndex("domainType")));
-		o.setDomainId(cursor.getString(cursor.getColumnIndex("domainId")));
-		o.setSource(cursor.getString(cursor.getColumnIndex("source")));
-		o.setType(cursor.getString(cursor.getColumnIndex("type")));
-		o.setCreatorId(cursor.getString(cursor.getColumnIndex("creatorId")));
-		o.setCreatorName(cursor.getString(cursor.getColumnIndex("creatorName")));
-		o.setEntityId(cursor.getString(cursor.getColumnIndex("entityId")));
-		o.setLocation(new double[] { cursor.getDouble(cursor.getColumnIndex("latitude")),
-				cursor.getDouble(cursor.getColumnIndex("longitude")) });
+		if (cursor != null ) {
 
-		o.setCommunityData(new CommunityData());
-		o.getCommunityData().setAverageRating(cursor.getInt(cursor.getColumnIndex("averageRating")));
-		o.getCommunityData().setFollowing(
-				Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("following")), Map.class));
-		o.getCommunityData().setRating(
-				Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("ratings")), Map.class));
-		o.getCommunityData().setRatingsCount(cursor.getInt(cursor.getColumnIndex("ratingsCount")));
-		o.getCommunityData().setFollowsCount(cursor.getInt(cursor.getColumnIndex("followsCount")));
-		o.getCommunityData()
-				.setTags(Utils.convertJSONToObjects(cursor.getString(cursor.getColumnIndex("tags")), Concept.class));
+			o.setId(cursor.getString(cursor.getColumnIndex("id")));
+			o.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+			o.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+			o.setDomainType(cursor.getString(cursor.getColumnIndex("domainType")));
+			o.setDomainId(cursor.getString(cursor.getColumnIndex("domainId")));
+			o.setSource(cursor.getString(cursor.getColumnIndex("source")));
+			o.setType(cursor.getString(cursor.getColumnIndex("type")));
+			o.setCreatorId(cursor.getString(cursor.getColumnIndex("creatorId")));
+			o.setCreatorName(cursor.getString(cursor.getColumnIndex("creatorName")));
+			o.setEntityId(cursor.getString(cursor.getColumnIndex("entityId")));
+			o.setLocation(new double[] { cursor.getDouble(cursor.getColumnIndex("latitude")),
+					cursor.getDouble(cursor.getColumnIndex("longitude")) });
 
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("customData")), Map.class);
-		if (map != null && !map.isEmpty())
-			o.setCustomData(map);
+			o.setCommunityData(new CommunityData());
+			o.getCommunityData().setAverageRating(cursor.getInt(cursor.getColumnIndex("averageRating")));
+			o.getCommunityData().setFollowing(
+					Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("following")), Map.class));
+			o.getCommunityData().setRating(
+					Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("ratings")), Map.class));
+			o.getCommunityData().setRatingsCount(cursor.getInt(cursor.getColumnIndex("ratingsCount")));
+			o.getCommunityData().setFollowsCount(cursor.getInt(cursor.getColumnIndex("followsCount")));
+			o.getCommunityData().setTags(
+					Utils.convertJSONToObjects(cursor.getString(cursor.getColumnIndex("tags")), Concept.class));
+
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = Utils.convertJSONToObject(cursor.getString(cursor.getColumnIndex("customData")),
+					Map.class);
+			if (map != null && !map.isEmpty())
+				o.setCustomData(map);
+		}
 	}
 
 	public static ContentValues toCommonContent(BaseDTObject bean) {

@@ -6,51 +6,44 @@ import java.util.List;
 import java.util.Locale;
 
 import android.location.Address;
-
-
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion.TYPE;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
+import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.TerritoryService;
-import eu.trentorise.smartcampus.territoryservice.TerritoryServiceException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StepObject;
 
 public class Utils {
-	public static final String userPoiObject="eu.trentorise.smartcampus.dt.model.UserPOIObject";
-	public static final String servicePoiObject="eu.trentorise.smartcampus.dt.model.ServicePOIObject";
-	
-	public static LocalStepObject getLocalStepFromStep(StepObject step){
+	public static final String userPoiObject = "eu.trentorise.smartcampus.dt.model.UserPOIObject";
+	public static final String servicePoiObject = "eu.trentorise.smartcampus.dt.model.ServicePOIObject";
 
-		//check if StepObject]
+	public static LocalStepObject getLocalStepFromStep(StepObject step) {
+
+		// check if StepObject]
 		LocalStepObject returnstep = new LocalStepObject();
 		TerritoryService tService = DTHelper.gettService();
 
-		if (step instanceof LocalStepObject)
-		{
+		if (step instanceof LocalStepObject) {
 			return (LocalStepObject) step;
-		}
-		else if (step instanceof StepObject)
-		{
+		} else if (step instanceof StepObject) {
 			// find POI on remote
-			POIObject poi =null;
-			try {
-				poi = tService.getPOI(step.getPoiId(), null);
-			} catch (TerritoryServiceException e) {
-				e.printStackTrace();
-			}
+			POIObject poi = null;
+			poi = DTHelper.findPOIById(step.getPoiId());
+
 			returnstep.setPoiId(step.getPoiId());
 			returnstep.assignPoi(poi);
 			return returnstep;
 		}
 
-		
 		return null;
 	}
-	
+
 	public static List<Concept> conceptConvertSS(Collection<SemanticSuggestion> tags) {
 		List<Concept> result = new ArrayList<Concept>();
 		for (SemanticSuggestion ss : tags) {
@@ -58,7 +51,7 @@ public class Utils {
 				result.add(new Concept(null, ss.getName()));
 			} else if (ss.getType() == TYPE.SEMANTIC) {
 				Concept c = new Concept();
-//				c.setId(ss.getId());
+				// c.setId(ss.getId());
 				c.setName(ss.getName());
 				c.setDescription(ss.getDescription());
 				c.setSummary(ss.getSummary());
@@ -69,14 +62,15 @@ public class Utils {
 	}
 
 	public static ArrayList<SemanticSuggestion> conceptConvertToSS(List<Concept> tags) {
-		if (tags == null) return new ArrayList<SemanticSuggestion>();
+		if (tags == null)
+			return new ArrayList<SemanticSuggestion>();
 		ArrayList<SemanticSuggestion> result = new ArrayList<SemanticSuggestion>();
 		for (Concept c : tags) {
 			SemanticSuggestion ss = new SemanticSuggestion();
 			if (c.getId() == null) {
 				ss.setType(TYPE.KEYWORD);
 			} else {
-//				ss.setId(c.getId());
+				// ss.setId(c.getId());
 				ss.setDescription(c.getDescription());
 				ss.setSummary(c.getSummary());
 				ss.setType(TYPE.SEMANTIC);
@@ -86,18 +80,25 @@ public class Utils {
 		}
 		return result;
 	}
+
 	public static String conceptToSimpleString(List<Concept> tags) {
-		if (tags == null) return null;
+		if (tags == null)
+			return null;
 		String content = "";
 		for (Concept s : tags) {
-			if (content.length() > 0) content += ", ";
+			if (content.length() > 0)
+				content += ", ";
 			content += s.getName();
 		}
 		return content;
 	}
+
 	public static String getPOIshortAddress(POIObject poi) {
-		return poi.getTitle() + (poi.getPoi().getStreet()==null || poi.getPoi().getStreet().length()==0? "": (", "+poi.getPoi().getStreet()));
+		return poi.getTitle()
+				+ (poi.getPoi().getStreet() == null || poi.getPoi().getStreet().length() == 0 ? "" : (", " + poi
+						.getPoi().getStreet()));
 	}
+
 	public static Address getPOIasGoogleAddress(POIObject poi) {
 		Address a = new Address(Locale.getDefault());
 		a.setLatitude(poi.getLocation()[0]);
@@ -110,11 +111,36 @@ public class Utils {
 		a.setAdminArea(poi.getPoi().getRegion());
 		return a;
 	}
-	public static boolean isCreatedByUser(BaseDTObject obj){
-		if (obj.getDomainType()==null || userPoiObject.equals(obj.getDomainType()))
-		{
+
+	public static boolean isCreatedByUser(BaseDTObject obj) {
+		if (obj.getDomainType() == null || userPoiObject.equals(obj.getDomainType())) {
 			return true;
+		} else
+			return false;
+	}
+
+	public static Collection<LocalEventObject> convertToLocalEventFromBean(
+			Collection<EventObjectForBean> searchInGeneral) {
+		Collection<LocalEventObject> returnCollection = new ArrayList<LocalEventObject>();
+		for (EventObjectForBean event : searchInGeneral) {
+			LocalEventObject localEvent = DTHelper.findEventById(event.getObjectForBean().getId());
+			returnCollection.add(localEvent);
 		}
-		else return false;
+		return returnCollection;
+	}
+
+	public static Collection<LocalEventObject> convertToLocalEvent(Collection<EventObject> events) {
+		Collection<EventObjectForBean> beanEvents = new ArrayList<EventObjectForBean>();
+		Collection<LocalEventObject> returnEvents = new ArrayList<LocalEventObject>();
+
+		for (EventObject event: events){
+			EventObjectForBean newObject = new EventObjectForBean();
+			LocalEventObject localObject = new LocalEventObject();
+			newObject.setObjectForBean(event);
+			localObject.setEventFromEventObjectForBean(newObject);
+			returnEvents.add(localObject);
+			}
+		
+		return returnEvents;
 	}
 }

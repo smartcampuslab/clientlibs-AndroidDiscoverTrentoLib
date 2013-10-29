@@ -17,7 +17,9 @@ package eu.trentorise.smartcampus.dt.fragments.events;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -130,8 +132,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			mEventId = getArguments().getString(ARG_EVENT_ID);
 		}
 
-		mEvent = DTHelper.findEventById(mEventId);
-
+		if (mEvent == null) {
+			mEvent = DTHelper.findEventById(mEventId);
+		}
 		if (mEvent != null) {
 			mPoi = DTHelper.findPOIById(mEvent.getPoiId());
 			mEvent.assignPoi(mPoi);
@@ -174,35 +177,19 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-//								FollowEntityObject obj = new FollowEntityObject(mEvent.getEntityId(),
-//										mEvent.getTitle(), DTConstants.ENTITY_TYPE_EVENT);
-//								if (mFollowByIntent) {
-//									// for MyPeople support
-//									followButtonView = buttonView;
-//									FollowHelper.follow(mFragment, obj, 3000);
-//								} else 
 								{
 									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
 													buttonView));
-									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), mEvent);
+									followTask.execute(mEvent);
 								}
 							} else {
 								// UNFOLLOW
-								BaseDTObject obj;
-								try {
-									obj = DTHelper.findEventByEntityId(getEvent().getEntityId());
-									if (obj != null) {
-										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
-														getSherlockActivity(), buttonView));
-										unfollowTask.execute(obj);
+								SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+										getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+												buttonView));
+								unfollowTask.execute(mEvent);
 
-									}
-								} catch (Exception e) {
-									Log.e(EventDetailsFragment.class.getName(),
-											String.format("Error unfollowing event %s", getEvent().getEntityId()));
-								}
 							}
 						} else {
 							mCanceledFollow = false;
@@ -224,10 +211,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			attendTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-//						// show dialog box
-//						UserRegistration.upgradeuser(getSherlockActivity());
-//					} else 
+					// if (new
+					// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
+					// {
+					// // show dialog box
+					// UserRegistration.upgradeuser(getSherlockActivity());
+					// } else
 					{
 						new SCAsyncTask<Boolean, Void, LocalEventObject>(getActivity(), new AttendProcessor(
 								getSherlockActivity(), buttonView)).execute(getEvent().getAttending() == null
@@ -287,13 +276,14 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 
 			// notes
 			tv = (TextView) this.getView().findViewById(R.id.event_details_notes);
-//			if (mEvent.getCommunityData() != null && mEvent.getCommunityData().getNotes() != null
-//					&& mEvent.getCommunityData().getNotes().length() > 0) {
-//				tv.setText(mEvent.getCommunityData().getNotes());
-			
-//			} else {
-				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
-//			}
+			// if (mEvent.getCommunityData() != null &&
+			// mEvent.getCommunityData().getNotes() != null
+			// && mEvent.getCommunityData().getNotes().length() > 0) {
+			// tv.setText(mEvent.getCommunityData().getNotes());
+
+			// } else {
+			((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
+			// }
 
 			// tags
 			tv = (TextView) this.getView().findViewById(R.id.event_details_tags);
@@ -361,11 +351,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-//						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-//							// show dialog box
-//							UserRegistration.upgradeuser(getSherlockActivity());
-//							return false;
-//						} else 
+						// if (new
+						// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
+						// {
+						// // show dialog box
+						// UserRegistration.upgradeuser(getSherlockActivity());
+						// return false;
+						// } else
 						{
 							ratingDialog();
 						}
@@ -404,7 +396,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private boolean isCertified(LocalEventObject event) {
-		if (event.getCustomData()!=null && (Boolean) event.getCustomData().get("certified"))
+		if (event.getCustomData() != null && (Boolean) event.getCustomData().get("certified"))
 			return true;
 		else
 			return false;
@@ -435,7 +427,13 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				CommunityData cd = mEvent.getCommunityData();
 
 				if (cd.getRating() != null && !cd.getRating().isEmpty()) {
-					rating.setRating(cd.getRating().get(0));
+					Iterator<Map.Entry<String, Integer>> entries = cd.getRating().entrySet().iterator();
+					float rate = 0;
+					while (entries.hasNext()) {
+						Map.Entry<String, Integer> entry = entries.next();
+						rate = entry.getValue();
+					}
+					rating.setRating(rate);
 				}
 
 				// user rating
@@ -584,11 +582,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			// return true;
 			// }
 		} else if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
-//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-//				// show dialog box
-//				UserRegistration.upgradeuser(getSherlockActivity());
-//				return false;
-//			} else 
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else
 			{
 				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 						.beginTransaction();
@@ -606,11 +605,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_delete) {
-//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-//				// show dialog box
-//				UserRegistration.upgradeuser(getSherlockActivity());
-//				return false;
-//			} else 
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else
 			{
 				new SCAsyncTask<LocalEventObject, Void, Boolean>(getActivity(), new EventDeleteProcessor(getActivity()))
 						.execute(getEvent());
@@ -625,8 +625,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 3000) {
 			if (resultCode == Activity.RESULT_OK) {
-				Topic topic = (Topic) data
-						.getSerializableExtra("topic");
+				Topic topic = (Topic) data.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
 				data.putExtra(AccountManager.KEY_AUTHTOKEN, DTHelper.getAuthToken());
@@ -792,9 +791,9 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			mEvent = result;
 			updateAttending();
 			// getSherlockActivity().invalidateOptionsMenu();
-			LocalEventObject event = getEvent();
+			// LocalEventObject event = getEvent();
 			if (getSherlockActivity() != null)
-				if (event.getAttending() == null || event.getAttending().isEmpty()) {
+				if (mEvent.getAttending() == null || mEvent.getAttending().isEmpty()) {
 					Toast.makeText(getSherlockActivity(), R.string.not_attend_success, Toast.LENGTH_SHORT).show();
 					buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
 				} else {

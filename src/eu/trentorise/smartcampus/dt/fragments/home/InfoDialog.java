@@ -52,7 +52,7 @@ public class InfoDialog extends SherlockDialogFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		if (this.data != null) {
+		if (this.data == null) {
 			this.data = (BaseDTObject) getArguments().getSerializable(PARAM);
 		}
 		if (data instanceof POIObject) {

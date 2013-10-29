@@ -72,8 +72,8 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
 
     	 try {
  			Log.e(TAG, "Trying synchronization");
-			SyncStorage storage = DTHelper.getSyncStorage();
-			storage.synchronize(DTHelper.getAuthToken(), GlobalConfig.getAppUrl(mContext), eu.trentorise.smartcampus.dt.custom.data.Constants.SYNC_SERVICE);
+			DTHelper.synchronize();
+//			storage.synchronize(DTHelper.getAuthToken(), GlobalConfig.getAppUrl(mContext), eu.trentorise.smartcampus.dt.custom.data.Constants.SYNC_SERVICE);
 
 		}  catch (SecurityException e) {
 			handleSecurityProblem();

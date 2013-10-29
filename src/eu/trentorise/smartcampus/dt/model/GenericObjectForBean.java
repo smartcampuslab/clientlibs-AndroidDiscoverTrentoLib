@@ -2,14 +2,13 @@ package eu.trentorise.smartcampus.dt.model;
 
 import eu.trentorise.smartcampus.storage.BasicObject;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
-import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
-public class GenericObjectForBean extends BasicObject {
+public class GenericObjectForBean<T extends BaseDTObject> extends BasicObject {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7872581890857683931L;
-	protected BaseDTObject objectForBean;
+	protected T objectForBean;
 
 	@Override
 	public void setId(String id) {
@@ -26,7 +25,7 @@ public class GenericObjectForBean extends BasicObject {
 		objectForBean.setVersion(version);
 	}
 
-	public void setObjectForBean(BaseDTObject objectForBean) {
+	public void setObjectForBean(T objectForBean) {
 		this.objectForBean = objectForBean;
 	}
 
@@ -45,7 +44,7 @@ public class GenericObjectForBean extends BasicObject {
 		return objectForBean.getVersion();
 	}
 
-	public BaseDTObject getObjectForBean() {
+	public T getObjectForBean() {
 		return objectForBean;
 	}
 }

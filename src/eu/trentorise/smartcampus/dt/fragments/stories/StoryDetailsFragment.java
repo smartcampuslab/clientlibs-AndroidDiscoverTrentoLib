@@ -17,8 +17,10 @@ package eu.trentorise.smartcampus.dt.fragments.stories;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -258,40 +260,20 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-								// FollowEntityObject obj = new
-								// FollowEntityObject(getStory().getEntityId(),
-								// getStory().getTitle(),
-								// DTConstants.ENTITY_TYPE_STORY);
-								// if (mFollowByIntent) {
-								// followButtonView = buttonView;
-								// FollowHelper.follow(StoryDetailsFragment.this,
-								// obj, 3000);
-								// } else
 								{
-
 									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
 													buttonView));
-									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(),
-											getStory());
-
+									followTask.execute(mStory);
 								}
 							} else {
 								// UNFOLLOW
-								BaseDTObject obj;
-								try {
-									obj = DTHelper.findStoryByEntityId(Long.parseLong(getStory().getEntityId())).getObjectForBean();
-									if (obj != null) {
 										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
 												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
 														getSherlockActivity(), buttonView));
-										unfollowTask.execute(obj);
+										unfollowTask.execute(mStory);
+
 									}
-								} catch (Exception e) {
-									Log.e(EventDetailsFragment.class.getName(),
-											String.format("Error unfollowing event %s", getStory().getEntityId()));
-								}
-							}
 						} else {
 							mCanceledFollow = false;
 						}
@@ -618,7 +600,13 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				CommunityData cd = getStory().getCommunityData();
 
 				if (cd.getRating() != null && !cd.getRating().isEmpty()) {
-					rating.setRating(cd.getRating().get(0));
+					Iterator<Map.Entry<String, Integer>> entries = cd.getRating().entrySet().iterator();
+					float rate = 0;
+					while (entries.hasNext()) {
+						Map.Entry<String, Integer> entry = entries.next();
+						rate = entry.getValue();
+					}
+					rating.setRating(rate);
 				}
 
 				// user rating
@@ -1038,6 +1026,40 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				DTHelper.follow(DTHelper.findStoryById(mStoryId));
 			} catch (Exception e) {
 				Log.e(FollowAsyncTask.class.getName(), String.format("Exception following event %s", mStoryId));
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// getSherlockActivity().invalidateOptionsMenu();
+			if (followButtonView != null) {
+				followButtonView.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+				followButtonView = null;
+			}
+			mStart = true;
+		}
+
+	}
+
+	class GetStoryAsyncTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			if (mStoryId == null || mStory == null) {
+				mStoryId = getArguments().getString(ARG_STORY_ID);
+				mStory = DTHelper.findStoryById(mStoryId);
+				if (mStory != null) {
+					try {
+						List<POIObject> poiList = DTHelper.getPOIBySteps(mStory.getSteps());
+						for (int i = 0; i < poiList.size(); i++) {
+							Utils.getLocalStepFromStep(mStory.getSteps().get(i)).assignPoi(poiList.get(i));
+						}
+					} catch (Exception e) {
+						Log.e(getClass().getName(), "Error reading story places: " + e.getMessage());
+					}
+
+				}
 			}
 			return null;
 		}

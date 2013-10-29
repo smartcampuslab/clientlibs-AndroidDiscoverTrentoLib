@@ -78,11 +78,13 @@ import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.DTConstants;
+import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 // to be used for event listing both in categories and in My Events
@@ -634,6 +636,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 	private List<LocalEventObject> getEvents(AbstractLstingFragment.ListingRequest... params) {
 		try {
 			Collection<LocalEventObject> result = null;
+			
 			Bundle bundle = getArguments();
 			boolean my = false;
 
@@ -648,39 +651,40 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)
 					&& (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 
-				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
+				result = Utils.convertToLocalEventFromBean(DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, LocalEventObject.class,
-						sort, categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObjectForBean.class,
+						sort, categories));
 
 			} else if (bundle.containsKey(ARG_POI) && (bundle.getString(ARG_POI) != null)) {
-				result = DTHelper.getEventsByPOI(params[0].position, params[0].size, bundle.getString(ARG_POI));
+				result = Utils.convertToLocalEvent(DTHelper.getEventsByPOI(params[0].position, params[0].size, bundle.getString(ARG_POI)));
 			} else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
 
-				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
+				result = Utils.convertToLocalEventFromBean(DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, LocalEventObject.class,
-						sort, categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObjectForBean.class,
+						sort, categories));
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
 
-				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
+				result = Utils.convertToLocalEventFromBean(DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, LocalEventObject.class,
-						sort, categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, EventObjectForBean.class,
+						sort, categories));
 
 			} else if (bundle.containsKey(ARG_QUERY_TODAY)) {
 				result = DTHelper.searchTodayEvents(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY));
 			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-				result = (List<LocalEventObject>) bundle.get(SearchFragment.ARG_LIST);
+				result =  (Collection<LocalEventObject>) bundle.get(SearchFragment.ARG_LIST);
 			} else {
 				return Collections.emptyList();
 			}
 
+			/*conversion to LocalObject*/
 			listEvents.addAll(result);
 			
 			List<LocalEventObject> sorted = new ArrayList<LocalEventObject>(listEvents);
@@ -709,6 +713,9 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 		}
 	}
 
+
+
+
 	private void calToDate(Calendar cal) {
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -725,6 +732,8 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 		}
 	}
 
+
+	
 	private class TaggingAsyncTask extends SCAsyncTask<List<Concept>, Void, Void> {
 
 		public TaggingAsyncTask(final LocalEventObject p) {
