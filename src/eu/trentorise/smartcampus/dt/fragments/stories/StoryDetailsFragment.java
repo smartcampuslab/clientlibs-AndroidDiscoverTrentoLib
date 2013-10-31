@@ -973,12 +973,13 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 		@Override
 		public void handleResult(StoryObject result) {
-			resetStory();
+//			resetStory();
+			mStory = result;
 			updateAttending();
 			// changeTheMapConfiguration();
 			// getSherlockActivity().invalidateOptionsMenu();
 			if (getSherlockActivity() != null)
-				if (getStory().getAttending() == null || getStory().getAttending().isEmpty()) {
+				if (mStory.getAttending() == null || mStory.getAttending().isEmpty()) {
 					Toast.makeText(getSherlockActivity(), R.string.not_attend_story_success, Toast.LENGTH_SHORT).show();
 					buttonView.setBackgroundResource(R.drawable.ic_btn_monitor_off);
 				} else {

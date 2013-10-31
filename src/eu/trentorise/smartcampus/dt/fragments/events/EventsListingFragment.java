@@ -689,7 +689,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			
 			List<LocalEventObject> sorted = new ArrayList<LocalEventObject>(listEvents);
 			for (LocalEventObject eventObject : sorted) {
-				if (eventObject.getPoiId() != null) {
+				if (eventObject!=null && eventObject.getPoiId() != null) {
 					eventObject.assignPoi(DTHelper.findPOIById(eventObject.getPoiId()));
 				}
 			}

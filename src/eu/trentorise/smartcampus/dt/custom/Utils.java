@@ -123,8 +123,11 @@ public class Utils {
 			Collection<EventObjectForBean> searchInGeneral) {
 		Collection<LocalEventObject> returnCollection = new ArrayList<LocalEventObject>();
 		for (EventObjectForBean event : searchInGeneral) {
-			LocalEventObject localEvent = DTHelper.findEventById(event.getObjectForBean().getId());
-			returnCollection.add(localEvent);
+				LocalEventObject localEvent = DTHelper.findEventById(event.getObjectForBean().getId());
+				if (localEvent != null) {
+
+				returnCollection.add(localEvent);
+			}
 		}
 		return returnCollection;
 	}
@@ -133,14 +136,14 @@ public class Utils {
 		Collection<EventObjectForBean> beanEvents = new ArrayList<EventObjectForBean>();
 		Collection<LocalEventObject> returnEvents = new ArrayList<LocalEventObject>();
 
-		for (EventObject event: events){
+		for (EventObject event : events) {
 			EventObjectForBean newObject = new EventObjectForBean();
 			LocalEventObject localObject = new LocalEventObject();
 			newObject.setObjectForBean(event);
 			localObject.setEventFromEventObjectForBean(newObject);
 			returnEvents.add(localObject);
-			}
-		
+		}
+
 		return returnEvents;
 	}
 }

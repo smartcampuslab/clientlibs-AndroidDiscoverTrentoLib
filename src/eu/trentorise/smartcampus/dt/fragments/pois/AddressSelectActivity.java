@@ -106,8 +106,10 @@ public class AddressSelectActivity extends FeedbackFragmentActivity implements O
 					+ Double.toString(address.getLatitude());
 			address.setAddressLine(0, addressLine);
 			
-			if(addresses!=null) //Fixed bug if you select a place without addresses (happens when you are without connection)
+			if(addresses!=null && !addresses.isEmpty()) //Fixed bug if you select a place without addresses (happens when you are without connection)
+														// must to manage the dialog if we have only lat long
 				new InfoDialog(AddressSelectActivity.this, addresses.get(0)).show(getSupportFragmentManager(), "me");
+			else Toast.makeText(this, getString(R.string.app_failure_localization), Toast.LENGTH_LONG).show();
 		}
 	}
 
