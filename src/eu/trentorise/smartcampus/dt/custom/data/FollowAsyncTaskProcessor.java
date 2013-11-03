@@ -2,15 +2,10 @@ package eu.trentorise.smartcampus.dt.custom.data;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Toast;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
-import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
@@ -48,24 +43,24 @@ public class FollowAsyncTaskProcessor extends AbstractAsyncTaskProcessor<Object,
 		return DTHelper.follow(obj);
 	}
 
-	private BaseDTObject findObject(FollowEntityObject feo) {
-		if (feo != null) {
-			try {
-				if (feo.getType().equals(DTConstants.ENTITY_TYPE_EVENT)) {
-					return DTHelper.findEventByEntityId(feo.getEntityId()).getObjectForBean();
-				} else if (feo.getType().equals(DTConstants.ENTITY_TYPE_POI)) {
-					return DTHelper.findPOIByEntityId(feo.getEntityId()).getObjectForBean();
-				} else if (feo.getType().equals(DTConstants.ENTITY_TYPE_STORY)) {
-					return DTHelper.findStoryByEntityId(feo.getEntityId()).getObjectForBean();
-				}
-			} catch (Exception e) {
-				Log.e(FollowAsyncTaskProcessor.class.getName(),
-						String.format("Error getting BaseDTObject %s of type %s", feo.getEntityId(), feo.getType()));
-				return null;
-			}
-		}
-		return null;
-	}
+//	private BaseDTObject findObject(FollowEntityObject feo) {
+//		if (feo != null) {
+//			try {
+//				if (feo.getType().equals(DTConstants.ENTITY_TYPE_EVENT)) {
+//					return DTHelper.findEventByEntityId(feo.getEntityId()).getObjectForBean();
+//				} else if (feo.getType().equals(DTConstants.ENTITY_TYPE_POI)) {
+//					return DTHelper.findPOIByEntityId(feo.getEntityId()).getObjectForBean();
+//				} else if (feo.getType().equals(DTConstants.ENTITY_TYPE_STORY)) {
+//					return DTHelper.findStoryByEntityId(feo.getEntityId()).getObjectForBean();
+//				}
+//			} catch (Exception e) {
+//				Log.e(FollowAsyncTaskProcessor.class.getName(),
+//						String.format("Error getting BaseDTObject %s of type %s", feo.getEntityId(), feo.getType()));
+//				return null;
+//			}
+//		}
+//		return null;
+//	}
 
 	@Override
 	public void handleResult(BaseDTObject result) {

@@ -8,7 +8,6 @@ import com.actionbarsherlock.view.MenuItem;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 
 public class NotificationsFragmentActivityDT extends FeedbackFragmentActivity {

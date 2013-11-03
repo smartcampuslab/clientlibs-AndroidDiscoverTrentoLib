@@ -167,8 +167,14 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 				TextView notePlace = (TextView) view.findViewById(R.id.step_tags);
 
 				if (stepPlace.getText() != null && stepPlace.getText().length() > 0) {
-					step = new LocalStepObject(DTHelper.findPOIByTitle(stepPlace.getText().toString()), notePlace.getText()
-							.toString());
+					if (poi == null || !poi.getTitle().equals(stepPlace.getText())) {
+						 poi = DTHelper.findPOIByTitle(stepPlace.getText().toString());
+					}
+					if (poi == null) {
+						Toast.makeText(getActivity(), R.string.poi_step_not_exist, Toast.LENGTH_LONG).show();
+						return;
+					}
+					step = new LocalStepObject(poi, notePlace.getText().toString());
 					if (stepHandler != null) {
 						if ((storyObject != null) && (position != null))
 							stepHandler.updateStep(step, position);

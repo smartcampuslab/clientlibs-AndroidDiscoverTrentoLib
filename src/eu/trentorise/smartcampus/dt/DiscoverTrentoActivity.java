@@ -28,7 +28,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -151,7 +150,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				if (DTHelper.wantTour(this))
 					showTutorial();
 			}
-		} else {
+		} else if (requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				String token = data.getExtras().getString(AccountManager.KEY_AUTHTOKEN);
 				if (token == null) {
@@ -161,7 +160,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					initData(token);
 				}
 			} else if (resultCode == RESULT_CANCELED && requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
-				DTHelper.endAppFailure(this, R.string.token_required);
+				DTHelper.endAppFailure(this, R.string.app_failure_security);
 			}
 		}
 	}
@@ -246,7 +245,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		@Override
 		public BaseDTObject performAction(Void... params) throws SecurityException, Exception {
-			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);
+			String entityId = getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
 			String type = getIntent().getStringExtra(getString(R.string.view_intent_arg_entity_type));
 
 			Exception res = null;
@@ -257,7 +256,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				res = e;
 			}
 
-			if (entityId > 0 && type != null) {
+			if (entityId != null && type != null) {
 				if ("event".equals(type))
 					return DTHelper.findEventByEntityId(entityId).getObjectForBean();
 				else if ("location".equals(type))
@@ -291,10 +290,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 									@Override
 									public void run() {
 										currentRootActivity.setSupportProgressBarIndeterminateVisibility(false);
-										if (DiscoverTrentoActivity.this != null)
+										if (DiscoverTrentoActivity.this != null) {
 											DiscoverTrentoActivity.this.setSupportProgressBarIndeterminateVisibility(false);
-										else
-											Log.e("no", "woman no cry");
+										}
 										isLoading = false;
 									}
 								});
@@ -304,7 +302,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				}).start();
 			} else {
 				setSupportProgressBarIndeterminateVisibility(false);
-
+				DTHelper.activateAutoSync();
 			}
 
 			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);

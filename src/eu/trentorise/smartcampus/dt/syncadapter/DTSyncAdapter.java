@@ -17,26 +17,18 @@
 package eu.trentorise.smartcampus.dt.syncadapter;
 
 import android.accounts.Account;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SyncResult;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
-import eu.trentorise.smartcampus.ac.AACException;
-import eu.trentorise.smartcampus.android.common.GlobalConfig;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
-import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.storage.sync.SyncStorage;
 import eu.trentorise.smartcampus.storage.sync.Utils;
 
 /**
@@ -84,31 +76,31 @@ public class DTSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     
 	public void handleSecurityProblem() {
-//        boolean anonymous = DTHelper.getAccessProvider().isUserAnonymous(mContext);
-//        DTHelper.getAccessProvider().invalidateToken(mContext, null);
-        try {
-			DTHelper.getAccessProvider().logout(mContext);
-		} catch (AACException e) {
-			e.printStackTrace();
-		}
-//        if (!anonymous) {
-            Intent i = new Intent("eu.trentorise.smartcampus.START");
-            i.setPackage(mContext.getPackageName());
-            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            
-            int icon = R.drawable.stat_notify_error;
-            CharSequence tickerText = mContext.getString(R.string.token_expired);
-            long when = System.currentTimeMillis();
-            CharSequence contentText = mContext.getString(R.string.token_required);
-            PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, i, 0);
-
-            Notification notification = new Notification(icon, tickerText, when);
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-            notification.setLatestEventInfo(mContext, tickerText, contentText, contentIntent);
-            
-//            mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
-            mNotificationManager.notify(1, notification);
-
-//        }
+////        boolean anonymous = DTHelper.getAccessProvider().isUserAnonymous(mContext);
+////        DTHelper.getAccessProvider().invalidateToken(mContext, null);
+//        try {
+//			DTHelper.getAccessProvider().logout(mContext);
+//		} catch (AACException e) {
+//			e.printStackTrace();
+//		}
+////        if (!anonymous) {
+//            Intent i = new Intent("eu.trentorise.smartcampus.START");
+//            i.setPackage(mContext.getPackageName());
+//            NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+//            
+//            int icon = R.drawable.stat_notify_error;
+//            CharSequence tickerText = mContext.getString(R.string.token_expired);
+//            long when = System.currentTimeMillis();
+//            CharSequence contentText = mContext.getString(R.string.token_required);
+//            PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, i, 0);
+//
+//            Notification notification = new Notification(icon, tickerText, when);
+//            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+//            notification.setLatestEventInfo(mContext, tickerText, contentText, contentIntent);
+//            
+////            mNotificationManager.notify(eu.trentorise.smartcampus.ac.Constants.ACCOUNT_NOTIFICATION_ID, notification);
+//            mNotificationManager.notify(1, notification);
+//
+////        }
 	}
 }

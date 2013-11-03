@@ -55,11 +55,8 @@ import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
-import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
@@ -70,13 +67,10 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
@@ -85,7 +79,6 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	public static final String ARG_POI_ID = "poi_id";
 
-	private boolean mFollowByIntent;
 	private boolean mStart = true;
 	private boolean mCanceledFollow = false;
 
@@ -384,9 +377,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
 					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
-			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
-			mFollowByIntent = false;
 			Log.e(PoiDetailsFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
 		}
 
@@ -555,7 +546,6 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		@Override
 		protected Void doInBackground(String... params) {
-			String topicId = params[0];
 			try {
 				DTHelper.follow(DTHelper.findPOIById(mPoiId));
 			} catch (Exception e) {
