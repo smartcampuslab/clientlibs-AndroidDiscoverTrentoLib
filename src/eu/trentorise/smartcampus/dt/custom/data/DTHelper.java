@@ -1048,6 +1048,7 @@ public class DTHelper {
 		EventObjectForBean newEventBean = new EventObjectForBean();
 		newEventBean.setObjectForBean(newEvent);
 		returnEvent.setEventFromEventObjectForBean(newEventBean);
+		synchronize();
 		return returnEvent;
 	}
 
@@ -1059,6 +1060,7 @@ public class DTHelper {
 		EventObjectForBean newEventBean = new EventObjectForBean();
 		newEventBean.setObjectForBean(newEvent);
 		returnEvent.setEventFromEventObjectForBean(newEventBean);
+		synchronize();
 		return returnEvent;
 	}
 
@@ -1279,7 +1281,7 @@ public class DTHelper {
 		// return returnEvent;
 
 		StoryObject returnObject = tService.myStory(story.getId(), true, getAuthToken());
-
+		synchronize();
 		return returnObject;
 	}
 
@@ -1287,7 +1289,7 @@ public class DTHelper {
 			SecurityException, DataException, RemoteException, StorageConfigurationException,
 			TerritoryServiceException, AACException {
 		StoryObject returnObject = tService.myStory(story.getId(), false, getAuthToken());
-
+		synchronize();
 		return returnObject;
 	}
 
