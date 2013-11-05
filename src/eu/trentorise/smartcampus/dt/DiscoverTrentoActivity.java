@@ -27,14 +27,12 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -51,17 +49,11 @@ import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
-import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
-import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
-import eu.trentorise.smartcampus.territoryservice.model.EventObject;
-import eu.trentorise.smartcampus.territoryservice.model.POIObject;
-import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
@@ -245,8 +237,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		@Override
 		public BaseDTObject performAction(Void... params) throws SecurityException, Exception {
-			String entityId = getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
-			String type = getIntent().getStringExtra(getString(R.string.view_intent_arg_entity_type));
+//			String entityId = getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
+//			String type = getIntent().getStringExtra(getString(R.string.view_intent_arg_entity_type));
 
 			Exception res = null;
 
@@ -256,14 +248,15 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				res = e;
 			}
 
-			if (entityId != null && type != null) {
-				if ("event".equals(type))
-					return DTHelper.findEventByEntityId(entityId).getObjectForBean();
-				else if ("location".equals(type))
-					return DTHelper.findPOIByEntityId(entityId).getObjectForBean();
-				else if ("narrative".equals(type))
-					return DTHelper.findStoryByEntityId(entityId).getObjectForBean();
-			} else if (res != null) {
+//			if (entityId != null && type != null) {
+//				if ("event".equals(type))
+//					return DTHelper.findEventByEntityId(entityId).getObjectForBean();
+//				else if ("location".equals(type))
+//					return DTHelper.findPOIByEntityId(entityId).getObjectForBean();
+//				else if ("narrative".equals(type))
+//					return DTHelper.findStoryByEntityId(entityId).getObjectForBean();
+//			} else 
+			if (res != null) {
 				throw res;
 			}
 			return null;
@@ -305,44 +298,44 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				DTHelper.activateAutoSync();
 			}
 
-			Long entityId = getIntent().getLongExtra(getString(R.string.view_intent_arg_entity_id), -1);
-			if (entityId > 0) {
-				if (result == null) {
-					Toast.makeText(DiscoverTrentoActivity.this, R.string.app_failure_obj_not_found, Toast.LENGTH_LONG).show();
-					return;
-				}
-
-				SherlockFragment fragment = null;
-				String tag = null;
-				Bundle args = new Bundle();
-				if (result instanceof POIObject) {
-					fragment = new PoiDetailsFragment();
-					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
-					tag = "pois";
-				} else if (result instanceof EventObject) {
-					fragment = new EventDetailsFragment();
-					args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
-					tag = "events";
-				} else if (result instanceof StoryObject) {
-					fragment = new StoryDetailsFragment();
-					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
-					tag = "stories";
-					// } else if (result instanceof StoryObject) {
-					// fragment = new EventDetailsFragment();
-					// args.putSerializable(StoryDetailsFragment.ARG_STORY_OBJECT,
-					// result);
-					// tag = "stories";
-				}
-				if (fragment != null) {
-					FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-					fragment.setArguments(args);
-
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, tag);
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
-				}
-			}
+//			String entityId = getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
+//			if (entityId != null) {
+//				if (result == null) {
+//					Toast.makeText(DiscoverTrentoActivity.this, R.string.app_failure_obj_not_found, Toast.LENGTH_LONG).show();
+//					return;
+//				}
+//
+//				SherlockFragment fragment = null;
+//				String tag = null;
+//				Bundle args = new Bundle();
+//				if (result instanceof POIObject) {
+//					fragment = new PoiDetailsFragment();
+//					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
+//					tag = "pois";
+//				} else if (result instanceof EventObject) {
+//					fragment = new EventDetailsFragment();
+//					args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
+//					tag = "events";
+//				} else if (result instanceof StoryObject) {
+//					fragment = new StoryDetailsFragment();
+//					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
+//					tag = "stories";
+//					// } else if (result instanceof StoryObject) {
+//					// fragment = new EventDetailsFragment();
+//					// args.putSerializable(StoryDetailsFragment.ARG_STORY_OBJECT,
+//					// result);
+//					// tag = "stories";
+//				}
+//				if (fragment != null) {
+//					FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//					fragment.setArguments(args);
+//
+//					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//					fragmentTransaction.replace(android.R.id.content, fragment, tag);
+//					fragmentTransaction.addToBackStack(fragment.getTag());
+//					fragmentTransaction.commit();
+//				}
+//			}
 		}
 
 	}

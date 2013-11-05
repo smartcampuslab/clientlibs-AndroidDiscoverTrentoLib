@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -28,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
@@ -45,6 +47,7 @@ import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -53,13 +56,19 @@ import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
+import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
+import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
+import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockMapFragmentDT;
+import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class HomeFragment extends NotificationsSherlockMapFragmentDT implements MapItemsHandler, OnCameraChangeListener,
 		OnMarkerClickListener, MapObjectContainer {
@@ -75,6 +84,8 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	private String[] eventsNotTodayCategories = null;
 	private Collection<? extends BaseDTObject> objects;
 
+	private boolean loaded = false;
+	
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -84,9 +95,25 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
-		initView();
+		if (!loaded) {
+			String key = getString(R.string.view_intent_arg_object_id);
+			if (getActivity().getIntent() != null && getActivity().getIntent().hasExtra(key)) {
+				new SCAsyncTask<Void, Void, BaseDTObject>(getActivity(), new LoadDataProcessor(getActivity())).execute();
+				eventsCategories = null;
+				poiCategories = null;
+			} else {
+				initView();
+			}
+			loaded = true;
+		}
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean("loaded", loaded);
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -364,6 +391,67 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(
 						getSherlockActivity().getApplicationContext(), getSupportMap(), objects);
 				MapManager.ClusteringHelper.render(getSupportMap(), cluster);
+			}
+		}
+
+	}
+
+	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
+
+		public LoadDataProcessor(Activity activity) {
+			super(activity);
+		}
+
+		@Override
+		public BaseDTObject performAction(Void... params) throws SecurityException, Exception {
+			String entityId = getActivity().getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
+			String type = getActivity().getIntent().getStringExtra(getString(R.string.view_intent_arg_entity_type));
+
+			if (entityId != null && type != null) {
+				if ("event".equals(type))
+					return DTHelper.findEventByEntityId(entityId).getObjectForBean();
+				else if ("location".equals(type))
+					return DTHelper.findPOIByEntityId(entityId).getObjectForBean();
+				else if ("narrative".equals(type))
+					return DTHelper.findStoryByEntityId(entityId).getObjectForBean();
+			}
+			return null;
+		}
+
+		@Override
+		public void handleResult(BaseDTObject result) {
+
+			String key = getString(R.string.view_intent_arg_object_id);
+			String entityId = getActivity().getIntent().getStringExtra(key);
+			getActivity().getIntent().removeExtra(key);
+
+			if (entityId != null) {
+				if (result == null) {
+					Toast.makeText(getActivity(), R.string.app_failure_obj_not_found, Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				SherlockFragment fragment = null;
+				Bundle args = new Bundle();
+				if (result instanceof POIObject) {
+					fragment = new PoiDetailsFragment();
+					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
+				} else if (result instanceof EventObject) {
+					fragment = new EventDetailsFragment();
+					args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
+				} else if (result instanceof StoryObject) {
+					fragment = new StoryDetailsFragment();
+					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
+				}
+				if (fragment != null) {
+					FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+					fragment.setArguments(args);
+
+					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.addToBackStack(fragment.getTag());
+					fragmentTransaction.commit();
+				}
 			}
 		}
 
