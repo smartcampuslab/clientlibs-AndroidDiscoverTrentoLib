@@ -161,21 +161,21 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 					DTHelper.synchronize();
 					eo = DTHelper.findEventByEntityId(entityObject.getEntityId());
 				}
-				return eo.getObjectForBean();
+				return eo == null ? null : eo.getObjectForBean();
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_LOCATION)) {
 				PoiObjectForBean po = DTHelper.findPOIByEntityId(entityObject.getEntityId());
 				if (po == null) {
 					DTHelper.synchronize();
 					po = DTHelper.findPOIByEntityId(entityObject.getEntityId());
 				}
-				return po.getObjectForBean();
+				return po == null ? null : po.getObjectForBean();
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_STORY)) {
 				StoryObjectForBean so = DTHelper.findStoryByEntityId((entityObject.getEntityId()));
 				if (so == null) {
 					DTHelper.synchronize();
 					so = DTHelper.findStoryByEntityId(entityObject.getEntityId());
 				}
-				return so.getObjectForBean();
+				return so == null ? null : so.getObjectForBean();
 			}
 
 			return null;

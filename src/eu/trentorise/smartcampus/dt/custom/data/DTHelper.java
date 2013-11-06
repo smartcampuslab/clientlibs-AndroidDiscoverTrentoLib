@@ -63,6 +63,8 @@ import eu.trentorise.smartcampus.dt.model.GenericObjectForBean;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
 import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
+import eu.trentorise.smartcampus.network.RemoteConnector;
+import eu.trentorise.smartcampus.network.RemoteConnector.CLIENT_TYPE;
 import eu.trentorise.smartcampus.profileservice.BasicProfileService;
 import eu.trentorise.smartcampus.profileservice.model.BasicProfile;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
@@ -151,6 +153,7 @@ public class DTHelper {
 	public static void init(final Context mContext) {
 		if (instance == null)
 			instance = new DTHelper(mContext);
+		
 		tService = new TerritoryService(getAppUrl() + "core.territory");
 
 		new AsyncTask<Void, Void, BasicProfile>() {
@@ -228,7 +231,11 @@ public class DTHelper {
 
 	protected DTHelper(Context mContext) {
 		super();
+
 		DTHelper.mContext = mContext;
+		if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.FROYO) {
+			RemoteConnector.setClientType(CLIENT_TYPE.CLIENT_WILDCARD);
+		}
 		accessProvider = SCAccessProvider.getInstance(mContext);
 		DTParamsHelper.init(mContext);
 		MapManager.initWithParam();
