@@ -143,10 +143,11 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	protected void initView() {
 		if (getSupportMap() != null) {
 			getSupportMap().clear();
+			getSupportMap().getUiSettings().setRotateGesturesEnabled(false);
+			getSupportMap().getUiSettings().setTiltGesturesEnabled(false);
 		}
 
-		getSupportMap().getUiSettings().setRotateGesturesEnabled(false);
-		getSupportMap().getUiSettings().setTiltGesturesEnabled(false);
+
 
 		if (getArguments() != null && getArguments().containsKey(ARG_OBJECTS)) {
 			poiCategories = null;
