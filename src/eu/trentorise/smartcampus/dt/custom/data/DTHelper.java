@@ -840,8 +840,8 @@ public class DTHelper {
 			if (where.length() > 0) {
 				where = "(" + where + ")";
 			}
-			if (where.length() > 0) where += " AND ";
-			where += "fromTime > " + getCurrentDateTimeForSearching();
+//			if (where.length() > 0) where += " AND ";
+//			where += "fromTime > " + getCurrentDateTimeForSearching();
 			Collection<EventObjectForBean> events = getInstance().storage.query(EventObjectForBean.class, where,
 					nonNullCategories.toArray(new String[nonNullCategories.size()]), position, size, "fromTime ASC");
 			for (EventObjectForBean eventBean : events) {
