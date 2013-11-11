@@ -184,6 +184,23 @@
     <string name="categories_poi_family">Famiglia</string>
     <string name="categories_poi_generic">Altri luoghi</string>
     
+    <string name="categories_parking_sseverino">Parcheggio SanSeverino</string>
+    <string name="categories_parking_gpiazzafiera">Garage Piazza Fiera</string>
+    <string name="categories_parking_autorimessaeuropa">Garage Autorimessa Europa</string>
+    <string name="categories_parking_povo">Parcheggio Povo</string>
+    <string name="categories_parking_gtorreverde">Garage Torre Verde</string>
+    <string name="categories_parking_autosilobuonconsiglio">Garage Autosilo Buonconsiglio</string>
+    <string name="categories_parking_gcentroeuropa">Garage Centro Europa</string>
+    <string name="categories_parking_pcte">Parcehggio CTE via Bomporto</string>
+    <string name="categories_parking_psit">Parcehggio Ex SIT via Canestrini</string>
+    <string name="categories_parking_gduomo">Garage Parcheggio Duomo</string>
+    <string name="categories_parking_ptangenzialepiedicastello">Parcheggio Ex tangenziale Piedicastello</string>
+    <string name="categories_parking_viaasiago">Parcheggio Via Asiago</string>
+    <string name="categories_parking_campoconi">Parcheggio Campo Coni</string>
+	<string name="categories_parking_zuffo">Parcheggio Area ex Zuffo</string>    
+    <string name="categories_parking_ghiaie">Parcheggio Ghiaie</string>
+    <string name="categories_parking_palazonda">Garage Parcheggio Palazzo Onda</string>
+    
     <string name="categories_story_leisure">Intrattenimento</string>
     <string name="categories_story_offices_and_services">Enti e servizi</string>
     <string name="categories_story_university">Università</string>

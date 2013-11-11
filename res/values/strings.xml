@@ -181,6 +181,8 @@
 	<string name="categories_poi_family">Family</string>
 	<string name="categories_poi_generic">Other places</string>
 	
+	<string name="categories_parking_city">ParkingOfTheCity</string>
+	
 	<string name="categories_story_leisure">Amusement</string>
 	<string name="categories_story_offices_and_services">Organisations</string>
 	<string name="categories_story_university">University</string>
