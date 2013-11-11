@@ -191,8 +191,8 @@
     <string name="categories_parking_gtorreverde">Garage Torre Verde</string>
     <string name="categories_parking_autosilobuonconsiglio">Garage Autosilo Buonconsiglio</string>
     <string name="categories_parking_gcentroeuropa">Garage Centro Europa</string>
-    <string name="categories_parking_pcte">Parcehggio CTE via Bomporto</string>
-    <string name="categories_parking_psit">Parcehggio Ex SIT via Canestrini</string>
+    <string name="categories_parking_pcte">Parcheggio CTE via Bomporto</string>
+    <string name="categories_parking_psit">Parcheggio Ex SIT via Canestrini</string>
     <string name="categories_parking_gduomo">Garage Parcheggio Duomo</string>
     <string name="categories_parking_ptangenzialepiedicastello">Parcheggio Ex tangenziale Piedicastello</string>
     <string name="categories_parking_viaasiago">Parcheggio Via Asiago</string>
