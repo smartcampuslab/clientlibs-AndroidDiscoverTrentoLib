@@ -187,6 +187,7 @@
     <string name="toast_poi_shared">Luogo condiviso.</string>
     <string name="toast_follow_ok">OK! Ora stai seguendo \"%s\"</string>
     <string name="toast_unfollow_ok">OK! Ora non segui piú \"%s\"</string>
+    <string name="toast_poi_not_found">Luogo non trovato</string>
     <string name="notifications_event_new">Nuovo evento \"%1$s\" per %2$s</string>
     <string name="notifications_story_new">Nuova storia \"%1$s\" su %2$s</string>
     <string name="notifications_event_updated">Evento \"%s\" aggiornato</string>
@@ -225,8 +226,7 @@
     <string name="info_dialog_title_poi">Informazioni luogo</string>
     <string name="info_dialog_title_event">Informazioni evento</string>
     <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.</string>
-	<string name="choose_poi">Seleziona luogo</string>
-	<string name="poi_step_not_exist">Luogo specificato non è trovato</string>	
-	
+    <string name="choose_poi">Seleziona luogo</string>
+    <string name="poi_step_not_exist">Luogo specificato non è trovato</string>
 
 </resources>

@@ -185,6 +185,7 @@
     <string name="toast_poi_shared">Place shared.</string>
     <string name="toast_follow_ok">OK! You\'re following \"%s\"</string>
     <string name="toast_unfollow_ok">OK! You\'re not following \"%s\"</string>
+    <string name="toast_poi_not_found">Place not found</string>
     <string name="notifications_unread">Unread notifications</string>
     <string name="notifications_list_empty">You have not received notifications yet about the events and the places you are following.</string>
     <string name="notifications_list_title">Notifications</string>
@@ -223,6 +224,7 @@
     <string name="info_dialog_title_poi">Place Info </string>
     <string name="info_dialog_title_event">Event Info</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
-	<string name="choose_poi">Choose a place</string>
-	<string name="poi_step_not_exist">No matching place found</string>
+    <string name="choose_poi">Choose a place</string>
+    <string name="poi_step_not_exist">No matching place found</string>
+
 </resources>
