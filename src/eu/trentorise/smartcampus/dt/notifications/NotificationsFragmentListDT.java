@@ -30,9 +30,7 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
-import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
-import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.notifications.NotificationsHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
@@ -122,18 +120,18 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 		try {
 			if (notification.getEntities().size() == 2) {
 				// new
-				if (event != null && event.getEntityId() != null && location != null && location.getEntityId() != null) {
+				if (event != null && event.getId() != null && location != null && location.getId() != null) {
 					viewDetailsTask.execute(event);
-				} else if (location != null && location.getEntityId() != null && story != null && story.getEntityId() != null) {
+				} else if (location != null && location.getId() != null && story != null && story.getId() != null) {
 					viewDetailsTask.execute(event);
 				}
 			} else if (notification.getEntities().size() == 1) {
 				// modified
-				if (event != null && event.getEntityId() != null) {
+				if (event != null && event.getId() != null) {
 					viewDetailsTask.execute(event);
-				} else if (location != null && location.getEntityId() != null) {
+				} else if (location != null && location.getId() != null) {
 					viewDetailsTask.execute(location);
-				} else if (story != null && story.getEntityId() != null) {
+				} else if (story != null && story.getId() != null) {
 					viewDetailsTask.execute(story);
 				}
 			}
@@ -156,26 +154,26 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			EntityObject entityObject = params[0];
 
 			if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_EVENT)) {
-				EventObjectForBean eo = DTHelper.findEventByEntityId(entityObject.getEntityId());
+				LocalEventObject eo = DTHelper.findEventById(entityObject.getId());
 				if (eo == null) {
 					DTHelper.synchronize();
-					eo = DTHelper.findEventByEntityId(entityObject.getEntityId());
+					eo = DTHelper.findEventById(entityObject.getId());
 				}
-				return eo == null ? null : eo.getObjectForBean();
+				return eo == null ? null : eo;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_LOCATION)) {
-				PoiObjectForBean po = DTHelper.findPOIByEntityId(entityObject.getEntityId());
+				POIObject po = DTHelper.findPOIById(entityObject.getId());
 				if (po == null) {
 					DTHelper.synchronize();
-					po = DTHelper.findPOIByEntityId(entityObject.getEntityId());
+					po = DTHelper.findPOIById(entityObject.getId());
 				}
-				return po == null ? null : po.getObjectForBean();
+				return po == null ? null : po;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_STORY)) {
-				StoryObjectForBean so = DTHelper.findStoryByEntityId((entityObject.getEntityId()));
+				StoryObject so = DTHelper.findStoryById((entityObject.getId()));
 				if (so == null) {
 					DTHelper.synchronize();
-					so = DTHelper.findStoryByEntityId(entityObject.getEntityId());
+					so = DTHelper.findStoryById(entityObject.getId());
 				}
-				return so == null ? null : so.getObjectForBean();
+				return so == null ? null : so;
 			}
 
 			return null;
