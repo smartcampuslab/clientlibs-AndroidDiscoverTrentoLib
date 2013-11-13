@@ -230,14 +230,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			mapBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (mPoi!=null){
-					ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
-					getEvent().setLocation(mPoi.getLocation());
-					list.add(getEvent());
-					MapManager.switchToMapView(list, mFragment);
-					}
-					else 
-					{
+					if (mPoi != null) {
+						ArrayList<BaseDTObject> list = new ArrayList<BaseDTObject>();
+						getEvent().setLocation(mPoi.getLocation());
+						list.add(getEvent());
+						MapManager.switchToMapView(list, mFragment);
+					} else {
 						Toast.makeText(getSherlockActivity(), R.string.toast_poi_not_found, Toast.LENGTH_SHORT).show();
 					}
 				}
@@ -248,7 +246,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			directionsBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					bringMeThere(getEvent());
+					if (mPoi != null) {
+
+						bringMeThere(getEvent());
+					} else {
+						Toast.makeText(getSherlockActivity(), R.string.toast_poi_not_found, Toast.LENGTH_SHORT).show();
+					}
 				}
 			});
 			/*
