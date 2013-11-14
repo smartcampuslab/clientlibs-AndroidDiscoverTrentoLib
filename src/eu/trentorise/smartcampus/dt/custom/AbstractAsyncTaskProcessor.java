@@ -48,7 +48,6 @@ public abstract class AbstractAsyncTaskProcessor<Params, Result> implements SCAs
 	public void handleSecurityError() {
 		SCAccessProvider accessProvider =  DTHelper.getAccessProvider();
 		try {
-			accessProvider.logout(activity);
 			accessProvider.login(activity, null);
 		} catch (Exception e) {
 			Log.e(getClass().getName(), ""+e.getMessage());
