@@ -45,7 +45,6 @@ import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.BaseDTObjectMapItemTapListener;
-import eu.trentorise.smartcampus.dt.custom.map.DTItemizedOverlay;
 import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
@@ -60,8 +59,6 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	public final static int RESULT_SELECTED = 11;
 
 	private GoogleMap mMap = null;
-	DTItemizedOverlay mItemizedoverlay = null;
-
 	private Collection<? extends BaseDTObject> objects;
 
 	@Override
@@ -228,7 +225,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 
 		if (list.size() == 1) {
 			onBaseDTObjectTap(list.get(0));
-		} else if (mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
+		} else if (MapManager.maxZoom(mMap)) {
 			onBaseDTObjectsTap(list);
 		} else {
 			MapManager.fitMapWithOverlays(list, mMap);

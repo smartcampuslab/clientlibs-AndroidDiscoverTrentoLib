@@ -57,8 +57,14 @@ import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class MapManager {
 
+	/**
+	 * 
+	 */
+	private static final int MAX_ZOOM = 18;
+
 	private static MapView mapView;
 
+	public static final int MAX_VISIBLE_DISTANCE = 20;
 	public static int ZOOM_DEFAULT = 15;
 	public static LatLng DEFAULT_POINT = new LatLng(46.0696727540531, 11.1212700605392); // Trento
 
@@ -112,9 +118,15 @@ public class MapManager {
 
 	private static void fit(GoogleMap map, double[] ll, double[] rr, boolean zoomIn) {
 		if (ll != null && rr != null) {
-			LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(rr[0], rr[1]))
-					.include(new LatLng(ll[0], ll[1])).build();
-			map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 64));
+			float[] dist = new float[3];
+			Location.distanceBetween(ll[0], ll[1], rr[0], rr[1], dist);
+			if (dist[0] > MAX_VISIBLE_DISTANCE) {
+				LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(rr[0], rr[1]))
+						.include(new LatLng(ll[0], ll[1])).build();
+				map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 64));
+			} else {
+				map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ll[0], ll[1]), MAX_ZOOM));
+			}
 		}
 	}
 
@@ -137,10 +149,18 @@ public class MapManager {
 		return line;
 	}
 
+	public static boolean maxZoom(GoogleMap map) {
+		return map.getCameraPosition().zoom >= MAX_ZOOM;//map.getMaxZoomLevel(); 
+	}
+	
 	/*
 	 * CLUSTERING
 	 */
 	public static class ClusteringHelper {
+		/**
+		 * 
+		 */
+
 		private static final String TAG = "MapManager.ClusteringHelper";
 
 		private static final int DENSITY_X = 5;
@@ -203,8 +223,7 @@ public class MapManager {
 				Log.e(TAG, ex.toString());
 			}
 
-			// if (mapView.getZoomLevel() == mapView.getMaxZoomLevel()) {
-			if (map.getCameraPosition().zoom == map.getMaxZoomLevel()) {
+			if (maxZoom(map)) {
 				for (int i = 0; i < grid.size(); i++) {
 					for (int j = 0; j < grid.get(0).size(); j++) {
 						List<BaseDTObject> curr = grid.get(i).get(j);
@@ -304,7 +323,7 @@ public class MapManager {
 				Location.distanceBetween(srcLatLng.latitude, srcLatLng.longitude, currLatLng.latitude,
 						currLatLng.longitude, dist);
 
-				if (dist[0] < 20) {
+				if (dist[0] < MAX_VISIBLE_DISTANCE) {
 					src.addAll(curr);
 					curr.clear();
 					return true;
