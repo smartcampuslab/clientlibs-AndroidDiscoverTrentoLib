@@ -363,7 +363,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 		if (list.size() == 1) {
 			onBaseDTObjectTap(list.get(0));
-		} else if (MapManager.maxZoom(getSupportMap())) {
+		} else if (getSupportMap().getCameraPosition().zoom == getSupportMap().getMaxZoomLevel()) {
 			onBaseDTObjectsTap(list);
 		} else {
 			MapManager.fitMapWithOverlays(list, getSupportMap());

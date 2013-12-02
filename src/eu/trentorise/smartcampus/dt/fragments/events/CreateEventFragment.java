@@ -225,7 +225,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 		EditText notes = (EditText) view.findViewById(R.id.event_notes);
 //		notes.setText(eventObject.getCommunityData().getNotes());
-		notes.setText(eventObject.getFormattedDescription());
+		notes.setText(eventObject.getDescription());
 
 		// Cannot edit title, date, poi, category, and notes for ServiceEvent
 		// and non-owned UserEvent
@@ -436,11 +436,11 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			CharSequence desc = ((EditText) view.findViewById(R.id.event_notes)).getText();
 			if (desc != null) {
 //				eventObject.getCommunityData().setNotes(desc.toString());
-				eventObject.setDescription(desc.toString().trim());
+				eventObject.setDescription(desc.toString());
 			}
 			CharSequence title = ((EditText) view.findViewById(R.id.event_title)).getText();
 			if (title != null) {
-				eventObject.setTitle(title.toString().trim());
+				eventObject.setTitle(title.toString());
 			}
 
 			String catString = ((Spinner) view.findViewById(R.id.event_category)).getSelectedItem().toString();
