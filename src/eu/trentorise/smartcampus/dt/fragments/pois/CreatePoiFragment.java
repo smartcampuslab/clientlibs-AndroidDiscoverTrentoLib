@@ -58,7 +58,6 @@ import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
 import eu.trentorise.smartcampus.territoryservice.model.POIData;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
@@ -226,6 +225,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				if (mAddress != null) {
 					intent.putExtra(AddressSelectActivity.ARG_POINT, mAddress);
 				}
+				intent.putExtra("field", "");
 				startActivityForResult(intent,
 						AddressSelectActivity.RESULT_SELECTED);
 			}
