@@ -226,46 +226,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		submenu.clear();
 
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
-			// SearchHelper.createSearchMenu(submenu, getActivity(), new
-			// SearchHelper.OnSearchListener() {
-			// @Override
-			// public void onSearch(String query) {
-			// FragmentTransaction fragmentTransaction =
-			// getSherlockActivity().getSupportFragmentManager().beginTransaction();
-			// StoriesListingFragment fragment = new StoriesListingFragment();
-			// Bundle args = new Bundle();
-			// args.putString(SearchFragment.ARG_QUERY, query);
-			// String category = (getArguments() != null) ?
-			// getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
-			// args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
-			// fragment.setArguments(args);
-			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.replace(android.R.id.content, fragment,
-			// "stories");
-			// fragmentTransaction.addToBackStack(fragment.getTag());
-			// fragmentTransaction.commit();
-			// }
-			// });
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
-		} else if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)
-				&& !getArguments().containsKey(SearchFragment.ARG_MY)
-				&& !getArguments().containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
-			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-				@Override
-				public void onSearch(String query) {
-					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-							.beginTransaction();
-					StoriesListingFragment fragment = new StoriesListingFragment();
-					Bundle args = new Bundle();
-					args.putString(SearchFragment.ARG_QUERY, query);
-					args.putBoolean(SearchFragment.ARG_MY, true);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
-				}
-			});
 		}
 
 		if (category == null)

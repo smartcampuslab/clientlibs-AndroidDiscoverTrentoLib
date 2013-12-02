@@ -54,9 +54,6 @@ import com.actionbarsherlock.view.SubMenu;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
-import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.listing.AbstractLstingFragment;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
@@ -77,14 +74,12 @@ import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
-import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 // to be used for event listing both in categories and in My Events
@@ -180,9 +175,6 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 	 */
 	private void insertEvent(LocalEventObject event, Integer indexAdapter2) {
 
-		Calendar cal = Calendar.getInstance();
-		calToDate(cal);
-		long biggerFromTime = cal.getTimeInMillis();
 		// add in the right place
 		List<LocalEventObject> returnList = new ArrayList<LocalEventObject>();
 		int i = 0;
@@ -200,7 +192,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 
 		// post proc for multidays
 		i = 0;
-		List<LocalEventObject> newList = postProcForRecurrentEvents(returnList, biggerFromTime, false);
+		List<LocalEventObject> newList = postProcForRecurrentEvents(returnList, false, getArguments().containsKey(ARG_QUERY_TODAY));
 		while (i < newList.size()) {
 			eventsAdapter.insert(newList.get(i), i);
 			i++;
@@ -694,15 +686,9 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 				}
 			}
 			
-//			if (params[0].position == 0) {
-				Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(System.currentTimeMillis());
-				calToDate(cal);
-				long biggerFromTime = cal.getTimeInMillis();
-//			}
 			if (sorted.size() > 0) {
 //				listEvents.addAll(postProcForRecurrentEvents(sorted, biggerFromTime));
-				return postProcForRecurrentEvents(sorted, biggerFromTime, result.size() == 0 || result.size() < getSize());
+				return postProcForRecurrentEvents(sorted, result.size() == 0 || result.size() < getSize(), getArguments().containsKey(ARG_QUERY_TODAY));
 			} else
 				return sorted;
 		} catch (Exception e) {
@@ -786,66 +772,68 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 		}
 	}
 
-	private List<LocalEventObject> postProcForRecurrentEvents(List<LocalEventObject> result, long lessFromTime, boolean endReached) {
+	private List<LocalEventObject> postProcForRecurrentEvents(List<LocalEventObject> result, boolean endReached, boolean todayOnly) {
+		if (result.isEmpty()) return result;
+
+		// 0:00 of today 
+		Calendar today = Calendar.getInstance();
+		today.setTimeInMillis(result.get(result.size() - 1).getFromTime());
+		calToDate(today);
+
+		// start time of the list visualization interval
+		long startInterval = result.get(0).getFromTime();
+		// if event start before today, the start is today
+		if (startInterval < today.getTimeInMillis() || todayOnly) {
+			startInterval = today.getTimeInMillis();
+		}
+		
+		// end time of the list visualization interval, corresponds to the start of the 
+		// latest event (assuming events ordered by fromTime) or to today if todayOnly specified
+		long endInterval = todayOnly ? today.getTimeInMillis() :  result.get(result.size()-1).getFromTime();
+		
 		List<LocalEventObject> returnList = new ArrayList<LocalEventObject>();
 		EventComparator r = new EventComparator();
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(result.get(result.size() - 1).getFromTime());
-		calToDate(cal);
-		long biggerFromTime = cal.getTimeInMillis();
-		if (biggerFromTime < lessFromTime )
-			biggerFromTime = lessFromTime;
+//		long biggerFromTime = today.getTimeInMillis();
+//		if (biggerFromTime < lessFromTime )
+//			biggerFromTime = lessFromTime;
 		for (LocalEventObject event : result) {
+			// normalize toTime field
 			if (event.getToTime() == null || event.getToTime() == 0) {
 				event.setToTime(event.getFromTime());
 			}
-			/*
-			 * if an event has toTime null o equal to toTime, it is only for
-			 * that day
-			 */
 			
-			
+			//  if an event is a single day event, add it directly, otherwise need to replicate
 			if ((event.getToTime() != null) && (event.getFromTime() != null) && (event.getToTime() != event.getFromTime())) {
 				long eventFromTime = event.getFromTime();
 				long eventToTime = event.getToTime();
-
 				Calendar calFromTime = Calendar.getInstance();
 				Calendar calToTime = Calendar.getInstance();
-
 				calFromTime.setTime(new Date(eventFromTime));
 				calToDate(calFromTime);
-
 				calToTime.setTime(new Date(eventToTime));
 				calToDate(calToTime);
-				long dayFromTime = calFromTime.getTimeInMillis();
-				long dayToTime = calToTime.getTimeInMillis();
+				eventFromTime = calFromTime.getTimeInMillis();
+				eventToTime = calToTime.getTimeInMillis();
 
-				if (dayFromTime == dayToTime) {
-					/* it takes the same day */
+				// if the times were different, but the date is the same, add it directly, as above
+				if (eventFromTime == eventToTime) {
 					returnList.add(event);
-
 				} else {
-					/*
-					 * if and event takes more than one day, duplicate it (until
-					 * X)
-					 */
-					dayFromTime = Math.max(dayFromTime, lessFromTime);
-					if (!endReached) {
-						dayToTime = Math.min(dayToTime, biggerFromTime);
-					}
-					long dayTmpTime = dayFromTime;
-
-					while (dayTmpTime <= dayToTime) {
+					// event takes more than one day, replicate it (until X)
+					// starting from either fromTime of an event or from interval start (when the event start in the past)
+					eventFromTime = Math.max(eventFromTime, startInterval);
+					// and ending on the interval end (if there are more events to query) or on the event end
+					eventToTime = endReached && !todayOnly ? eventToTime : endInterval;
+					
+					// replicate event within the interval
+					Calendar caltmp = Calendar.getInstance();
+					caltmp.setTimeInMillis(eventFromTime);
+					while (caltmp.getTimeInMillis() <= eventToTime) {
 						LocalEventObject newEvent = event.copy();
-						newEvent.setFromTime(dayTmpTime);
-						newEvent.setToTime(dayTmpTime);
-						Calendar caltmp = Calendar.getInstance();
-						caltmp.setTimeInMillis(dayTmpTime);
+						newEvent.setFromTime(caltmp.getTimeInMillis());
+						newEvent.setToTime(caltmp.getTimeInMillis());
 						caltmp.add(Calendar.DATE, 1);
-						dayTmpTime = caltmp.getTimeInMillis();
 						returnList.add(newEvent);
-						if (this.getArguments().containsKey(ARG_QUERY_TODAY))
-							break;
 					}
 					/* calculate how much days use the events */
 					/* create and entry for every day */
