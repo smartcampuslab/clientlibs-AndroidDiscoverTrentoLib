@@ -33,10 +33,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -159,10 +159,6 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 				// get the data from the user interface and call the correct
 				// method of the handler
 				// if the step is new or an update
-				if (Log.isLoggable(TAG, Log.VERBOSE)) {
-					Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment click on save button ");
-				}
-
 				AutoCompleteTextView stepPlace = (AutoCompleteTextView) view.findViewById(R.id.step_place);
 				TextView notePlace = (TextView) view.findViewById(R.id.step_tags);
 
@@ -171,7 +167,10 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 						 poi = DTHelper.findPOIByTitle(stepPlace.getText().toString());
 					}
 					if (poi == null) {
-						Toast.makeText(getActivity(), R.string.poi_step_not_exist, Toast.LENGTH_LONG).show();
+						ValidatorHelper.highlight(
+								getActivity(), 
+								view.findViewById(R.id.poi_title), 
+								getString(R.string.poi_step_not_exist));
 						return;
 					}
 					step = new LocalStepObject(poi, notePlace.getText().toString());
@@ -184,7 +183,10 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 					}
 
 				} else {
-					Toast.makeText(getActivity(), R.string.empty_step_title, Toast.LENGTH_LONG).show();
+					ValidatorHelper.highlight(
+							getActivity(), 
+							view.findViewById(R.id.step_place), 
+							getString(R.string.toast_is_required_p, getString(R.string.create_place)));
 				}
 			}
 		});

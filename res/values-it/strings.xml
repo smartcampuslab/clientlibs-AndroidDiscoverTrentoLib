@@ -130,7 +130,6 @@
     <string name="next_step">Successivo</string>
     <string name="empty_step_title">Il luogo non può essere vuoto</string>
     <string name="sure_delete_step">Si vuole davvero eliminare questa tappa?</string>
-    <string name="msg_field_required"> richiesto.</string>
     <string name="sure_change">Sovrascrivere i dati precedenti?</string>
     <string name="add">Aggiungi</string>
     <string name="event">evento</string>
@@ -180,6 +179,8 @@
     <string name="search_today_events">Eventi di oggi</string>
     <string name="toast_is_required">richiesto.</string>
     <string name="toast_incorrect">Dato non corretto:</string>
+    <string name="toast_is_required_p">%s è richiesto.</string>
+    <string name="toast_incorrect_p">%s non è corretto</string>
     <string name="eventlist_at_place">Eventi a</string>
     <string name="toast_my_events_clicked">Cliccato I miei eventi</string>
     <string name="toast_browsing_your_files">Controllo dei tuoi files&#8230;</string>
