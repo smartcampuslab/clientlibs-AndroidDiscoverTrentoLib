@@ -323,7 +323,7 @@ public class MapManager {
 		fragment.setArguments(args);
 		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		// fragmentTransaction.detach(src);
-		fragmentTransaction.replace(android.R.id.content, fragment, src.getTag());
+		fragmentTransaction.replace(src.getId(), fragment, src.getTag());
 		fragmentTransaction.addToBackStack(fragment.getTag());
 		fragmentTransaction.commit();
 
@@ -337,7 +337,7 @@ public class MapManager {
 		fragment.setArguments(args);
 		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		// fragmentTransaction.detach(src);
-		fragmentTransaction.replace(android.R.id.content, fragment, src.getTag());
+		fragmentTransaction.replace(src.getId(), fragment, src.getTag());
 		fragmentTransaction.addToBackStack(fragment.getTag());
 		fragmentTransaction.commit();
 

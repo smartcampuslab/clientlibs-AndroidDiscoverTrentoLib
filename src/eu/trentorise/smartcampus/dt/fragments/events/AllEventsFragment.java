@@ -69,7 +69,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 
 		gridview = (GridView) getView().findViewById(R.id.events_gridview);
 		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
-				list, fragmentManager));
+				list, fragmentManager,this));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
