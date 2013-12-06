@@ -520,7 +520,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
@@ -608,7 +608,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;

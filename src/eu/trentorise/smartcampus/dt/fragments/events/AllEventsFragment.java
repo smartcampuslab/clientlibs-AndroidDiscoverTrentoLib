@@ -69,7 +69,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 
 		gridview = (GridView) getView().findViewById(R.id.events_gridview);
 		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
-				list, fragmentManager,this));
+				list, fragmentManager));
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
@@ -142,7 +142,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 				fragment = new CreateEventFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -181,7 +181,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

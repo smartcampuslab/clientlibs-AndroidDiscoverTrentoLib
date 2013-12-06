@@ -90,7 +90,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 				Fragment fragment = new CreatePoiFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -102,7 +102,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

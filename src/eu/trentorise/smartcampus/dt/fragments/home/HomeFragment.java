@@ -91,7 +91,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 		super.onStart();
 		// hide keyboard if it is still open
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
+		imm.hideSoftInputFromWindow(getActivity().findViewById(R.id.fragment_container).getWindowToken(), 0);
 
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
@@ -287,7 +287,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "me");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "me");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
@@ -345,9 +345,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 	private GoogleMap getSupportMap() {
 		if (mMap == null) {
-			if (getFragmentManager().findFragmentById(android.R.id.content) != null
-					&& getFragmentManager().findFragmentById(android.R.id.content) instanceof SupportMapFragment)
-				mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(android.R.id.content)).getMap();
+			if (getFragmentManager().findFragmentById(R.id.fragment_container) != null
+					&& getFragmentManager().findFragmentById(R.id.fragment_container) instanceof SupportMapFragment)
+				mMap = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).getMap();
 			if (mMap != null)
 				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
 
@@ -449,7 +449,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 					fragment.setArguments(args);
 
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}

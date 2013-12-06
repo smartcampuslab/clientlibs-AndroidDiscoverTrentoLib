@@ -151,7 +151,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction = fragmentManager.beginTransaction();
 				fragment = new CreateStoryFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -176,7 +176,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

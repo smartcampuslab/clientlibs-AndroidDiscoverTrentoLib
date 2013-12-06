@@ -27,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
@@ -37,15 +38,13 @@ public class EventsCategoriesAdapter extends ArrayAdapter<CategoryDescriptor> {
 	private Context mContext;
 	private int layoutResourceId;
 	private FragmentManager fragmentManager;
-    private AllEventsFragment src;
 
 	public EventsCategoriesAdapter(Context mContext, int layoutResourceId, List<CategoryDescriptor> list,
-			FragmentManager fragmentManager,AllEventsFragment sr) {
+			FragmentManager fragmentManager) {
 		super(mContext, layoutResourceId, list);
 		this.mContext = mContext;
 		this.layoutResourceId = layoutResourceId;
 		this.fragmentManager = fragmentManager;
-		this.src = src;
 	}
 
 	// CategoryHelper.getEventCategoryDescriptorsFiltered()
@@ -91,7 +90,7 @@ public class EventsCategoriesAdapter extends ArrayAdapter<CategoryDescriptor> {
 
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(src.getId(), fragment, "events");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}

@@ -114,14 +114,14 @@ public class InfoDialog extends SherlockDialogFragment {
 					args.putString(PoiDetailsFragment.ARG_POI_ID, data.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				} else if (data instanceof LocalEventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
 					args.putString(EventDetailsFragment.ARG_EVENT_ID, (data.getId()));
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				}
 				fragmentTransaction.commit();

@@ -339,7 +339,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				reload = true;
@@ -358,7 +358,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			/* add category to bundle */
@@ -521,7 +521,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 
@@ -573,7 +573,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 					// fragmentTransaction.detach(this);
-					fragmentTransaction.replace(android.R.id.content, fragment, "events");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}

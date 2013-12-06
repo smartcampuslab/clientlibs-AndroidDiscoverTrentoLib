@@ -63,7 +63,7 @@ public class GalleryFragment extends SherlockFragment {
 				fragment.setArguments(args);
 				fragmentTransaction
 						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment,
+				fragmentTransaction.replace(R.id.fragment_container, fragment,
 						"fullscreen");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();

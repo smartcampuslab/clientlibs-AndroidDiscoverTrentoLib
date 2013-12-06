@@ -208,7 +208,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, poiHandler);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}

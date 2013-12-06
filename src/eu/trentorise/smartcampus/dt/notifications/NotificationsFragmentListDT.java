@@ -204,7 +204,7 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "details");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "details");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}

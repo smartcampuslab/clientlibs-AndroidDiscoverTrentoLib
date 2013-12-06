@@ -64,7 +64,7 @@ public class EventsMenuFragment extends NotificationsSherlockFragmentDT {
 				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 				Fragment fragment = new AllEventsFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}
@@ -76,7 +76,7 @@ public class EventsMenuFragment extends NotificationsSherlockFragmentDT {
 				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 				Fragment fragment = new CreateEventFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}

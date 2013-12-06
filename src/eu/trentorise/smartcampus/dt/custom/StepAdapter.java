@@ -117,7 +117,7 @@ public class StepAdapter extends ArrayAdapter<LocalStepObject> {
 					fragment.setArguments(args);
 					fragmentTransaction
 							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment,
+					fragmentTransaction.replace(R.id.fragment_container, fragment,
 							"stories");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
