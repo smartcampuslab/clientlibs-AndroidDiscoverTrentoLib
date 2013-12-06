@@ -274,7 +274,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				reload = true;
@@ -294,7 +294,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			/* add category to bundle */
@@ -448,7 +448,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					args.putSerializable(CreateStoryFragment.ARG_STORY, story);
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}
@@ -526,7 +526,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}

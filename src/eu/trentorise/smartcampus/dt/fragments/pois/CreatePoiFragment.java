@@ -243,7 +243,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				getSherlockActivity().getSupportFragmentManager()
 						.popBackStack();
 				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
+				imm.hideSoftInputFromWindow(getActivity().findViewById(R.id.fragment_container).getWindowToken(), 0);
 			}
 
 		});
