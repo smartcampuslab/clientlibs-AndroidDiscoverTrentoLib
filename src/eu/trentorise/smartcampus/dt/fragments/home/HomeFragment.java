@@ -85,6 +85,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	private Collection<? extends BaseDTObject> objects;
 
 	private boolean loaded = false;
+	private boolean fitMap = true;
 	
 	@Override
 	public void onStart() {
@@ -171,6 +172,8 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			poiCategories = null;
 			setEventCategoriesToLoad(getArguments().getString(ARG_EVENT_CATEGORY));
 		} else {
+			// this is initial load, disable map fit
+			fitMap = false;
 			if (poiCategories != null) {
 				setPOICategoriesToLoad(poiCategories);
 			}
@@ -224,10 +227,12 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_show_places_layers) {
+			fitMap = true;
 			MapLayerDialogHelper.createPOIDialog(getActivity(), this, getString(R.string.layers_title_places), poiCategories)
 					.show();
 			return true;
 		} else if (item.getItemId() == R.id.menu_item_show_events_layers) {
+			fitMap = true;
 			Dialog eventsDialog = MapLayerDialogHelper.createEventsDialog(getActivity(), this,
 					getString(R.string.layers_title_events), eventsCategories);
 			eventsDialog.show();
@@ -363,7 +368,7 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 
 		if (list.size() == 1) {
 			onBaseDTObjectTap(list.get(0));
-		} else if (getSupportMap().getCameraPosition().zoom == getSupportMap().getMaxZoomLevel()) {
+		} else if (MapManager.maxZoom(getSupportMap())) {
 			onBaseDTObjectsTap(list);
 		} else {
 			MapManager.fitMapWithOverlays(list, getSupportMap());
@@ -381,7 +386,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 		if (getSupportMap() != null) {
 			this.objects = objects;
 			render(objects);
-			MapManager.fitMapWithOverlays(objects, getSupportMap());
+			if (fitMap) {
+				MapManager.fitMapWithOverlays(objects, getSupportMap());
+			}
 		}
 	}
 

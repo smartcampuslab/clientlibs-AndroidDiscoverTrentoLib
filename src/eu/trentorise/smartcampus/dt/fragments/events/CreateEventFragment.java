@@ -49,6 +49,7 @@ import android.widget.Toast;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
@@ -225,7 +226,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 		EditText notes = (EditText) view.findViewById(R.id.event_notes);
 //		notes.setText(eventObject.getCommunityData().getNotes());
-		notes.setText(eventObject.getDescription());
+		notes.setText(eventObject.getFormattedDescription());
 
 		// Cannot edit title, date, poi, category, and notes for ServiceEvent
 		// and non-owned UserEvent
@@ -377,23 +378,6 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		return eventObject;
 	}
 
-	private Integer validate(LocalEventObject data) {
-		Integer result = null;
-		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
-			return R.string.create_title;
-		// if (data.getFromTime() == null)
-		// return R.string.createevent_timestart;
-		// if (data.getToTime() == null)
-		// return R.string.createevent_timeend;
-		// if (data.getToTime() <= data.getFromTime())
-		// return R.string.createevent_timeend;
-		if (data.getPoiId() == null)
-			return R.string.create_place;
-		if (data.getType() == null || data.getType().length() == 0)
-			return R.string.create_cat;
-		return result;
-	}
-
 	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
 		for (CategoryDescriptor cd : categoryDescriptors) {
 			String catDesc = getSherlockActivity().getApplicationContext().getResources().getString(cd.description);
@@ -435,30 +419,32 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		public void onClick(View v) {
 			CharSequence desc = ((EditText) view.findViewById(R.id.event_notes)).getText();
 			if (desc != null) {
-//				eventObject.getCommunityData().setNotes(desc.toString());
-				eventObject.setDescription(desc.toString());
+				eventObject.setDescription(desc.toString().trim());
 			}
+			// TITLE
 			CharSequence title = ((EditText) view.findViewById(R.id.event_title)).getText();
-			if (title != null) {
-				eventObject.setTitle(title.toString());
+			if (title != null && title.toString().trim().length() > 0) {
+				eventObject.setTitle(title.toString().trim());
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_title), 
+						getString(R.string.toast_is_required_p, getString(R.string.create_title)));
+				return;
 			}
 
+			// CATEGORY
 			String catString = ((Spinner) view.findViewById(R.id.event_category)).getSelectedItem().toString();
 			String cat = getCategoryDescriptorByDescription(catString).category;
+			eventObject.setType(cat);
 
-			AutoCompleteTextView eventPlace = (AutoCompleteTextView) view.findViewById(R.id.event_place);
-			if ((poi == null || !poi.getTitle().equals(eventPlace.getText().toString()))
-					&& eventPlace.getText() != null && eventPlace.getText().length() > 0) {
-				poi = DTHelper.findPOIByTitle(eventPlace.getText().toString());
-			}
-
+			// FROM DATE
 			CharSequence dateFromstr = ((EditText) view.findViewById(R.id.event_date_from)).getText();
 			if (dateFromstr == null || dateFromstr.length() == 0) {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getResources().getString(R.string.createevent_date) + " "
-								+ getActivity().getResources().getString(R.string.msg_field_required),
-						Toast.LENGTH_SHORT).show();
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_date_from), 
+						getString(R.string.toast_is_required_p, getString(R.string.createevent_date)));
 				return;
 			}
 			Calendar cal = Calendar.getInstance();
@@ -467,69 +453,72 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				fromDate = DatePickerDialogFragment.DATEFORMAT.parse(dateFromstr.toString());
 				cal.setTime(fromDate);
 			} catch (ParseException e) {
-				Toast.makeText(
-						getActivity(),
-						getResources().getString(R.string.toast_incorrect) + " "
-								+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_date_from), 
+						getString(R.string.toast_incorrect_p, getString(R.string.createevent_date)));
 				return;
 			}
 			eventObject.setFromTime(cal.getTimeInMillis());
 
+			// TO DATE
 			CharSequence dateTostr = ((EditText) view.findViewById(R.id.event_date_to)).getText();
 			if (moreDaysCheckbox.isChecked()) {
 				if (dateTostr == null || dateTostr.length() == 0) {
-					Toast.makeText(
-							getActivity(),
-							getActivity().getResources().getString(R.string.createevent_ending_date) + " "
-									+ getActivity().getResources().getString(R.string.msg_field_required),
-							Toast.LENGTH_SHORT).show();
+					ValidatorHelper.highlight(
+							getActivity(), 
+							view.findViewById(R.id.event_date_to), 
+							getString(R.string.toast_is_required_p, getString(R.string.createevent_ending_date)));
 					return;
 				} else {
 					Date toDate;
 					try {
 						toDate = FORMAT_DATE_UI.parse(dateTostr.toString());
 						if (fromDate.after(toDate)) {
-							Toast.makeText(getActivity(), R.string.to_date_before_from_date, Toast.LENGTH_SHORT).show();
+							ValidatorHelper.highlight(
+									getActivity(), 
+									view.findViewById(R.id.event_date_to), 
+									getString(R.string.to_date_before_from_date));
 							return;
 						}
 						cal.setTime(toDate);
 						eventObject.setToTime(cal.getTimeInMillis());
 					} catch (ParseException e) {
-						Toast.makeText(getActivity(), R.string.date_field_empty, Toast.LENGTH_SHORT).show();
+						ValidatorHelper.highlight(
+								getActivity(), 
+								view.findViewById(R.id.event_date_to), 
+								getString(R.string.toast_incorrect_p, getString(R.string.createevent_ending_date)));
 						return;
 					}
 
 				}
 			}
 
-			// if (eventObject.getTiming() == null ||
-			// eventObject.isFromTimeUserDefined() ||
-			// DTHelper.isOwnedObject(eventObject)) {
-			if (DTHelper.isOwnedObject(eventObject)) {
-				CharSequence timingstr = ((EditText) view.findViewById(R.id.event_timing_et)).getText();
-				if (timingstr == null || timingstr.length() == 0) {
-					Toast.makeText(
-							getActivity(),
-							getActivity().getResources().getString(R.string.createevent_timing) + " "
-									+ getActivity().getResources().getString(R.string.msg_field_required),
-							Toast.LENGTH_SHORT).show();
-					return;
-				}
-				eventObject.setTiming(timingstr.toString());
+			// TIMING
+			CharSequence timingstr = ((EditText) view.findViewById(R.id.event_timing_et)).getText();
+			if (timingstr == null || timingstr.length() == 0) {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_timing_et), 
+						getString(R.string.toast_is_required_p,getString(R.string.createevent_timing)));
+				return;
 			}
+			eventObject.setTiming(timingstr.toString());
 
-			eventObject.setType(cat);
+			// POI
+			AutoCompleteTextView eventPlace = (AutoCompleteTextView) view.findViewById(R.id.event_place);
+			if ((poi == null || !poi.getTitle().equals(eventPlace.getText().toString()))
+					&& eventPlace.getText() != null && eventPlace.getText().length() > 0) {
+				poi = DTHelper.findPOIByTitle(eventPlace.getText().toString());
+			}
+			
 			if (poi != null) {
 				eventObject.setPoiId(poi.getId());
-			}
-			Integer missing = validate(eventObject);
-			if (missing != null) {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getResources().getString(missing)
-								+ " "
-								+ getSherlockActivity().getApplicationContext().getResources()
-										.getString(R.string.toast_is_required), Toast.LENGTH_SHORT).show();
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_place), 
+						getString(R.string.toast_is_required_p,getString(R.string.create_place)));
 				return;
 			}
 

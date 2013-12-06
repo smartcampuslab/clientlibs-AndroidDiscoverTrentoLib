@@ -92,7 +92,7 @@
         <service android:name="eu.trentorise.smartcampus.storage.sync.service.SyncStorageService" />
 
         <activity
-            android:name="eu.trentorise.smartcampus.dt.fragments.pois.AddressSelectActivity"
+            android:name="eu.trentorise.smartcampus.dt.fragments.pois.AddressSelectFragment"
             android:logo="@drawable/logo"
             android:theme="@style/Theme.Discovertrento" />
         <activity

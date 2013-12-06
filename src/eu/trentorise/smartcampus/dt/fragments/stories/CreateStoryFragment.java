@@ -44,21 +44,20 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.StepAdapter;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
-import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StepObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
@@ -352,56 +351,38 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		@Override
 		public void onClick(View v) {
 
-			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment SaveStory.onClick ");
-			}
+			// DESCRIPTION
 			CharSequence desc = ((EditText) view.findViewById(R.id.story_description)).getText();
 			if (desc != null) {
 				storyObject.setDescription(desc.toString());
 			}
+			// TITLE
 			CharSequence title = ((EditText) view.findViewById(R.id.story_title)).getText();
-			if (title != null) {
-				storyObject.setTitle(title.toString());
+			if (title != null && title.toString().trim().length() > 0) {
+				storyObject.setTitle(title.toString().trim());
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.story_title), 
+						getString(R.string.toast_is_required_p, getString(R.string.create_title)));
+				return;
 			}
 
+			// TYPE
 			String catString = ((Spinner) view.findViewById(R.id.story_category)).getSelectedItem().toString();
 			String cat = getCategoryDescriptorByDescription(catString).category;
-
 			storyObject.setType(cat);
+			
 			for (int i = 0; i < storyObject.getSteps().size(); i++) {
 				LocalStepObject step = Utils.getLocalStepFromStep(storyObject.getSteps().get(i));
 				if ((step != null) && (step.assignedPoi() != null)) {
-//					storyObject.getSteps().get(i).setId((step.assignedPoi().getId()));
 					Utils.getLocalStepFromStep(storyObject.getSteps().get(i)).assignPoi(step.assignedPoi());
 
 				}
 			}
-			// check if some important field is missing and, if it is, show a
-			// message
-			Integer missing = validate(storyObject);
-			if (missing != null) {
-				Toast.makeText(getSherlockActivity(), getString(missing) + " " + getString(R.string.toast_is_required),
-						Toast.LENGTH_SHORT).show();
-				return;
-			}
-
-			new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity()))
-					.execute(storyObject);
-
+			new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity())).execute(storyObject);
 		}
 
-	}
-
-	private Integer validate(StoryObject data) {
-		Integer result = null;
-
-		if (Log.isLoggable(TAG, Log.VERBOSE)) {
-			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment.validate");
-		}
-
-		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
-			return R.string.create_title;
-		return result;
 	}
 
 	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
@@ -423,10 +404,6 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 		@Override
 		public void addStep(LocalStepObject step) {
-
-			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment AddStep.addStep");
-			}
 			// add the step, notify to the adapter and go back to this fragment
 			storyObject.getSteps().add(step);
 			stepAdapter.notifyDataSetChanged();
@@ -446,11 +423,6 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 		@Override
 		public void updateStep(LocalStepObject step, Integer position) {
-
-			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment AddStep.updateStep");
-			}
-
 			// generate dialog box for confirming the update
 			storyObject.getSteps().set(position, step);
 			stepAdapter.notifyDataSetChanged();

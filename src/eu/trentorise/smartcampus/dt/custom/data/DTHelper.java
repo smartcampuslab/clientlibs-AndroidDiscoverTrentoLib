@@ -510,50 +510,12 @@ public class DTHelper {
 		Boolean result = null;
 		if (event.getId() == null) {
 			event = tService.createEvent(event, getAuthToken());
+			tService.myEvent(event.getId(), true, getAuthToken());
 			result = true;
 		} else {
 			event = tService.updateEvent(event.getId(), event, getAuthToken());
 			result = false;
 		}
-		// String requestService = null;
-		// Method method = null;
-		// Boolean result = null;
-		// if (event.getId() == null) {
-		// if (event.createdByUser())
-		// requestService = Constants.SERVICE +
-		// "/eu.trentorise.smartcampus.dt.model.UserEventObject";
-		// else
-		// throw new DataException("cannot create service object");
-		// method = Method.POST;
-		// result = true;
-		// } else {
-		// if (event.createdByUser())
-		// requestService = Constants.SERVICE +
-		// "/eu.trentorise.smartcampus.dt.model.UserEventObject/"
-		// + event.getId();
-		// else
-		// requestService = Constants.SERVICE +
-		// "/eu.trentorise.smartcampus.dt.model.ServiceEventObject/"
-		// + event.getId();
-		// method = Method.PUT;
-		// result = false;
-		// }
-		// MessageRequest request = new
-		// MessageRequest(GlobalConfig.getAppUrl(mContext),
-		// requestService);
-		// request.setMethod(method);
-		// String json =
-		// eu.trentorise.smartcampus.android.common.Utils.convertToJSON(event);
-		// request.setBody(json);
-		//
-		// MessageResponse msg =
-		// getInstance().mProtocolCarrier.invokeSync(request,
-		// DTParamsHelper.getAppToken(),
-		// getAuthToken());
-		// // getRemote(instance.mContext, instance.token).create(poi);
-		// EventObject eventreturn =
-		// eu.trentorise.smartcampus.android.common.Utils.convertJSONToObject(msg.getBody(),
-		// EventObject.class);
 		synchronize();
 		return result;
 	}
@@ -1117,40 +1079,13 @@ public class DTHelper {
 			TerritoryServiceException, AACException {
 		boolean returnvalue = true;
 		if (storyObject.getId() == null) {
-			tService.createStory(storyObject, getAuthToken());
+			StoryObject story = tService.createStory(storyObject, getAuthToken());
+			tService.myStory(story.getId(), true, getAuthToken());
 			returnvalue = true;
 		} else {
 			storyObject = tService.updateStory(storyObject.getId(), storyObject, getAuthToken());
 			returnvalue = false;
 		}
-		// String requestService = null;
-		// Method method = null;
-		// Boolean result = null;
-		// if (storyObject.getId() == null) {
-		// // create
-		// requestService = Constants.SERVICE +
-		// "/eu.trentorise.smartcampus.dt.model.UserStoryObject";
-		// method = Method.POST;
-		// result = true;
-		// } else {
-		// // update
-		// requestService = Constants.SERVICE +
-		// "/eu.trentorise.smartcampus.dt.model.UserStoryObject/"
-		// + storyObject.getId();
-		// method = Method.PUT;
-		// result = false;
-		// }
-		// MessageRequest request = new
-		// MessageRequest(GlobalConfig.getAppUrl(mContext),
-		// requestService);
-		// request.setMethod(method);
-		// String json =
-		// eu.trentorise.smartcampus.android.common.Utils.convertToJSON(storyObject);
-		// request.setBody(json);
-		//
-		// getInstance().mProtocolCarrier.invokeSync(request,
-		// DTParamsHelper.getAppToken(), getAuthToken());
-		// getRemote(mContext, instance.token).create(poi);
 		synchronize();
 		return returnvalue;
 	}
@@ -1398,7 +1333,7 @@ public class DTHelper {
 				else
 					args.add(what);
 			}
-			if (EventObject.class.getCanonicalName().equals(cls.getCanonicalName())) {
+			if (EventObjectForBean.class.getCanonicalName().equals(cls.getCanonicalName())) {
 				if (when != null)
 					where = addWhenToWhere(where, when.getFrom(), when.getTo());
 
@@ -1414,7 +1349,7 @@ public class DTHelper {
 			 * se evento metti in ordine di data ma se place metti in ordine
 			 * alfabetico
 			 */
-			if (EventObject.class.getCanonicalName().equals(cls.getCanonicalName())) {
+			if (EventObjectForBean.class.getCanonicalName().equals(cls.getCanonicalName())) {
 				return getInstance().storage.query(cls, where, argsArray, position, size, "fromTime ASC");
 			} else {
 				return getInstance().storage.query(cls, where, argsArray, position, size, "title ASC");
