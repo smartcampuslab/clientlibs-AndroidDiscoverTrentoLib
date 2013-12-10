@@ -23,8 +23,8 @@
     <string name="allevents">Tutti gli eventi</string>
     <string name="allpois">Tutti i luoghi</string>
     <string name="createevent">Crea evento</string>
-    <string name="myevents">I miei eventi</string>
-    <string name="mystory">La mia storia</string>
+    <string name="myevents">Partecipazioni</string>
+    <string name="mystory">Preferiti</string>
     <string name="create_title">Nome</string>
     <string name="create_description">Descrizione</string>
     <string name="createevent_date">Data</string>
@@ -45,13 +45,13 @@
     <string name="create_noteshint">Descrizione</string>
     <string name="menu_item_addpoi_text">Aggiungi luogo</string>
     <string name="menu_item_addstory_text">Aggiungi una storia</string>
-    <string name="menu_item_mystories_text">Le mie storie</string>
+    <string name="menu_item_mystories_text">Preferiti</string>
     <string name="createpoi">Crea luogo</string>
     <string name="createstory">Crea storia</string>
     <string name="createpoi_ot">Orari di apertura</string>
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Aggiungi evento</string>
-    <string name="menu_item_myevents_text">I miei eventi</string>
+    <string name="menu_item_myevents_text">Partecipazioni</string>
     <string name="menu_item_layers_text">Categorie</string>
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
     <string name="menu_item_poicategory_text">Categorie dei luoghi</string>
@@ -72,8 +72,8 @@
     <string name="rate">Esprimi giudizio</string>
     <string name="attend">Partecipa</string>
     <string name="save">Salva</string>
-    <string name="add_my_stories">Aggiungi a Le mie storie</string>
-    <string name="delete_my_stories">Rimuovi da Le mie storie</string>
+    <string name="add_my_stories">Aggiungi ai preferiti</string>
+    <string name="delete_my_stories">Rimuovi dai preferiti</string>
     <string name="attend_not">Non partecipare</string>
     <string name="follow">Segui</string>
     <string name="unfollow">Smetti di seguire</string>
@@ -139,8 +139,8 @@
     <string name="list_event_tomorrow">Domani</string>
     <string name="menu_item_todayevent_text">Eventi di oggi</string>
     <string name="categories_event_today">Eventi di oggi</string>
-    <string name="categories_event_my">I miei eventi</string>
-    <string name="categories_story_my">Le mie storie</string>
+    <string name="categories_event_my">Partecipazioni</string>
+    <string name="categories_story_my">Preferiti</string>
     <string name="tab_home">Home</string>
     <string name="tab_places">Luoghi</string>
     <string name="tab_events">Eventi</string>
@@ -182,7 +182,7 @@
     <string name="toast_is_required_p">%s è richiesto.</string>
     <string name="toast_incorrect_p">%s non è corretto</string>
     <string name="eventlist_at_place">Eventi a</string>
-    <string name="toast_my_events_clicked">Cliccato I miei eventi</string>
+    <string name="toast_my_events_clicked">Cliccato Partecipazioni!</string>
     <string name="toast_browsing_your_files">Controllo dei tuoi files&#8230;</string>
     <string name="toast_event_saved">Evento salvato!</string>
     <string name="toast_poi_shared">Luogo condiviso.</string>
