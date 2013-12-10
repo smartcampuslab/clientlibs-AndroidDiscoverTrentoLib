@@ -50,6 +50,7 @@ import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
@@ -92,6 +93,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setHasOptionsMenu(false);
 
 		if (savedInstanceState != null && savedInstanceState.containsKey(ARG_EVENT)
@@ -280,7 +282,13 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	@Override
 	public void onStart() {
 		super.onStart();
-
+		
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        
 		// date and time will be returned as tags
 		final EditText dateFromEditText = (EditText) getView().findViewById(R.id.event_date_from);
 		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {

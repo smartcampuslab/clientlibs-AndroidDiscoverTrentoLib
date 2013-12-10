@@ -34,7 +34,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
@@ -49,6 +49,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		fragmentManager = getSherlockActivity().getSupportFragmentManager();
 		setHasOptionsMenu(true);
 	}
@@ -61,7 +62,11 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+		
+    	DiscoverTrentoActivity.drawerState = "on";
 
+		
 		List<CategoryDescriptor> list = new ArrayList<CategoryDescriptor>();
 		list.add(CategoryHelper.EVENTS_MY);
 		list.add(CategoryHelper.EVENTS_TODAY);

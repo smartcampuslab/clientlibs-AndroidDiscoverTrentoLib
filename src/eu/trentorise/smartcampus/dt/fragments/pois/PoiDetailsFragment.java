@@ -57,6 +57,7 @@ import com.google.android.maps.GeoPoint;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
@@ -92,6 +93,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+        
 		setHasOptionsMenu(true);
 
 		if (getArguments() != null) {
@@ -160,6 +162,14 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			} else {
 				certifiedBanner.setVisibility(View.GONE);
 			}
+			
+			DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+	    	DiscoverTrentoActivity.drawerState = "off";
+	        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+	        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+	        
+	        
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.poi_details_title);
 			tv.setText(mPoi.getTitle());

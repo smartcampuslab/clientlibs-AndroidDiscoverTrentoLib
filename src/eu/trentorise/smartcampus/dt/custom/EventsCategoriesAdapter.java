@@ -29,7 +29,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
-import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 

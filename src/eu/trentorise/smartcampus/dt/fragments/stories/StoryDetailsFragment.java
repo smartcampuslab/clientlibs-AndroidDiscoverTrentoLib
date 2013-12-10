@@ -70,25 +70,21 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.maps.GeoPoint;
 
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
-import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
-import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
@@ -126,7 +122,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setHasOptionsMenu(true);
-
+		
 		if (getArguments() != null) {
 			mStoryId = getArguments().getString(ARG_STORY_ID);
 			getStory();
@@ -230,6 +226,13 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	public void onStart() {
 		super.onStart();
 
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        
+        
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
 		this.stepScollView = (ScrollView) getView().findViewById(R.id.step_details);
@@ -505,7 +508,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			if (actualStepPosition < 0) {
 				initCamera();
 			}
-			getSherlockActivity().invalidateOptionsMenu();
+			getSherlockActivity().supportInvalidateOptionsMenu();
 		}
 	}
 

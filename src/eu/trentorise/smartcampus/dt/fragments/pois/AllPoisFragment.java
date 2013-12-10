@@ -30,12 +30,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
+
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 //import eu.trentorise.smartcampus.ac.UserRegistration;
 //import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.PoisCategoriesAdapter;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
@@ -46,6 +47,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		fragmentManager = getSherlockActivity().getSupportFragmentManager();
 		setHasOptionsMenu(true);
 	}
@@ -58,6 +60,9 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+    	DiscoverTrentoActivity.drawerState = "on";
+
 		gridview = (GridView) getView().findViewById(R.id.pois_gridview);
 		gridview.setAdapter(new PoisCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
 				fragmentManager));

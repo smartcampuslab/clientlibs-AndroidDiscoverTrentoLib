@@ -27,12 +27,16 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -44,7 +48,6 @@ import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.TabListener;
 import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
@@ -52,6 +55,7 @@ import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
+import eu.trentorise.smartcampus.dt.notifications.NotificationsFragmentActivityDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
@@ -61,6 +65,17 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private Tutorial lastShowed;
 	private boolean isLoading;
 
+	
+	public static DrawerLayout mDrawerLayout;
+	public static ListView mDrawerList;
+	public static ActionBarDrawerToggle mDrawerToggle;
+	public static String drawerState = "on";
+	private CharSequence mDrawerTitle;
+	private CharSequence mTitle;
+	private String[] mFragmentTitles;
+	
+	protected final int mainlayout = android.R.id.content;
+	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -70,7 +85,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState == null) {
+			startHomeFragment();
+			// firstConfig();
 
+		}
 		setUpContent(savedInstanceState != null ? savedInstanceState.getInt("tag") : null);
 
 		initDataManagement(savedInstanceState);
@@ -84,6 +103,18 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		}
 	}
 
+	private void startHomeFragment() {
+		//drawerState = "on";
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		HomeFragment fragment = new HomeFragment();
+		Bundle args = new Bundle();
+		fragment.setArguments(args);
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.replace(R.id.fragment_container, fragment);
+		// ft.addToBackStack(fragment.getTag());
+		ft.commit();
+
+	}
 	@Override
 	protected void onResume() {
 		if (DTHelper.getLocationHelper() != null)
@@ -119,15 +150,15 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			onBackPressed();
-			return true;
-		} else
-			return super.onOptionsItemSelected(item);
-
-	}
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		if (item.getItemId() == android.R.id.home) {
+//			onBackPressed();
+//			return true;
+//		} else
+//			return super.onOptionsItemSelected(item);
+//
+//	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -186,46 +217,123 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		setContentView(R.layout.main);
 
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayShowTitleEnabled(true); // system title
-		actionBar.setDisplayShowHomeEnabled(true); // home icon bar
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS); // tabs bar
+		mFragmentTitles = getResources().getStringArray(R.array.fragment_array);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		mDrawerList.setAdapter(new MenuDrawerAdapter(this, getResources()
+				.getStringArray(R.array.fragment_array)));
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+		mTitle = mDrawerTitle = getTitle();
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		//
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
 
-		// Home
-		ActionBar.Tab tab = actionBar.newTab();
-		tab.setText(R.string.tab_home);
-		tab.setTabListener(new TabListener<HomeFragment>(this, "me", HomeFragment.class));
-		actionBar.addTab(tab);
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle(mTitle);
+				supportInvalidateOptionsMenu();
+			}
 
-		// Points of interest
-		tab = actionBar.newTab();
-		tab.setText(R.string.tab_places);
-		tab.setTabListener(new TabListener<AllPoisFragment>(this, "pois", AllPoisFragment.class));
-		actionBar.addTab(tab);
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle(mDrawerTitle);
+				supportInvalidateOptionsMenu();
+			}
 
-		// Events
-		tab = actionBar.newTab();
-		tab.setText(R.string.tab_events);
-		tab.setTabListener(new TabListener<AllEventsFragment>(this, "events", AllEventsFragment.class));
-		actionBar.addTab(tab);
+			public void onDrawerSlide(View drawerView, float slideOffset) {
+				getSupportActionBar().setTitle(mDrawerTitle);
+				mDrawerLayout.bringChildToFront(drawerView);
+				supportInvalidateOptionsMenu();
+				super.onDrawerSlide(drawerView, slideOffset);
+			}
+		};
 
-		// Stories
-		// ATTENZIONE se si modifica la posizione di questa tab il tutorial
-		// sballa
-		// bisogna modificare anche alla riga 475 (circa) dove si seleziona la
-		// tab delle storie
-		tab = getSupportActionBar().newTab();
-		tab.setText(R.string.tab_stories);
-		tab.setTabListener(new TabListener<AllStoriesFragment>(this, "stories", AllStoriesFragment.class));
-		actionBar.addTab(tab);
-
-		if (pos != null)
-			actionBar.selectTab(actionBar.getTabAt(pos));
-		actionBar.setHomeButtonEnabled(false);
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		// enable ActionBar app icon to behave as action to toggle nav drawer
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
 
 	}
+	
+	/* The click listner for ListView in the navigation drawer */
+	private class DrawerItemClickListener implements
+			ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			selectItem(position);
+		}
+	}
+	
+	private void selectItem(int position) {
+		String fragmentString = mFragmentTitles[position];
+		// // update the main content by replacing fragments
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		if (fragmentString.equals(mFragmentTitles[0])) {
+			HomeFragment fragment = new HomeFragment();
+			fragmentTransaction
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment,
+					"inbox");
+//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			mDrawerLayout.closeDrawer(mDrawerList);
+		} else if (fragmentString.equals(mFragmentTitles[1])) {
+			AllPoisFragment fragment = new AllPoisFragment();
+			fragmentTransaction
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment,
+					"star");
+//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			mDrawerLayout.closeDrawer(mDrawerList);
+		} else if (fragmentString.equals(mFragmentTitles[2])) {
+			AllEventsFragment fragment = new AllEventsFragment();
+			fragmentTransaction
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment,
+					"extsbs");
+//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			mDrawerLayout.closeDrawer(mDrawerList);
+		} else if (fragmentString.equals(mFragmentTitles[3])) {
+			AllStoriesFragment fragment = new AllStoriesFragment();
+			fragmentTransaction
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment,
+					"Labels");
+//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+			mDrawerLayout.closeDrawer(mDrawerList);
+		}
+		else if (fragmentString.equals(mFragmentTitles[4])) {
+			Intent i = (new Intent(DiscoverTrentoActivity.this, NotificationsFragmentActivityDT.class));
+			startActivity(i);
+			mDrawerLayout.closeDrawer(mDrawerList);
+		}
 
+	}
+	
+	@Override
+	public void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		//mDrawerToggle.setDrawerIndicatorEnabled(true);
+		mDrawerLayout.closeDrawer(mDrawerList);
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {
+		mTitle = title;
+		getSupportActionBar().setTitle(mTitle);
+	}
+	
 	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
 
 		private int syncRequired = 0;
@@ -262,6 +370,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			return null;
 		}
 
+		
 		@Override
 		public void handleResult(BaseDTObject result) {
 			if (syncRequired != DTHelper.SYNC_NOT_REQUIRED) {
@@ -487,6 +596,28 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (drawerState.equals("on")) {
+				if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+					mDrawerLayout.closeDrawer(mDrawerList);
+				} else {
+					mDrawerLayout.openDrawer(mDrawerList);
+				}
+			} else {
+				//drawerState = "on";
+				onBackPressed();
+			}
+			return true;
+
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 }

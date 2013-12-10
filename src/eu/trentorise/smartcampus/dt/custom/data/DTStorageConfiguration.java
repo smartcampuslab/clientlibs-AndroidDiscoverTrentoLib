@@ -23,7 +23,6 @@ import eu.trentorise.smartcampus.storage.BasicObject;
 import eu.trentorise.smartcampus.storage.StorageConfigurationException;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
 import eu.trentorise.smartcampus.storage.db.StorageConfiguration;
-import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 

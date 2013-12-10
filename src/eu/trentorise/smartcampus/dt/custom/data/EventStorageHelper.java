@@ -20,12 +20,9 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 import eu.trentorise.smartcampus.dt.model.EventObjectForBean;
-import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
 import eu.trentorise.smartcampus.territoryservice.model.EventObject;
-import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class EventStorageHelper implements BeanStorageHelper<EventObjectForBean> {
 

@@ -18,6 +18,16 @@
 
     <string name="app_name">ViviTrento</string>
     <!-- <string name="app_name">EsploraTrento</string> -->
+     <string-array name="fragment_array">
+        <item>Home</item>
+        <item>Luoghi</item>
+        <item>Eventi</item>
+        <item>Storie</item>
+        <item>Notifiche</item>
+        </string-array>
+        <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    
     <string name="empty" />
     <string name="slidingmenu_home">Home</string>
     <string name="allevents">Tutti gli eventi</string>

@@ -16,6 +16,16 @@
 <resources>
 
     <string name="app_name">ViviTrento</string>
+    <string-array name="fragment_array">
+        <item>Home</item>
+        <item>Places</item>
+        <item>Events</item>
+        <item>Story</item>
+        <item>Notifications</item>
+        
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
     <string name="empty" />
     <string name="slidingmenu_home">Home</string>
     <string name="allevents">All events</string>

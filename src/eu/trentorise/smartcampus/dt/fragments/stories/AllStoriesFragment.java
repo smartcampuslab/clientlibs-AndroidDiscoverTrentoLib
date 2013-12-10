@@ -35,6 +35,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
+
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 //import eu.trentorise.smartcampus.ac.UserRegistration;
 //import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
@@ -77,6 +79,9 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+
+    	DiscoverTrentoActivity.drawerState = "on";
 
 		if (Log.isLoggable(TAG, Log.VERBOSE)) {
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onStart ");

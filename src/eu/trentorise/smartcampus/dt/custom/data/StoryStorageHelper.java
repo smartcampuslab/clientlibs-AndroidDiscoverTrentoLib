@@ -21,10 +21,8 @@ import java.util.Map;
 import android.content.ContentValues;
 import android.database.Cursor;
 import eu.trentorise.smartcampus.android.common.Utils;
-import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
 import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
 import eu.trentorise.smartcampus.storage.db.BeanStorageHelper;
-import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StepObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 

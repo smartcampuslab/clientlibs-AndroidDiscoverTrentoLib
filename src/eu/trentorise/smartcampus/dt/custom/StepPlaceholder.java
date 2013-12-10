@@ -15,10 +15,10 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
-import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 
 public class StepPlaceholder {
 	public LocalStepObject step;
