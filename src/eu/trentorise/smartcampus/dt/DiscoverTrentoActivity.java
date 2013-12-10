@@ -230,17 +230,17 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				R.string.drawer_close) {
 
 			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(mTitle);
+				//getSupportActionBar().setTitle(mTitle);
 				supportInvalidateOptionsMenu();
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mDrawerTitle);
+				//getSupportActionBar().setTitle(mDrawerTitle);
 				supportInvalidateOptionsMenu();
 			}
 
 			public void onDrawerSlide(View drawerView, float slideOffset) {
-				getSupportActionBar().setTitle(mDrawerTitle);
+				//getSupportActionBar().setTitle(mDrawerTitle);
 				mDrawerLayout.bringChildToFront(drawerView);
 				supportInvalidateOptionsMenu();
 				super.onDrawerSlide(drawerView, slideOffset);
