@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -225,6 +226,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		mTitle = mDrawerTitle = getTitle();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		//
+		
+		
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
@@ -266,6 +269,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	
 	private void selectItem(int position) {
 		String fragmentString = mFragmentTitles[position];
+		setTitle(fragmentString);
 		// // update the main content by replacing fragments
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 				.beginTransaction();
@@ -274,7 +278,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"inbox");
+					"map");
 //			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
@@ -283,7 +287,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"star");
+					"pois");
 //			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
@@ -292,7 +296,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"extsbs");
+					"events");
 //			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
@@ -301,7 +305,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"Labels");
+					"stories");
 //			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
@@ -310,6 +314,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			Intent i = (new Intent(DiscoverTrentoActivity.this, NotificationsFragmentActivityDT.class));
 			startActivity(i);
 			mDrawerLayout.closeDrawer(mDrawerList);
+		}else if (fragmentString.equals(mFragmentTitles[5])){
+			Toast.makeText(getApplicationContext(), "Coming soon!", Toast.LENGTH_LONG).show();
 		}
 
 	}
