@@ -37,7 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -53,12 +53,20 @@ import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
+import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
+import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
+import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsFragmentActivityDT;
+import eu.trentorise.smartcampus.dt.notifications.NotificationsFragmentListDT;
+import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
@@ -86,6 +94,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		if (savedInstanceState == null) {
 			startHomeFragment();
 			// firstConfig();
@@ -102,6 +111,29 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			showTourDialog();
 			DTHelper.disableFirstLaunch(this);
 		}
+		Intent intent = getIntent();
+		BaseDTObject result = (BaseDTObject) intent.getSerializableExtra(NotificationsFragmentListDT.NOTIFICATIONS_PARAM);
+		if (result !=null){
+			FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+			SherlockFragment fragment = null;
+			Bundle args = new Bundle();
+
+			if (result instanceof EventObject) {
+				fragment = new EventDetailsFragment();
+				args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
+			} else if (result instanceof POIObject) {
+				fragment = new PoiDetailsFragment();
+				args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
+			} else if (result instanceof StoryObject) {
+				fragment = new StoryDetailsFragment();
+				args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
+			}
+			fragment.setArguments(args);
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "details");
+			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
+		} 
 	}
 
 	private void startHomeFragment() {

@@ -3,6 +3,7 @@ package eu.trentorise.smartcampus.dt.notifications;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -23,6 +24,7 @@ import eu.trentorise.smartcampus.communicator.model.Notification;
 import eu.trentorise.smartcampus.communicator.model.NotificationFilter;
 import eu.trentorise.smartcampus.communicator.model.NotificationsConstants.ORDERING;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
@@ -38,14 +40,14 @@ import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
-
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 // SherlockListFragment
 public class NotificationsFragmentListDT extends SherlockListFragment {
 
 	private NotificationsListAdapterDT adapter;
 	private final static String APPID = "core.territory";
 	private static final int MAX_MSG = 50;
-
+	public static final String NOTIFICATIONS_PARAM = "Notifications";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
 		return inflater.inflate(R.layout.notifications_list_dt, container);
@@ -185,7 +187,6 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 				Toast.makeText(getSherlockActivity(), getString(R.string.app_failure_obj_not_found), Toast.LENGTH_LONG).show();
 				return;
 			}
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			SherlockFragment fragment = null;
 			Bundle args = new Bundle();
 
@@ -201,12 +202,11 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			}
 
 			if (fragment != null) {
-				fragment.setArguments(args);
-				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(R.id.fragment_container, fragment, "details");
-				fragmentTransaction.addToBackStack(fragment.getTag());
-				fragmentTransaction.commit();
+				//start  DiscoverTrento and pass params
+				Intent i = (new Intent(getSherlockActivity(), DiscoverTrentoActivity.class));
+				i.putExtra(NOTIFICATIONS_PARAM, result);
+				startActivity(i);
+
 			}
 		}
 	}
