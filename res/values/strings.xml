@@ -67,7 +67,6 @@
     <string name="menu_item_poicategory_text">Place categories</string>
     <string name="related_poi">Related place</string>
     <string name="submenu_related_events">Related events</string>
-    <string name="submenu_tag">Add tags</string>
     <string name="getdir">Directions</string>
     <string name="onmap">View on map</string>
     <string name="poi_select_address_content_description">Select an address on the map</string>

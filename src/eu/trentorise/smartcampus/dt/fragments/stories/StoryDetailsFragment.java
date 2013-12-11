@@ -533,37 +533,10 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 		menu.clear();
 		getSherlockActivity().getSupportMenuInflater().inflate(R.menu.gripmenu, menu);
-
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
 		if (actualStepPosition == -1 || getStory().getSteps() == null || getStory().getSteps().size() == 0) {
-			// story visualization
-			// String userId = DTHelper.getUserId();
-
-			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE,
-			// R.string.rate);
-
-			// if (getStory().getAttending() == null ||
-			// getStory().getAttending().isEmpty()) {
-			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE,
-			// R.string.add_my_stories);
-			// } else {
-			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.add_my_stories, Menu.NONE,
-			// R.string.delete_my_stories);
-			// }
-
-			// if
-			// (getStory().getCommunityData().getFollowing().containsKey(userId))
-			// {
-			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_unfollow,
-			// Menu.NONE, R.string.unfollow);
-			// } else {
-			// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_follow, Menu.NONE,
-			// R.string.follow);
-			// }
-
-			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
 
 			// CAN EDIT OR DELETE ONLY OWN STORY
 			if (DTHelper.isOwnedObject(getStory())) {
@@ -585,6 +558,9 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				submenu.add(Menu.CATEGORY_SYSTEM, R.id.edit_step_btn, Menu.NONE, R.string.edit);
 			}
 
+		}
+		if (submenu.size() == 0) {
+			menu.clear();
 		}
 		super.onPrepareOptionsMenu(menu);
 	}
