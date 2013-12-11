@@ -22,7 +22,7 @@
         <item>Home</item>
         <item>Luoghi</item>
         <item>Eventi</item>
-        <item>Storie</item>
+        <item>Itinerari</item>
         <item>Notifiche</item>
         <item>Tutorial</item>
         </string-array>
@@ -55,10 +55,10 @@
     <string name="create_notes">Note</string>
     <string name="create_noteshint">Descrizione</string>
     <string name="menu_item_addpoi_text">Aggiungi luogo</string>
-    <string name="menu_item_addstory_text">Aggiungi una storia</string>
+    <string name="menu_item_addstory_text">Aggiungi itinerario</string>
     <string name="menu_item_mystories_text">Preferiti</string>
     <string name="createpoi">Crea luogo</string>
-    <string name="createstory">Crea storia</string>
+    <string name="createstory">Crea itinerario</string>
     <string name="createpoi_ot">Orari di apertura</string>
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Aggiungi evento</string>
@@ -83,8 +83,7 @@
     <string name="rate">Esprimi giudizio</string>
     <string name="attend">Partecipa</string>
     <string name="save">Salva</string>
-    <string name="add_my_stories">Aggiungi ai preferiti</string>
-    <string name="delete_my_stories">Rimuovi dai preferiti</string>
+    <string name="save_to_favorites">Aggiungi ai preferiti</string>
     <string name="attend_not">Non partecipare</string>
     <string name="follow">Segui</string>
     <string name="unfollow">Smetti di seguire</string>
@@ -104,10 +103,9 @@
     <string name="ratingtext_user">Il tuo giudizio:</string>
     <string name="ratingtext_raters">Giudizi totali: %s</string>
     <string name="attendees_extended"> persone parteciperanno all\'evento.</string>
-    <string name="attendees_story_extended"> persone stanno seguendo questa storia.</string>
     <string name="rating_place_dialog_title">Valuta questo luogo:</string>
     <string name="rating_event_dialog_title">Valuta questo evento:</string>
-    <string name="rating_story_dialog_title">Valuta questa storia:</string>
+    <string name="rating_story_dialog_title">Valuta questo itinerario:</string>
     <string name="noevents">Non ci sono eventi in questa categoria! </string>
     <string name="backstring">Indietro</string>
     <string name="showdetails">Dettagli&#8230;</string>
@@ -122,12 +120,12 @@
     <string name="content_empty">Nessun risultato.</string>
     <string name="address_select_toast">Tieni premuto per scegliere un luogo</string>
     <string name="rating_success">La tua valutazione è stata salvata</string>
-    <string name="attend_success">Parteciperai a questo evento!</string>
-    <string name="not_attend_success">Non parteciperai a questo evento!</string>
-    <string name="attend_story_success">La storia è stata aggiunta a Le mie storie!</string>
-    <string name="not_attend_story_success">Storia rimossa da Le mie storie!</string>
+    <string name="attend_success">Aggiunto alla tua lista di partecipazioni!</string>
+    <string name="not_attend_success">Rimosso dalla tua lista di partecipazioni!</string>
+    <string name="attend_story_success">Aggiunto ai preferiti!</string>
+    <string name="not_attend_story_success">Rimosso dai preferiti!</string>
     <string name="event_create_success">Evento creato!</string>
-    <string name="story_create_success">Storia creata!</string>
+    <string name="story_create_success">Itinerario creato!</string>
     <string name="poi_create_success">Luogo creato!</string>
     <string name="update_success">Le tue modifiche sono state salvate</string>
     <string name="add_step">Aggiungi tappa</string>
@@ -143,9 +141,11 @@
     <string name="sure_delete_step">Si vuole davvero eliminare questa tappa?</string>
     <string name="sure_change">Sovrascrivere i dati precedenti?</string>
     <string name="add">Aggiungi</string>
-    <string name="event">evento</string>
-    <string name="story">storia</string>
-    <string name="place">luogo</string>
+    
+    <string name="add_story_in_cat">Aggiungi itinerario su %s</string>
+    <string name="add_poi_in_cat">Aggiungi luogo su %s</string>
+    <string name="add_event_in_cat">Aggiungi evento su %s</string>
+    
     <string name="list_event_today">Oggi</string>
     <string name="list_event_tomorrow">Domani</string>
     <string name="menu_item_todayevent_text">Eventi di oggi</string>
@@ -155,7 +155,7 @@
     <string name="tab_home">Home</string>
     <string name="tab_places">Luoghi</string>
     <string name="tab_events">Eventi</string>
-    <string name="tab_stories">Storie</string>
+    <string name="tab_stories">Itinerari</string>
     <string name="menu_item__places_layers_text">Luoghi</string>
     <string name="menu_item__events_layers_text">Eventi</string>
     <string name="categories_event_concert">Concerti</string>
@@ -184,7 +184,7 @@
     <string name="categories_story_offices_and_services">Enti e servizi</string>
     <string name="categories_story_university">Università</string>
     <string name="categories_story_culture">Cultura</string>
-    <string name="categories_story_generic">Altre storie</string>
+    <string name="categories_story_generic">Altre itinerari</string>
     <string name="search_for">Cerca</string>
     <string name="search_in_category">nella categoria</string>
     <string name="search_today_events">Eventi di oggi</string>
@@ -193,7 +193,6 @@
     <string name="toast_is_required_p">%s è richiesto.</string>
     <string name="toast_incorrect_p">%s non è corretto</string>
     <string name="eventlist_at_place">Eventi a</string>
-    <string name="toast_my_events_clicked">Cliccato Partecipazioni!</string>
     <string name="toast_browsing_your_files">Controllo dei tuoi files&#8230;</string>
     <string name="toast_event_saved">Evento salvato!</string>
     <string name="toast_poi_shared">Luogo condiviso.</string>
@@ -201,12 +200,12 @@
     <string name="toast_unfollow_ok">OK! Ora non segui piú \"%s\"</string>
     <string name="toast_poi_not_found">Luogo non trovato</string>
     <string name="notifications_event_new">Nuovo evento \"%1$s\" per %2$s</string>
-    <string name="notifications_story_new">Nuova storia \"%1$s\" su %2$s</string>
+    <string name="notifications_story_new">Nuovo itinerario \"%1$s\" su %2$s</string>
     <string name="notifications_event_updated">Evento \"%s\" aggiornato</string>
     <string name="notifications_location_updated">Luogo \"%s\" aggiornato</string>
-    <string name="notifications_story_updated">Storia \"%s\" aggiornata</string>
+    <string name="notifications_story_updated">Itinerario \"%s\" aggiornato</string>
     <string name="notifications_event_at_place_updated">Evento \"%1$s\" per %2$s aggiornato</string>
-    <string name="notifications_story_at_place_update">Storia \"%1$s\" su %2$s aggiornata</string>
+    <string name="notifications_story_at_place_update">Itinerario \"%1$s\" su %2$s aggiornato</string>
     <string name="notifications_unread">Notifiche non lette</string>
     <string name="notifications_list_empty">Non hai ancora ricevuto notifiche\nriguardanti gli eventi e i luoghi\nche stai seguendo.</string>
     <string name="notifications_list_title">Notifiche</string>

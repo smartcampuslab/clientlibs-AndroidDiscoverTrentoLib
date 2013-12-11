@@ -80,8 +80,6 @@ import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
@@ -248,41 +246,43 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// follow/unfollow
 			if (mStart) {
 				ToggleButton followTbtn = (ToggleButton) this.getView().findViewById(R.id.storydetails_follow_tbtn);
-				if (getStory().getCommunityData().getFollowing() != null
-						&& getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
-					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
-					followTbtn.setChecked(true);
-				} else {
-					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
-					followTbtn.setChecked(false);
-				}
-
-				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if (!mCanceledFollow) {
-							if (isChecked) {
-								// FOLLOW
-								{
-									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
-											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
-													buttonView));
-									followTask.execute(mStory);
-								}
-							} else {
-								// UNFOLLOW
-										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
-														getSherlockActivity(), buttonView));
-										unfollowTask.execute(mStory);
-
-									}
-						} else {
-							mCanceledFollow = false;
-						}
-						resetStory();
-					}
-				});
+				// TODO disabled for the moment
+//				followTbtn.setVisibility(View.GONE);
+//				if (getStory().getCommunityData().getFollowing() != null
+//						&& getStory().getCommunityData().getFollowing().containsKey(DTHelper.getUserId())) {
+//					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_on);
+//					followTbtn.setChecked(true);
+//				} else {
+//					followTbtn.setBackgroundResource(R.drawable.ic_btn_monitor_off);
+//					followTbtn.setChecked(false);
+//				}
+//
+//				followTbtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//					@Override
+//					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//						if (!mCanceledFollow) {
+//							if (isChecked) {
+//								// FOLLOW
+//								{
+//									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
+//											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
+//													buttonView));
+//									followTask.execute(mStory);
+//								}
+//							} else {
+//								// UNFOLLOW
+//										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+//												getSherlockActivity(), new UnfollowAsyncTaskProcessor(
+//														getSherlockActivity(), buttonView));
+//										unfollowTask.execute(mStory);
+//
+//									}
+//						} else {
+//							mCanceledFollow = false;
+//						}
+//						resetStory();
+//					}
+//				});
 			}
 
 			// attend

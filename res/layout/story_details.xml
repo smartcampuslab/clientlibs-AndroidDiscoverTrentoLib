@@ -68,7 +68,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/follow" />
+                        android:text="@string/follow" 
+                        android:visibility="gone"/>
 
                     <ToggleButton
                         android:id="@+id/storydetails_follow_tbtn"
@@ -77,13 +78,14 @@
                         android:layout_marginLeft="4dp"
                         android:text="@string/empty"
                         android:textOff="@string/empty"
-                        android:textOn="@string/empty" />
+                        android:textOn="@string/empty" 
+                        android:visibility="gone"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
-                        android:text="@string/save" />
+                        android:text="@string/save_to_favorites" />
 
                     <ToggleButton
                         android:id="@+id/storydetails_attend_tbtn"

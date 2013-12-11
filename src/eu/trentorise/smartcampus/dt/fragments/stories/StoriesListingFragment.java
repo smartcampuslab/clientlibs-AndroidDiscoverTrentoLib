@@ -228,18 +228,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		if (category == null)
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		if (category != null) {
-			String addString = getString(R.string.add)
-					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-							CategoryHelper.CATEGORY_TYPE_STORIES, category).description) + " "
-					+ getString(R.string.story);
-			if (Locale.getDefault().equals(Locale.ITALY))
-				addString = getString(R.string.add)
-						+ " "
-						+ getString(R.string.story)
-						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-								CategoryHelper.CATEGORY_TYPE_STORIES, category).description);
+			String addString = getString(R.string.add_story_in_cat, getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+					CategoryHelper.CATEGORY_TYPE_STORIES, category).description));
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
 		}

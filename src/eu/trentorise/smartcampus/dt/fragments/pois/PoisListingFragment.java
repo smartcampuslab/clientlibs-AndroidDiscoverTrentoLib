@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -248,17 +247,8 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 		submenu.add(Menu.CATEGORY_SYSTEM, R.id.map_view, Menu.NONE, R.string.map_view);
 
 		if (category != null) {
-			String addString = getString(R.string.add)
-					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_POIS,
-							category).description) + " " + getString(R.string.place);
-			if (Locale.getDefault().equals(Locale.ITALY))
-				addString = getString(R.string.add)
-						+ " "
-						+ getString(R.string.place)
-						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_POIS,
-								category).description);
+			String addString = getString(R.string.add_poi_in_cat, getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_POIS,
+							category).description));
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addpoi, Menu.NONE, addString);
 		}

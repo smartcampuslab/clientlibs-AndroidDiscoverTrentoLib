@@ -20,7 +20,7 @@
         <item>Home</item>
         <item>Places</item>
         <item>Events</item>
-        <item>Story</item>
+        <item>Tours</item>
         <item>Notifications</item>
         <item>Tutorial</item>
     </string-array>
@@ -52,10 +52,10 @@
     <string name="create_notes">Notes</string>
     <string name="create_noteshint">Other information</string>
     <string name="menu_item_addpoi_text">Add place</string>
-    <string name="menu_item_addstory_text">Add a story</string>
+    <string name="menu_item_addstory_text">Add a tour</string>
     <string name="menu_item_mystories_text">Favourites</string>
     <string name="createpoi">Create place</string>
-    <string name="createstory">Create story</string>
+    <string name="createstory">Create tour</string>
     <string name="createpoi_ot">Opening times</string>
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Create event</string>
@@ -82,8 +82,8 @@
     <string name="rate">Rate</string>
     <string name="attend">Attend</string>
     <string name="save">Save</string>
-    <string name="add_my_stories">Add to attending</string>
-    <string name="delete_my_stories">Remove from attending</string>
+    <string name="save_to_favorites">Save to favourites</string>
+    
     <string name="attend_not">Not attend</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
@@ -103,10 +103,9 @@
     <string name="ratingtext_user">Your rating:</string>
     <string name="ratingtext_raters">Total rates: %s</string>
     <string name="attendees_extended"> people are attending this event.</string>
-    <string name="attendees_story_extended"> people are attending this story.</string>
     <string name="rating_place_dialog_title">Rate this place:</string>
     <string name="rating_event_dialog_title">Rate this event:</string>
-    <string name="rating_story_dialog_title">Rate this story:</string>
+    <string name="rating_story_dialog_title">Rate this tour:</string>
     <string name="noevents">No events available in this category! </string>
     <string name="backstring">Back</string>
     <string name="showdetails">Details&#8230;</string>
@@ -121,12 +120,12 @@
     <string name="content_empty">No results.</string>
     <string name="address_select_toast">Keep your finger pressed to select a location</string>
     <string name="rating_success">Your rating has been saved</string>
-    <string name="attend_success">You will attend this event!</string>
-    <string name="not_attend_success">You will not attend this event!</string>
-    <string name="attend_story_success">Story successfully added to favourites!</string>
-    <string name="not_attend_story_success">Story removed from favourites!</string>
+    <string name="attend_success">Added to your attending list!</string>
+    <string name="not_attend_success">Removed from your attending list!</string>
+    <string name="attend_story_success">Saved to favourites!</string>
+    <string name="not_attend_story_success">Removed from favourites!</string>
     <string name="event_create_success">Event successfully created!</string>
-    <string name="story_create_success">Story successfully created!</string>
+    <string name="story_create_success">Tour successfully created!</string>
     <string name="poi_create_success">Place successfully created!</string>
     <string name="update_success">Your modifications have been saved.</string>
     <string name="add_step">Add step</string>
@@ -141,10 +140,12 @@
     <string name="empty_step_title">The Place must not be empty</string>
     <string name="sure_delete_step">Are you sure you want to delete this step?</string>
     <string name="sure_change">Overwrite previous data?</string>
+    
+    <string name="add_story_in_cat">Add %s tour</string>
+    <string name="add_poi_in_cat">Add %s place</string>
+    <string name="add_event_in_cat">Add %s event</string>
+    
     <string name="add">Add</string>
-    <string name="event">event</string>
-    <string name="story">story</string>
-    <string name="place">place</string>
     <string name="list_event_today">Today</string>
     <string name="list_event_tomorrow">Tomorrow</string>
     <string name="menu_item_todayevent_text">Today\'s Events</string>
@@ -154,7 +155,7 @@
     <string name="tab_home">Home</string>
     <string name="tab_places">Places</string>
     <string name="tab_events">Events</string>
-    <string name="tab_stories">Stories</string>
+    <string name="tab_stories">Tours</string>
     <string name="categories_event_concert">Concerts</string>
     <string name="categories_event_happyhour">Happy hours</string>
     <string name="categories_event_movie">Movies</string>
@@ -190,7 +191,6 @@
     <string name="toast_is_required_p">%s is required!</string>
     <string name="toast_incorrect_p">%s is incorrect!</string>
     <string name="eventlist_at_place">Events at</string>
-    <string name="toast_my_events_clicked">Attending clicked</string>
     <string name="toast_browsing_your_files">Browsing your files&#8230;</string>
     <string name="toast_event_saved">Event saved!</string>
     <string name="toast_poi_shared">Place shared.</string>
@@ -201,12 +201,12 @@
     <string name="notifications_list_empty">You have not received notifications yet about the events and the places you are following.</string>
     <string name="notifications_list_title">Notifications</string>
     <string name="notifications_event_new">New event \"%1$s\" at %2$s</string>
-    <string name="notifications_story_new">New story \"%1$s\" about %2$s</string>
+    <string name="notifications_story_new">New tour \"%1$s\" about %2$s</string>
     <string name="notifications_event_updated">Event \"%s\" updated</string>
     <string name="notifications_location_updated">Place \"%s\" updated</string>
-    <string name="notifications_story_updated">Story \"%s\" updated</string>
+    <string name="notifications_story_updated">Tour \"%s\" updated</string>
     <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
-    <string name="notifications_story_at_place_update">Story \"%1$s\" about %2$s is updated</string>
+    <string name="notifications_story_at_place_update">Tour \"%1$s\" about %2$s is updated</string>
     <string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
 
     <!-- String for the searching fragment -->
