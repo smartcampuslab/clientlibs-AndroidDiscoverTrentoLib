@@ -84,7 +84,7 @@ public class InfoDialog extends SherlockDialogFragment {
 						CategoryHelper.CATEGORY_TYPE_EVENTS, event.getType()).description);
 				msgText += "</p><br/>";
 			}
-			msgText += "<p>" + event.getTiming() + "</p>";
+			msgText += "<p>" + event.getTimingFormatted() + "</p>";
 			if (poi != null) {
 				msgText += "<p>" + Utils.getPOIshortAddress(poi) + "</p>";
 			}
