@@ -15,11 +15,15 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt;
 
+import java.util.Map;
+
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -32,6 +36,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -74,7 +79,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private Tutorial lastShowed;
 	private boolean isLoading;
 
-	
 	public static DrawerLayout mDrawerLayout;
 	public static ListView mDrawerList;
 	public static ActionBarDrawerToggle mDrawerToggle;
@@ -82,9 +86,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mFragmentTitles;
-	
+
 	protected final int mainlayout = android.R.id.content;
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -108,12 +112,14 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		// DTHelper.getTutorialPreferences(this).edit().clear().commit();
 
 		if (DTHelper.isFirstLaunch(this)) {
+			openNavDrawerIfNeeded();
 			showTourDialog();
 			DTHelper.disableFirstLaunch(this);
 		}
 		Intent intent = getIntent();
-		BaseDTObject result = (BaseDTObject) intent.getSerializableExtra(NotificationsFragmentListDT.NOTIFICATIONS_PARAM);
-		if (result !=null){
+		BaseDTObject result = (BaseDTObject) intent
+				.getSerializableExtra(NotificationsFragmentListDT.NOTIFICATIONS_PARAM);
+		if (result != null) {
 			FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 			SherlockFragment fragment = null;
 			Bundle args = new Bundle();
@@ -133,11 +139,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction.replace(R.id.fragment_container, fragment, "details");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
-		} 
+		}
 	}
 
 	private void startHomeFragment() {
-		//drawerState = "on";
+		// drawerState = "on";
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		HomeFragment fragment = new HomeFragment();
 		Bundle args = new Bundle();
@@ -148,6 +154,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		ft.commit();
 
 	}
+
 	@Override
 	protected void onResume() {
 		if (DTHelper.getLocationHelper() != null)
@@ -183,20 +190,20 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		return true;
 	}
 
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		if (item.getItemId() == android.R.id.home) {
-//			onBackPressed();
-//			return true;
-//		} else
-//			return super.onOptionsItemSelected(item);
-//
-//	}
+	// @Override
+	// public boolean onOptionsItemSelected(MenuItem item) {
+	// if (item.getItemId() == android.R.id.home) {
+	// onBackPressed();
+	// return true;
+	// } else
+	// return super.onOptionsItemSelected(item);
+	//
+	// }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-	
+
 		if (requestCode == TUTORIAL_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				String resData = data.getExtras().getString(BaseTutorialActivity.RESULT_DATA);
@@ -252,30 +259,27 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		mFragmentTitles = getResources().getStringArray(R.array.fragment_array);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		mDrawerList.setAdapter(new MenuDrawerAdapter(this, getResources()
-				.getStringArray(R.array.fragment_array)));
+		mDrawerList.setAdapter(new MenuDrawerAdapter(this, getResources().getStringArray(R.array.fragment_array)));
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 		mTitle = mDrawerTitle = getTitle();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		//
-		
-		
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-				R.drawable.ic_drawer, R.string.drawer_open,
+
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
 
 			public void onDrawerClosed(View view) {
-				//getSupportActionBar().setTitle(mTitle);
+				// getSupportActionBar().setTitle(mTitle);
 				supportInvalidateOptionsMenu();
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				//getSupportActionBar().setTitle(mDrawerTitle);
+				// getSupportActionBar().setTitle(mDrawerTitle);
 				supportInvalidateOptionsMenu();
 			}
 
 			public void onDrawerSlide(View drawerView, float slideOffset) {
-				//getSupportActionBar().setTitle(mDrawerTitle);
+				// getSupportActionBar().setTitle(mDrawerTitle);
 				mDrawerLayout.bringChildToFront(drawerView);
 				supportInvalidateOptionsMenu();
 				super.onDrawerSlide(drawerView, slideOffset);
@@ -288,70 +292,77 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 
 	}
-	
+
 	/* The click listner for ListView in the navigation drawer */
-	private class DrawerItemClickListener implements
-			ListView.OnItemClickListener {
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			selectItem(position);
 		}
 	}
-	
+
 	private void selectItem(int position) {
 		String fragmentString = mFragmentTitles[position];
 		setTitle(fragmentString);
 		// // update the main content by replacing fragments
-		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-				.beginTransaction();
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		if (fragmentString.equals(mFragmentTitles[0])) {
 			HomeFragment fragment = new HomeFragment();
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"map");
-//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "map");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[1])) {
 			AllPoisFragment fragment = new AllPoisFragment();
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"pois");
-//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[2])) {
 			AllEventsFragment fragment = new AllEventsFragment();
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"events");
-//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[3])) {
 			AllStoriesFragment fragment = new AllStoriesFragment();
-			fragmentTransaction
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(R.id.fragment_container, fragment,
-					"stories");
-//			fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
+			// fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
-		}
-		else if (fragmentString.equals(mFragmentTitles[4])) {
-			Intent i = (new Intent(DiscoverTrentoActivity.this, NotificationsFragmentActivityDT.class));
-			startActivity(i);
+		} else if (fragmentString.equals(mFragmentTitles[4])) {
+			// Intent i = (new Intent(DiscoverTrentoActivity.this,
+			// NotificationsFragmentActivityDT.class));
+			// startActivity(i);
+			// mDrawerLayout.closeDrawer(mDrawerList);
+			NotificationsFragmentListDT fragment = new NotificationsFragmentListDT();
+			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			fragmentTransaction.replace(R.id.fragment_container, fragment);
+			// fragmentTransaction.addToBackStack(fragment.getTag());
+			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
-		}else if (fragmentString.equals(mFragmentTitles[5])){
-			Toast.makeText(getApplicationContext(), "Coming soon!", Toast.LENGTH_LONG).show();
+		} else if (fragmentString.equals(mFragmentTitles[5])) {
+			prepareTutorial();
+			showTutorial();
 		}
 
 	}
-	
+
+	private void prepareTutorial() {
+		SharedPreferences pref = DTHelper.getTutorialPreferences(this);
+		Editor editor = pref.edit();
+		// reset tutorial
+		for (Tutorial tut : Tutorial.values()) {
+			editor.putBoolean(tut.toString(), false);
+		}
+		editor.commit();
+		DTHelper.setWantTour(DiscoverTrentoActivity.this, true);		
+	}
+
 	@Override
 	public void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -362,7 +373,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		//mDrawerToggle.setDrawerIndicatorEnabled(true);
+		// mDrawerToggle.setDrawerIndicatorEnabled(true);
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 
@@ -371,7 +382,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		mTitle = title;
 		getSupportActionBar().setTitle(mTitle);
 	}
-	
+
 	private class LoadDataProcessor extends AbstractAsyncTaskProcessor<Void, BaseDTObject> {
 
 		private int syncRequired = 0;
@@ -383,8 +394,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		@Override
 		public BaseDTObject performAction(Void... params) throws SecurityException, Exception {
-//			String entityId = getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
-//			String type = getIntent().getStringExtra(getString(R.string.view_intent_arg_entity_type));
+			// String entityId =
+			// getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
+			// String type =
+			// getIntent().getStringExtra(getString(R.string.view_intent_arg_entity_type));
 
 			Exception res = null;
 
@@ -394,21 +407,20 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				res = e;
 			}
 
-//			if (entityId != null && type != null) {
-//				if ("event".equals(type))
-//					return DTHelper.findEventByEntityId(entityId).getObjectForBean();
-//				else if ("location".equals(type))
-//					return DTHelper.findPOIByEntityId(entityId).getObjectForBean();
-//				else if ("narrative".equals(type))
-//					return DTHelper.findStoryByEntityId(entityId).getObjectForBean();
-//			} else 
+			// if (entityId != null && type != null) {
+			// if ("event".equals(type))
+			// return DTHelper.findEventByEntityId(entityId).getObjectForBean();
+			// else if ("location".equals(type))
+			// return DTHelper.findPOIByEntityId(entityId).getObjectForBean();
+			// else if ("narrative".equals(type))
+			// return DTHelper.findStoryByEntityId(entityId).getObjectForBean();
+			// } else
 			if (res != null) {
 				throw res;
 			}
 			return null;
 		}
 
-		
 		@Override
 		public void handleResult(BaseDTObject result) {
 			if (syncRequired != DTHelper.SYNC_NOT_REQUIRED) {
@@ -431,7 +443,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 									public void run() {
 										currentRootActivity.setSupportProgressBarIndeterminateVisibility(false);
 										if (DiscoverTrentoActivity.this != null) {
-											DiscoverTrentoActivity.this.setSupportProgressBarIndeterminateVisibility(false);
+											DiscoverTrentoActivity.this
+													.setSupportProgressBarIndeterminateVisibility(false);
 										}
 										isLoading = false;
 									}
@@ -445,44 +458,49 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 				DTHelper.activateAutoSync();
 			}
 
-//			String entityId = getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
-//			if (entityId != null) {
-//				if (result == null) {
-//					Toast.makeText(DiscoverTrentoActivity.this, R.string.app_failure_obj_not_found, Toast.LENGTH_LONG).show();
-//					return;
-//				}
-//
-//				SherlockFragment fragment = null;
-//				String tag = null;
-//				Bundle args = new Bundle();
-//				if (result instanceof POIObject) {
-//					fragment = new PoiDetailsFragment();
-//					args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
-//					tag = "pois";
-//				} else if (result instanceof EventObject) {
-//					fragment = new EventDetailsFragment();
-//					args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));
-//					tag = "events";
-//				} else if (result instanceof StoryObject) {
-//					fragment = new StoryDetailsFragment();
-//					args.putString(StoryDetailsFragment.ARG_STORY_ID, result.getId());
-//					tag = "stories";
-//					// } else if (result instanceof StoryObject) {
-//					// fragment = new EventDetailsFragment();
-//					// args.putSerializable(StoryDetailsFragment.ARG_STORY_OBJECT,
-//					// result);
-//					// tag = "stories";
-//				}
-//				if (fragment != null) {
-//					FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//					fragment.setArguments(args);
-//
-//					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//					fragmentTransaction.replace(android.R.id.content, fragment, tag);
-//					fragmentTransaction.addToBackStack(fragment.getTag());
-//					fragmentTransaction.commit();
-//				}
-//			}
+			// String entityId =
+			// getIntent().getStringExtra(getString(R.string.view_intent_arg_object_id));
+			// if (entityId != null) {
+			// if (result == null) {
+			// Toast.makeText(DiscoverTrentoActivity.this,
+			// R.string.app_failure_obj_not_found, Toast.LENGTH_LONG).show();
+			// return;
+			// }
+			//
+			// SherlockFragment fragment = null;
+			// String tag = null;
+			// Bundle args = new Bundle();
+			// if (result instanceof POIObject) {
+			// fragment = new PoiDetailsFragment();
+			// args.putString(PoiDetailsFragment.ARG_POI_ID, result.getId());
+			// tag = "pois";
+			// } else if (result instanceof EventObject) {
+			// fragment = new EventDetailsFragment();
+			// args.putString(EventDetailsFragment.ARG_EVENT_ID,
+			// (result.getId()));
+			// tag = "events";
+			// } else if (result instanceof StoryObject) {
+			// fragment = new StoryDetailsFragment();
+			// args.putString(StoryDetailsFragment.ARG_STORY_ID,
+			// result.getId());
+			// tag = "stories";
+			// // } else if (result instanceof StoryObject) {
+			// // fragment = new EventDetailsFragment();
+			// // args.putSerializable(StoryDetailsFragment.ARG_STORY_OBJECT,
+			// // result);
+			// // tag = "stories";
+			// }
+			// if (fragment != null) {
+			// FragmentTransaction fragmentTransaction =
+			// getSupportFragmentManager().beginTransaction();
+			// fragment.setArguments(args);
+			//
+			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			// fragmentTransaction.replace(android.R.id.content, fragment, tag);
+			// fragmentTransaction.addToBackStack(fragment.getTag());
+			// fragmentTransaction.commit();
+			// }
+			// }
 		}
 
 	}
@@ -519,54 +537,96 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 	private void showTutorial() {
+		// open menu if it is needed
+		openNavDrawerIfNeeded();
+
 		DTHelper.Tutorial t = getFirstValidTutorial();
 		int id;
 		String title = "Tip!";
 		String msg = "";
+		View view = null;
 		boolean isLast = false;
-		switch (t) {
-		case NOTIF:
-			id = R.id.menu_item_notifications;
-			title = getString(R.string.notifications_unread);
-			msg = getString(R.string.dt_notif_tut);
-			break;
-		case EVENTS:
-			id = R.id.menu_item_show_events_layers;
-			title = getString(R.string.menu_item__events_layers_text);
-			msg = getString(R.string.dt_events_tut);
-			break;
-		case PLACES:
-			id = R.id.menu_item_show_places_layers;
-			title = getString(R.string.menu_item__places_layers_text);
-			msg = getString(R.string.dt_places_tut);
-			break;
-		case STORIES:
-			id = -3;
-			title = getString(R.string.tab_stories);
-			msg = getString(R.string.dt_stories_tut);
-			isLast = true;
-			break;
-		default:
-			id = -1;
+		if (t != null) {
+			switch (t) {
+			case HOME:
+				view = getViewFromNavDrawer(0);
+				// id = R.id.menu_item_notifications;
+				title = getString(R.string.home_title);
+				msg = getString(R.string.dt_home_tut);
+				break;
+			case NOTIF:
+				view = getViewFromNavDrawer(4);
+				title = getString(R.string.notifications_unread);
+				msg = getString(R.string.dt_notif_tut);
+				break;
+			case EVENTS:
+				view = getViewFromNavDrawer(2);
+
+				title = getString(R.string.menu_item__events_layers_text);
+				msg = getString(R.string.dt_events_tut);
+				break;
+			case PLACES:
+				view = getViewFromNavDrawer(1);
+
+				title = getString(R.string.menu_item__places_layers_text);
+				msg = getString(R.string.dt_places_tut);
+				break;
+			case STORIES:
+				view = getViewFromNavDrawer(3);
+				title = getString(R.string.tab_stories);
+				msg = getString(R.string.dt_stories_tut);
+				break;
+			case TUTORIAL:
+				view = getViewFromNavDrawer(5);
+				title = getString(R.string.tab_stories);
+				msg = getString(R.string.dt_stories_tut);
+				isLast = true;
+				break;
+
+			default:
+				id = -1;
+			}
 		}
 		if (t != null) {
 			lastShowed = t;
-			displayShowcaseView(id, title, msg, isLast);
+			displayShowcaseView(view, title, msg, isLast);
 		} else
 			DTHelper.setWantTour(this, false);
+		closeNavDrawerIfItIsTheEnd(t);
+	}
+
+	private void closeNavDrawerIfItIsTheEnd(Tutorial t) {
+		if (t==null){
+			DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			if (mDrawerLayout.isDrawerOpen(Gravity.LEFT))
+				mDrawerLayout.closeDrawer(Gravity.LEFT);
+		}
+	}
+
+	private View getViewFromNavDrawer(int i) {
+		ListView menu = (ListView) findViewById(R.id.left_drawer);
+		if (menu != null) {
+			return menu.getChildAt(i).findViewById(R.id.logo);
+		}
+		return null;
+	}
+
+	private void openNavDrawerIfNeeded() {
+		DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		if (!mDrawerLayout.isDrawerOpen(Gravity.LEFT))
+			mDrawerLayout.openDrawer(Gravity.LEFT);
 	}
 
 	private Tutorial getFirstValidTutorial() {
 		Tutorial t = DTHelper.getLastTutorialNotShowed(this);
-		/*if smartcampus (no notif) salta notifiche (setta a true notif*/
+		/* if smartcampus (no notif) salta notifiche (setta a true notif */
 		ApplicationInfo ai;
 		try {
-			ai = getPackageManager().getApplicationInfo(
-					getPackageName(), PackageManager.GET_META_DATA);
+			ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
-			if (aBundle.getBoolean("hidden-notification")&& t.equals(t.NOTIF))
-			{ DTHelper.setTutorialAsShowed(this, t);
-				t =DTHelper.getLastTutorialNotShowed(this);
+			if (aBundle.getBoolean("hidden-notification") && t.equals(t.NOTIF)) {
+				DTHelper.setTutorialAsShowed(this, t);
+				t = DTHelper.getLastTutorialNotShowed(this);
 
 			}
 		} catch (NameNotFoundException e) {
@@ -575,51 +635,13 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		}
 		return t;
 	}
-	
-	
-	private void displayShowcaseView(int id, String title, String msg, boolean isLast) {
+
+	private void displayShowcaseView(View view, String title, String msg, boolean isLast) {
 		int[] position = new int[2];
 		int radius = 0;
-		if (id != -3) {
-			View v = findViewById(id);
-			if (v != null) {
-				v.getLocationOnScreen(position);
-				radius = v.getWidth();
-				BaseTutorialActivity.newIstance(this, position, radius, Color.WHITE, null, title, msg, isLast,
-						TUTORIAL_REQUEST_CODE, TutorialActivity.class);
-			}
-		} else {
-			Resources res = getResources();
-
-			if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-				Display d = getWindowManager().getDefaultDisplay();
-				radius = d.getWidth() / 5;
-				position[0] = (int) (d.getWidth() - radius - TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
-						res.getDisplayMetrics()));
-				position[1] = (int) (getSupportActionBar().getHeight() / 2 + TypedValue.applyDimension(
-						TypedValue.COMPLEX_UNIT_DIP, 24, res.getDisplayMetrics()));
-
-			} else {
-
-				try {
-					getSupportActionBar().selectTab(getSupportActionBar().getTabAt(3));
-				} catch (IllegalStateException e) {
-					// Do nothing because there is nothing to do
-				}
-
-				View v = findViewById(R.id.menu_item_notifications);
-				if (v != null) {
-					v.getLocationOnScreen(position);
-				}
-				if (isLoading) {
-					position[0] -= TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, res.getDisplayMetrics());
-				}
-				position[0] -= TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, res.getDisplayMetrics());
-
-				radius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, title.length() * 12,
-						res.getDisplayMetrics());
-
-			}
+		if (view != null) {
+			view.getLocationOnScreen(position);
+			radius = view.getWidth();
 			BaseTutorialActivity.newIstance(this, position, radius, Color.WHITE, null, title, msg, isLast,
 					TUTORIAL_REQUEST_CODE, TutorialActivity.class);
 		}
@@ -635,7 +657,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public String getAuthToken() {
 		return DTHelper.getAuthToken();
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -648,7 +670,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					mDrawerLayout.openDrawer(mDrawerList);
 				}
 			} else {
-				//drawerState = "on";
+				// drawerState = "on";
 				onBackPressed();
 			}
 			return true;

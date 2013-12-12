@@ -50,7 +50,7 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 	public static final String NOTIFICATIONS_PARAM = "Notifications";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
-		return inflater.inflate(R.layout.notifications_list_dt, container);
+		return inflater.inflate(R.layout.notifications_list_dt, container,false);
 	}
 
 	@Override

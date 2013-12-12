@@ -105,8 +105,7 @@ public class DTHelper {
 	}
 
 	public static enum Tutorial {
-		NOTIF("notifTut"), PLACES("placesTut"), EVENTS("eventsTut"), STORIES("storyTut"), MENU("menuTut"), RATING(
-				"ratingTut");
+		HOME("homeTut"), PLACES("placesTut"), EVENTS("eventsTut"), STORIES("storyTut"), NOTIF("notifTut"), TUTORIAL("tutTut");
 		/**
 		 * @param text
 		 */

@@ -237,5 +237,6 @@
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
     <string name="choose_poi">Choose a place</string>
     <string name="poi_step_not_exist">No matching place found</string>
-
+	<string name="home_title">Home</string>
+	<string name="dt_home_tut">blablalba</string>
 </resources>

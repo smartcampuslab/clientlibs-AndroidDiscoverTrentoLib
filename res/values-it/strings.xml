@@ -240,5 +240,6 @@
     <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.</string>
     <string name="choose_poi">Seleziona luogo</string>
     <string name="poi_step_not_exist">Luogo specificato non è trovato</string>
-
+	<string name="home_title">Home</string>
+	<string name="dt_home_tut">blablalba</string>
 </resources>
