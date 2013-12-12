@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -279,19 +278,8 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 		}
 
 		if (category != null) {
-			String addString = getString(R.string.add)
-					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-							CategoryHelper.CATEGORY_TYPE_EVENTS, category).description) + " "
-					+ getString(R.string.event);
-			if (Locale.getDefault().equals(Locale.ITALY))
-				addString = getString(R.string.add)
-						+ " "
-						+ getString(R.string.event)
-						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-								CategoryHelper.CATEGORY_TYPE_EVENTS, category).description);
-
+			String addString = getString(R.string.add_event_in_cat, getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+					CategoryHelper.CATEGORY_TYPE_EVENTS, category).description));
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addevent, Menu.NONE, addString);
 		}
 

@@ -303,10 +303,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private void selectItem(int position) {
 		String fragmentString = mFragmentTitles[position];
-		setTitle(fragmentString);
+		
 		// // update the main content by replacing fragments
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		if (fragmentString.equals(mFragmentTitles[0])) {
+			setTitle(fragmentString);
 			HomeFragment fragment = new HomeFragment();
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment, "map");
@@ -314,6 +315,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[1])) {
+			setTitle(fragmentString);
 			AllPoisFragment fragment = new AllPoisFragment();
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
@@ -321,6 +323,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[2])) {
+			setTitle(fragmentString);
 			AllEventsFragment fragment = new AllEventsFragment();
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
@@ -328,6 +331,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			fragmentTransaction.commit();
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[3])) {
+			setTitle(fragmentString);
 			AllStoriesFragment fragment = new AllStoriesFragment();
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
