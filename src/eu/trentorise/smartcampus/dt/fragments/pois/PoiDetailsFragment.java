@@ -254,8 +254,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 			}
 
-			// notes
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
+//			// notes
+//			tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
 			// if (mPoi.getCommunityData() != null &&
 			// mPoi.getCommunityData().getNotes() != null
 			// && mPoi.getCommunityData().getNotes().length() > 0) {

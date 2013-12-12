@@ -96,7 +96,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		
+
 		setHasOptionsMenu(true);
 
 		if (getArguments() != null) {
@@ -144,11 +144,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	public void onStart() {
 		super.onStart();
 		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
-    	DiscoverTrentoActivity.drawerState = "off";
-        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
-        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
-        
+		DiscoverTrentoActivity.drawerState = "off";
+		getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+		getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+		mEvent=getEvent();
 		if (mEvent != null) {
 			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
 			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(mEvent.getType()) && isCertified(mEvent))
@@ -579,6 +579,7 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
+				resetEvent();
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_delete) {
@@ -596,6 +597,11 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void resetEvent() {
+		mEvent = null;
+		mEventId = null;
 	}
 
 	@Override
