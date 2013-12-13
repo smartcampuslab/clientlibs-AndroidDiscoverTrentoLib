@@ -240,4 +240,7 @@
     <string name="poi_step_not_exist">Luogo specificato non è trovato</string>
 	<string name="home_title">Home</string>
 	<string name="dt_home_tut">blablalba</string>
+	
+    <string name="moderation_rejected">Le modifiche a \'%1$s\' fatte il %2$s sono state rimosse per seguenti motivi:\n%3$s</string>
+		
 </resources>

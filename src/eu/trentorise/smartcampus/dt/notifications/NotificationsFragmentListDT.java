@@ -40,7 +40,6 @@ import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
-import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 // SherlockListFragment
 public class NotificationsFragmentListDT extends SherlockListFragment {
 
@@ -57,6 +56,11 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		if (getActivity() instanceof DiscoverTrentoActivity) {
+			DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+	    	DiscoverTrentoActivity.drawerState = "on";
+		}
+		
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
 		adapter = new NotificationsListAdapterDT(getActivity(), R.layout.notifications_row_dt);
@@ -202,11 +206,13 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			}
 
 			if (fragment != null) {
-				//start  DiscoverTrento and pass params
-				Intent i = (new Intent(getSherlockActivity(), DiscoverTrentoActivity.class));
-				i.putExtra(NOTIFICATIONS_PARAM, result);
-				startActivity(i);
-
+				FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+				fragment.setArguments(args);
+				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "details");
+				fragmentTransaction.addToBackStack(fragment.getTag());
+				fragmentTransaction.commit();
+//
 			}
 		}
 	}
