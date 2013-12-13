@@ -609,7 +609,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	private View getViewFromNavDrawer(int i) {
 		ListView menu = (ListView) findViewById(R.id.left_drawer);
-		if (menu != null) {
+		if (menu != null && menu.getChildAt(i)!=null) {
 			return menu.getChildAt(i).findViewById(R.id.logo);
 		}
 		return null;

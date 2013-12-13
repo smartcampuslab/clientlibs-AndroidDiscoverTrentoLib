@@ -45,7 +45,7 @@ public class MenuDrawerAdapter extends ArrayAdapter<String> {
 		} else if (s.equals(values[4])) {
 			imageView.setImageResource(R.drawable.ic_ic_notices);
 		}else if (s.equals(values[5])) {
-			imageView.setImageResource(R.drawable.ic_star_s);
+			imageView.setImageResource(R.drawable.ic_tutorial);
 		}
 
 		return rowView;
