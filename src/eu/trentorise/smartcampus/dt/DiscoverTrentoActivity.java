@@ -42,6 +42,10 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.github.espiandev.showcaseview.BaseTutorialActivity;
+import com.github.espiandev.showcaseview.ListViewTutorialHelper;
+import com.github.espiandev.showcaseview.TutorialHelper;
+import com.github.espiandev.showcaseview.TutorialHelper.TutorialProvider;
+import com.github.espiandev.showcaseview.TutorialItem;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
@@ -71,8 +75,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mFragmentTitles;
-
 	protected final int mainlayout = android.R.id.content;
+	private boolean tutorialHasOpened = false;
+	private boolean movedMenu = false;
+	private TutorialHelper mTutorialHelper = null;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,9 +96,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		// DEBUG PURPOSE
 		// DTHelper.getTutorialPreferences(this).edit().clear().commit();
+		mTutorialHelper = new ListViewTutorialHelper(this, mTutorialProvider);
 
 		if (DTHelper.isFirstLaunch(this)) {
 			openNavDrawerIfNeeded();
+			
 			showTourDialog();
 			DTHelper.disableFirstLaunch(this);
 		}
@@ -120,8 +129,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	protected void onPostResume() {
 		super.onPostResume();
-		if (DTHelper.wantTour(this))
-			showTutorial();
+
 	}
 
 	@Override
@@ -158,17 +166,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == TUTORIAL_REQUEST_CODE) {
-			if (resultCode == RESULT_OK) {
-				String resData = data.getExtras().getString(BaseTutorialActivity.RESULT_DATA);
-				if (resData.equals(BaseTutorialActivity.OK)) {
-					DTHelper.setTutorialAsShowed(this, lastShowed);
-				}
-				if (DTHelper.wantTour(this))
-					showTutorial();
-			}
-		} else if (requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
+		mTutorialHelper.onTutorialActivityResult(requestCode, resultCode, data);
+			if (requestCode == SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				String token = data.getExtras().getString(AccountManager.KEY_AUTHTOKEN);
 				if (token == null) {
@@ -223,20 +222,35 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
 
+
 			public void onDrawerClosed(View view) {
 				// getSupportActionBar().setTitle(mTitle);
 				supportInvalidateOptionsMenu();
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				// getSupportActionBar().setTitle(mDrawerTitle);
 				supportInvalidateOptionsMenu();
+				if (tutorialHasOpened)
+				{
+					tutorialHasOpened=false;
+					mTutorialHelper.showTutorials();
+//					showTutorial();
+				}
 			}
 
 			public void onDrawerSlide(View drawerView, float slideOffset) {
 				// getSupportActionBar().setTitle(mDrawerTitle);
+				
+				//visto che ho spostato il menu laterale e sono uscito senza mostrare nulla (da fare), ricarico il tutorial
+				
 				mDrawerLayout.bringChildToFront(drawerView);
 				supportInvalidateOptionsMenu();
+				if (movedMenu){
+					movedMenu=false;
+					mTutorialHelper.showTutorials();
+//					showTutorial();
+				}
+					
 				super.onDrawerSlide(drawerView, slideOffset);
 			}
 		};
@@ -307,7 +321,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else if (fragmentString.equals(mFragmentTitles[5])) {
 			prepareTutorial();
-			showTutorial();
+			mTutorialHelper.showTutorials();
+//			showTutorial();
 		}
 
 	}
@@ -482,7 +497,8 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						DTHelper.setWantTour(DiscoverTrentoActivity.this, true);
-						showTutorial();
+						mTutorialHelper.showTutorials();
+//						showTutorial();
 					}
 				}).setNeutralButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
 
@@ -495,64 +511,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		builder.create().show();
 	}
 
-	private void showTutorial() {
-		// open menu if it is needed
-		openNavDrawerIfNeeded();
-
-		DTHelper.Tutorial t = getFirstValidTutorial();
-		int id;
-		String title = "Tip!";
-		String msg = "";
-		View view = null;
-		boolean isLast = false;
-		if (t != null) {
-			switch (t) {
-			case HOME:
-				view = getViewFromNavDrawer(0);
-				// id = R.id.menu_item_notifications;
-				title = getString(R.string.home_title);
-				msg = getString(R.string.dt_home_tut);
-				break;
-			case NOTIF:
-				view = getViewFromNavDrawer(4);
-				title = getString(R.string.notifications_unread);
-				msg = getString(R.string.dt_notif_tut);
-				break;
-			case EVENTS:
-				view = getViewFromNavDrawer(2);
-
-				title = getString(R.string.menu_item__events_layers_text);
-				msg = getString(R.string.dt_events_tut);
-				break;
-			case PLACES:
-				view = getViewFromNavDrawer(1);
-
-				title = getString(R.string.menu_item__places_layers_text);
-				msg = getString(R.string.dt_places_tut);
-				break;
-			case STORIES:
-				view = getViewFromNavDrawer(3);
-				title = getString(R.string.tab_stories);
-				msg = getString(R.string.dt_stories_tut);
-				break;
-			case TUTORIAL:
-				view = getViewFromNavDrawer(5);
-				title = getString(R.string.tab_stories);
-				msg = getString(R.string.dt_stories_tut);
-				isLast = true;
-				break;
-
-			default:
-				id = -1;
-			}
-		}
-		if (t != null) {
-			lastShowed = t;
-			displayShowcaseView(view, title, msg, isLast);
-		} else
-			DTHelper.setWantTour(this, false);
-		closeNavDrawerIfItIsTheEnd(t);
-	}
 
 	private void closeNavDrawerIfItIsTheEnd(Tutorial t) {
 		if (t==null){
@@ -565,15 +523,27 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private View getViewFromNavDrawer(int i) {
 		ListView menu = (ListView) findViewById(R.id.left_drawer);
 		if (menu != null && menu.getChildAt(i)!=null) {
+			if (menu.getChildAt(i).findViewById(R.id.logo)==null)
+				{
+				mDrawerList.setSelection(i);
+				movedMenu=true;
+				return null;
+				}
 			return menu.getChildAt(i).findViewById(R.id.logo);
 		}
 		return null;
 	}
 
-	private void openNavDrawerIfNeeded() {
+	private boolean openNavDrawerIfNeeded() {
 		DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		if (!mDrawerLayout.isDrawerOpen(Gravity.LEFT))
+		{
+			tutorialHasOpened=true;
 			mDrawerLayout.openDrawer(Gravity.LEFT);
+			return true;
+			
+		}
+		return false;
 	}
 
 	private Tutorial getFirstValidTutorial() {
@@ -639,4 +609,38 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		}
 	}
 
+
+
+	private TutorialProvider mTutorialProvider = new TutorialProvider() {
+		
+		TutorialItem[] tutorial = new TutorialItem[]{
+				new TutorialItem("home", null, 0, R.string.home_title, R.string.dt_home_tut),
+				new TutorialItem("layers", null, 0, R.string.menu_item__places_layers_text, R.string.dt_places_tut),
+				new TutorialItem("events", null, 0, R.string.menu_item__events_layers_text, R.string.dt_events_tut),
+				new TutorialItem("stories", null, 0, R.string.tab_stories, R.string.dt_stories_tut),
+				new TutorialItem("notifications", null, 0, R.string.notifications_unread, R.string.dt_notif_tut),
+}; 
+
+		
+		@Override
+		public void onTutorialFinished() {
+			mDrawerLayout.closeDrawer(mDrawerList);
+		}
+		
+		@Override
+		public void onTutorialCancelled() {
+			mDrawerLayout.closeDrawer(mDrawerList);
+		}
+		
+		@Override
+		public TutorialItem getItemAt(int i) {
+			ListViewTutorialHelper.fillTutorialItemParams(tutorial[i], i, mDrawerList, R.id.logo);
+			return tutorial[i];
+		}
+		
+		@Override
+		public int size() {
+			return tutorial.length;
+		}
+	};
 }
