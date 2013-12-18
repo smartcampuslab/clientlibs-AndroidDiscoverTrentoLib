@@ -23,6 +23,8 @@ import java.util.Map;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -462,8 +464,32 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			// return false;
 			// } else
 			{
-				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
-						.execute(mPoi);
+				AlertDialog.Builder mAlert = new AlertDialog.Builder(
+						getSherlockActivity());
+				mAlert.setMessage(getText(R.string.alert_message));
+				mAlert.setPositiveButton("OK",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
+								.execute(mPoi);
+							}
+						});
+				mAlert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								
+								//getSherlockActivity().onBackPressed();
+								
+							}
+						});
+
+				AlertDialog alert = mAlert.create();
+
+				alert.show();
+//				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
+//						.execute(mPoi);
 				return true;
 			}
 		} else {

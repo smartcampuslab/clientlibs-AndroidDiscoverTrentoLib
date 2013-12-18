@@ -207,7 +207,8 @@
     <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
     <string name="notifications_story_at_place_update">Tour \"%1$s\" about %2$s is updated</string>
     <string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
-
+<string name="alert_message">Are you sure?</string>
+    
     <!-- String for the searching fragment -->
     <string name="search_what">What: </string>
     <string name="search_when">When: </string>

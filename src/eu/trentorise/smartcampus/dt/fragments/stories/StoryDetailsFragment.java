@@ -717,8 +717,32 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// return false;
 			// } else
 			{
-				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
-						.execute(getStory());
+				AlertDialog.Builder mAlert = new AlertDialog.Builder(
+						getSherlockActivity());
+				mAlert.setMessage(getText(R.string.alert_message));
+				mAlert.setPositiveButton("OK",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
+								.execute(getStory());
+							}
+						});
+				mAlert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								
+								//getSherlockActivity().onBackPressed();
+								
+							}
+						});
+
+				AlertDialog alert = mAlert.create();
+
+				alert.show();
+//				new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
+//						.execute(getStory());
 				return true;
 			}
 		} else if (item.getItemId() == R.id.related_step_btn) {
