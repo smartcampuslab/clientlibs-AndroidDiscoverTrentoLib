@@ -30,12 +30,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
+//import eu.trentorise.smartcampus.ac.UserRegistration;
+//import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.PoisCategoriesAdapter;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
@@ -46,6 +47,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		fragmentManager = getSherlockActivity().getSupportFragmentManager();
 		setHasOptionsMenu(true);
 	}
@@ -58,6 +60,9 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+    	DiscoverTrentoActivity.drawerState = "on";
+
 		gridview = (GridView) getView().findViewById(R.id.pois_gridview);
 		gridview.setAdapter(new PoisCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
 				fragmentManager));
@@ -80,16 +85,17 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_addpoi) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 				Fragment fragment = new CreatePoiFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -101,7 +107,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 			args.putString(CategoryHelper.CATEGORY_TYPE_POIS, CategoryHelper.CATEGORY_TYPE_POIS);
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

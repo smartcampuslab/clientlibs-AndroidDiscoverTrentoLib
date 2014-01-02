@@ -16,17 +16,15 @@
 package eu.trentorise.smartcampus.dt.custom;
 
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 
 // contains all info about the event. To be passed to the listing and details fragments.
 public class EventPlaceholder {
 
-	public EventObject event;
+	public LocalEventObject event;
 	public TextView dateSeparator;
 	public ViewSwitcher vs;
 	public int displayChild=0;

@@ -16,13 +16,23 @@
 <resources>
 
     <string name="app_name">ViviTrento</string>
+    <string-array name="fragment_array">
+        <item>Home</item>
+        <item>Places</item>
+        <item>Events</item>
+        <item>Tours</item>
+        <item>Notifications</item>
+        <item>Tutorial</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
     <string name="empty" />
     <string name="slidingmenu_home">Home</string>
     <string name="allevents">All events</string>
     <string name="allpois">All places</string>
     <string name="createevent">Create event</string>
-    <string name="myevents">My events</string>
-    <string name="mystory">My Story</string>
+    <string name="myevents">Attending</string>
+    <string name="mystory">Favourites</string>
     <string name="create_title">Title</string>
     <string name="create_description">Description</string>
     <string name="createevent_date">Date</string>
@@ -42,14 +52,14 @@
     <string name="create_notes">Notes</string>
     <string name="create_noteshint">Other information</string>
     <string name="menu_item_addpoi_text">Add place</string>
-    <string name="menu_item_addstory_text">Add a story</string>
-    <string name="menu_item_mystories_text">My stories</string>
+    <string name="menu_item_addstory_text">Add a tour</string>
+    <string name="menu_item_mystories_text">Favourites</string>
     <string name="createpoi">Create place</string>
-    <string name="createstory">Create story</string>
+    <string name="createstory">Create tour</string>
     <string name="createpoi_ot">Opening times</string>
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Create event</string>
-    <string name="menu_item_myevents_text">My events</string>
+    <string name="menu_item_myevents_text">Attending</string>
     <string name="menu_item_layers_text">Categories</string>
     <string name="menu_item__places_layers_text">Places</string>
     <string name="menu_item__events_layers_text">Events</string>
@@ -57,7 +67,6 @@
     <string name="menu_item_poicategory_text">Place categories</string>
     <string name="related_poi">Related place</string>
     <string name="submenu_related_events">Related events</string>
-    <string name="submenu_tag">Add tags</string>
     <string name="getdir">Directions</string>
     <string name="onmap">View on map</string>
     <string name="poi_select_address_content_description">Select an address on the map</string>
@@ -72,9 +81,8 @@
     <string name="rate">Rate</string>
     <string name="attend">Attend</string>
     <string name="save">Save</string>
-    <string name="add_my_stories">Add to My stories</string>
-    <string name="delete_my_stories">Remove from My stories</string>
-        
+    <string name="save_to_favorites">Save to favourites</string>
+    
     <string name="attend_not">Not attend</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
@@ -87,16 +95,16 @@
     <string name="app_failure_security">Failed to retrieve authentication data</string>
     <string name="app_failure_setup">Failed to initialize application</string>
     <string name="app_failure_operation">OOPS! An error occurred. Please check your connection or try again later</string>
+    <string name="app_failure_localization">Failed to localize the user</string>
     <string name="app_failure_cannot_delete">Object cannot be deleted.</string>
     <string name="app_failure_obj_not_found">Object not found!</string>
     <string name="ratingtext_average">Average rating: %s</string>
     <string name="ratingtext_user">Your rating:</string>
     <string name="ratingtext_raters">Total rates: %s</string>
     <string name="attendees_extended"> people are attending this event.</string>
-    <string name="attendees_story_extended"> people are attending this story.</string>
     <string name="rating_place_dialog_title">Rate this place:</string>
     <string name="rating_event_dialog_title">Rate this event:</string>
-    <string name="rating_story_dialog_title">Rate this story:</string>
+    <string name="rating_story_dialog_title">Rate this tour:</string>
     <string name="noevents">No events available in this category! </string>
     <string name="backstring">Back</string>
     <string name="showdetails">Details&#8230;</string>
@@ -106,23 +114,17 @@
     <string name="file_hint">Browse&#8230;</string>
     <string name="apply_to_all_text">Apply to all</string>
     <string name="app_uid_label">SmartCampus</string>
-    
     <string name="tags_successfully_added">Tags successfully saved.</string>
-    
     <string name="select_poi_title">Select event location</string>
-    
     <string name="content_empty">No results.</string>
-    
     <string name="address_select_toast">Keep your finger pressed to select a location</string>
-    
     <string name="rating_success">Your rating has been saved</string>
-    <string name="attend_success">You will attend this event!</string>
-    <string name="not_attend_success">You will not attend this event!</string>
-
-    <string name="attend_story_success">Story successfully added to My stories!</string>
-    <string name="not_attend_story_success">Story removed from My stories!</string>
+    <string name="attend_success">Added to your attending list!</string>
+    <string name="not_attend_success">Removed from your attending list!</string>
+    <string name="attend_story_success">Saved to favourites!</string>
+    <string name="not_attend_story_success">Removed from favourites!</string>
     <string name="event_create_success">Event successfully created!</string>
-    <string name="story_create_success">Story successfully created!</string>
+    <string name="story_create_success">Tour successfully created!</string>
     <string name="poi_create_success">Place successfully created!</string>
     <string name="update_success">Your modifications have been saved.</string>
     <string name="add_step">Add step</string>
@@ -134,88 +136,79 @@
     <string name="prev_step">Previous</string>
     <string name="poi_erased">Place erased by user</string>
     <string name="next_step">Next</string>
-
     <string name="empty_step_title">The Place must not be empty</string>
     <string name="sure_delete_step">Are you sure you want to delete this step?</string>
-
-    <string name="msg_field_required"> is required.</string>
-    
     <string name="sure_change">Overwrite previous data?</string>
+    
+    <string name="add_story_in_cat">Add %s tour</string>
+    <string name="add_poi_in_cat">Add %s place</string>
+    <string name="add_event_in_cat">Add %s event</string>
+    
     <string name="add">Add</string>
-    <string name="event">event</string>
-    <string name="story">story</string>
-    <string name="place">place</string>
-	<string name="list_event_today">Today</string> 
-	<string name="list_event_tomorrow">Tomorrow</string>    
+    <string name="list_event_today">Today</string>
+    <string name="list_event_tomorrow">Tomorrow</string>
     <string name="menu_item_todayevent_text">Today\'s Events</string>
     <string name="categories_event_today">Today\'s Events</string>
-    <string name="categories_event_my">My Events</string>
-    <string name="categories_story_my">My Stories</string>
-	
-	<string name="tab_home">Home</string>
-	<string name="tab_places">Places</string>
-	<string name="tab_events">Events</string>
-	<string name="tab_stories">Stories</string>
-	
-	<string name="categories_event_concert">Concerts</string>
-	<string name="categories_event_happyhour">Happy hours</string>
-	<string name="categories_event_movie">Movies</string>
-	<string name="categories_event_party">Parties</string>
-	<string name="categories_event_seminar">Seminars</string>
-	<string name="categories_event_theater">Performances</string>
-	<string name="categories_event_exhibition">Exhibitions</string>
-	<string name="categories_event_family">Family</string>	
-	<string name="categories_event_generic">Other</string>
-	
-	<string name="categories_poi_museum">Museums</string>
-	<string name="categories_poi_mobility">Mobility</string>
-	<string name="categories_poi_parking">Parking</string>
-	<string name="categories_poi_office">Offices</string>
-	<string name="categories_poi_theater">Theaters</string>
-	<string name="categories_poi_university">University</string>
-	<string name="categories_poi_accommodation">Lodging</string>
-	<string name="categories_poi_library">Libraries</string>
-	<string name="categories_poi_food">Restaurants</string>
-	<string name="categories_poi_drink">Bars</string>
-	<string name="categories_poi_cinema">Cinemas</string>
-	<string name="categories_poi_family">Family</string>
-	<string name="categories_poi_generic">Other places</string>
-	
-	<string name="categories_story_leisure">Amusement</string>
-	<string name="categories_story_offices_and_services">Organisations</string>
-	<string name="categories_story_university">University</string>
-	<string name="categories_story_culture">Art &amp; Tourism</string>
-	<string name="categories_story_generic">Other</string>
-	
-	<string name="search_for">Search for</string>
-	<string name="search_in_category">in category</string>
-	<string name="search_today_events">Search today\'s events</string>
-	
-	<string name="toast_is_required">is required.</string>
-	<string name="toast_incorrect">Incorrect</string>
-    
-	<string name="eventlist_at_place">Events at</string>
-	
-	<string name="toast_my_events_clicked">My events clicked</string>
-	<string name="toast_browsing_your_files">Browsing your files&#8230;</string>
-	<string name="toast_event_saved">Event saved!</string>
-	<string name="toast_poi_shared">Place shared.</string>
-	<string name="toast_follow_ok">OK! You\'re following \"%s\"</string>
+    <string name="categories_event_my">Attending</string>
+    <string name="categories_story_my">Favourites</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_places">Places</string>
+    <string name="tab_events">Events</string>
+    <string name="tab_stories">Tours</string>
+    <string name="categories_event_concert">Concerts</string>
+    <string name="categories_event_happyhour">Happy hours</string>
+    <string name="categories_event_movie">Movies</string>
+    <string name="categories_event_party">Parties</string>
+    <string name="categories_event_seminar">Seminars</string>
+    <string name="categories_event_theater">Performances</string>
+    <string name="categories_event_exhibition">Exhibitions</string>
+    <string name="categories_event_family">Family</string>
+    <string name="categories_event_generic">Other</string>
+    <string name="categories_poi_museum">Museums</string>
+    <string name="categories_poi_mobility">Mobility</string>
+    <string name="categories_poi_parking">Parking</string>
+    <string name="categories_poi_office">Offices</string>
+    <string name="categories_poi_theater">Theaters</string>
+    <string name="categories_poi_university">University</string>
+    <string name="categories_poi_accommodation">Lodging</string>
+    <string name="categories_poi_library">Libraries</string>
+    <string name="categories_poi_food">Restaurants</string>
+    <string name="categories_poi_drink">Bars</string>
+    <string name="categories_poi_cinema">Cinemas</string>
+    <string name="categories_poi_family">Family</string>
+    <string name="categories_poi_generic">Other places</string>
+    <string name="categories_story_leisure">Amusement</string>
+    <string name="categories_story_offices_and_services">Organisations</string>
+    <string name="categories_story_university">University</string>
+    <string name="categories_story_culture">Art &amp; Tourism</string>
+    <string name="categories_story_generic">Other</string>
+    <string name="search_for">Search for</string>
+    <string name="search_in_category">in category</string>
+    <string name="search_today_events">Search today\'s events</string>
+    <string name="toast_is_required">is required.</string>
+    <string name="toast_incorrect">Incorrect</string>
+    <string name="toast_is_required_p">%s is required!</string>
+    <string name="toast_incorrect_p">%s is incorrect!</string>
+    <string name="eventlist_at_place">Events at</string>
+    <string name="toast_browsing_your_files">Browsing your files&#8230;</string>
+    <string name="toast_event_saved">Event saved!</string>
+    <string name="toast_poi_shared">Place shared.</string>
+    <string name="toast_follow_ok">OK! You\'re following \"%s\"</string>
     <string name="toast_unfollow_ok">OK! You\'re not following \"%s\"</string>
-		
-	<string name="notifications_unread">Unread notifications</string>
-	<string name="notifications_list_empty">You have not received notifications yet about the events and the places you are following.</string>
-	<string name="notifications_list_title">Notifications</string>
-	<string name="notifications_event_new">New event \"%1$s\" at %2$s</string>
-	<string name="notifications_story_new">New story \"%1$s\" about %2$s</string>
-	<string name="notifications_event_updated">Event \"%s\" updated</string>
-	<string name="notifications_location_updated">Place \"%s\" updated</string>
-	<string name="notifications_story_updated">Story \"%s\" updated</string>
+    <string name="toast_poi_not_found">Place not found</string>
+    <string name="notifications_unread">Unread notifications</string>
+    <string name="notifications_list_empty">You have not received notifications yet about the events and the places you are following.</string>
+    <string name="notifications_list_title">Notifications</string>
+    <string name="notifications_event_new">New event \"%1$s\" at %2$s</string>
+    <string name="notifications_story_new">New tour \"%1$s\" about %2$s</string>
+    <string name="notifications_event_updated">Event \"%s\" updated</string>
+    <string name="notifications_location_updated">Place \"%s\" updated</string>
+    <string name="notifications_story_updated">Tour \"%s\" updated</string>
     <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
-    <string name="notifications_story_at_place_update">Story \"%1$s\" about %2$s is updated</string>
-	
-	<string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
-	
+    <string name="notifications_story_at_place_update">Tour \"%1$s\" about %2$s is updated</string>
+    <string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
+<string name="alert_message">Are you sure?</string>
+    
     <!-- String for the searching fragment -->
     <string name="search_what">What: </string>
     <string name="search_when">When: </string>
@@ -233,19 +226,17 @@
     <string name="search_wthin1km">Within 1km</string>
     <string name="search_within50km">Within 50km</string>
     <string name="dialog_connection_search">Offline mode supports only basic search. To exploit advanced search please connect to a network.</string>
-    
     <string name="event_date_from">Date</string>
     <string name="separator"> - </string>
     <string name="event_date_to">Ending date</string>
     <string name="more_days">More days</string>
     <string name="to_date_before_from_date">Start date should be earlier than end date!</string>
     <string name="date_field_empty">Select event date!</string>
-    
     <string name="info_dialog_title_poi">Place Info </string>
     <string name="info_dialog_title_event">Event Info</string>
     <string name="warning_for_direction">Warning! The directions will lead you to the seat of the organization and not to the venue.</string>
- 	<string name="choose_poi">Chose a POI</string>
- 	
- 	<string name="poi_step_not_exist">No matching place found</string>
-</resources>   
-     
+    <string name="choose_poi">Choose a place</string>
+    <string name="poi_step_not_exist">No matching place found</string>
+
+    <string name="moderation_rejected">Your changes to \'%1$s\' on %2$s were removed for the following reason:\n%3$s</string>
+</resources>

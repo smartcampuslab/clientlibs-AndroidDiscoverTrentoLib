@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class ConfirmPoiDialog extends SherlockDialogFragment {
 

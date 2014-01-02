@@ -20,11 +20,10 @@ import java.util.Collection;
 import android.app.Activity;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.maps.MapView;
 
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public abstract class MapLoadProcessor extends AbstractAsyncTaskProcessor<Void, Collection<? extends BaseDTObject>> {
 	

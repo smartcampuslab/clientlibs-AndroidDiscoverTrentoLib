@@ -16,5 +16,5 @@
 
 <transition xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/list_pressed_holo_light_discovertrento"  />
-    <item android:drawable="@drawable/list_longpressed_holo"  />
+    <item android:drawable="@drawable/list_longpressed_holo_discovertrento"  />
 </transition>

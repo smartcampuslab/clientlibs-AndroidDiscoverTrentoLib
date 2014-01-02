@@ -105,9 +105,7 @@ public class AddressSelectActivity extends FeedbackFragmentActivity implements O
 			String addressLine = "LON " + Double.toString(address.getLongitude()) + ", LAT "
 					+ Double.toString(address.getLatitude());
 			address.setAddressLine(0, addressLine);
-			
-			if(addresses!=null) //Fixed bug if you select a place without addresses (happens when you are without connection)
-				new InfoDialog(AddressSelectActivity.this, addresses.get(0)).show(getSupportFragmentManager(), "me");
+			new InfoDialog(AddressSelectActivity.this, address).show(getSupportFragmentManager(), "me");
 		}
 	}
 

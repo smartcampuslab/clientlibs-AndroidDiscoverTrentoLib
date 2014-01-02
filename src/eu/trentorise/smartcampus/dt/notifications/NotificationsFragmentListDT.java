@@ -3,6 +3,7 @@ package eu.trentorise.smartcampus.dt.notifications;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -22,6 +23,8 @@ import eu.trentorise.smartcampus.communicator.model.EntityObject;
 import eu.trentorise.smartcampus.communicator.model.Notification;
 import eu.trentorise.smartcampus.communicator.model.NotificationFilter;
 import eu.trentorise.smartcampus.communicator.model.NotificationsConstants.ORDERING;
+import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
@@ -29,28 +32,35 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.notifications.NotificationsHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.ConnectionException;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
-
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 // SherlockListFragment
 public class NotificationsFragmentListDT extends SherlockListFragment {
 
 	private NotificationsListAdapterDT adapter;
-
+	private final static String APPID = "core.territory";
+	private static final int MAX_MSG = 50;
+	public static final String NOTIFICATIONS_PARAM = "Notifications";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
-		return inflater.inflate(R.layout.notifications_list_dt, container);
+		return inflater.inflate(R.layout.notifications_list_dt, container,false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		if (getActivity() instanceof DiscoverTrentoActivity) {
+			DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+	    	DiscoverTrentoActivity.drawerState = "on";
+		}
+		
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
 		adapter = new NotificationsListAdapterDT(getActivity(), R.layout.notifications_row_dt);
@@ -58,14 +68,16 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 		adapter.clear();
 
 		// instantiate again NotificationsHelper if needed
-		String appToken = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_APP_TOKEN);
-		String syncDbName = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_SYNC_DB_NAME);
-		String syncService = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_SYNC_SERVICE);
-		String authority = getSherlockActivity().getIntent().getStringExtra(NotificationsHelper.PARAM_AUTHORITY);
-
-		if (!NotificationsHelper.isInstantiated() && appToken != null && syncDbName != null && syncService != null
-				&& authority != null) {
-			NotificationsHelper.init(getSherlockActivity(), appToken, syncDbName, syncService, authority);
+		if (!NotificationsHelper.isInstantiated()) {
+			try{
+				NotificationsHelper.init(getSherlockActivity(), DTParamsHelper.getAppToken(), null, APPID, MAX_MSG);
+			} catch (Exception e) {
+				Log.e(getClass().getName(), e.toString());
+				Toast.makeText(getActivity().getApplicationContext(),
+						getString(R.string.app_failure_operation),
+						Toast.LENGTH_SHORT).show();
+				getActivity().finish();
+			}
 		}
 
 		new SCAsyncTask<Void, Void, List<Notification>>(getSherlockActivity(), new NotificationsLoader(getSherlockActivity())).execute();
@@ -85,7 +97,6 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 	private NotificationFilter getNotificationFilter() {
 		NotificationFilter filter = new NotificationFilter();
 		filter.setOrdering(ORDERING.ORDER_BY_ARRIVAL);
-		filter.setSource("Social");
 		return filter;
 	}
 
@@ -115,18 +126,18 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 		try {
 			if (notification.getEntities().size() == 2) {
 				// new
-				if (event != null && event.getEntityId() != null && location != null && location.getEntityId() != null) {
+				if (event != null && event.getId() != null && location != null && location.getId() != null) {
 					viewDetailsTask.execute(event);
-				} else if (location != null && location.getEntityId() != null && story != null && story.getEntityId() != null) {
+				} else if (location != null && location.getId() != null && story != null && story.getId() != null) {
 					viewDetailsTask.execute(event);
 				}
 			} else if (notification.getEntities().size() == 1) {
 				// modified
-				if (event != null && event.getEntityId() != null) {
+				if (event != null && event.getId() != null) {
 					viewDetailsTask.execute(event);
-				} else if (location != null && location.getEntityId() != null) {
+				} else if (location != null && location.getId() != null) {
 					viewDetailsTask.execute(location);
-				} else if (story != null && story.getEntityId() != null) {
+				} else if (story != null && story.getId() != null) {
 					viewDetailsTask.execute(story);
 				}
 			}
@@ -149,26 +160,26 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			EntityObject entityObject = params[0];
 
 			if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_EVENT)) {
-				EventObject eo = (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+				LocalEventObject eo = DTHelper.findEventById(entityObject.getId());
 				if (eo == null) {
 					DTHelper.synchronize();
-					eo = (EventObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					eo = DTHelper.findEventById(entityObject.getId());
 				}
-				return eo;
+				return eo == null ? null : eo;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_LOCATION)) {
-				POIObject po = (POIObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+				POIObject po = DTHelper.findPOIById(entityObject.getId());
 				if (po == null) {
 					DTHelper.synchronize();
-					po = (POIObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					po = DTHelper.findPOIById(entityObject.getId());
 				}
-				return po;
+				return po == null ? null : po;
 			} else if (entityObject.getType().equalsIgnoreCase(Constants.TYPE_STORY)) {
-				StoryObject so = (StoryObject) DTHelper.findStoryByEntityId((entityObject.getEntityId()));
+				StoryObject so = DTHelper.findStoryById((entityObject.getId()));
 				if (so == null) {
 					DTHelper.synchronize();
-					so = (StoryObject) DTHelper.findEventByEntityId(entityObject.getEntityId());
+					so = DTHelper.findStoryById(entityObject.getId());
 				}
-				return so;
+				return so == null ? null : so;
 			}
 
 			return null;
@@ -180,7 +191,6 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 				Toast.makeText(getSherlockActivity(), getString(R.string.app_failure_obj_not_found), Toast.LENGTH_LONG).show();
 				return;
 			}
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
 			SherlockFragment fragment = null;
 			Bundle args = new Bundle();
 
@@ -196,12 +206,13 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 			}
 
 			if (fragment != null) {
+				FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "details");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "details");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
+//
 			}
 		}
 	}

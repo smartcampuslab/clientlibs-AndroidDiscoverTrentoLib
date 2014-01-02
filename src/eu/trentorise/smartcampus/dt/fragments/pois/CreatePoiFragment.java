@@ -27,8 +27,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -47,21 +47,22 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.POIData;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.UserPOIObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 		implements OnTagsSelectedListener, TagProvider {
@@ -82,10 +83,9 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 
 	@Override
 	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-		poiObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		poiObject.getCommunityData().setTags(Utils.conceptConvertSS(suggestions));
 		if (getView() != null)
-			((EditText) getView().findViewById(R.id.poi_tags)).setText(Concept
-					.toSimpleString(poiObject.getCommunityData().getTags()));
+			((EditText) getView().findViewById(R.id.poi_tags)).setText(Utils.conceptToSimpleString(poiObject.getCommunityData().getTags()));
 	}
 
 	@Override
@@ -97,6 +97,9 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+        
 		setHasOptionsMenu(false);
 		if (getArguments() != null
 				&& getArguments().containsKey(ARG_POI_HANDLER)
@@ -113,7 +116,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				&& getArguments().getSerializable(ARG_POI) != null) {
 			poiObject = (POIObject) getArguments().getSerializable(ARG_POI);
 		} else {
-			poiObject = new UserPOIObject();
+//			poiObject = new UserPOIObject();
+			poiObject= new POIObject();
 			if (getArguments() != null
 					&& getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
 				poiObject.setType(getArguments().getString(
@@ -125,6 +129,17 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			poiObject.setCommunityData(new CommunityData());
 	}
 
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -166,14 +181,6 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 		GeocodingAutocompletionHelper locationAutocompletionHelper = new GeocodingAutocompletionHelper(
 				getSherlockActivity(), location, TN_REGION, TN_COUNTRY,
 				TN_ADM_AREA, refLoc);
-		/*
-		 * locationAutocompletionHelper.setOnAddressSelectedListener(new
-		 * OnAddressSelectedListener() {
-		 * 
-		 * @Override public void onAddressSelected(Address address) {
-		 * savePosition(address, "from"); } });
-		 */
-
 		// autocomplete the poi's address
 		locationAutocompletionHelper
 				.setOnAddressSelectedListener(new OnAddressSelectedListener() {
@@ -200,10 +207,10 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 		}
 
 		EditText notes = (EditText) view.findViewById(R.id.poi_notes);
-		notes.setText(poiObject.getCommunityData().getNotes());
-
+//		notes.setText(poiObject.getCommunityData().getNotes());
+		notes.setText(poiObject.getDescription());
 		EditText tagsEdit = (EditText) view.findViewById(R.id.poi_tags);
-		tagsEdit.setText(Concept.toSimpleString(poiObject.getCommunityData()
+		tagsEdit.setText(Utils.conceptToSimpleString(poiObject.getCommunityData()
 				.getTags()));
 		tagsEdit.setClickable(true);
 		tagsEdit.setFocusableInTouchMode(false);
@@ -211,8 +218,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			@Override
 			public void onClick(View v) {
 				TaggingDialog taggingDialog = new TaggingDialog(getActivity(),
-						CreatePoiFragment.this, CreatePoiFragment.this, Concept
-								.convertToSS(poiObject.getCommunityData()
+						CreatePoiFragment.this, CreatePoiFragment.this, Utils.conceptConvertToSS(poiObject.getCommunityData()
 										.getTags()));
 				taggingDialog.show();
 			}
@@ -227,6 +233,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				if (mAddress != null) {
 					intent.putExtra(AddressSelectActivity.ARG_POINT, mAddress);
 				}
+				intent.putExtra("field", "");
 				startActivityForResult(intent,
 						AddressSelectActivity.RESULT_SELECTED);
 			}
@@ -251,7 +258,7 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				getSherlockActivity().getSupportFragmentManager()
 						.popBackStack();
 				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
+				imm.hideSoftInputFromWindow(getActivity().findViewById(R.id.fragment_container).getWindowToken(), 0);
 			}
 
 		});
@@ -260,17 +267,6 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 		save.setOnClickListener(new SavePOI());
 
 		return view;
-	}
-
-	private Integer validate(POIObject data) {
-		Integer result = null;
-		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
-			return R.string.create_title;
-		if (data.getLocation() == null)
-			return R.string.create_place;
-		if (data.getType() == null || data.getType().length() == 0)
-			return R.string.create_cat;
-		return result;
 	}
 
 	@Override
@@ -291,24 +287,6 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			return Collections.emptyList();
 		}
 	}
-
-	/*
-	 * private class CreatePoiProcessor extends
-	 * AbstractAsyncTaskProcessor<POIObject, Boolean> {
-	 * 
-	 * public CreatePoiProcessor(Activity activity) { super(activity); }
-	 * 
-	 * @Override public Boolean performAction(POIObject... params) throws
-	 * SecurityException, Exception { return DTHelper.savePOI(params[0]); }
-	 * 
-	 * @Override public void handleResult(Boolean result) {
-	 * getSherlockActivity().getSupportFragmentManager().popBackStack(); if
-	 * (result) { Toast.makeText(getSherlockActivity(),
-	 * R.string.poi_create_success, Toast.LENGTH_SHORT).show();
-	 * 
-	 * } else { Toast.makeText(getSherlockActivity(), R.string.update_success,
-	 * Toast.LENGTH_SHORT).show(); } } }
-	 */
 
 	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
 		for (CategoryDescriptor cd : categoryDescriptors) {
@@ -376,22 +354,29 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(getActivity().findViewById(android.R.id.content).getWindowToken(), 0);
 			
-			CharSequence desc = ((EditText) view.findViewById(R.id.poi_notes))
-					.getText();
+			CharSequence desc = ((EditText) view.findViewById(R.id.poi_notes)).getText();
 			if (desc != null) {
-				poiObject.getCommunityData().setNotes(desc.toString());
+				poiObject.setDescription(desc.toString());
 			}
-			CharSequence title = ((EditText) view.findViewById(R.id.poi_title))
-					.getText();
-			if (title != null) {
-				poiObject.setTitle(title.toString());
+			// TITLE
+			CharSequence title = ((EditText) view.findViewById(R.id.poi_title)).getText();
+			if (title != null && title.toString().trim().length() > 0) {
+				poiObject.setTitle(title.toString().trim());
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.poi_title), 
+						getString(R.string.toast_is_required_p, getString(R.string.create_title)));
+				return;
 			}
 
+			// CATEGORY
 			String catString = ((Spinner) view.findViewById(R.id.poi_category))
 					.getSelectedItem().toString();
 			String cat = getCategoryDescriptorByDescription(catString).category;
-
 			poiObject.setType(cat);
+
+			// LOCATION
 			if (mAddress != null) {
 				POIData poiData = new POIData();
 				poiData.setStreet(mAddress.getAddressLine(0));
@@ -405,17 +390,11 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 				poiData.setLongitude(mAddress.getLongitude());
 				poiObject.setPoi(poiData);
 			}
-
-			Integer missing = validate(poiObject);
-			if (missing != null) {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getResources().getString(missing)
-								+ " "
-								+ getSherlockActivity().getApplicationContext()
-										.getResources()
-										.getString(R.string.toast_is_required),
-						Toast.LENGTH_SHORT).show();
+			if (poiObject.getLocation() == null) {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.poi_place), 
+						getString(R.string.toast_is_required_p, getString(R.string.create_place)));
 				return;
 			}
 

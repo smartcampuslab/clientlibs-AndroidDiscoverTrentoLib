@@ -15,7 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom.map;
 
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public interface MapStoryHandler {
 	public void setPOIStoryToLoad(final StoryObject story);

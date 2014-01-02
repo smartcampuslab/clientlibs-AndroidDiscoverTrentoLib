@@ -30,28 +30,34 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class InfoDialog extends SherlockDialogFragment {
+	public static final String PARAM = "DTO_OBJECT";
 	private BaseDTObject data;
 
-	public InfoDialog() {
-	}
+	//
+	// public InfoDialog() {
+	// }
 
-	public InfoDialog(BaseDTObject o) {
-		this.data = o;
-	}
+	// public InfoDialog(BaseDTObject o) {
+	// this.data = o;
+	// }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if (this.data == null) {
+			this.data = (BaseDTObject) getArguments().getSerializable(PARAM);
+		}
 		if (data instanceof POIObject) {
 			getDialog().setTitle(getString(R.string.info_dialog_title_poi));
-		} else if (data instanceof EventObject) {
+		} else if (data instanceof LocalEventObject) {
 			getDialog().setTitle(R.string.info_dialog_title_event);
 		}
 		return inflater.inflate(R.layout.mapdialog, container, false);
@@ -64,9 +70,9 @@ public class InfoDialog extends SherlockDialogFragment {
 
 		if (data instanceof POIObject) {
 			msg.setText(Html.fromHtml("<h2>" + ((POIObject) data).getTitle() + "</h2><br/><p>"
-					+ ((POIObject) data).shortAddress() + "</p>"));
-		} else if (data instanceof EventObject) {
-			EventObject event = (EventObject) data;
+					+ Utils.getPOIshortAddress(((POIObject) data)) + "</p>"));
+		} else if (data instanceof LocalEventObject) {
+			LocalEventObject event = (LocalEventObject) data;
 			POIObject poi = DTHelper.findPOIById(event.getPoiId());
 			String msgText = "";
 			msgText += "<h2>";
@@ -78,9 +84,9 @@ public class InfoDialog extends SherlockDialogFragment {
 						CategoryHelper.CATEGORY_TYPE_EVENTS, event.getType()).description);
 				msgText += "</p><br/>";
 			}
-			msgText += "<p>" + event.getTiming() + "</p>";
+			msgText += "<p>" + event.getTimingFormatted() + "</p>";
 			if (poi != null) {
-				msgText += "<p>" + poi.shortAddress() + "</p>";
+				msgText += "<p>" + Utils.getPOIshortAddress(poi) + "</p>";
 			}
 			msg.setText(Html.fromHtml(msgText));
 		}
@@ -99,7 +105,8 @@ public class InfoDialog extends SherlockDialogFragment {
 		b.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Bundle args = new Bundle();
 
 				if (data instanceof POIObject) {
@@ -107,14 +114,14 @@ public class InfoDialog extends SherlockDialogFragment {
 					args.putString(PoiDetailsFragment.ARG_POI_ID, data.getId());
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
-				} else if (data instanceof EventObject) {
+				} else if (data instanceof LocalEventObject) {
 					EventDetailsFragment fragment = new EventDetailsFragment();
 					args.putString(EventDetailsFragment.ARG_EVENT_ID, (data.getId()));
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "me");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "me");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 				}
 				fragmentTransaction.commit();

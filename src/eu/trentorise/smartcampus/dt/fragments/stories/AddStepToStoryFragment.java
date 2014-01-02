@@ -33,17 +33,19 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.POISelectActivity;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Fragment that manages a single step of a story with the POI and the note
@@ -56,7 +58,7 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 	public static String ARG_STEP_POSITION = "position";
 	private View view = null;
 	private POIObject poi = null;
-	private StepObject step = null;
+	private LocalStepObject step = null;
 	private StepHandler stepHandler = null;
 	private StoryObject storyObject = null;
 	private Integer position = null;
@@ -76,6 +78,9 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
+
+        
 		if (Log.isLoggable(TAG, Log.VERBOSE)) {
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.onCreate ");
 		}
@@ -117,7 +122,7 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 		if (poi != null) {
 			poiField.setText(poi.getTitle());
 		} else if ((storyObject != null) && (position != null)) {
-			step = storyObject.getSteps().get(position);
+			step = Utils.getLocalStepFromStep(storyObject.getSteps().get(position));
 			poi = step.assignedPoi();
 			if (poi != null)
 				poiField.setText(poi.getTitle());
@@ -158,24 +163,21 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 				// get the data from the user interface and call the correct
 				// method of the handler
 				// if the step is new or an update
-				if (Log.isLoggable(TAG, Log.VERBOSE)) {
-					Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment click on save button ");
-				}
-				
 				AutoCompleteTextView stepPlace = (AutoCompleteTextView) view.findViewById(R.id.step_place);
 				TextView notePlace = (TextView) view.findViewById(R.id.step_tags);
 
-				
 				if (stepPlace.getText() != null && stepPlace.getText().length() > 0) {
 					if (poi == null || !poi.getTitle().equals(stepPlace.getText())) {
-						poi = DTHelper.findPOIByTitle(stepPlace.getText().toString());
+						 poi = DTHelper.findPOIByTitle(stepPlace.getText().toString());
 					}
 					if (poi == null) {
-						Toast.makeText(getActivity(), R.string.poi_step_not_exist, Toast.LENGTH_LONG).show();
+						ValidatorHelper.highlight(
+								getActivity(), 
+								view.findViewById(R.id.poi_title), 
+								getString(R.string.poi_step_not_exist));
 						return;
 					}
-					
-					step = new StepObject(poi, notePlace.getText().toString());
+					step = new LocalStepObject(poi, notePlace.getText().toString());
 					if (stepHandler != null) {
 						if ((storyObject != null) && (position != null))
 							stepHandler.updateStep(step, position);
@@ -185,7 +187,10 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 					}
 
 				} else {
-					Toast.makeText(getActivity(), R.string.empty_step_title, Toast.LENGTH_LONG).show();
+					ValidatorHelper.highlight(
+							getActivity(), 
+							view.findViewById(R.id.step_place), 
+							getString(R.string.toast_is_required_p, getString(R.string.create_place)));
 				}
 			}
 		});
@@ -193,6 +198,15 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 		return view;
 	}
 
+	@Override
+	public void onStart() {
+		// TODO Auto-generated me
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+	}
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -240,9 +254,9 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
 	}
 
 	public interface StepHandler {
-		public void addStep(StepObject step);
+		public void addStep(LocalStepObject step);
 
-		public void updateStep(StepObject step, Integer position);
+		public void updateStep(LocalStepObject step, Integer position);
 	}
 
 }

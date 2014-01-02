@@ -6,10 +6,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
@@ -25,28 +23,28 @@ public class NotificationsSherlockFragmentDT extends FeedbackFragment {
 		setHiddenNotification();
 	}
 
-	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		onPrepareOptionsMenuNotifications(menu);
-		super.onPrepareOptionsMenu(menu);
-	}
+//	@Override
+//	public void onPrepareOptionsMenu(Menu menu) {
+//		onPrepareOptionsMenuNotifications(menu);
+//		super.onPrepareOptionsMenu(menu);
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return onOptionsItemSelectedNotifications(getSherlockActivity(), item);
 	}
 
-	public static void onPrepareOptionsMenuNotifications(Menu menu) {
-		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_notifications, 0, R.string.notifications_unread);
-		item.setIcon(R.drawable.ic_menu_notifications_w);
-		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		if (mHiddenNotification) {
-
-			if (item != null) {
-				item.setVisible(false);
-			}
-		}
-	}
+//	public static void onPrepareOptionsMenuNotifications(Menu menu) {
+//		MenuItem item = menu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_notifications, 0, R.string.notifications_unread);
+//		item.setIcon(R.drawable.ic_menu_notifications_w);
+//		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//		if (mHiddenNotification) {
+//
+//			if (item != null) {
+//				item.setVisible(false);
+//			}
+//		}
+//	}
 
 	public static boolean onOptionsItemSelectedNotifications(SherlockFragmentActivity activity, MenuItem item) {
 		if (item.getItemId() == R.id.menu_item_notifications) {

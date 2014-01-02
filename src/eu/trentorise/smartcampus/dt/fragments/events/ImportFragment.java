@@ -27,12 +27,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class ImportFragment extends NotificationsSherlockFragmentDT {
 	private AlertDialog self;
@@ -46,6 +47,12 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 	public void onStart() {
 		super.onStart();
 
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        
 		Button b = (Button) getView().findViewById(R.id.browse_btn);
 		b.setOnClickListener(new OnClickListener() {
 
@@ -65,16 +72,16 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 			@Override
 			public void onClick(View v) {
 				// to be replaced with list of events parsed from file
-				List<EventObject> list = new LinkedList<EventObject>();
-				list.add(new EventObject());
-				list.add(new EventObject());
+				List<LocalEventObject> list = new LinkedList<LocalEventObject>();
+				list.add(new LocalEventObject());
+				list.add(new LocalEventObject());
 				onParsingCompleted(list);
 			}
 		});
 	}
 
-	private void onParsingCompleted(List<EventObject> list) {
-		for (EventObject e : list) {
+	private void onParsingCompleted(List<LocalEventObject> list) {
+		for (LocalEventObject e : list) {
 			AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(
 					getActivity().getLayoutInflater().inflate(R.layout.import_dialog, null)).create();
 			dialog.setTitle("Event found:");
@@ -102,13 +109,13 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 				POIObject poi = DTHelper.findPOIById(e.getPoiId());
 				if (poi != null) {
 					et = (EditText) dialog.findViewById(R.id.import_place);
-					et.setText(poi.shortAddress());
+					et.setText(Utils.getPOIshortAddress(poi));
 				}
 			}
 			// tags
 			if (e.getCommunityData().getTags() != null) {
 				et = (EditText) dialog.findViewById(R.id.import_tags);
-				et.setText(Concept.toSimpleString(e.getCommunityData().getTags()));
+				et.setText(Utils.conceptToSimpleString(e.getCommunityData().getTags()));
 			}
 			// categories
 			if (e.getType() != null) {
@@ -116,9 +123,9 @@ public class ImportFragment extends NotificationsSherlockFragmentDT {
 				et.setText(e.getType());
 			}
 			// notes
-			if (e.getCommunityData().getNotes() != null) {
+			if (e.getDescription() != null) {
 				et = (EditText) dialog.findViewById(R.id.import_notes);
-				et.setText(e.getCommunityData().getNotes());
+				et.setText(e.getDescription());
 			}
 
 			b = (Button) dialog.findViewById(R.id.btn_import_ok);

@@ -34,8 +34,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
@@ -50,6 +49,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		fragmentManager = getSherlockActivity().getSupportFragmentManager();
 		setHasOptionsMenu(true);
 	}
@@ -62,7 +62,11 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+		
+    	DiscoverTrentoActivity.drawerState = "on";
 
+		
 		List<CategoryDescriptor> list = new ArrayList<CategoryDescriptor>();
 		list.add(CategoryHelper.EVENTS_MY);
 		list.add(CategoryHelper.EVENTS_TODAY);
@@ -133,16 +137,17 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 		Fragment fragment;
 		Bundle args;
 		if (item.getItemId() == R.id.menu_item_addevent) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				fragmentTransaction = fragmentManager.beginTransaction();
 				fragment = new CreateEventFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "events");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -181,7 +186,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "events");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "events");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

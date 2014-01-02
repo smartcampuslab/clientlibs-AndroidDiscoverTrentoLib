@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.dt.notifications;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
@@ -32,7 +33,16 @@ import eu.trentorise.smartcampus.communicator.model.Notification;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.data.Constants;
 
+//public class NotificationsListAdapterDT extends ArrayAdapter<Object> {
+//
+//	public NotificationsListAdapterDT(Context context, int resource) {
+//		super(context, resource);
+//		// TODO Auto-generated constructor stub
+//	}
+
 public class NotificationsListAdapterDT extends ArrayAdapter<Notification> {
+
+	public static final String NT_MODERATION = "moderation";
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 	private Context mContext;
@@ -84,48 +94,55 @@ public class NotificationsListAdapterDT extends ArrayAdapter<Notification> {
 	 * Builders
 	 */
 	private void buildHolder(Holder holder, Notification notification) {
-		// missing custom data
-		if (notification.getEntities() == null || notification.getEntities().isEmpty() || notification.getEntities().size() > 2) {
-			holder.desc.setText(notification.getTitle() + "\n" + notification.getDescription());
-		}
-
-		EntityObject event = null;
-		EntityObject location = null;
-		EntityObject story = null;
-
-		for (EntityObject eb : notification.getEntities()) {
-			String type = eb.getType();
-
-			if (type.equalsIgnoreCase(Constants.TYPE_EVENT)) {
-				event = eb;
-			} else if (type.equalsIgnoreCase(Constants.TYPE_LOCATION)) {
-				location = eb;
-			} else if (type.equalsIgnoreCase(Constants.TYPE_STORY)) {
-				story = eb;
-			}
-		}
-
-		boolean update = notification.getContent() != null && notification.getContent().containsKey("updated") && (Boolean)notification.getContent().get("updated");
-
-		if (notification.getEntities().size() == 2) {
-			// new
-			if (event != null && location != null) {
-				holder.desc
-						.setText(mContext.getString(update? R.string.notifications_event_at_place_updated : R.string.notifications_event_new, event.getTitle(), location.getTitle()));
-			} else if (location != null && story != null) {
-				holder.desc
-						.setText(mContext.getString(update? R.string.notifications_story_at_place_update : R.string.notifications_story_new, story.getTitle(), location.getTitle()));
-			}
+		//  moderation message
+		if (notification.getContent() != null && NotificationsListAdapterDT.NT_MODERATION.equals(notification.getContent().get("type"))) {
+			// title is the name of the object
+			Long modificationTime = (Long)notification.getContent().get("modificationTime");
+			String note = (String)notification.getContent().get("note");
+			holder.desc.setText(mContext.getString(R.string.moderation_rejected,notification.getTitle(),dateFormat.format(new Date(modificationTime)),note));
 		} else {
-			if (event != null) {
-				holder.desc.setText(mContext.getString(R.string.notifications_event_updated, event.getTitle()));
-			} else if (location != null) {
-				holder.desc.setText(mContext.getString(R.string.notifications_location_updated, location.getTitle()));
-			} else if (story != null) {
-				holder.desc.setText(mContext.getString(R.string.notifications_story_updated, story.getTitle()));
+			// missing custom data
+			if (notification.getEntities() == null || notification.getEntities().isEmpty() || notification.getEntities().size() > 2) {
+				holder.desc.setText(notification.getTitle() + "\n" + notification.getDescription());
+			}
+
+			EntityObject event = null;
+			EntityObject location = null;
+			EntityObject story = null;
+
+			for (EntityObject eb : notification.getEntities()) {
+				String type = eb.getType();
+
+				if (type.equalsIgnoreCase(Constants.TYPE_EVENT)) {
+					event = eb;
+				} else if (type.equalsIgnoreCase(Constants.TYPE_LOCATION)) {
+					location = eb;
+				} else if (type.equalsIgnoreCase(Constants.TYPE_STORY)) {
+					story = eb;
+				}
+			}
+
+			boolean update = notification.getContent() != null && notification.getContent().containsKey("updated") && (Boolean)notification.getContent().get("updated");
+
+			if (notification.getEntities().size() == 2) {
+				// new
+				if (event != null && location != null) {
+					holder.desc
+							.setText(mContext.getString(update? R.string.notifications_event_at_place_updated : R.string.notifications_event_new, event.getTitle(), location.getTitle()));
+				} else if (location != null && story != null) {
+					holder.desc
+							.setText(mContext.getString(update? R.string.notifications_story_at_place_update : R.string.notifications_story_new, story.getTitle(), location.getTitle()));
+				}
+			} else {
+				if (event != null) {
+					holder.desc.setText(mContext.getString(R.string.notifications_event_updated, event.getTitle()));
+				} else if (location != null) {
+					holder.desc.setText(mContext.getString(R.string.notifications_location_updated, location.getTitle()));
+				} else if (story != null) {
+					holder.desc.setText(mContext.getString(R.string.notifications_story_updated, story.getTitle()));
+				}
 			}
 		}
-
 		Calendar notificationDateTime = Calendar.getInstance();
 		notificationDateTime.setTimeInMillis(notification.getTimestamp());
 		holder.date.setText(dateFormat.format(notificationDateTime.getTime()));

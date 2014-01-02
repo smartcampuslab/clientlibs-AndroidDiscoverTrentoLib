@@ -17,10 +17,14 @@ package eu.trentorise.smartcampus.dt.fragments.pois;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -52,39 +56,32 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 import com.google.android.maps.GeoPoint;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
-import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.UnfollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.POIObject;
 import eu.trentorise.smartcampus.dt.model.TmpComment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 	public static final String ARG_POI_ID = "poi_id";
 
-	private boolean mFollowByIntent;
 	private boolean mStart = true;
 	private boolean mCanceledFollow = false;
 
@@ -98,6 +95,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+        
 		setHasOptionsMenu(true);
 
 		if (getArguments() != null) {
@@ -128,25 +126,31 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	private void updateRating() {
-		if (getView()!=null){
-		RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
-		if (mPoi.getCommunityData() != null) {
-			CommunityData cd = mPoi.getCommunityData();
+		if (getView() != null) {
+			RatingBar rating = (RatingBar) getView().findViewById(R.id.poi_rating);
+			if (mPoi.getCommunityData() != null) {
+				CommunityData cd = mPoi.getCommunityData();
 
-			if (cd.getRatings() != null && !cd.getRatings().isEmpty()) {
-				rating.setRating(cd.getRatings().get(0).getValue());
+				if (cd.getRating() != null && !cd.getRating().isEmpty()) {
+					Iterator<Map.Entry<String, Integer>> entries = cd.getRating().entrySet().iterator();
+					float rate = 0;
+					while (entries.hasNext()) {
+						Map.Entry<String, Integer> entry = entries.next();
+						rate = entry.getValue();
+					}
+					rating.setRating(rate);
+				}
+
+				// user rating
+
+				// total raters
+				((TextView) getView().findViewById(R.id.poi_rating_raters)).setText(getString(
+						R.string.ratingtext_raters, cd.getRatingsCount()));
+
+				// averange rating
+				((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(
+						R.string.ratingtext_average, cd.getAverageRating()));
 			}
-
-			// user rating
-
-			// total raters
-			((TextView) getView().findViewById(R.id.poi_rating_raters)).setText(getString(R.string.ratingtext_raters,
-					cd.getRatingsCount()));
-
-			// averange rating
-			((TextView) getView().findViewById(R.id.poi_rating_average)).setText(getString(R.string.ratingtext_average,
-					cd.getAverageRating()));
-		}
 		}
 	}
 
@@ -160,6 +164,14 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			} else {
 				certifiedBanner.setVisibility(View.GONE);
 			}
+			
+			DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+	    	DiscoverTrentoActivity.drawerState = "off";
+	        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+	        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+	        
+	        
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.poi_details_title);
 			tv.setText(mPoi.getTitle());
@@ -184,34 +196,19 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 						if (!mCanceledFollow) {
 							if (isChecked) {
 								// FOLLOW
-								FollowEntityObject obj = new FollowEntityObject(mPoi.getEntityId(), mPoi.getTitle(),
-										DTConstants.ENTITY_TYPE_POI);
-								if (mFollowByIntent) {
-									// for MyPeople support
-									followButtonView = buttonView;
-									FollowHelper.follow(mFragment, obj, 3000);
-								} else {
-									SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(
+								{
+									SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 											getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(),
 													buttonView));
-									followTask.execute(DTParamsHelper.getAppToken(), DTHelper.getAuthToken(), obj);
+									followTask.execute(mPoi);
 								}
 							} else {
 								// UNFOLLOW
-								BaseDTObject obj;
-								try {
-									obj = DTHelper.findPOIByEntityId(mPoi.getEntityId());
-									if (obj != null) {
-										SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
-												getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
-														buttonView));
-										unfollowTask.execute(obj);
+								SCAsyncTask<BaseDTObject, Void, BaseDTObject> unfollowTask = new SCAsyncTask<BaseDTObject, Void, BaseDTObject>(
+										getSherlockActivity(), new UnfollowAsyncTaskProcessor(getSherlockActivity(),
+												buttonView));
+								unfollowTask.execute(mPoi);
 
-									}
-								} catch (Exception e) {
-									Log.e(EventDetailsFragment.class.getName(),
-											String.format("Error unfollowing event %s", mPoi.getEntityId()));
-								}
 							}
 						} else {
 							mCanceledFollow = false;
@@ -236,7 +233,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			directionsBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Address to = mPoi.asGoogleAddress();
+					Address to = Utils.getPOIasGoogleAddress(mPoi);
 					Address from = null;
 					GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 					if (mylocation != null) {
@@ -259,18 +256,21 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 			}
 
-			// notes
-			tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
-			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getNotes() != null
-					&& mPoi.getCommunityData().getNotes().length() > 0) {
-				tv.setText(mPoi.getCommunityData().getNotes());
+//			// notes
+//			tv = (TextView) this.getView().findViewById(R.id.poi_details_notes);
+			// if (mPoi.getCommunityData() != null &&
+			// mPoi.getCommunityData().getNotes() != null
+			// && mPoi.getCommunityData().getNotes().length() > 0) {
+			// tv.setText(mPoi.getCommunityData().getNotes());
+			if (mPoi.getCommunityData() != null && mPoi.getDescription() != null && mPoi.getDescription().length() > 0) {
+				tv.setText(mPoi.getDescription());
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 			}
 
 			// location
 			tv = (TextView) this.getView().findViewById(R.id.poi_details_loc);
-			tv.setText(Html.fromHtml("<a href=\"\">" + mPoi.shortAddress() + "</a> "));
+			tv.setText(Html.fromHtml("<a href=\"\">" + Utils.getPOIshortAddress(mPoi) + "</a> "));
 			tv.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -285,14 +285,14 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			tv = (TextView) this.getView().findViewById(R.id.poi_details_tags);
 			if (mPoi.getCommunityData() != null && mPoi.getCommunityData().getTags() != null
 					&& mPoi.getCommunityData().getTags().size() > 0) {
-				tv.setText(Concept.toSimpleString(mPoi.getCommunityData().getTags()));
+				tv.setText(Utils.conceptToSimpleString(mPoi.getCommunityData().getTags()));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
 			}
 
 			// multimedia
-			((LinearLayout) getView().findViewById(R.id.multimedia_source))
-					.removeView(getView().findViewById(R.id.gallery_btn));
+			((LinearLayout) getView().findViewById(R.id.multimedia_source)).removeView(getView().findViewById(
+					R.id.gallery_btn));
 
 			/*
 			 * ImageButton b = (ImageButton) getView().findViewById(
@@ -317,7 +317,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (mPoi.getSource() != null && mPoi.getSource().length() > 0) {
 				/* Source is "ou" sometimes O_o */
 				tv.setText(mPoi.getSource());
-			} else if (mPoi.createdByUser()) {
+			} else if (Utils.isCreatedByUser(mPoi)) {
 				tv.setText(getString(R.string.source_smartcampus));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.poidetails)).removeView(tv);
@@ -329,11 +329,14 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_UP) {
-						if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-							// show dialog box
-							UserRegistration.upgradeuser(getSherlockActivity());
-							return false;
-						} else {
+						// if (new
+						// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
+						// {
+						// // show dialog box
+						// UserRegistration.upgradeuser(getSherlockActivity());
+						// return false;
+						// } else
+						{
 							ratingDialog();
 						}
 					}
@@ -357,8 +360,10 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 					commentsList.addView(entry);
 				}
 			} else {
-				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(R.id.poi_comments));
-				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(R.id.comments_list));
+				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
+						R.id.poi_comments));
+				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
+						R.id.comments_list));
 				((LinearLayout) getView().findViewById(R.id.poidetails)).removeView(getView().findViewById(
 						R.id.poi_comments_separator));
 			}
@@ -384,9 +389,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
 					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
 			Bundle aBundle = ai.metaData;
-			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
-			mFollowByIntent = false;
 			Log.e(PoiDetailsFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
 		}
 
@@ -401,15 +404,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		SubMenu submenu = menu.getItem(0).getSubMenu();
 		submenu.clear();
 
-		// submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_rate, Menu.NONE,
-		// R.string.rate);
-		// submenu.add(Menu.NONE, R.id.submenu_get_dir, Menu.NONE,
-		// R.string.getdir);
-		// submenu.add(Menu.NONE, R.id.submenu_see_on_map, Menu.NONE,
-		// R.string.onmap);
-
 		submenu.add(Menu.NONE, R.id.submenu_show_related_events, Menu.NONE, R.string.submenu_related_events);
-		submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_tag, Menu.NONE, R.string.submenu_tag);
 
 		// ONLY THE OWNER CAN EDIT AND DELETE OBJECTS
 		if (DTHelper.isOwnedObject(getPOI())) {
@@ -436,35 +431,65 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;
 		} else if (item.getItemId() == R.id.submenu_edit || item.getItemId() == R.id.submenu_tag) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else
+			{
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Fragment fragment = new CreatePoiFragment();
 				Bundle args = new Bundle();
 				args.putSerializable(CreatePoiFragment.ARG_POI, mPoi);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
 			}
 		} else if (item.getItemId() == R.id.submenu_delete) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
-				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity())).execute(mPoi);
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else
+			{
+				AlertDialog.Builder mAlert = new AlertDialog.Builder(
+						getSherlockActivity());
+				mAlert.setMessage(getText(R.string.alert_message));
+				mAlert.setPositiveButton("OK",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
+								.execute(mPoi);
+							}
+						});
+				mAlert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+								
+								//getSherlockActivity().onBackPressed();
+								
+							}
+						});
+
+				AlertDialog alert = mAlert.create();
+
+				alert.show();
+//				new SCAsyncTask<POIObject, Void, Boolean>(getActivity(), new POIDeleteProcessor(getActivity()))
+//						.execute(mPoi);
 				return true;
 			}
 		} else {
@@ -477,8 +502,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 		if (requestCode == 3000) {
 			if (resultCode == Activity.RESULT_OK) {
 				mStart = false;
-				eu.trentorise.smartcampus.cm.model.Topic topic = (eu.trentorise.smartcampus.cm.model.Topic) data
-						.getSerializableExtra("topic");
+				Topic topic = (Topic) data.getSerializableExtra("topic");
 				new FollowAsyncTask().execute(topic.getId());
 				// fix to avoid onActivityResult DiscoverTrentoActivity failure
 				data.putExtra(AccountManager.KEY_AUTHTOKEN, DTHelper.getAuthToken());
@@ -493,8 +517,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 	private void ratingDialog() {
 		float rating = (mPoi != null && mPoi.getCommunityData() != null && mPoi.getCommunityData().getAverageRating() > 0) ? mPoi
 				.getCommunityData().getAverageRating() : 2.5f;
-		RatingHelper
-				.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()), R.string.rating_place_dialog_title);
+		RatingHelper.ratingDialog(getActivity(), rating, new RatingProcessor(getActivity()),
+				R.string.rating_place_dialog_title);
 	}
 
 	/*
@@ -539,8 +563,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 			if (result) {
 				getSherlockActivity().getSupportFragmentManager().popBackStack();
 			} else {
-				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete), Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(getActivity(), getActivity().getString(R.string.app_failure_cannot_delete),
+						Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -550,9 +574,8 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 
 		@Override
 		protected Void doInBackground(String... params) {
-			String topicId = params[0];
 			try {
-				DTHelper.follow(DTHelper.findPOIById(mPoiId), topicId);
+				DTHelper.follow(DTHelper.findPOIById(mPoiId));
 			} catch (Exception e) {
 				Log.e(FollowAsyncTask.class.getName(), String.format("Exception following event %s", mPoiId));
 			}

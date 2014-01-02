@@ -17,7 +17,8 @@ package eu.trentorise.smartcampus.dt.custom.map;
 
 import java.util.List;
 
-import eu.trentorise.smartcampus.dt.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+
 
 public interface BaseDTObjectMapItemTapListener {
 

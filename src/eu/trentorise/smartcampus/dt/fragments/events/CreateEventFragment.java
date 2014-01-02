@@ -49,23 +49,24 @@ import android.widget.Toast;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.DatePickerDialogFragment;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.CreatePoiFragment.PoiHandler;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.EventObject;
-import eu.trentorise.smartcampus.dt.model.POIObject;
-import eu.trentorise.smartcampus.dt.model.UserEventObject;
+import eu.trentorise.smartcampus.dt.model.LocalEventObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class CreateEventFragment extends NotificationsSherlockFragmentDT implements
 		TaggingDialog.OnTagsSelectedListener, TaggingDialog.TagProvider {
@@ -80,7 +81,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	public static final SimpleDateFormat FORMAT_DATE_UI = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 	private CategoryDescriptor[] categoryDescriptors;
 
-	private EventObject eventObject;
+	private LocalEventObject eventObject;
 
 	@Override
 	public void onSaveInstanceState(Bundle arg0) {
@@ -92,6 +93,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setHasOptionsMenu(false);
 
 		if (savedInstanceState != null && savedInstanceState.containsKey(ARG_EVENT)
@@ -101,7 +103,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				&& getArguments().getSerializable(ARG_EVENT) != null) {
 			eventObject = getEvent(savedInstanceState);
 		} else {
-			eventObject = new UserEventObject();
+			eventObject = new LocalEventObject();
 			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
 				eventObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
@@ -209,7 +211,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, poiHandler);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "pois");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "pois");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}
@@ -225,7 +227,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		});
 
 		EditText notes = (EditText) view.findViewById(R.id.event_notes);
-		notes.setText(eventObject.getCommunityData().getNotes());
+//		notes.setText(eventObject.getCommunityData().getNotes());
+		notes.setText(eventObject.getFormattedDescription());
 
 		// Cannot edit title, date, poi, category, and notes for ServiceEvent
 		// and non-owned UserEvent
@@ -249,14 +252,14 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		EditText tagsEdit = (EditText) view.findViewById(R.id.event_tags);
-		tagsEdit.setText(Concept.toSimpleString(eventObject.getCommunityData().getTags()));
+		tagsEdit.setText(Utils.conceptToSimpleString(eventObject.getCommunityData().getTags()));
 		tagsEdit.setClickable(true);
 		tagsEdit.setFocusableInTouchMode(false);
 		tagsEdit.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				TaggingDialog taggingDialog = new TaggingDialog(getActivity(), CreateEventFragment.this,
-						CreateEventFragment.this, Concept.convertToSS(eventObject.getCommunityData().getTags()));
+						CreateEventFragment.this, Utils.conceptConvertToSS(eventObject.getCommunityData().getTags()));
 				taggingDialog.show();
 			}
 		});
@@ -279,7 +282,13 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 	@Override
 	public void onStart() {
 		super.onStart();
-
+		
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        
 		// date and time will be returned as tags
 		final EditText dateFromEditText = (EditText) getView().findViewById(R.id.event_date_from);
 		if (eventObject.createdByUser() && DTHelper.isOwnedObject(eventObject)) {
@@ -349,9 +358,9 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 
 	@Override
 	public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-		eventObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		eventObject.getCommunityData().setTags(Utils.conceptConvertSS(suggestions));
 		if (getView() != null)
-			((EditText) getView().findViewById(R.id.event_tags)).setText(Concept.toSimpleString(eventObject
+			((EditText) getView().findViewById(R.id.event_tags)).setText(Utils.conceptToSimpleString(eventObject
 					.getCommunityData().getTags()));
 	}
 
@@ -364,7 +373,7 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		}
 	}
 
-	private EventObject getEvent(Bundle savedInstanceState) {
+	private LocalEventObject getEvent(Bundle savedInstanceState) {
 		if (eventObject == null) {
 			Bundle bundle = this.getArguments();
 			String eventId = bundle.getString(ARG_EVENT);
@@ -375,23 +384,6 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 			}
 		}
 		return eventObject;
-	}
-
-	private Integer validate(EventObject data) {
-		Integer result = null;
-		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
-			return R.string.create_title;
-		// if (data.getFromTime() == null)
-		// return R.string.createevent_timestart;
-		// if (data.getToTime() == null)
-		// return R.string.createevent_timeend;
-		// if (data.getToTime() <= data.getFromTime())
-		// return R.string.createevent_timeend;
-		if (data.getPoiId() == null)
-			return R.string.create_place;
-		if (data.getType() == null || data.getType().length() == 0)
-			return R.string.create_cat;
-		return result;
 	}
 
 	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
@@ -405,14 +397,14 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		return null;
 	}
 
-	private class CreateEventProcessor extends AbstractAsyncTaskProcessor<EventObject, Boolean> {
+	private class CreateEventProcessor extends AbstractAsyncTaskProcessor<LocalEventObject, Boolean> {
 
 		public CreateEventProcessor(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public Boolean performAction(EventObject... params) throws SecurityException, Exception {
+		public Boolean performAction(LocalEventObject... params) throws SecurityException, Exception {
 			return DTHelper.saveEvent(params[0]);
 		}
 
@@ -435,29 +427,32 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 		public void onClick(View v) {
 			CharSequence desc = ((EditText) view.findViewById(R.id.event_notes)).getText();
 			if (desc != null) {
-				eventObject.getCommunityData().setNotes(desc.toString());
+				eventObject.setDescription(desc.toString().trim());
 			}
+			// TITLE
 			CharSequence title = ((EditText) view.findViewById(R.id.event_title)).getText();
-			if (title != null) {
-				eventObject.setTitle(title.toString());
+			if (title != null && title.toString().trim().length() > 0) {
+				eventObject.setTitle(title.toString().trim());
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_title), 
+						getString(R.string.toast_is_required_p, getString(R.string.create_title)));
+				return;
 			}
 
+			// CATEGORY
 			String catString = ((Spinner) view.findViewById(R.id.event_category)).getSelectedItem().toString();
 			String cat = getCategoryDescriptorByDescription(catString).category;
+			eventObject.setType(cat);
 
-			AutoCompleteTextView eventPlace = (AutoCompleteTextView) view.findViewById(R.id.event_place);
-			if ((poi == null || !poi.getTitle().equals(eventPlace.getText().toString()))
-					&& eventPlace.getText() != null && eventPlace.getText().length() > 0) {
-				poi = DTHelper.findPOIByTitle(eventPlace.getText().toString());
-			}
-
+			// FROM DATE
 			CharSequence dateFromstr = ((EditText) view.findViewById(R.id.event_date_from)).getText();
 			if (dateFromstr == null || dateFromstr.length() == 0) {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getResources().getString(R.string.createevent_date) + " "
-								+ getActivity().getResources().getString(R.string.msg_field_required),
-						Toast.LENGTH_SHORT).show();
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_date_from), 
+						getString(R.string.toast_is_required_p, getString(R.string.createevent_date)));
 				return;
 			}
 			Calendar cal = Calendar.getInstance();
@@ -466,73 +461,76 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				fromDate = DatePickerDialogFragment.DATEFORMAT.parse(dateFromstr.toString());
 				cal.setTime(fromDate);
 			} catch (ParseException e) {
-				Toast.makeText(
-						getActivity(),
-						getResources().getString(R.string.toast_incorrect) + " "
-								+ getResources().getString(R.string.createevent_date), Toast.LENGTH_SHORT).show();
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_date_from), 
+						getString(R.string.toast_incorrect_p, getString(R.string.createevent_date)));
 				return;
 			}
 			eventObject.setFromTime(cal.getTimeInMillis());
 
+			// TO DATE
 			CharSequence dateTostr = ((EditText) view.findViewById(R.id.event_date_to)).getText();
 			if (moreDaysCheckbox.isChecked()) {
 				if (dateTostr == null || dateTostr.length() == 0) {
-					Toast.makeText(
-							getActivity(),
-							getActivity().getResources().getString(R.string.createevent_ending_date) + " "
-									+ getActivity().getResources().getString(R.string.msg_field_required),
-							Toast.LENGTH_SHORT).show();
+					ValidatorHelper.highlight(
+							getActivity(), 
+							view.findViewById(R.id.event_date_to), 
+							getString(R.string.toast_is_required_p, getString(R.string.createevent_ending_date)));
 					return;
 				} else {
 					Date toDate;
 					try {
 						toDate = FORMAT_DATE_UI.parse(dateTostr.toString());
 						if (fromDate.after(toDate)) {
-							Toast.makeText(getActivity(), R.string.to_date_before_from_date, Toast.LENGTH_SHORT).show();
+							ValidatorHelper.highlight(
+									getActivity(), 
+									view.findViewById(R.id.event_date_to), 
+									getString(R.string.to_date_before_from_date));
 							return;
 						}
 						cal.setTime(toDate);
 						eventObject.setToTime(cal.getTimeInMillis());
 					} catch (ParseException e) {
-						Toast.makeText(getActivity(), R.string.date_field_empty, Toast.LENGTH_SHORT).show();
+						ValidatorHelper.highlight(
+								getActivity(), 
+								view.findViewById(R.id.event_date_to), 
+								getString(R.string.toast_incorrect_p, getString(R.string.createevent_ending_date)));
 						return;
 					}
 
 				}
 			}
 
-			// if (eventObject.getTiming() == null ||
-			// eventObject.isFromTimeUserDefined() ||
-			// DTHelper.isOwnedObject(eventObject)) {
-			if (DTHelper.isOwnedObject(eventObject)) {
-				CharSequence timingstr = ((EditText) view.findViewById(R.id.event_timing_et)).getText();
-				if (timingstr == null || timingstr.length() == 0) {
-					Toast.makeText(
-							getActivity(),
-							getActivity().getResources().getString(R.string.createevent_timing) + " "
-									+ getActivity().getResources().getString(R.string.msg_field_required),
-							Toast.LENGTH_SHORT).show();
-					return;
-				}
-				eventObject.setTiming(timingstr.toString());
+			// TIMING
+			CharSequence timingstr = ((EditText) view.findViewById(R.id.event_timing_et)).getText();
+			if (timingstr == null || timingstr.length() == 0) {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_timing_et), 
+						getString(R.string.toast_is_required_p,getString(R.string.createevent_timing)));
+				return;
 			}
+			eventObject.setTiming(timingstr.toString());
 
-			eventObject.setType(cat);
+			// POI
+			AutoCompleteTextView eventPlace = (AutoCompleteTextView) view.findViewById(R.id.event_place);
+			if ((poi == null || !poi.getTitle().equals(eventPlace.getText().toString()))
+					&& eventPlace.getText() != null && eventPlace.getText().length() > 0) {
+				poi = DTHelper.findPOIByTitle(eventPlace.getText().toString());
+			}
+			
 			if (poi != null) {
 				eventObject.setPoiId(poi.getId());
-			}
-			Integer missing = validate(eventObject);
-			if (missing != null) {
-				Toast.makeText(
-						getActivity(),
-						getActivity().getResources().getString(missing)
-								+ " "
-								+ getSherlockActivity().getApplicationContext().getResources()
-										.getString(R.string.toast_is_required), Toast.LENGTH_SHORT).show();
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.event_place), 
+						getString(R.string.toast_is_required_p,getString(R.string.create_place)));
 				return;
 			}
 
-			new SCAsyncTask<EventObject, Void, Boolean>(getActivity(), new CreateEventProcessor(getActivity()))
+			new SCAsyncTask<LocalEventObject, Void, Boolean>(getActivity(), new CreateEventProcessor(getActivity()))
 					.execute(eventObject);
 		}
 

@@ -17,14 +17,25 @@
 <resources>
 
     <string name="app_name">ViviTrento</string>
-<!--     <string name="app_name">EsploraTrento</string> -->
+    <!-- <string name="app_name">EsploraTrento</string> -->
+     <string-array name="fragment_array">
+        <item>Home</item>
+        <item>Luoghi</item>
+        <item>Eventi</item>
+        <item>Itinerari</item>
+        <item>Notifiche</item>
+        <item>Tutorial</item>
+        </string-array>
+        <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    
     <string name="empty" />
     <string name="slidingmenu_home">Home</string>
     <string name="allevents">Tutti gli eventi</string>
     <string name="allpois">Tutti i luoghi</string>
     <string name="createevent">Crea evento</string>
-    <string name="myevents">I miei eventi</string>
-    <string name="mystory">La mia storia</string>
+    <string name="myevents">Partecipazioni</string>
+    <string name="mystory">Preferiti</string>
     <string name="create_title">Nome</string>
     <string name="create_description">Descrizione</string>
     <string name="createevent_date">Data</string>
@@ -38,26 +49,25 @@
     <string name="createevent_timeendhint">18:00</string>
     <string name="create_place">Indirizzo</string>
     <string name="create_placehint">Posizione </string>
-    <string name="create_tagshint">Party, fun (English only)</string> 
+    <string name="create_tagshint">Party, fun (English only)</string>
     <string name="create_cat">Categoria</string>
     <string name="create_cathint">Party, concert, movie (English only)</string>
     <string name="create_notes">Note</string>
     <string name="create_noteshint">Descrizione</string>
     <string name="menu_item_addpoi_text">Aggiungi luogo</string>
-    <string name="menu_item_addstory_text">Aggiungi una storia</string>
-    <string name="menu_item_mystories_text">Le mie storie</string>
+    <string name="menu_item_addstory_text">Aggiungi itinerario</string>
+    <string name="menu_item_mystories_text">Preferiti</string>
     <string name="createpoi">Crea luogo</string>
-    <string name="createstory">Crea storia</string>
+    <string name="createstory">Crea itinerario</string>
     <string name="createpoi_ot">Orari di apertura</string>
     <string name="createpoi_othint">12:00&#8211;18:00</string>
     <string name="menu_item_addevent_text">Aggiungi evento</string>
-    <string name="menu_item_myevents_text">I miei eventi</string>
+    <string name="menu_item_myevents_text">Partecipazioni</string>
     <string name="menu_item_layers_text">Categorie</string>
     <string name="maps_api_key">0fdlLrw2lMFFg-TnfYFuceTi0m60-Q1mBF6EMFA</string>
     <string name="menu_item_poicategory_text">Categorie dei luoghi</string>
     <string name="related_poi">Luogo dell\'evento</string>
     <string name="submenu_related_events">Eventi in programma</string>
-    <string name="submenu_tag">Aggiungi tag</string>
     <string name="getdir">Indicazioni stradali</string>
     <string name="onmap">Mostra sulla mappa</string>
     <string name="poi_select_address_content_description">Seleziona un indirizzo sulla mappa</string>
@@ -72,9 +82,7 @@
     <string name="rate">Esprimi giudizio</string>
     <string name="attend">Partecipa</string>
     <string name="save">Salva</string>
-    <string name="add_my_stories">Aggiungi a Le mie storie</string>
-    <string name="delete_my_stories">Rimuovi da Le mie storie</string>
-        
+    <string name="save_to_favorites">Aggiungi ai preferiti</string>
     <string name="attend_not">Non partecipare</string>
     <string name="follow">Segui</string>
     <string name="unfollow">Smetti di seguire</string>
@@ -87,16 +95,16 @@
     <string name="app_failure_security">Recupero delle informazioni di autenticazione non riuscito!</string>
     <string name="app_failure_setup">Inizializzazione dell\'applicazione non riuscita</string>
     <string name="app_failure_operation">OOPS! C\'è stato un errore. Controlla la connessione e riprova a breve.</string>
+    <string name="app_failure_localization">Localizzazione dell\'utente non riuscita</string>
     <string name="app_failure_cannot_delete">L\'oggetto non può essere cancellato.</string>
     <string name="app_failure_obj_not_found">Oggetto non trovato!</string>
     <string name="ratingtext_average">Giudizio medio: %s</string>
     <string name="ratingtext_user">Il tuo giudizio:</string>
     <string name="ratingtext_raters">Giudizi totali: %s</string>
     <string name="attendees_extended"> persone parteciperanno all\'evento.</string>
-    <string name="attendees_story_extended"> persone stanno seguendo questa storia.</string>
     <string name="rating_place_dialog_title">Valuta questo luogo:</string>
     <string name="rating_event_dialog_title">Valuta questo evento:</string>
-    <string name="rating_story_dialog_title">Valuta questa storia:</string>
+    <string name="rating_story_dialog_title">Valuta questo itinerario:</string>
     <string name="noevents">Non ci sono eventi in questa categoria! </string>
     <string name="backstring">Indietro</string>
     <string name="showdetails">Dettagli&#8230;</string>
@@ -106,23 +114,17 @@
     <string name="file_hint">Esplora&#8230;</string>
     <string name="apply_to_all_text">Applica a tutto</string>
     <string name="app_uid_label">SmartCampus</string>
-    
     <string name="tags_successfully_added">Tag salvati con successo.</string>
-    
     <string name="select_poi_title">Seleziona luogo dell\'evento</string>
-    
     <string name="content_empty">Nessun risultato.</string>
-    
     <string name="address_select_toast">Tieni premuto per scegliere un luogo</string>
-    
     <string name="rating_success">La tua valutazione è stata salvata</string>
-    <string name="attend_success">Parteciperai a questo evento!</string>
-    <string name="not_attend_success">Non parteciperai a questo evento!</string>
-
-    <string name="attend_story_success">La storia è stata aggiunta a Le mie storie!</string>
-    <string name="not_attend_story_success">Storia rimossa da Le mie storie!</string>
+    <string name="attend_success">Aggiunto alla tua lista di partecipazioni!</string>
+    <string name="not_attend_success">Rimosso dalla tua lista di partecipazioni!</string>
+    <string name="attend_story_success">Aggiunto ai preferiti!</string>
+    <string name="not_attend_story_success">Rimosso dai preferiti!</string>
     <string name="event_create_success">Evento creato!</string>
-    <string name="story_create_success">Storia creata!</string>
+    <string name="story_create_success">Itinerario creato!</string>
     <string name="poi_create_success">Luogo creato!</string>
     <string name="update_success">Le tue modifiche sono state salvate</string>
     <string name="add_step">Aggiungi tappa</string>
@@ -134,32 +136,27 @@
     <string name="prev_step">Precedente</string>
     <string name="poi_erased">Luogo eliminato dall\'utente</string>
     <string name="next_step">Successivo</string>
-
     <string name="empty_step_title">Il luogo non può essere vuoto</string>
     <string name="sure_delete_step">Si vuole davvero eliminare questa tappa?</string>
-
-    <string name="msg_field_required"> richiesto.</string>
-    
     <string name="sure_change">Sovrascrivere i dati precedenti?</string>
     <string name="add">Aggiungi</string>
-    <string name="event">evento</string>
-    <string name="story">storia</string>
-    <string name="place">luogo</string>
-    <string name="list_event_today">Oggi</string> 
-    <string name="list_event_tomorrow">Domani</string>    
-    <string name="menu_item_todayevent_text">Eventi di oggi</string> 
-	<string name="categories_event_today">Eventi di oggi</string>
-	<string name="categories_event_my">I miei eventi</string>
-	<string name="categories_story_my">Le mie storie</string>
     
+    <string name="add_story_in_cat">Aggiungi itinerario su %s</string>
+    <string name="add_poi_in_cat">Aggiungi luogo su %s</string>
+    <string name="add_event_in_cat">Aggiungi evento su %s</string>
+    
+    <string name="list_event_today">Oggi</string>
+    <string name="list_event_tomorrow">Domani</string>
+    <string name="menu_item_todayevent_text">Eventi di oggi</string>
+    <string name="categories_event_today">Eventi di oggi</string>
+    <string name="categories_event_my">Partecipazioni</string>
+    <string name="categories_story_my">Preferiti</string>
     <string name="tab_home">Home</string>
     <string name="tab_places">Luoghi</string>
     <string name="tab_events">Eventi</string>
-    <string name="tab_stories">Storie</string>
-    
+    <string name="tab_stories">Itinerari</string>
     <string name="menu_item__places_layers_text">Luoghi</string>
     <string name="menu_item__events_layers_text">Eventi</string>
-    
     <string name="categories_event_concert">Concerti</string>
     <string name="categories_event_happyhour">Happy hour</string>
     <string name="categories_event_movie">Film</string>
@@ -169,7 +166,6 @@
     <string name="categories_event_exhibition">Mostre</string>
     <string name="categories_event_family">Famiglia</string>
     <string name="categories_event_generic">Altri eventi</string>
-    
     <string name="categories_poi_museum">Musei</string>
     <string name="categories_poi_mobility">Mobilità</string>
     <string name="categories_poi_parking">Parcheggi</string>
@@ -183,75 +179,68 @@
     <string name="categories_poi_cinema">Cinema</string>
     <string name="categories_poi_family">Famiglia</string>
     <string name="categories_poi_generic">Altri luoghi</string>
-    
     <string name="categories_story_leisure">Intrattenimento</string>
     <string name="categories_story_offices_and_services">Enti e servizi</string>
     <string name="categories_story_university">Università</string>
     <string name="categories_story_culture">Cultura</string>
-    <string name="categories_story_generic">Altre storie</string>
-    
+    <string name="categories_story_generic">Altre itinerari</string>
     <string name="search_for">Cerca</string>
     <string name="search_in_category">nella categoria</string>
     <string name="search_today_events">Eventi di oggi</string>
-    
     <string name="toast_is_required">richiesto.</string>
     <string name="toast_incorrect">Dato non corretto:</string>
-
+    <string name="toast_is_required_p">%s è richiesto.</string>
+    <string name="toast_incorrect_p">%s non è corretto</string>
     <string name="eventlist_at_place">Eventi a</string>
-    
-    <string name="toast_my_events_clicked">Cliccato I miei eventi</string>
     <string name="toast_browsing_your_files">Controllo dei tuoi files&#8230;</string>
     <string name="toast_event_saved">Evento salvato!</string>
     <string name="toast_poi_shared">Luogo condiviso.</string>
     <string name="toast_follow_ok">OK! Ora stai seguendo \"%s\"</string>
     <string name="toast_unfollow_ok">OK! Ora non segui piú \"%s\"</string>
+    <string name="toast_poi_not_found">Luogo non trovato</string>
     <string name="notifications_event_new">Nuovo evento \"%1$s\" per %2$s</string>
-    <string name="notifications_story_new">Nuova storia \"%1$s\" su %2$s</string>
+    <string name="notifications_story_new">Nuovo itinerario \"%1$s\" su %2$s</string>
     <string name="notifications_event_updated">Evento \"%s\" aggiornato</string>
     <string name="notifications_location_updated">Luogo \"%s\" aggiornato</string>
-    <string name="notifications_story_updated">Storia \"%s\" aggiornata</string>
+    <string name="notifications_story_updated">Itinerario \"%s\" aggiornato</string>
     <string name="notifications_event_at_place_updated">Evento \"%1$s\" per %2$s aggiornato</string>
-    <string name="notifications_story_at_place_update">Storia \"%1$s\" su %2$s aggiornata</string>
-    
+    <string name="notifications_story_at_place_update">Itinerario \"%1$s\" su %2$s aggiornato</string>
     <string name="notifications_unread">Notifiche non lette</string>
     <string name="notifications_list_empty">Non hai ancora ricevuto notifiche\nriguardanti gli eventi e i luoghi\nche stai seguendo.</string>
     <string name="notifications_list_title">Notifiche</string>
-
     <string name="initial_data_load">Caricamenti iniziale... (questa volta può richiedere alcuni secondi)</string>
+	<string name="alert_message">Sei sicuro di procedere con l\'eliminazione?</string>
     
-
-	
-	<!-- 	String for the searching fragment -->
+    <!-- String for the searching fragment -->
     <string name="search_what">Cosa: </string>
-	<string name="search_when">Quando: </string>
-	<string name="search_where">Dove: </string>
-	<string name="search_anytime">Qualsiasi momento</string>
-	<string name="search_today">Oggi</string>
-	<string name="search_tomorrow">Domani</string>
-	<string name="search_thisweek">Questa settimana</string>
-	<string name="search_intwoweeks">Nelle prossime due settimane</string>
-	<string name="search_inonemonth">Il prossimo mese</string>
-	<string name="search_anywhere">Qualsiasi luogo</string>
-	<string name="search_within100m">Entro 100m</string>
-	<string name="search_within200m">Entro 200m</string>
-	<string name="search_within500m">Entro 500m</string>
-	<string name="search_wthin1km">Entro 1km</string>
-	<string name="search_within50km">Entro 50km</string>
-	<string name="dialog_connection_search">La modalità offline supporta solo la ricerca testuale. Per utilizzare le funzionalità avanzate connettiti ad una rete.</string>
-	
-	<string name="event_date_from">Data</string>
+    <string name="search_when">Quando: </string>
+    <string name="search_where">Dove: </string>
+    <string name="search_anytime">Qualsiasi momento</string>
+    <string name="search_today">Oggi</string>
+    <string name="search_tomorrow">Domani</string>
+    <string name="search_thisweek">Questa settimana</string>
+    <string name="search_intwoweeks">Nelle prossime due settimane</string>
+    <string name="search_inonemonth">Il prossimo mese</string>
+    <string name="search_anywhere">Qualsiasi luogo</string>
+    <string name="search_within100m">Entro 100m</string>
+    <string name="search_within200m">Entro 200m</string>
+    <string name="search_within500m">Entro 500m</string>
+    <string name="search_wthin1km">Entro 1km</string>
+    <string name="search_within50km">Entro 50km</string>
+    <string name="dialog_connection_search">La modalità offline supporta solo la ricerca testuale. Per utilizzare le funzionalità avanzate connettiti ad una rete.</string>
+    <string name="event_date_from">Data</string>
     <string name="separator"> - </string>
     <string name="event_date_to">Data fine</string>
     <string name="more_days">Più giorni</string>
     <string name="datetime_to_before_from">Data e/o orario di fine sono precedenti a quelle di inizio!</string>
     <string name="date_field_empty">Selezionare la data dell\'evento!</string>
     <string name="info_dialog_title_poi">Informazioni luogo</string>
-    <string name="info_dialog_title_event">Informazioni evento</string>   
-    <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.
+    <string name="info_dialog_title_event">Informazioni evento</string>
+    <string name="warning_for_direction">Attenzione! Le indicazioni stradali ti porteranno nella sede dell\'organizzatore e non nella sede dell\'evento.</string>
     <string name="choose_poi">Seleziona luogo</string>
-
     <string name="poi_step_not_exist">Luogo specificato non è trovato</string>
-    
-</string>
-    
+
+	
+    <string name="moderation_rejected">Le modifiche a \'%1$s\' fatte il %2$s sono state rimosse per seguenti motivi:\n%3$s</string>
+		
 </resources>

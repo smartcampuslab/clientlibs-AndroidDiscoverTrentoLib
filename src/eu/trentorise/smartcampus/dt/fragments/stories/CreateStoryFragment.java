@@ -15,6 +15,7 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.fragments.stories;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -43,21 +44,23 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
+import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.StepAdapter;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
-import eu.trentorise.smartcampus.dt.model.CommunityData;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.StepObject;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
-import eu.trentorise.smartcampus.dt.model.UserStoryObject;
+import eu.trentorise.smartcampus.dt.model.LocalStepObject;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
+import eu.trentorise.smartcampus.territoryservice.model.StepObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Fragment for the creation of the story: title, description, category, tags and the set of steps
@@ -84,9 +87,9 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment.onTagsSelected ");
 		}
 
-		storyObject.getCommunityData().setTags(Concept.convertSS(suggestions));
+		storyObject.getCommunityData().setTags(Utils.conceptConvertSS(suggestions));
 		if (getView() != null)
-			((EditText) getView().findViewById(R.id.story_tags)).setText(Concept.toSimpleString(storyObject
+			((EditText) getView().findViewById(R.id.story_tags)).setText(Utils.conceptToSimpleString(storyObject
 					.getCommunityData().getTags()));
 
 	}
@@ -126,7 +129,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 				&& getArguments().getSerializable(ARG_STORY) != null) {
 			storyObject = (StoryObject) getArguments().getSerializable(ARG_STORY);
 		} else {
-			storyObject = new UserStoryObject();
+			storyObject = new StoryObject();
 			if (getArguments() != null && getArguments().containsKey(SearchFragment.ARG_CATEGORY)) {
 				storyObject.setType(getArguments().getString(SearchFragment.ARG_CATEGORY));
 			}
@@ -152,7 +155,15 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		list.addHeaderView(headerView);
 		View footerView = View.inflate(context, R.layout.createstoryfooter, null);
 		list.addFooterView(footerView);
-		stepAdapter = new StepAdapter(context, R.layout.steps_row, storyObject.getSteps(), storyObject,
+		/*
+		 * make list of LocalStepObject	
+		 */
+		List<LocalStepObject> steps = new ArrayList<LocalStepObject>();
+		for (StepObject step:storyObject.getSteps())
+		{
+			steps.add(Utils.getLocalStepFromStep(step));
+		}
+		stepAdapter = new StepAdapter(context, R.layout.steps_row, steps, storyObject,
 				fragmentManager, getActivity());
 		list.setAdapter(stepAdapter);
 
@@ -182,14 +193,14 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 		// tags
 		EditText tagsEdit = (EditText) view.findViewById(R.id.story_tags);
-		tagsEdit.setText(Concept.toSimpleString(storyObject.getCommunityData().getTags()));
+		tagsEdit.setText(Utils.conceptToSimpleString(storyObject.getCommunityData().getTags()));
 		tagsEdit.setClickable(true);
 		tagsEdit.setFocusableInTouchMode(false);
 		tagsEdit.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				TaggingDialog taggingDialog = new TaggingDialog(getActivity(), CreateStoryFragment.this,
-						CreateStoryFragment.this, Concept.convertToSS(storyObject.getCommunityData().getTags()));
+						CreateStoryFragment.this, Utils.conceptConvertToSS(storyObject.getCommunityData().getTags()));
 				taggingDialog.show();
 			}
 		});
@@ -211,7 +222,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 				args.putParcelable(AddStepToStoryFragment.ARG_STEP_HANDLER, stepHandler);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 			}
@@ -251,6 +262,16 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		return view;
 	}
 
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+	}
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -341,55 +362,38 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		@Override
 		public void onClick(View v) {
 
-			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment SaveStory.onClick ");
-			}
+			// DESCRIPTION
 			CharSequence desc = ((EditText) view.findViewById(R.id.story_description)).getText();
 			if (desc != null) {
 				storyObject.setDescription(desc.toString());
 			}
+			// TITLE
 			CharSequence title = ((EditText) view.findViewById(R.id.story_title)).getText();
-			if (title != null) {
-				storyObject.setTitle(title.toString());
-			}
-
-			String catString = ((Spinner) view.findViewById(R.id.story_category)).getSelectedItem().toString();
-			String cat = getCategoryDescriptorByDescription(catString).category;
-
-			storyObject.setType(cat);
-			for (int i = 0; i < storyObject.getSteps().size(); i++) {
-				StepObject step = storyObject.getSteps().get(i);
-				if ((step != null) && (step.assignedPoi() != null)) {
-					storyObject.getSteps().get(i).setId((step.assignedPoi().getId()));
-
-				}
-			}
-			// check if some important field is missing and, if it is, show a
-			// message
-			Integer missing = validate(storyObject);
-			if (missing != null) {
-				Toast.makeText(getSherlockActivity(), getString(missing) + " " + getString(R.string.toast_is_required),
-						Toast.LENGTH_SHORT).show();
+			if (title != null && title.toString().trim().length() > 0) {
+				storyObject.setTitle(title.toString().trim());
+			} else {
+				ValidatorHelper.highlight(
+						getActivity(), 
+						view.findViewById(R.id.story_title), 
+						getString(R.string.toast_is_required_p, getString(R.string.create_title)));
 				return;
 			}
 
-			new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity()))
-					.execute(storyObject);
+			// TYPE
+			String catString = ((Spinner) view.findViewById(R.id.story_category)).getSelectedItem().toString();
+			String cat = getCategoryDescriptorByDescription(catString).category;
+			storyObject.setType(cat);
+			
+			for (int i = 0; i < storyObject.getSteps().size(); i++) {
+				LocalStepObject step = Utils.getLocalStepFromStep(storyObject.getSteps().get(i));
+				if ((step != null) && (step.assignedPoi() != null)) {
+					Utils.getLocalStepFromStep(storyObject.getSteps().get(i)).assignPoi(step.assignedPoi());
 
+				}
+			}
+			new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity())).execute(storyObject);
 		}
 
-	}
-
-	private Integer validate(StoryObject data) {
-		Integer result = null;
-
-		if (Log.isLoggable(TAG, Log.VERBOSE)) {
-			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment.validate");
-		}
-
-		if (data.getTitle() == null || data.getTitle().trim().length() == 0)
-			return R.string.create_title;
-		return result;
 	}
 
 	private CategoryDescriptor getCategoryDescriptorByDescription(String desc) {
@@ -410,11 +414,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 	private class AddStep implements StepHandler, Parcelable {
 
 		@Override
-		public void addStep(StepObject step) {
-
-			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment AddStep.addStep");
-			}
+		public void addStep(LocalStepObject step) {
 			// add the step, notify to the adapter and go back to this fragment
 			storyObject.getSteps().add(step);
 			stepAdapter.notifyDataSetChanged();
@@ -433,12 +433,7 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 		}
 
 		@Override
-		public void updateStep(StepObject step, Integer position) {
-
-			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-				Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.CreateStoryFragment AddStep.updateStep");
-			}
-
+		public void updateStep(LocalStepObject step, Integer position) {
 			// generate dialog box for confirming the update
 			storyObject.getSteps().set(position, step);
 			stepAdapter.notifyDataSetChanged();

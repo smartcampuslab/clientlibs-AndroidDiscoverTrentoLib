@@ -35,8 +35,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
+
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
+//import eu.trentorise.smartcampus.ac.UserRegistration;
+//import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
@@ -77,6 +79,9 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 	@Override
 	public void onStart() {
 		super.onStart();
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
+
+    	DiscoverTrentoActivity.drawerState = "on";
 
 		if (Log.isLoggable(TAG, Log.VERBOSE)) {
 			Log.v(TAG, "eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment.onStart ");
@@ -142,15 +147,16 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 		}
 
 		if (item.getItemId() == R.id.menu_item_addstory) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
+//			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+//				// show dialog box
+//				UserRegistration.upgradeuser(getSherlockActivity());
+//				return false;
+//			} else 
+			{
 				fragmentTransaction = fragmentManager.beginTransaction();
 				fragment = new CreateStoryFragment();
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				return true;
@@ -175,7 +181,7 @@ public class AllStoriesFragment extends NotificationsSherlockFragmentDT {
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			// fragmentTransaction.detach(this);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			return true;

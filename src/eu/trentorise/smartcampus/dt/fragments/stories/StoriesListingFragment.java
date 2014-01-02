@@ -49,36 +49,33 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
-import eu.trentorise.smartcampus.ac.UserRegistration;
-import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask.SCAsyncTaskProcessor;
-import eu.trentorise.smartcampus.android.common.follow.FollowEntityObject;
-import eu.trentorise.smartcampus.android.common.follow.FollowHelper;
-import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.listing.AbstractLstingFragment;
 import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
+import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
-import eu.trentorise.smartcampus.dt.custom.SearchHelper;
 import eu.trentorise.smartcampus.dt.custom.StoryAdapter;
 import eu.trentorise.smartcampus.dt.custom.StoryPlaceholder;
+import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.FollowAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
-import eu.trentorise.smartcampus.dt.model.Concept;
-import eu.trentorise.smartcampus.dt.model.DTConstants;
-import eu.trentorise.smartcampus.dt.model.StoryObject;
+import eu.trentorise.smartcampus.dt.model.StoryObjectForBean;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
+import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 /*
  * Fragment lists the stories of a category, my stories or the searched ones
@@ -147,7 +144,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
 		} catch (NameNotFoundException e) {
 			mFollowByIntent = false;
-			Log.e(StoriesListingFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
+			Log.e(StoriesListingFragment.class.getName(),
+					"you should set the follow-by-intent metadata in app manifest");
 		}
 
 	}
@@ -224,67 +222,19 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		submenu.clear();
 
 		if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)) {
-			// SearchHelper.createSearchMenu(submenu, getActivity(), new
-			// SearchHelper.OnSearchListener() {
-			// @Override
-			// public void onSearch(String query) {
-			// FragmentTransaction fragmentTransaction =
-			// getSherlockActivity().getSupportFragmentManager().beginTransaction();
-			// StoriesListingFragment fragment = new StoriesListingFragment();
-			// Bundle args = new Bundle();
-			// args.putString(SearchFragment.ARG_QUERY, query);
-			// String category = (getArguments() != null) ?
-			// getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
-			// args.putString(SearchFragment.ARG_CATEGORY_SEARCH, category);
-			// fragment.setArguments(args);
-			// fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			// fragmentTransaction.replace(android.R.id.content, fragment,
-			// "stories");
-			// fragmentTransaction.addToBackStack(fragment.getTag());
-			// fragmentTransaction.commit();
-			// }
-			// });
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.submenu_search, Menu.NONE, R.string.search_txt);
-		} else if (getArguments() == null || !getArguments().containsKey(SearchFragment.ARG_QUERY)
-				&& !getArguments().containsKey(SearchFragment.ARG_MY)
-				&& !getArguments().containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
-			SearchHelper.createSearchMenu(submenu, getActivity(), new SearchHelper.OnSearchListener() {
-				@Override
-				public void onSearch(String query) {
-					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
-							.beginTransaction();
-					StoriesListingFragment fragment = new StoriesListingFragment();
-					Bundle args = new Bundle();
-					args.putString(SearchFragment.ARG_QUERY, query);
-					args.putBoolean(SearchFragment.ARG_MY, true);
-					fragment.setArguments(args);
-					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
-					fragmentTransaction.addToBackStack(fragment.getTag());
-					fragmentTransaction.commit();
-				}
-			});
 		}
 
 		if (category == null)
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;
 		if (category != null) {
-			String addString = getString(R.string.add)
-					+ " "
-					+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(CategoryHelper.CATEGORY_TYPE_STORIES,
-							category).description) + " " + getString(R.string.story);
-			if (Locale.getDefault().equals(Locale.ITALY))
-				addString = getString(R.string.add)
-						+ " "
-						+ getString(R.string.story)
-						+ " su "
-						+ getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
-								CategoryHelper.CATEGORY_TYPE_STORIES, category).description);
+			String addString = getString(R.string.add_story_in_cat, getString(CategoryHelper.getCategoryDescriptorByCategoryFiltered(
+					CategoryHelper.CATEGORY_TYPE_STORIES, category).description));
 
 			submenu.add(Menu.CATEGORY_SYSTEM, R.id.menu_item_addstory, Menu.NONE, addString);
 		}
 
-		NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
+		//NotificationsSherlockFragmentDT.onPrepareOptionsMenuNotifications(menu);
 
 		super.onPrepareOptionsMenu(menu);
 	}
@@ -295,19 +245,22 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
 
 		if (item.getItemId() == R.id.menu_item_addstory) {
-			if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-				// show dialog box
-				UserRegistration.upgradeuser(getSherlockActivity());
-				return false;
-			} else {
-				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			// if (new
+			// AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
+			// // show dialog box
+			// UserRegistration.upgradeuser(getSherlockActivity());
+			// return false;
+			// } else
+			{
+				FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+						.beginTransaction();
 				Fragment fragment = new CreateStoryFragment();
 				Bundle args = new Bundle();
 				args.putString(SearchFragment.ARG_CATEGORY, category);
 				fragment.setArguments(args);
 				fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 				// fragmentTransaction.detach(this);
-				fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+				fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 				fragmentTransaction.addToBackStack(fragment.getTag());
 				fragmentTransaction.commit();
 				reload = true;
@@ -327,7 +280,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				args.putBoolean(SearchFragment.ARG_MY, getArguments().getBoolean(SearchFragment.ARG_MY));
 			fragment.setArguments(args);
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 			/* add category to bundle */
@@ -347,10 +300,17 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			setAdapter(storiesAdapter);
 			reload = false;
 		}
+		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
+    	DiscoverTrentoActivity.drawerState = "off";
+        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        
 		Bundle bundle = this.getArguments();
 		String category = (bundle != null) ? bundle.getString(SearchFragment.ARG_CATEGORY) : null;
 		CategoryDescriptor catDescriptor = CategoryHelper.getCategoryDescriptorByCategoryFiltered("stories", category);
-		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description) : null;
+		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description)
+				: null;
 
 		// list = (ListView)
 		// getSherlockActivity().findViewById(R.id.stories_list);
@@ -444,12 +404,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			b.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-						// show dialog box
-						UserRegistration.upgradeuser(getSherlockActivity());
-					} else {
-						new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(getActivity()))
-								.execute(story);
+					// if (new
+					// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
+					// {
+					// // show dialog box
+					// UserRegistration.upgradeuser(getSherlockActivity());
+					// } else
+					{
+						new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(
+								getActivity())).execute(story);
 					}
 				}
 			});
@@ -462,10 +425,13 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
+				// if (new
+				// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
+				// {
+				// // show dialog box
+				// UserRegistration.upgradeuser(getSherlockActivity());
+				// } else
+				{
 					// load pois of the story
 					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
 							.beginTransaction();
@@ -474,7 +440,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 					args.putSerializable(CreateStoryFragment.ARG_STORY, story);
 					fragment.setArguments(args);
 					fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+					fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 					fragmentTransaction.addToBackStack(fragment.getTag());
 					fragmentTransaction.commit();
 				}
@@ -486,18 +452,23 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-				if (new AMSCAccessProvider().isUserAnonymous(getSherlockActivity())) {
-					// show dialog box
-					UserRegistration.upgradeuser(getSherlockActivity());
-				} else {
-					TaggingDialog taggingDialog = new TaggingDialog(getActivity(), new TaggingDialog.OnTagsSelectedListener() {
+				// if (new
+				// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
+				// {
+				// // show dialog box
+				// UserRegistration.upgradeuser(getSherlockActivity());
+				// } else
+				{
+					TaggingDialog taggingDialog = new TaggingDialog(getActivity(),
+							new TaggingDialog.OnTagsSelectedListener() {
 
-						@SuppressWarnings("unchecked")
-						@Override
-						public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
-							new TaggingAsyncTask(story).execute(Concept.convertSS(suggestions));
-						}
-					}, StoriesListingFragment.this, Concept.convertToSS(story.getCommunityData().getTags()));
+								@SuppressWarnings("unchecked")
+								@Override
+								public void onTagsSelected(Collection<SemanticSuggestion> suggestions) {
+									new TaggingAsyncTask(story).execute(Utils.conceptConvertSS(suggestions));
+								}
+							}, StoriesListingFragment.this, Utils
+									.conceptConvertToSS(story.getCommunityData().getTags()));
 					taggingDialog.show();
 				}
 
@@ -509,16 +480,17 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			@Override
 			public void onClick(View v) {
 
-				FollowEntityObject obj = new FollowEntityObject(story.getEntityId(), story.getTitle(),
-						DTConstants.ENTITY_TYPE_STORY);
-				if (mFollowByIntent) {
-					FollowHelper.follow(getSherlockActivity(), obj);
-				} else {
-					SCAsyncTask<Object, Void, Topic> followTask = new SCAsyncTask<Object, Void, Topic>(getSherlockActivity(),
-							new FollowAsyncTaskProcessor(getSherlockActivity(), null));
-					followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
-							DTHelper.getAuthToken(), obj);
-				}
+				// FollowEntityObject obj = new
+				// FollowEntityObject(story.getEntityId(), story.getTitle(),
+				// DTConstants.ENTITY_TYPE_STORY);
+				// if (mFollowByIntent) {
+				// FollowHelper.follow(getSherlockActivity(), obj);
+				// } else {
+				SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
+						getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), null));
+				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
+						DTHelper.getAuthToken(), story);
+				// }
 			}
 		});
 	}
@@ -537,7 +509,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
 			// no items needed to be flipped, fill and open details page
-			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
+					.beginTransaction();
 			StoryDetailsFragment fragment = new StoryDetailsFragment();
 
 			Bundle args = new Bundle();
@@ -545,7 +518,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			fragment.setArguments(args);
 
 			fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			fragmentTransaction.replace(android.R.id.content, fragment, "stories");
+			fragmentTransaction.replace(R.id.fragment_container, fragment, "stories");
 			fragmentTransaction.addToBackStack(fragment.getTag());
 			fragmentTransaction.commit();
 		}
@@ -556,67 +529,56 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	 */
 	private List<StoryObject> getStories(AbstractLstingFragment.ListingRequest... params) {
 		try {
-			Collection<StoryObject> result = null;
+			Collection<StoryObjectForBean> result = null;
+			List<StoryObject> returnArray = new ArrayList<StoryObject>();
+
 			Bundle bundle = getArguments();
 			boolean my = false;
 			if (bundle.getBoolean(SearchFragment.ARG_MY))
 				my = true;
 			String categories = bundle.getString(SearchFragment.ARG_CATEGORY);
-
-			// if (bundle == null) {
-			// return Collections.emptyList();
-			// } else if (bundle.containsKey(SearchFragment.ARG_CATEGORY)) {
-			// result = DTHelper.getStoryByCategory(params[0].position,
-			// params[0].size, bundle.getString(SearchFragment.ARG_CATEGORY));
-			// } else if (bundle.containsKey(SearchFragment.ARG_MY)) {
-			// result = DTHelper.getMyStories(params[0].position,
-			// params[0].size);
-			// } else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
-			// if (bundle.containsKey(SearchFragment.ARG_CATEGORY_SEARCH)) {
-			// result = DTHelper.searchStoriesByCategory(params[0].position,
-			// params[0].size, bundle.getString(SearchFragment.ARG_QUERY),
-			// bundle.getString(SearchFragment.ARG_CATEGORY_SEARCH));
-			// } else if (bundle.containsKey(SearchFragment.ARG_MY)) {
-			// result = DTHelper.searchMyStories(params[0].position,
-			// params[0].size, bundle.getString(SearchFragment.ARG_QUERY));
-			// } else
-			// result = DTHelper.searchStories(params[0].position,
-			// params[0].size, bundle.getString(SearchFragment.ARG_QUERY));
 			SortedMap<String, Integer> sort = new TreeMap<String, Integer>();
 			sort.put("title", 1);
-			if (bundle.containsKey(SearchFragment.ARG_CATEGORY) && (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
+			if (bundle.containsKey(SearchFragment.ARG_CATEGORY)
+					&& (bundle.getString(SearchFragment.ARG_CATEGORY) != null)) {
 
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class, sort,
-						categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,
+						StoryObjectForBean.class, sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_MY) && (bundle.getBoolean(SearchFragment.ARG_MY))) {
 
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class, sort,
-						categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,
+						StoryObjectForBean.class, sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_QUERY)) {
 
 				result = DTHelper.searchInGeneral(params[0].position, params[0].size,
 						bundle.getString(SearchFragment.ARG_QUERY),
 						(WhereForSearch) bundle.getParcelable(SearchFragment.ARG_WHERE_SEARCH),
-						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my, StoryObject.class, sort,
-						categories);
+						(WhenForSearch) bundle.getParcelable(SearchFragment.ARG_WHEN_SEARCH), my,
+						StoryObjectForBean.class, sort, categories);
 
 			} else if (bundle.containsKey(SearchFragment.ARG_LIST)) {
-				result = (List<StoryObject>) bundle.get(SearchFragment.ARG_LIST);
+				List<StoryObjectForBean> results = (List<StoryObjectForBean>) bundle.get(SearchFragment.ARG_LIST);
+				for (StoryObjectForBean storyBean : results) {
+					returnArray.add(storyBean.getObjectForBean());
+				}
+				return returnArray;
 			} else {
 				return Collections.emptyList();
 			}
 
-			List<StoryObject> sorted = new ArrayList<StoryObject>(result);
+			for (StoryObjectForBean storyBean : result) {
+				returnArray.add(storyBean.getObjectForBean());
+			}
+			return returnArray;
 
-			return sorted;
 		} catch (Exception e) {
 			Log.e(StoriesListingFragment.class.getName(), e.getMessage());
 			e.printStackTrace();
@@ -627,15 +589,16 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	/*
 	 * Asynchtask that get all the stories
 	 */
-	private class StoryLoader extends AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<StoryObject>> {
+	private class StoryLoader extends
+			AbstractAsyncTaskProcessor<AbstractLstingFragment.ListingRequest, List<StoryObject>> {
 
 		public StoryLoader(Activity activity) {
 			super(activity);
 		}
 
 		@Override
-		public List<StoryObject> performAction(AbstractLstingFragment.ListingRequest... params) throws SecurityException,
-				Exception {
+		public List<StoryObject> performAction(AbstractLstingFragment.ListingRequest... params)
+				throws SecurityException, Exception {
 			return getStories(params);
 		}
 
@@ -712,15 +675,15 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	}
 
 	private void updateList(boolean empty) {
-	if (getView()!=null){
+		if (getView() != null) {
 
-		eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
-				R.id.storylistcontainer));
-		if (empty) {
-			eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+			eu.trentorise.smartcampus.dt.custom.ViewHelper.removeEmptyListView((LinearLayout) getView().findViewById(
 					R.id.storylistcontainer));
+			if (empty) {
+				eu.trentorise.smartcampus.dt.custom.ViewHelper.addEmptyListView((LinearLayout) getView().findViewById(
+						R.id.storylistcontainer));
+			}
+			hideListItemsMenu(null, false);
 		}
-		hideListItemsMenu(null, false);
 	}
-}
 }
