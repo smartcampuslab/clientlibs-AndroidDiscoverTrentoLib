@@ -28,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:lines="2"
-        android:text="aaaa"
         android:gravity="left|center_vertical"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
