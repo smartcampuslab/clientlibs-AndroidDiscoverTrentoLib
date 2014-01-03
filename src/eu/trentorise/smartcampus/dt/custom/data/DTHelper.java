@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 import android.accounts.Account;
@@ -1605,6 +1606,39 @@ public class DTHelper {
 		return poi.getTitle()
 				+ (poi.getPoi().getStreet() == null || poi.getPoi().getStreet().length() == 0 ? "" : (", " + poi
 						.getPoi().getStreet()));
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public static Set<String> findDeleted(Collection<BaseDTObject> coll) {
+		try {
+			Set<String> result = new HashSet<String>();
+			BaseDTObject obj = coll.iterator().next();
+			String tableName = null;
+			if (obj instanceof EventObject) tableName = getInstance().config.getTableName(EventObjectForBean.class);
+			if (obj instanceof StoryObject) tableName = getInstance().config.getTableName(StoryObjectForBean.class);
+			if (obj instanceof POIObject) tableName = getInstance().config.getTableName(PoiObjectForBean.class);
+			if (tableName == null) return Collections.emptySet();
+			String where = "";
+			for (BaseDTObject o : coll) {
+				if (where.length() > 0) where += " OR ";
+				where += "(id='"+o.getId()+"')";
+				result.add(o.getId());
+			}
+			Cursor c = getInstance().storage.rawQuery("SELECT id FROM "+tableName+" WHERE "+where, null);
+			c.moveToFirst();
+			while (c.getPosition() < c.getCount()) {
+				String v = c.getString(0);
+				result.remove(v);
+				c.moveToNext();
+			}
+			
+			return result;
+		} catch (Exception e) {
+			return Collections.emptySet();
+		}
 	}
 
 }

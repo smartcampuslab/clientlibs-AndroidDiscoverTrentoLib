@@ -40,6 +40,7 @@ import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
 import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.Utils;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.POISelectActivity;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
@@ -206,15 +207,14 @@ public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT impl
         getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
         getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        super.onStart();
 	}
 	@Override
 	public void onPause() {
 		super.onPause();
 		// hide the keyboard
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		TextView noteField = (TextView) view.findViewById(R.id.step_tags);
-
-		imm.hideSoftInputFromWindow(noteField.getWindowToken(), 0);
+		ViewHelper.hideKeyboard(getSherlockActivity(), noteField);
 
 	}
 

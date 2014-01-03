@@ -31,12 +31,14 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
 
+
 import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 //import eu.trentorise.smartcampus.ac.UserRegistration;
 //import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.PoisCategoriesAdapter;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
@@ -67,8 +69,7 @@ public class AllPoisFragment extends NotificationsSherlockFragmentDT {
 		gridview.setAdapter(new PoisCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
 				fragmentManager));
 		// hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
+		ViewHelper.hideKeyboard(getSherlockActivity(), gridview);
 	}
 
 	@Override

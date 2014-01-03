@@ -39,6 +39,7 @@ import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.EventsCategoriesAdapter;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
@@ -76,8 +77,7 @@ public class AllEventsFragment extends NotificationsSherlockFragmentDT {
 		gridview.setAdapter(new EventsCategoriesAdapter(getSherlockActivity().getApplicationContext(), R.layout.grid_item,
 				list, fragmentManager));
 		// hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(gridview.getWindowToken(), 0);
+		ViewHelper.hideKeyboard(getSherlockActivity(), gridview);
 	}
 
 	@Override

@@ -15,6 +15,9 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.dt.custom;
 
+import android.content.Context;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.dt.R;
@@ -34,4 +37,8 @@ public class ViewHelper {
 		parent.removeView(parent.findViewById(R.id.content_empty));
 	}
 
+	public static void hideKeyboard(Context ctx, View view) {
+		InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+	}
 }

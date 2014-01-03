@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -50,6 +53,7 @@ import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
@@ -88,14 +92,16 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	private boolean loaded = false;
 	private boolean fitMap = true;
 	
+	private Collection<BaseDTObject> dirtyObjects = null;
+	
+	
 	@Override
 	public void onStart() {
 		super.onStart();
 		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(true);
 		DiscoverTrentoActivity.drawerState = "on";
 		// hide keyboard if it is still open
-		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(getActivity().findViewById(R.id.fragment_container).getWindowToken(), 0);
+		ViewHelper.hideKeyboard(getActivity(), getActivity().findViewById(R.id.fragment_container));
 
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 
@@ -193,6 +199,19 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			getSupportMap().setMyLocationEnabled(true);
 			getSupportMap().setOnCameraChangeListener(this);
 			getSupportMap().setOnMarkerClickListener(this);
+			if (dirtyObjects != null) {
+				boolean found = false;
+				Set<String> deleted = DTHelper.findDeleted(dirtyObjects);
+				for (Iterator<? extends BaseDTObject> iterator = objects.iterator(); iterator.hasNext();) {
+					BaseDTObject o = iterator.next();
+					if (deleted.contains(o.getId())) {
+						found = true;
+						iterator.remove();
+					}
+				}
+				if (found) render(objects);
+				dirtyObjects = null;
+			} 
 			// if (objects != null) {
 			// render(objects);
 			// }
@@ -267,6 +286,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 	}
 
 	private void onBaseDTObjectTap(BaseDTObject o) {
+		dirtyObjects = new ArrayList<BaseDTObject>(1);
+		dirtyObjects.add(o);
+		
 		Bundle args = new Bundle();
 		args.putSerializable(InfoDialog.PARAM, o);
 		InfoDialog dtoTap=new InfoDialog();
@@ -281,6 +303,9 @@ public class HomeFragment extends NotificationsSherlockMapFragmentDT implements 
 			onBaseDTObjectTap(list.get(0));
 			return;
 		}
+		
+		dirtyObjects = new HashSet<BaseDTObject>(list);
+		
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		SherlockFragment fragment = null;
 		Bundle args = new Bundle();

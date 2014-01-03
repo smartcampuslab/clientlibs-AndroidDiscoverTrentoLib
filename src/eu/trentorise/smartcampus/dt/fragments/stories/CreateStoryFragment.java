@@ -49,6 +49,7 @@ import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.StepAdapter;
 import eu.trentorise.smartcampus.dt.custom.Utils;
@@ -391,6 +392,9 @@ public class CreateStoryFragment extends NotificationsSherlockFragmentDT impleme
 
 				}
 			}
+
+			ViewHelper.hideKeyboard(getSherlockActivity(), view);
+			
 			new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new CreateStoryProcessor(getActivity())).execute(storyObject);
 		}
 

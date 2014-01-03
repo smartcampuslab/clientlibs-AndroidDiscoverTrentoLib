@@ -27,9 +27,6 @@ import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -100,14 +97,10 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 	public static final String ARG_INDEX = "index_adapter";
 
 	private String category;
-	private EventAdapter eventsAdapter;
-	private boolean mFollowByIntent;
-//	private long biggerFromTime;
 	private String idEvent = "";
 	private Integer indexAdapter;
 	private Boolean reload = false;
 	private Integer postitionSelected = -1;
-	private ViewSwitcher previousViewSwitcher;
 	private List<LocalEventObject> listEvents = new ArrayList<LocalEventObject>();
 	
 	@Override
@@ -121,11 +114,12 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 
 		}
 		/* create the adapter is it is the first time you load */
-		if (eventsAdapter == null) {
-			eventsAdapter = new EventAdapter(context, R.layout.events_row);
+		if (getEventAdapter() == null) {
+			EventAdapter eventsAdapter = new EventAdapter(context, R.layout.events_row);
+			setAdapter(eventsAdapter);
+		} else {
+			setAdapter(getEventAdapter());
 		}
-		setAdapter(eventsAdapter);
-
 	}
 
 	@Override
@@ -145,31 +139,28 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			}
 			if (event == null) {
 				// cancellazione
-				removeEvent(eventsAdapter, indexAdapter);
-
+				removeEvent(indexAdapter);
 			} else {
 				// modifica se numero della versione e' diverso
-				// if (event.getUpdateTime() !=
-				// eventsAdapter.getItem(indexAdapter)
-				// .getUpdateTime()) {
-				if (event.getUpdateTime() == 0) {
+				 if (event.getUpdateTime() != getEventAdapter().getItem(indexAdapter).getUpdateTime()) {
 
 					event.assignPoi(poi);
-					restoreElement(eventsAdapter, indexAdapter, event);
+					restoreElement(event);
 					// removeEvent(eventsAdapter,indexAdapter);
 					// insertEvent(event);
 				}
 			}
 			// notify
-			eventsAdapter.notifyDataSetChanged();
+			getEventAdapter().notifyDataSetChanged();
+			updateList(getAdapter().getCount() == 0);
 			idEvent = "";
 			indexAdapter = 0;
 		}
 
 	}
 
-	private void restoreElement(EventAdapter eventsAdapter2, Integer indexAdapter2, LocalEventObject event) {
-		removeEvent(eventsAdapter, indexAdapter);
+	private void restoreElement(LocalEventObject event) {
+		removeEvent(indexAdapter);
 		insertEvent(event, indexAdapter);
 
 	}
@@ -179,6 +170,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 	 * multiday events
 	 */
 	private void insertEvent(LocalEventObject event, Integer indexAdapter2) {
+		EventAdapter eventsAdapter = getEventAdapter();
 
 		// add in the right place
 		List<LocalEventObject> returnList = new ArrayList<LocalEventObject>();
@@ -205,15 +197,23 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 	}
 
 	/* clean the adapter from the items modified or erased */
-	private void removeEvent(EventAdapter eventsAdapter, Integer indexAdapter) {
+	private void removeEvent(Integer indexAdapter) {
+		EventAdapter eventsAdapter = getEventAdapter();
 		LocalEventObject objectToRemove = eventsAdapter.getItem(indexAdapter);
 		int i = 0;
 		while (i < eventsAdapter.getCount()) {
-			if (eventsAdapter.getItem(i).getEntityId() == objectToRemove.getEntityId())
+			if (eventsAdapter.getItem(i).getId() == objectToRemove.getId())
 				eventsAdapter.remove(eventsAdapter.getItem(i));
 			else
 				i++;
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	private EventAdapter getEventAdapter() {
+		return (EventAdapter)getAdapter();
 	}
 
 	@Override
@@ -230,25 +230,11 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 		super.onCreate(savedInstanceState);
 		this.context = this.getSherlockActivity();
 		setHasOptionsMenu(true);
-		setFollowByIntent();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.eventslist, container, false);
-	}
-
-	private void setFollowByIntent() {
-		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
-					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
-			Bundle aBundle = ai.metaData;
-			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
-		} catch (NameNotFoundException e) {
-			mFollowByIntent = false;
-			Log.e(EventsListingFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
-		}
-
 	}
 
 	@Override
@@ -300,8 +286,8 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			} else {
 				ArrayList<BaseDTObject> target = new ArrayList<BaseDTObject>();
 				if (list != null) {
-					for (int i = 0; i < list.getAdapter().getCount(); i++) {
-						BaseDTObject o = (BaseDTObject) list.getAdapter().getItem(i);
+					for (int i = 0; i < getEventAdapter().getCount(); i++) {
+						BaseDTObject o = (BaseDTObject) getEventAdapter().getItem(i);
 						if (o.getLocation() != null && o.getLocation()[0] != 0 && o.getLocation()[1] != 0) {
 							target.add(o);
 						}
@@ -363,8 +349,10 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 		// new EventLoader(getActivity())).execute(bundle);
 
 		if (reload) {
-			eventsAdapter = new EventAdapter(context, R.layout.events_row);
-			setAdapter(eventsAdapter);
+			getEventAdapter().clear();
+			listEvents.clear();
+//			EventAdapter eventsAdapter = new EventAdapter(context, R.layout.events_row);
+//			setAdapter(eventsAdapter);
 			reload = false;
 		}
 
@@ -486,10 +474,8 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			if (view instanceof ViewSwitcher && ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
-				eventsAdapter.setElementSelected(-1);
+				getEventAdapter().setElementSelected(-1);
 				postitionSelected = -1;
-				previousViewSwitcher = null;
-
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {
@@ -761,7 +747,7 @@ public class EventsListingFragment extends AbstractLstingFragment<LocalEventObje
 			// } else
 			// list.setAdapter(new EventAdapter(context, R.layout.events_row,
 			// result));
-			eventsAdapter.clear();
+			getEventAdapter().clear();
 			updateList(result == null || result.isEmpty());
 		}
 	}

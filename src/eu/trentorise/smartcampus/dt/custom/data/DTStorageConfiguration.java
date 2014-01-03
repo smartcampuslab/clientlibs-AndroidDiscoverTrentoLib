@@ -30,7 +30,7 @@ public class DTStorageConfiguration implements StorageConfiguration {
 	private static final long serialVersionUID = 906503482979452854L;
 
 	@SuppressWarnings("unchecked")
-	private static Class<? extends BasicObject>[] classes = (Class<? extends BasicObject>[])new Class<?>[]{POIObject.class, LocalEventObject.class,StoryObject.class};
+	private static Class<? extends BasicObject>[] classes = (Class<? extends BasicObject>[])new Class<?>[]{PoiObjectForBean.class, EventObjectForBean.class,StoryObjectForBean.class};
 	private static BeanStorageHelper<PoiObjectForBean> poiHelper = new POIStorageHelper();
 	private static BeanStorageHelper<EventObjectForBean> eventHelper = new EventStorageHelper();
 	private static BeanStorageHelper<StoryObjectForBean> storyHelper = new StoryStorageHelper();
@@ -42,13 +42,13 @@ public class DTStorageConfiguration implements StorageConfiguration {
 
 	@Override
 	public String getTableName(Class<? extends BasicObject> cls) throws StorageConfigurationException {
-		if (cls.equals(PoiObjectForBean.class)||cls.equals(POIObject.class)) {
+		if (cls.equals(PoiObjectForBean.class)) {
 			return "pois";
 		}
-		if (cls.equals(EventObjectForBean.class)||cls.equals(LocalEventObject.class)) {
+		if (cls.equals(EventObjectForBean.class)) {
 			return "events";
 		}
-		if (cls.equals(StoryObjectForBean.class)||cls.equals(StoryObject.class)) {
+		if (cls.equals(StoryObjectForBean.class)) {
 			return "stories";
 		}
 		return null;
@@ -57,13 +57,13 @@ public class DTStorageConfiguration implements StorageConfiguration {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends BasicObject> BeanStorageHelper<T> getStorageHelper(Class<T> cls) throws StorageConfigurationException {
-		if (cls.equals(POIObject.class)||(cls.equals(PoiObjectForBean.class))) {
+		if (cls.equals(PoiObjectForBean.class)) {
 			return (BeanStorageHelper<T>) poiHelper;
 		}
-		if (cls.equals(LocalEventObject.class)||(cls.equals(EventObjectForBean.class))) {
+		if (cls.equals(EventObjectForBean.class)) {
 			return (BeanStorageHelper<T>) eventHelper;
 		}
-		if (cls.equals(StoryObject.class)||(cls.equals(StoryObjectForBean.class))) {
+		if (cls.equals(StoryObjectForBean.class)) {
 			return (BeanStorageHelper<T>) storyHelper;
 		}
 		return null;

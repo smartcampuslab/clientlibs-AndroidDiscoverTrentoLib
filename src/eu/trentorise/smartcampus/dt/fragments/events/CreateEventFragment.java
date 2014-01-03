@@ -54,6 +54,7 @@ import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.DatePickerDialogFragment;
 import eu.trentorise.smartcampus.dt.custom.Utils;
@@ -530,6 +531,8 @@ public class CreateEventFragment extends NotificationsSherlockFragmentDT impleme
 				return;
 			}
 
+			ViewHelper.hideKeyboard(getSherlockActivity(), view);
+			
 			new SCAsyncTask<LocalEventObject, Void, Boolean>(getActivity(), new CreateEventProcessor(getActivity()))
 					.execute(eventObject);
 		}

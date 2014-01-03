@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import eu.trentorise.smartcampus.android.common.Utils;
 import eu.trentorise.smartcampus.social.model.Concept;
+import eu.trentorise.smartcampus.storage.ILocalStorage;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
 
@@ -30,7 +31,10 @@ public class BaseDTStorageHelper {
 	public static void setCommonFields(Cursor cursor, BaseDTObject o) {
 		if (cursor != null ) {
 
-			o.setId(cursor.getString(cursor.getColumnIndex("id")));
+			o.setId(cursor.getString(cursor.getColumnIndex(ILocalStorage.FIELD_ID)));
+			o.setVersion(cursor.getLong(cursor.getColumnIndex(ILocalStorage.FIELD_VERSION)));
+			o.setUpdateTime(cursor.getLong(cursor.getColumnIndex(ILocalStorage.FIELD_UPDATE_TIME)));
+			
 			o.setTitle(cursor.getString(cursor.getColumnIndex("title")));
 			o.setDescription(cursor.getString(cursor.getColumnIndex("description")));
 			o.setDomainType(cursor.getString(cursor.getColumnIndex("domainType")));

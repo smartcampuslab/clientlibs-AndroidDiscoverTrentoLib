@@ -53,6 +53,7 @@ import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
 import eu.trentorise.smartcampus.dt.custom.Utils;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
@@ -397,6 +398,8 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 						getString(R.string.toast_is_required_p, getString(R.string.create_place)));
 				return;
 			}
+
+			ViewHelper.hideKeyboard(getSherlockActivity(), view);
 
 			new SCAsyncTask<POIObject, Void, POIObject>(getActivity(),
 					new CreatePoiProcessor(getActivity())).execute(poiObject);

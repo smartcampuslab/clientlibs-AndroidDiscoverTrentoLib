@@ -25,7 +25,6 @@ import java.util.Map;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -45,7 +44,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -79,6 +77,7 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.Utils;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
@@ -406,9 +405,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			// reinit the story every time this fragment is loaded
 			changeStep(-1);
 			// hide the keyboard
-			InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
-					Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(nextButton.getWindowToken(), 0);
+			ViewHelper.hideKeyboard(getSherlockActivity(), nextButton);
 			// changeTheMapConfiguration();
 			// mItemizedoverlay.fithMaptOnTheStory();
 

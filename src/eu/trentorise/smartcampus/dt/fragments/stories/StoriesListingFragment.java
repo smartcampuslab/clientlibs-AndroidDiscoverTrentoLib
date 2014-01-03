@@ -19,15 +19,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -87,15 +83,12 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	private ListView list;
 	private Context context;
 	private View clickedElement;
-	private boolean mFollowByIntent;
-	private StoryAdapter storiesAdapter;
 	public static final String ARG_ID = "id_story";
 	public static final String ARG_INDEX = "index_adapter";
 	private String idStory = "";
 	private Integer indexAdapter;
 	private Boolean reload = false;
 	private Integer postitionSelected = 0;
-	private ViewSwitcher previousViewSwitcher;
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -111,7 +104,6 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		super.onCreate(savedInstanceState);
 		this.context = this.getSherlockActivity();
 		setHasOptionsMenu(true);
-		setFollowByIntent();
 	}
 
 	@Override
@@ -124,30 +116,24 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			indexAdapter = arg0.getInt(ARG_INDEX);
 
 		}
-		if (storiesAdapter == null) {
-			storiesAdapter = new StoryAdapter(context, R.layout.stories_row);
+		if (getStoriesAdapter() == null) {
+			setAdapter(new StoryAdapter(context, R.layout.stories_row));
+		} else {
+			setAdapter(getStoriesAdapter());
 		}
-		setAdapter(storiesAdapter);
 
+	}
+
+	/**
+	 * @return
+	 */
+	private StoryAdapter getStoriesAdapter() {
+		return (StoryAdapter) getAdapter();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.stories_list, container, false);
-	}
-
-	private void setFollowByIntent() {
-		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
-					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
-			Bundle aBundle = ai.metaData;
-			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
-		} catch (NameNotFoundException e) {
-			mFollowByIntent = false;
-			Log.e(StoriesListingFragment.class.getName(),
-					"you should set the follow-by-intent metadata in app manifest");
-		}
-
 	}
 
 	@Override
@@ -159,19 +145,18 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			if (story == null) {
 				// cancellazione
-				removeStory(storiesAdapter, indexAdapter);
+				removeStory(indexAdapter);
 
 			} else {
 				// modifica se numero della versione e' diverso
-				// if (poi.getUpdateTime() != poiAdapter.getItem(indexAdapter)
-				// .getUpdateTime()) {
-				if (story.getUpdateTime() == 0) {
-					removeStory(storiesAdapter, indexAdapter);
+				 if (story.getUpdateTime() != getStoriesAdapter().getItem(indexAdapter).getUpdateTime()) {
+					removeStory(indexAdapter);
 					insertStory(story);
 				}
 			}
 			// notify
-			storiesAdapter.notifyDataSetChanged();
+			getStoriesAdapter().notifyDataSetChanged();
+			updateList(getAdapter().getCount() == 0);
 			idStory = "";
 			indexAdapter = 0;
 		}
@@ -181,6 +166,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	 * insert in the same adapter the new item
 	 */
 	private void insertStory(StoryObject story) {
+		StoryAdapter storiesAdapter = getStoriesAdapter();
 		// add in the right place
 		int i = 0;
 		boolean insert = false;
@@ -202,7 +188,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	}
 
 	/* clean the adapter from the items modified or erased */
-	private void removeStory(StoryAdapter storiesAdapter, Integer indexAdapter) {
+	private void removeStory(Integer indexAdapter) {
+		StoryAdapter storiesAdapter = getStoriesAdapter();
 		StoryObject objectToRemove = storiesAdapter.getItem(indexAdapter);
 		int i = 0;
 		while (i < storiesAdapter.getCount()) {
@@ -296,8 +283,7 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 	@Override
 	public void onStart() {
 		if (reload) {
-			storiesAdapter = new StoryAdapter(context, R.layout.stories_row);
-			setAdapter(storiesAdapter);
+			getStoriesAdapter().clear();
 			reload = false;
 		}
 		DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
@@ -312,12 +298,6 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 		String categoryString = (catDescriptor != null) ? context.getResources().getString(catDescriptor.description)
 				: null;
 
-		// list = (ListView)
-		// getSherlockActivity().findViewById(R.id.stories_list);
-		// StoryAdapter storyAdapter = new StoryAdapter(context,
-		// R.layout.stories_row);
-		// setAdapter(storyAdapter);
-		// set title
 		TextView title = (TextView) getView().findViewById(R.id.list_title);
 		if (category != null && categoryString != null) {
 			title.setText(categoryString);
@@ -346,32 +326,6 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 				setStorePoiId(view, position);
 			}
 		});
-
-		// open items menu for that entry
-		// list.setOnItemLongClickListener(new
-		// AdapterView.OnItemLongClickListener() {
-		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
-		// position, long id) {
-		// if ((position != postitionSelected) && (previousViewSwitcher !=
-		// null)) {
-		// // //close the old viewSwitcher
-		// previousViewSwitcher.showPrevious();
-		// storiesAdapter.setElementSelected(-1);
-		// previousViewSwitcher = null;
-		// hideListItemsMenu(view, true);
-		//
-		// }
-		// ViewSwitcher vs = (ViewSwitcher)
-		// view.findViewById(R.id.story_viewswitecher);
-		// setupOptionsListeners(vs, position);
-		// vs.showNext();
-		// postitionSelected = position;
-		// storiesAdapter.setElementSelected(position);
-		// previousViewSwitcher = vs;
-		//
-		// return true;
-		// }
-		// });
 
 		FeedbackFragmentInflater.inflateHandleButton(getSherlockActivity(), getView());
 		super.onStart();
@@ -404,12 +358,6 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			b.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					// if (new
-					// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
-					// {
-					// // show dialog box
-					// UserRegistration.upgradeuser(getSherlockActivity());
-					// } else
 					{
 						new SCAsyncTask<StoryObject, Void, Boolean>(getActivity(), new StoryDeleteProcessor(
 								getActivity())).execute(story);
@@ -425,12 +373,6 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-				// if (new
-				// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
-				// {
-				// // show dialog box
-				// UserRegistration.upgradeuser(getSherlockActivity());
-				// } else
 				{
 					// load pois of the story
 					FragmentTransaction fragmentTransaction = getSherlockActivity().getSupportFragmentManager()
@@ -452,12 +394,6 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-				// if (new
-				// AMSCAccessProvider().isUserAnonymous(getSherlockActivity()))
-				// {
-				// // show dialog box
-				// UserRegistration.upgradeuser(getSherlockActivity());
-				// } else
 				{
 					TaggingDialog taggingDialog = new TaggingDialog(getActivity(),
 							new TaggingDialog.OnTagsSelectedListener() {
@@ -479,18 +415,10 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 
 			@Override
 			public void onClick(View v) {
-
-				// FollowEntityObject obj = new
-				// FollowEntityObject(story.getEntityId(), story.getTitle(),
-				// DTConstants.ENTITY_TYPE_STORY);
-				// if (mFollowByIntent) {
-				// FollowHelper.follow(getSherlockActivity(), obj);
-				// } else {
 				SCAsyncTask<Object, Void, BaseDTObject> followTask = new SCAsyncTask<Object, Void, BaseDTObject>(
 						getSherlockActivity(), new FollowAsyncTaskProcessor(getSherlockActivity(), null));
 				followTask.execute(getSherlockActivity().getApplicationContext(), DTParamsHelper.getAppToken(),
 						DTHelper.getAuthToken(), story);
-				// }
 			}
 		});
 	}
@@ -502,9 +430,8 @@ public class StoriesListingFragment extends AbstractLstingFragment<StoryObject> 
 			if (view instanceof ViewSwitcher && ((ViewSwitcher) view).getDisplayedChild() == 1) {
 				((ViewSwitcher) view).showPrevious();
 				toBeHidden = true;
-				storiesAdapter.setElementSelected(-1);
+				getStoriesAdapter().setElementSelected(-1);
 				postitionSelected = -1;
-				previousViewSwitcher = null;
 			}
 		}
 		if (!toBeHidden && v != null && v.getTag() != null && !close) {

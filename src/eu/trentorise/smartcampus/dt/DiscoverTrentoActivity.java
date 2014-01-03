@@ -22,10 +22,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
@@ -41,7 +37,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-import com.github.espiandev.showcaseview.BaseTutorialActivity;
 import com.github.espiandev.showcaseview.ListViewTutorialHelper;
 import com.github.espiandev.showcaseview.TutorialHelper;
 import com.github.espiandev.showcaseview.TutorialHelper.TutorialProvider;
@@ -51,7 +46,6 @@ import eu.trentorise.smartcampus.ac.SCAccessProvider;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.TutorialActivity;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
@@ -64,15 +58,11 @@ import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
-	private final static int TUTORIAL_REQUEST_CODE = 1;
-	private Tutorial lastShowed;
-	private boolean isLoading;
 
 	public static DrawerLayout mDrawerLayout;
 	public static ListView mDrawerList;
 	public static ActionBarDrawerToggle mDrawerToggle;
 	public static String drawerState = "on";
-	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mFragmentTitles;
 	protected final int mainlayout = android.R.id.content;
@@ -215,7 +205,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		mDrawerList.setAdapter(new MenuDrawerAdapter(this, getResources().getStringArray(R.array.fragment_array)));
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-		mTitle = mDrawerTitle = getTitle();
+		mTitle = getTitle();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		//
 
@@ -403,7 +393,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 					Toast.makeText(DiscoverTrentoActivity.this, R.string.initial_data_load, Toast.LENGTH_LONG).show();
 				}
 				setSupportProgressBarIndeterminateVisibility(true);
-				isLoading = true;
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -421,7 +410,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 											DiscoverTrentoActivity.this
 													.setSupportProgressBarIndeterminateVisibility(false);
 										}
-										isLoading = false;
 									}
 								});
 							}
@@ -512,28 +500,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 
-	private void closeNavDrawerIfItIsTheEnd(Tutorial t) {
-		if (t==null){
-			DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			if (mDrawerLayout.isDrawerOpen(Gravity.LEFT))
-				mDrawerLayout.closeDrawer(Gravity.LEFT);
-		}
-	}
-
-	private View getViewFromNavDrawer(int i) {
-		ListView menu = (ListView) findViewById(R.id.left_drawer);
-		if (menu != null && menu.getChildAt(i)!=null) {
-			if (menu.getChildAt(i).findViewById(R.id.logo)==null)
-				{
-				mDrawerList.setSelection(i);
-				movedMenu=true;
-				return null;
-				}
-			return menu.getChildAt(i).findViewById(R.id.logo);
-		}
-		return null;
-	}
-
 	private boolean openNavDrawerIfNeeded() {
 		DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		if (!mDrawerLayout.isDrawerOpen(Gravity.LEFT))
@@ -544,37 +510,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 			
 		}
 		return false;
-	}
-
-	private Tutorial getFirstValidTutorial() {
-		Tutorial t = DTHelper.getLastTutorialNotShowed(this);
-		/* if smartcampus (no notif) salta notifiche (setta a true notif */
-		ApplicationInfo ai;
-		try {
-			ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-			Bundle aBundle = ai.metaData;
-			if (aBundle.getBoolean("hidden-notification") && t.equals(t.NOTIF)) {
-				DTHelper.setTutorialAsShowed(this, t);
-				t = DTHelper.getLastTutorialNotShowed(this);
-
-			}
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return t;
-	}
-
-	private void displayShowcaseView(View view, String title, String msg, boolean isLast) {
-		int[] position = new int[2];
-		int radius = 0;
-		if (view != null) {
-			view.getLocationOnScreen(position);
-			radius = view.getWidth();
-			BaseTutorialActivity.newIstance(this, position, radius, Color.WHITE, null, title, msg, isLast,
-					TUTORIAL_REQUEST_CODE, TutorialActivity.class);
-		}
-
 	}
 
 	@Override
