@@ -7,7 +7,7 @@
     <string name="dt_places_tut">This icon will let you see interesting places</string>
     <string name="dt_events_tut">This other icon will let you see interesting events</string>
     <string name="dt_ratings_tut">See what others thought of this place and vote for it yourself.</string>
-    <string name="dt_stories_tut">Create itineraries between places\'s interest and events, or visit the proposals of other users</string>
+    <string name="dt_stories_tut">Create itineraries between places\'s interest and events, or visit other users\' suggestions</string>
     <string name="dt_menu_tut">By clicking this symbol, you will be able to search for events or places or add new </string>
     <string name="dt_notif_tut_title">Tutorial</string>
     <string name="dt_notif_tut_tut">Try a guided tour of the application</string>

@@ -83,7 +83,7 @@
     <string name="save">Save</string>
     <string name="save_to_favorites">Save to favourites</string>
     
-    <string name="attend_not">Not attend</string>
+    <string name="attend_not">Not attending</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
     <string name="edit">Edit</string>
@@ -100,7 +100,7 @@
     <string name="app_failure_obj_not_found">Object not found!</string>
     <string name="ratingtext_average">Average rating: %s</string>
     <string name="ratingtext_user">Your rating:</string>
-    <string name="ratingtext_raters">Total rates: %s</string>
+    <string name="ratingtext_raters">Total ratings: %s</string>
     <string name="attendees_extended"> people are attending this event.</string>
     <string name="rating_place_dialog_title">Rate this place:</string>
     <string name="rating_event_dialog_title">Rate this event:</string>
@@ -136,7 +136,7 @@
     <string name="prev_step">Previous</string>
     <string name="poi_erased">Place erased by user</string>
     <string name="next_step">Next</string>
-    <string name="empty_step_title">The Place must not be empty</string>
+    <string name="empty_step_title">The place must not be empty</string>
     <string name="sure_delete_step">Are you sure you want to delete this step?</string>
     <string name="sure_change">Overwrite previous data?</string>
     
@@ -206,7 +206,7 @@
     <string name="notifications_story_updated">Tour \"%s\" updated</string>
     <string name="notifications_event_at_place_updated">Event \"%1$s\" at %2$s is updated</string>
     <string name="notifications_story_at_place_update">Tour \"%1$s\" about %2$s is updated</string>
-    <string name="initial_data_load">Loading initial data&#8230; (it may take a while this time)</string>
+    <string name="initial_data_load">Loading initial data&#8230; (this may take some time)</string>
 <string name="alert_message">Are you sure?</string>
     
     <!-- String for the searching fragment -->
@@ -225,7 +225,7 @@
     <string name="search_within500m">Within 500m</string>
     <string name="search_wthin1km">Within 1km</string>
     <string name="search_within50km">Within 50km</string>
-    <string name="dialog_connection_search">Offline mode supports only basic search. To exploit advanced search please connect to a network.</string>
+    <string name="dialog_connection_search">Offline mode supports only basic search. To use advanced search please connect to a network.</string>
     <string name="event_date_from">Date</string>
     <string name="separator"> - </string>
     <string name="event_date_to">Ending date</string>
