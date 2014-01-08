@@ -191,9 +191,13 @@ public class NotificationsFragmentListDT extends SherlockListFragment {
 				Toast.makeText(getSherlockActivity(), getString(R.string.app_failure_obj_not_found), Toast.LENGTH_LONG).show();
 				return;
 			}
+			Intent i=new Intent(getSherlockActivity(),DiscoverTrentoActivity.class);
+			i.putExtra(DiscoverTrentoActivity.NOTIFICATION_RESULT, result);
+			getSherlockActivity().startActivity(i);
+
 			SherlockFragment fragment = null;
 			Bundle args = new Bundle();
-
+			
 			if (result instanceof EventObject) {
 				fragment = new EventDetailsFragment();
 				args.putString(EventDetailsFragment.ARG_EVENT_ID, (result.getId()));

@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -49,12 +50,19 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
+import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
+import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
+import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsFragmentListDT;
+import eu.trentorise.smartcampus.notifications.NotificationsHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
+import eu.trentorise.smartcampus.territoryservice.model.EventObject;
+import eu.trentorise.smartcampus.territoryservice.model.POIObject;
+import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
@@ -63,6 +71,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	public static ListView mDrawerList;
 	public static ActionBarDrawerToggle mDrawerToggle;
 	public static String drawerState = "on";
+	public final static String NOTIFICATION_RESULT = "result";
 	private CharSequence mTitle;
 	private String[] mFragmentTitles;
 	protected final int mainlayout = android.R.id.content;
@@ -74,14 +83,14 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (savedInstanceState == null) {
+		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(NotificationsHelper.PARAM_NOTIFICATION_ACTIVITY)){
+			startNotificationListFragment();
+		} else 
+		 if (savedInstanceState == null) {
 			startHomeFragment();
-			// firstConfig();
 
 		}
 		setUpContent();
-
 		initDataManagement(savedInstanceState);
 
 		// DEBUG PURPOSE
@@ -96,6 +105,23 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		}
 	}
 
+	private void startNotificationListFragment() {
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+		NotificationsFragmentListDT fragment = new NotificationsFragmentListDT();
+		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		fragmentTransaction.replace(R.id.fragment_container, fragment);
+//		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//		HomeFragment fragment = new HomeFragment();
+		Bundle args = new Bundle();
+		fragment.setArguments(args);
+		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		fragmentTransaction.replace(R.id.fragment_container, fragment);
+		fragmentTransaction.addToBackStack(fragment.getTag());
+		fragmentTransaction.commit();
+		
+	}
+
+
 	private void startHomeFragment() {
 		// drawerState = "on";
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -104,7 +130,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		fragment.setArguments(args);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.replace(R.id.fragment_container, fragment);
-		// ft.addToBackStack(fragment.getTag());
+//		 ft.addToBackStack(fragment.getTag());
 		ft.commit();
 
 	}
