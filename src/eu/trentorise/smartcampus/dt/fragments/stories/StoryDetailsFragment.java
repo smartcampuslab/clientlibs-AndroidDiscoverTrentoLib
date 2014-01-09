@@ -70,6 +70,7 @@ import com.google.android.maps.GeoPoint;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.common.follow.model.Topic;
 import eu.trentorise.smartcampus.android.common.navigation.NavigationHelper;
+import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
 import eu.trentorise.smartcampus.android.feedback.utils.FeedbackFragmentInflater;
 import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
@@ -83,7 +84,6 @@ import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AddStepToStoryFragment.StepHandler;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
-import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.CommunityData;
@@ -94,7 +94,7 @@ import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 /*
  * Shows the detail of the story and steps, manages the mapview and the refresh of it
  */
-public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implements OnCameraChangeListener,
+public class StoryDetailsFragment extends FeedbackFragment implements OnCameraChangeListener,
 		OnMarkerClickListener {
 
 	private boolean mFollowByIntent;

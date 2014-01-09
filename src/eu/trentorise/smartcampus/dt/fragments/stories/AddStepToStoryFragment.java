@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -37,6 +35,7 @@ import eu.trentorise.smartcampus.android.common.tagging.SemanticSuggestion;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.OnTagsSelectedListener;
 import eu.trentorise.smartcampus.android.common.tagging.TaggingDialog.TagProvider;
 import eu.trentorise.smartcampus.android.common.validation.ValidatorHelper;
+import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
 import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.Utils;
@@ -44,7 +43,6 @@ import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.POISelectActivity;
 import eu.trentorise.smartcampus.dt.model.LocalStepObject;
-import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
@@ -52,7 +50,7 @@ import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
  * Fragment that manages a single step of a story with the POI and the note
  */
 
-public class AddStepToStoryFragment extends NotificationsSherlockFragmentDT implements OnTagsSelectedListener, TagProvider {
+public class AddStepToStoryFragment extends FeedbackFragment implements OnTagsSelectedListener, TagProvider {
 
 	public static String ARG_STEP_HANDLER = "handler";
 	public static String ARG_STORY_OBJECT = "story";

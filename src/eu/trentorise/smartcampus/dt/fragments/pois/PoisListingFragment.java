@@ -69,7 +69,6 @@ import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.WhenForSearch;
 import eu.trentorise.smartcampus.dt.fragments.search.WhereForSearch;
 import eu.trentorise.smartcampus.dt.model.PoiObjectForBean;
-import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.social.model.Concept;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
@@ -232,7 +231,6 @@ public class PoisListingFragment extends AbstractLstingFragment<POIObject> imple
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		NotificationsSherlockFragmentDT.onOptionsItemSelectedNotifications(getSherlockActivity(), item);
 
 		if (item.getItemId() == R.id.map_view) {
 			category = (getArguments() != null) ? getArguments().getString(SearchFragment.ARG_CATEGORY) : null;

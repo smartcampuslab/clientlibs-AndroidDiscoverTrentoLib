@@ -26,15 +26,14 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockMapFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,8 +52,8 @@ import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
-import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
+import eu.trentorise.smartcampus.dt.custom.ViewHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.map.MapItemsHandler;
 import eu.trentorise.smartcampus.dt.custom.map.MapLayerDialogHelper;
@@ -68,14 +67,13 @@ import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.search.SearchFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
-import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockMapFragmentDT;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.EventObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
-public class HomeFragment extends NotificationsSherlockMapFragmentDT implements MapItemsHandler, OnCameraChangeListener,
+public class HomeFragment extends SherlockMapFragment implements MapItemsHandler, OnCameraChangeListener,
 		OnMarkerClickListener, MapObjectContainer {
 
 	public static final String ARG_OBJECTS = "objects";

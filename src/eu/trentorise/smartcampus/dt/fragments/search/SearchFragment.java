@@ -38,6 +38,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
 
 import eu.trentorise.smartcampus.android.common.listing.AbstractLstingFragment;
+import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper.CategoryDescriptor;
@@ -46,9 +47,8 @@ import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.events.EventsListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.PoisListingFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.StoriesListingFragment;
-import eu.trentorise.smartcampus.dt.notifications.NotificationsSherlockFragmentDT;
 
-public class SearchFragment extends NotificationsSherlockFragmentDT {
+public class SearchFragment extends FeedbackFragment {
 
 	public static final String ARG_WHEN_SEARCH = "when_search";
 	public static final String ARG_WHERE_SEARCH = "where_search";

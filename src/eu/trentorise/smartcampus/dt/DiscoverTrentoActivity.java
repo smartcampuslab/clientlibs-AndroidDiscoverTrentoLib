@@ -78,7 +78,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private boolean tutorialHasOpened = false;
 	private boolean movedMenu = false;
 	private TutorialHelper mTutorialHelper = null;
-	private static final String PARAM_NOTIFICATION_ACTIVITY = "notification_activity";
+	public static final String PARAM_NOTIFICATION_ACTIVITY = "notification_activity";
 
 
 	@Override
@@ -111,13 +111,11 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		NotificationsFragmentListDT fragment = new NotificationsFragmentListDT();
 		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		fragmentTransaction.replace(R.id.fragment_container, fragment);
-//		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//		HomeFragment fragment = new HomeFragment();
 		Bundle args = new Bundle();
 		fragment.setArguments(args);
 		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		fragmentTransaction.replace(R.id.fragment_container, fragment);
-		fragmentTransaction.addToBackStack(fragment.getTag());
+//		fragmentTransaction.addToBackStack(fragment.getTag());
 		fragmentTransaction.commit();
 		
 	}
