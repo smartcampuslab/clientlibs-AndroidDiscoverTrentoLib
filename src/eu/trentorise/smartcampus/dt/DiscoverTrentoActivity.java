@@ -78,12 +78,13 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	private boolean tutorialHasOpened = false;
 	private boolean movedMenu = false;
 	private TutorialHelper mTutorialHelper = null;
+	private static final String PARAM_NOTIFICATION_ACTIVITY = "notification_activity";
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(NotificationsHelper.PARAM_NOTIFICATION_ACTIVITY)){
+		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(PARAM_NOTIFICATION_ACTIVITY)){
 			startNotificationListFragment();
 		} else 
 		 if (savedInstanceState == null) {
