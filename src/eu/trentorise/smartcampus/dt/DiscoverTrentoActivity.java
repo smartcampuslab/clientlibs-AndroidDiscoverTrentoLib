@@ -44,6 +44,7 @@ import com.github.espiandev.showcaseview.TutorialHelper.TutorialProvider;
 import com.github.espiandev.showcaseview.TutorialItem;
 
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
+import eu.trentorise.smartcampus.android.common.LauncherHelper;
 import eu.trentorise.smartcampus.android.common.SCAsyncTask;
 import eu.trentorise.smartcampus.android.feedback.activity.FeedbackFragmentActivity;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
@@ -97,8 +98,10 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		// DEBUG PURPOSE
 		// DTHelper.getTutorialPreferences(this).edit().clear().commit();
 		mTutorialHelper = new ListViewTutorialHelper(this, mTutorialProvider);
+		
+		
 
-		if (DTHelper.isFirstLaunch(this)) {
+		if (LauncherHelper.isLauncherInstalled(this, true) && DTHelper.isFirstLaunch(this)) {
 			openNavDrawerIfNeeded();
 			
 			showTourDialog();
