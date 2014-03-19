@@ -24,12 +24,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <com.google.android.maps.MapView
+        <!--
+              <com.google.android.maps.MapView
             android:id="@+id/mapview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:apiKey="@string/maps_api_key"
             android:clickable="true" />
+        
+-->
+        <eu.trentorise.smartcampus.osm.android.views.MapView
+            android:id="@+id/mapview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"  />
+        
     </LinearLayout>
 
 </RelativeLayout>

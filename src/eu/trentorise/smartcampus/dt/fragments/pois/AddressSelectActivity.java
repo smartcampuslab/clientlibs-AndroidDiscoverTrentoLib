@@ -51,41 +51,41 @@ public class AddressSelectActivity extends FeedbackFragmentActivity implements O
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.mapcontainer_dt_v2);
-
-		getSupportActionBar().setDisplayUseLogoEnabled(true); // system logo
-		getSupportActionBar().setDisplayShowTitleEnabled(true); // system title
-		getSupportActionBar().setDisplayShowHomeEnabled(false); // home icon bar
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		if (getSupportActionBar().getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
-			getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		}
-		if (((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap() != null) {
-
-		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-		mMap.setOnMapLongClickListener(this);
-		mMap.setMyLocationEnabled(true);
-
-		LatLng me = null;
-		Address address = (Address) getIntent().getParcelableExtra(ARG_POINT);
-		if (address != null) {
-			me = new LatLng(address.getLatitude(), address.getLongitude());
-			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap() + 2));
-		} else {
-			if (DTHelper.getLocationHelper().getLocation() != null) {
-				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
-						.getLocation().getLongitudeE6() / 1e6);
-			} else {
-				me = MapManager.DEFAULT_POINT;
-			}
-			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
-		}
-
-		Toast.makeText(this, getString(R.string.address_select_toast), Toast.LENGTH_LONG).show();
-
-		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
-				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
-		}
+//		setContentView(R.layout.mapcontainer_dt_v2);
+//
+//		getSupportActionBar().setDisplayUseLogoEnabled(true); // system logo
+//		getSupportActionBar().setDisplayShowTitleEnabled(true); // system title
+//		getSupportActionBar().setDisplayShowHomeEnabled(false); // home icon bar
+//		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//		if (getSupportActionBar().getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
+//			getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+//		}
+//		if (((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap() != null) {
+//
+//		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+//		mMap.setOnMapLongClickListener(this);
+//		mMap.setMyLocationEnabled(true);
+//
+//		LatLng me = null;
+//		Address address = (Address) getIntent().getParcelableExtra(ARG_POINT);
+//		if (address != null) {
+//			me = new LatLng(address.getLatitude(), address.getLongitude());
+//			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap() + 2));
+//		} else {
+//			if (DTHelper.getLocationHelper().getLocation() != null) {
+//				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
+//						.getLocation().getLongitudeE6() / 1e6);
+//			} else {
+//				me = MapManager.DEFAULT_POINT;
+//			}
+//			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
+//		}
+//
+//		Toast.makeText(this, getString(R.string.address_select_toast), Toast.LENGTH_LONG).show();
+//
+//		FeedbackFragmentInflater.inflateHandleButtonInRelativeLayout(this,
+//				(RelativeLayout) findViewById(R.id.mapcontainer_relativelayout_dt));
+//		}
 	}
 
 	@Override

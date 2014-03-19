@@ -26,10 +26,18 @@
     <!-- android:orientation="vertical" > -->
     <!-- </LinearLayout> -->
 
-    <fragment
+
+    <!--
+         <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    
+
+    <eu.trentorise.smartcampus.osm.android.views.MapView
+        android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />-->
 
 </RelativeLayout>

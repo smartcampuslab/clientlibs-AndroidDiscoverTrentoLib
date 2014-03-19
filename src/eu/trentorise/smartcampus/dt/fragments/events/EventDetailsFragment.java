@@ -714,12 +714,12 @@ public class EventDetailsFragment extends NotificationsSherlockFragmentDT {
 	}
 
 	/**
-	 * 
+	 * CAmbiamento 3 linea di codice Ricordarsi di rivedere il tutto
 	 */
 	protected void callBringMeThere() {
 		Address to = Utils.getPOIasGoogleAddress(getPOI());
 		Address from = null;
-		GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+		eu.trentorise.smartcampus.osm.android.util.GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 		if (mylocation != null) {
 			from = new Address(Locale.getDefault());
 			from.setLatitude(mylocation.getLatitudeE6() / 1E6);

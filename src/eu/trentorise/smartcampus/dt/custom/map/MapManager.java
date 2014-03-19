@@ -18,7 +18,15 @@ package eu.trentorise.smartcampus.dt.custom.map;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
+
+
+
+
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,36 +39,45 @@ import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
+//import com.google.android.gms.maps.CameraUpdateFactory;
+//import com.google.android.gms.maps.model.BitmapDescriptor;
+//import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+//import com.google.android.gms.maps.model.LatLng;
+//import com.google.android.gms.maps.model.LatLngBounds;
+//import com.google.android.gms.maps.model.MarkerOptions;
+//import com.google.android.gms.maps.model.PolylineOptions;
 
 import eu.trentorise.smartcampus.dt.DTParamsHelper;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
+import eu.trentorise.smartcampus.dt.fragments.home.MyOwnItemizedOverlay;
+import eu.trentorise.smartcampus.dt.fragments.home.OverlayObject;
 import eu.trentorise.smartcampus.dt.model.LocalEventObject;
+import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
+import eu.trentorise.smartcampus.osm.android.util.BoundingBoxE6;
+import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
+import eu.trentorise.smartcampus.osm.android.views.MapController;
+import eu.trentorise.smartcampus.osm.android.views.MapView;
+import eu.trentorise.smartcampus.osm.android.views.overlay.MyLocationOverlay;
+import eu.trentorise.smartcampus.osm.android.views.overlay.Overlay;
+import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
 public class MapManager {
 
 	private static MapView mapView;
+	private static MyLocationOverlay myLoc;
 
 	public static int ZOOM_DEFAULT = 15;
-	public static LatLng DEFAULT_POINT = new LatLng(46.0696727540531, 11.1212700605392); // Trento
+	public static GeoPoint DEFAULT_POINT = new GeoPoint(46.0696727540531, 11.1212700605392); // Trento
 
 	public static void initWithParam() {
 		int zoom = DTParamsHelper.getZoomLevelMap();
@@ -72,7 +89,7 @@ public class MapManager {
 		if (centerMap != null) {
 			Double latitute = centerMap.get(0);
 			Double longitude = centerMap.get(1);
-			DEFAULT_POINT = new LatLng(latitute, longitude);
+			DEFAULT_POINT = new GeoPoint(latitute, longitude);
 		}
 	}
 
@@ -87,10 +104,12 @@ public class MapManager {
 	}
 
 	public static GeoPoint requestMyLocation(Context ctx) {
-		return DTHelper.getLocationHelper().getLocation();
+		//sistemare metodi in DTHelper il return è messo a caso per testare
+		//return DTHelper.getLocationHelper().getLocation();
+		return new GeoPoint(45.0,45.0);
 	}
 
-	public static void fitMapWithOverlays(Collection<? extends BaseDTObject> objects, GoogleMap map) {
+	public static void fitMapWithOverlays(Collection<? extends BaseDTObject> objects, MapView map) {
 		double[] ll = null, rr = null;
 		if (objects != null) {
 			for (BaseDTObject o : objects) {
@@ -110,208 +129,257 @@ public class MapManager {
 		fit(map, ll, rr, objects != null && objects.size() > 1);
 	}
 
-	private static void fit(GoogleMap map, double[] ll, double[] rr, boolean zoomIn) {
+	private static void fit(MapView map, double[] ll, double[] rr, boolean zoomIn) {
 		if (ll != null && rr != null) {
-			LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(rr[0], rr[1]))
-					.include(new LatLng(ll[0], ll[1])).build();
-			map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 64));
+			//LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(rr[0], rr[1]))
+				//	.include(new LatLng(ll[0], ll[1])).build()ll;
+			//map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 64));
+			
+			BoundingBoxE6 bounds = new BoundingBoxE6(rr[0], rr[1], ll[0], ll[1]);
+			map.setBoundingBox(bounds);
 		}
 	}
+	
+	// non utilizzo più questo metodo
+	//--------------------------------------------------------------------------
+//	public static MarkerOptions createStoryStepMarker(Context ctx, BaseDTObject obj, int pos, boolean selected) {
+//		LatLng latLng = getLatLngFromBasicObject(obj);
+//
+//		int markerIcon = selected ? R.drawable.selected_step : R.drawable.step;
+//
+//		BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnStoryMarker(ctx, markerIcon,
+//				Integer.toString(pos)));
+//		MarkerOptions marker = new MarkerOptions().anchor(0.5f, 0.5f).position(latLng).icon(bd).title("" + pos);
+//		return marker;
+//	}
 
-	public static MarkerOptions createStoryStepMarker(Context ctx, BaseDTObject obj, int pos, boolean selected) {
-		LatLng latLng = getLatLngFromBasicObject(obj);
+	
+	//----------------TRovare metodo simile
+	//---------------------------------------------------
+//	public static PolylineOptions createStoryStepLine(Context ctx, BaseDTObject from, BaseDTObject to) {
+//		LatLng latLngFrom = getLatLngFromBasicObject(from);
+//		LatLng latLngTo = getLatLngFromBasicObject(to);
+//		PolylineOptions line = new PolylineOptions().add(latLngFrom, latLngTo)
+//				.color(Color.parseColor(ctx.getString(R.color.dtappcolor))).width(6);
+//		return line;
+//	}
 
-		int markerIcon = selected ? R.drawable.selected_step : R.drawable.step;
-
-		BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnStoryMarker(ctx, markerIcon,
-				Integer.toString(pos)));
-		MarkerOptions marker = new MarkerOptions().anchor(0.5f, 0.5f).position(latLng).icon(bd).title("" + pos);
-		return marker;
-	}
-
-	public static PolylineOptions createStoryStepLine(Context ctx, BaseDTObject from, BaseDTObject to) {
-		LatLng latLngFrom = getLatLngFromBasicObject(from);
-		LatLng latLngTo = getLatLngFromBasicObject(to);
-		PolylineOptions line = new PolylineOptions().add(latLngFrom, latLngTo)
-				.color(Color.parseColor(ctx.getString(R.color.dtappcolor))).width(6);
-		return line;
-	}
+	
 
 	/*
 	 * CLUSTERING
 	 */
-	public static class ClusteringHelper {
-		private static final String TAG = "MapManager.ClusteringHelper";
+public static class ClusteringHelper {
+//		private static final String TAG = "MapManager.ClusteringHelper";
+//
+//		private static final int DENSITY_X = 5;
+//		private static final int DENSITY_Y = 5;
+//
+//		private static List<List<List<BaseDTObject>>> grid = new ArrayList<List<List<BaseDTObject>>>();
+//		private static SparseArray<int[]> item2group = new SparseArray<int[]>();
 
-		private static final int DENSITY_X = 5;
-		private static final int DENSITY_Y = 5;
+		public synchronized static <T extends OverlayItem> List<OverlayItem> cluster(Context mContext,
+				MapView map, Collection<T> objects) {
+			
+			return eu.trentorise.smartcampus.osm.android.util.ClusteringHelper.cluster(mContext, map, objects);
 
-		private static List<List<List<BaseDTObject>>> grid = new ArrayList<List<List<BaseDTObject>>>();
-		private static SparseArray<int[]> item2group = new SparseArray<int[]>();
-
-		public synchronized static <T extends BaseDTObject> List<MarkerOptions> cluster(Context mContext,
-				GoogleMap map, Collection<T> objects) {
-			item2group.clear();
-			// 2D array with some configurable, fixed density
-			grid.clear();
-
-			for (int i = 0; i <= DENSITY_X; i++) {
-				ArrayList<List<BaseDTObject>> column = new ArrayList<List<BaseDTObject>>(DENSITY_Y + 1);
-				for (int j = 0; j <= DENSITY_Y; j++) {
-					column.add(new ArrayList<BaseDTObject>());
-				}
-				grid.add(column);
-			}
-
-			LatLng lu = map.getProjection().getVisibleRegion().farLeft;
-			LatLng rd = map.getProjection().getVisibleRegion().nearRight;
-			int step = (int) (Math.abs((lu.longitude * 1E6) - (rd.longitude * 1E6)) / DENSITY_X);
-
-			// compute leftmost bound of the affected grid:
-			// this is the bound of the leftmost grid cell that intersects
-			// with the visible part
-			int startX = (int) ((lu.longitude * 1E6) - ((lu.longitude * 1E6) % step));
-			if (lu.longitude < 0) {
-				startX -= step;
-			}
-			// compute bottom bound of the affected grid
-			int startY = (int) ((rd.latitude * 1E6) - ((rd.latitude * 1E6) % step));
-			if (lu.latitude < 0) {
-				startY -= step;
-			}
-			int endX = startX + (DENSITY_X + 1) * step;
-			int endY = startY + (DENSITY_Y + 1) * step;
-
-			int idx = 0;
-			try {
-				for (BaseDTObject basicObject : objects) {
-					LatLng objLatLng = getLatLngFromBasicObject(basicObject);
-
-					if (objLatLng != null && (objLatLng.longitude * 1E6) >= startX
-							&& (objLatLng.longitude * 1E6) <= endX && (objLatLng.latitude * 1E6) >= startY
-							&& (objLatLng.latitude * 1E6) <= endY) {
-						int binX = (int) (Math.abs((objLatLng.longitude * 1E6) - startX) / step);
-						int binY = (int) (Math.abs((objLatLng.latitude * 1E6) - startY) / step);
-
-						item2group.put(idx, new int[] { binX, binY });
-						// just push the reference
-						grid.get(binX).get(binY).add(basicObject);
-					}
-					idx++;
-				}
-			} catch (ConcurrentModificationException ex) {
-				Log.e(TAG, ex.toString());
-			}
-
-			// if (mapView.getZoomLevel() == mapView.getMaxZoomLevel()) {
-			if (map.getCameraPosition().zoom == map.getMaxZoomLevel()) {
-				for (int i = 0; i < grid.size(); i++) {
-					for (int j = 0; j < grid.get(0).size(); j++) {
-						List<BaseDTObject> curr = grid.get(i).get(j);
-						if (curr.size() == 0)
-							continue;
-
-						if (i > 0) {
-							if (checkDistanceAndMerge(i - 1, j, curr))
-								continue;
-						}
-						if (j > 0) {
-							if (checkDistanceAndMerge(i, j - 1, curr))
-								continue;
-						}
-						if (i > 0 && j > 0) {
-							if (checkDistanceAndMerge(i - 1, j - 1, curr))
-								continue;
-						}
-					}
-				}
-			}
-
-			// generate markers
-			List<MarkerOptions> markers = new ArrayList<MarkerOptions>();
-
-			for (int i = 0; i < grid.size(); i++) {
-				for (int j = 0; j < grid.get(i).size(); j++) {
-					List<BaseDTObject> markerList = grid.get(i).get(j);
-					if (markerList.size() > 1) {
-						markers.add(createGroupMarker(mContext, map, markerList, i, j));
-					} else if (markerList.size() == 1) {
-						// draw single marker
-						markers.add(createSingleMarker(markerList.get(0), i, j));
-					}
-				}
-			}
-
-			return markers;
+			//			item2group.clear();
+//			// 2D array with some configurable, fixed density
+//			grid.clear();
+//
+//			for (int i = 0; i <= DENSITY_X; i++) {
+//				ArrayList<List<BaseDTObject>> column = new ArrayList<List<BaseDTObject>>(DENSITY_Y + 1);
+//				for (int j = 0; j <= DENSITY_Y; j++) {
+//					column.add(new ArrayList<BaseDTObject>());
+//				}
+//				grid.add(column);
+//			}
+//
+////			LatLng lu = map.getProjection().getVisibleRegion().farLeft;
+////			LatLng rd = map.getProjection().getVisibleRegion().nearRight;
+//			GeoPoint lu = (GeoPoint) map.getMapFarLeft();
+//			GeoPoint rd = (GeoPoint) map.getMapNearRight();
+//					
+//					
+//			int step = (int) (Math.abs((lu.getLongitudeE6() * 1E6) - (rd.getLongitudeE6() * 1E6)) / DENSITY_X);
+//
+//			// compute leftmost bound of the affected grid:
+//			// this is the bound of the leftmost grid cell that intersects
+//			// with the visible part
+//			int startX = (int) ((lu.getLongitudeE6() * 1E6) - ((lu.getLongitudeE6() * 1E6) % step));
+//			if (lu.getLongitudeE6() < 0) {
+//				startX -= step;
+//			}
+//			// compute bottom bound of the affected grid
+//			int startY = (int) ((rd.getLatitudeE6() * 1E6) - ((rd.getLatitudeE6() * 1E6) % step));
+//			if (lu.getLatitudeE6() < 0) {
+//				startY -= step;
+//			}
+//			int endX = startX + (DENSITY_X + 1) * step;
+//			int endY = startY + (DENSITY_Y + 1) * step;
+//
+//			int idx = 0;
+//			try {
+//				for (BaseDTObject basicObject : objects) {
+//					LatLng objLatLng = getLatLngFromBasicObject(basicObject);
+//
+//					if (objLatLng != null && (objLatLng.longitude * 1E6) >= startX
+//							&& (objLatLng.longitude * 1E6) <= endX && (objLatLng.latitude * 1E6) >= startY
+//							&& (objLatLng.latitude * 1E6) <= endY) {
+//						int binX = (int) (Math.abs((objLatLng.longitude * 1E6) - startX) / step);
+//						int binY = (int) (Math.abs((objLatLng.latitude * 1E6) - startY) / step);
+//
+//						item2group.put(idx, new int[] { binX, binY });
+//						// just push the reference
+//						grid.get(binX).get(binY).add(basicObject);
+//					}
+//					idx++;
+//				}
+//			} catch (ConcurrentModificationException ex) {
+//				Log.e(TAG, ex.toString());
+//			}
+//
+//			// if (mapView.getZoomLevel() == mapView.getMaxZoomLevel()) {
+////			if (map.getCameraPosition().zoom == map.getMaxZoomLevel()) {
+////				for (int i = 0; i < grid.size(); i++) {
+////					for (int j = 0; j < grid.get(0).size(); j++) {
+////						List<BaseDTObject> curr = grid.get(i).get(j);
+////						if (curr.size() == 0)
+////							continue;
+////
+////						if (i > 0) {
+////							if (checkDistanceAndMerge(i - 1, j, curr))
+////								continue;
+////						}
+////						if (j > 0) {
+////							if (checkDistanceAndMerge(i, j - 1, curr))
+////								continue;
+////						}
+////						if (i > 0 && j > 0) {
+////							if (checkDistanceAndMerge(i - 1, j - 1, curr))
+////								continue;
+////						}
+////					}
+////				}
+////			}
+//
+//			// generate markers
+//			//List<MarkerOptions> markers = new ArrayList<MarkerOptions>();
+//			List<GeoPoint> markers = new ArrayList<GeoPoint>();
+//			
+//			for (int i = 0; i < grid.size(); i++) {
+//				for (int j = 0; j < grid.get(i).size(); j++) {
+//					List<BaseDTObject> markerList = grid.get(i).get(j);
+//					if (markerList.size() > 1) {
+//						markers.add(createGroupMarker(mContext, map, markerList, i, j));
+//					} else if (markerList.size() == 1) {
+//						// draw single marker
+//						markers.add(createSingleMarker(markerList.get(0), i, j));
+//					}
+//				}
+//			}
+//
+//			return markers;
 		}
 
-		public static void render(GoogleMap map, List<MarkerOptions> markers) {
-			for (MarkerOptions mo : markers) {
-				map.addMarker(mo);
-			}
+		public static void render(MapView map, List<OverlayItem> markers, final FragmentManager fragman, Context context) {
+//			for (MarkerOptions mo : markers) {
+//				map.addMarker(mo);
+//			}
+			eu.trentorise.smartcampus.osm.android.util.ClusteringHelper.render(map,markers);
+			//aggiungo la lista overlay per essere cliccabile
+			
+			map.getOverlayManager().clear();
+			MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(map.getContext(),markers,fragman);
+			map.getOverlays().add(overlay);
+
+			
+			myLoc = new MyLocationOverlay(context, map);
+			myLoc.enableMyLocation();
+			myLoc.enableCompass();
+			map.getOverlays().add(HomeFragment.myLoc);
+			
 		}
 
-		private static MarkerOptions createSingleMarker(BaseDTObject item, int x, int y) {
-			LatLng latLng = getLatLngFromBasicObject(item);
+		//-----------------------------------------------------
+		//Non mi serve più dato che la classe ClusteringHelper delle librerie
+		//-----------------------------------------------------
+//		private static MarkerOptions createSingleMarker(BaseDTObject item, int x, int y) {
+//			LatLng latLng = getLatLngFromBasicObject(item);
+//
+//			int markerIcon = CategoryHelper.getMapIconByType(item.getType());
+//			if (CategoryHelper.FAMILY_CATEGORY_POI.equals(item.getType())
+//					|| (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(item.getType())))
+//				markerIcon = objectCertified(item);
+//
+//			MarkerOptions marker = new MarkerOptions().position(latLng)
+//					.icon(BitmapDescriptorFactory.fromResource(markerIcon)).title(x + ":" + y);
+//			return marker;
+//		}
 
-			int markerIcon = CategoryHelper.getMapIconByType(item.getType());
-			if (CategoryHelper.FAMILY_CATEGORY_POI.equals(item.getType())
-					|| (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(item.getType())))
-				markerIcon = objectCertified(item);
+		//-----------------------------------------------------
+		//Non mi serve più dato che la classe ClusteringHelper delle librerie
+		//-----------------------------------------------------
+		
+//		private static ExtendedOverlayItem createGroupMarker(Context mContext, MapView map, List<BaseDTObject> markerList,
+//				int x, int y) {
+//			BaseDTObject item = markerList.get(0);
+//			GeoPoint latLng = getLatLngFromBasicObject(item);
+//			//LatLng latLng = getLatLngFromBasicObject(item);
+//			
+//			int markerIcon = R.drawable.ic_marker_p_generic;
+//
+//			//--------------------------------------------------------------------------
+//			//da aggiungere immagine all'Extendoverlayitem
+//			// Classe MarkerOptions sostituito con ExtendedOverlayitem
+//			//---------------------------------------------------------------------------
+//			
+//			//BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnMarker(mContext, markerIcon,
+//			//		Integer.toString(markerList.size())));
+//			//MarkerOptions marker = new MarkerOptions().position(latLng).icon(bd).title(x + ":" + y);
+//			ExtendedOverlayItem marker = new ExtendedOverlayItem(Integer.toString(x) + ":" + Integer.toString(y), "test", latLng);
+//			return marker;
+//		}
 
-			MarkerOptions marker = new MarkerOptions().position(latLng)
-					.icon(BitmapDescriptorFactory.fromResource(markerIcon)).title(x + ":" + y);
-			return marker;
+		public static List<OverlayItem> getFromGridId(String id) {
+			
+			return eu.trentorise.smartcampus.osm.android.util.ClusteringHelper.getFromGridId(id);
+//			try {
+//				String[] parsed = id.split(":");
+//				int x = Integer.parseInt(parsed[0]);
+//				int y = Integer.parseInt(parsed[1]);
+//
+//				return grid.get(x).get(y);
+//			} catch (Exception e) {
+//				return null;
+//			}
 		}
 
-		private static MarkerOptions createGroupMarker(Context mContext, GoogleMap map, List<BaseDTObject> markerList,
-				int x, int y) {
-			BaseDTObject item = markerList.get(0);
-			LatLng latLng = getLatLngFromBasicObject(item);
-
-			int markerIcon = R.drawable.ic_marker_p_generic;
-
-			BitmapDescriptor bd = BitmapDescriptorFactory.fromBitmap(writeOnMarker(mContext, markerIcon,
-					Integer.toString(markerList.size())));
-			MarkerOptions marker = new MarkerOptions().position(latLng).icon(bd).title(x + ":" + y);
-			return marker;
-		}
-
-		public static List<BaseDTObject> getFromGridId(String id) {
-			try {
-				String[] parsed = id.split(":");
-				int x = Integer.parseInt(parsed[0]);
-				int y = Integer.parseInt(parsed[1]);
-
-				return grid.get(x).get(y);
-			} catch (Exception e) {
-				return null;
-			}
-		}
-
-		private static boolean checkDistanceAndMerge(int i, int j, List<BaseDTObject> curr) {
-			List<BaseDTObject> src = grid.get(i).get(j);
-			if (src.size() == 0) {
-				return false;
-			}
-
-			LatLng srcLatLng = getLatLngFromBasicObject(src.get(0));
-			LatLng currLatLng = getLatLngFromBasicObject(curr.get(0));
-
-			if (srcLatLng != null && currLatLng != null) {
-				float[] dist = new float[3];
-
-				Location.distanceBetween(srcLatLng.latitude, srcLatLng.longitude, currLatLng.latitude,
-						currLatLng.longitude, dist);
-
-				if (dist[0] < 20) {
-					src.addAll(curr);
-					curr.clear();
-					return true;
-				}
-			}
-			return false;
-		}
+//		private static boolean checkDistanceAndMerge(int i, int j, List<BaseDTObject> curr) {
+//			List<BaseDTObject> src = grid.get(i).get(j);
+//			if (src.size() == 0) {
+//				return false;
+//			}
+//
+////			LatLng srcLatLng = getLatLngFromBasicObject(src.get(0));
+////			LatLng currLatLng = getLatLngFromBasicObject(curr.get(0));
+//			GeoPoint srcLatLng = getLatLngFromBasicObject(src.get(0));
+//			GeoPoint currLatLng = getLatLngFromBasicObject(curr.get(0));
+//
+//			if (srcLatLng != null && currLatLng != null) {
+//				float[] dist = new float[3];
+//
+//				Location.distanceBetween(srcLatLng.getLatitudeE6(), srcLatLng.getLongitudeE6(), currLatLng.getLatitudeE6(),
+//						currLatLng.getLongitudeE6(), dist);
+//
+//				if (dist[0] < 20) {
+//					src.addAll(curr);
+//					curr.clear();
+//					return true;
+//				}
+//			}
+//			return false;
+//		}
 
 	}
 
@@ -327,6 +395,22 @@ public class MapManager {
 		fragmentTransaction.addToBackStack(fragment.getTag());
 		fragmentTransaction.commit();
 
+//		//aggiungo la fit per centare la mappa
+//		Iterator<? extends BaseDTObject> iter = list.iterator();
+//		List<OverlayObject> markerResult = new ArrayList<OverlayObject>();
+//		while (iter.hasNext()) {
+//			BaseDTObject marker = iter.next();
+//			eu.trentorise.smartcampus.osm.android.util.GeoPoint p = new eu.trentorise.smartcampus.osm.android.util.GeoPoint(
+//					marker.getLocation()[0], marker.getLocation()[1]);
+//			OverlayObject o = new OverlayObject(marker.getTitle(),
+//					marker.getDescription(), p);
+//			o.setData(marker);
+//			markerResult.add(o);
+//		}
+//		
+//		//ClusteringHelper.render(mapView, markerResult,HomeFragment.contextPublic);
+//		//fitMapWithOverlays(list);
+		
 	}
 
 	public static void switchToMapView(String category, String argType, Fragment src) {
@@ -361,54 +445,127 @@ public class MapManager {
 		return CategoryHelper.getMapIconByType(o.getType());
 	}
 
-	private static Bitmap writeOnMarker(Context mContext, int drawableId, String text) {
-		float scale = mContext.getResources().getDisplayMetrics().density;
+//	private static Bitmap writeOnMarker(Context mContext, int drawableId, String text) {
+//		float scale = mContext.getResources().getDisplayMetrics().density;
+//
+//		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,
+//				true);
+//
+//		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//		paint.setTextAlign(Align.CENTER);
+//		paint.setTextSize(scale * 14);
+//		paint.setAntiAlias(true);
+//		paint.setARGB(255, 255, 255, 255);
+//
+//		Canvas canvas = new Canvas(bitmap);
+//		Rect bounds = new Rect();
+//		paint.getTextBounds(text, 0, text.length(), bounds);
+//		float x = bitmap.getWidth() / 2;
+//		float y = bitmap.getHeight() / 2;
+//		canvas.drawText(text, x, y, paint);
+//
+//		return bitmap;
+//	}
+//
+//	private static Bitmap writeOnStoryMarker(Context mContext, int drawableId, String text) {
+//		float scale = mContext.getResources().getDisplayMetrics().density;
+//
+//		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,
+//				true);
+//		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//		paint.setTextAlign(Align.CENTER);
+//		paint.setTextSize(scale * 14);
+//		paint.setAntiAlias(true);
+//		paint.setARGB(255, 255, 255, 255);
+//
+//		Canvas canvas = new Canvas(bitmap);
+//		Rect bounds = new Rect();
+//		paint.getTextBounds(text, 0, text.length(), bounds);
+//		float x = bitmap.getWidth() / 2;
+//		float y = bitmap.getHeight() / 2 - ((paint.descent() + paint.ascent()) / 2);
+//
+//		canvas.drawText(text, x, y, paint);
+//
+//		return bitmap;
+//	}
 
-		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,
-				true);
-
-		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setTextAlign(Align.CENTER);
-		paint.setTextSize(scale * 14);
-		paint.setAntiAlias(true);
-		paint.setARGB(255, 255, 255, 255);
-
-		Canvas canvas = new Canvas(bitmap);
-		Rect bounds = new Rect();
-		paint.getTextBounds(text, 0, text.length(), bounds);
-		float x = bitmap.getWidth() / 2;
-		float y = bitmap.getHeight() / 2;
-		canvas.drawText(text, x, y, paint);
-
-		return bitmap;
-	}
-
-	private static Bitmap writeOnStoryMarker(Context mContext, int drawableId, String text) {
-		float scale = mContext.getResources().getDisplayMetrics().density;
-
-		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,
-				true);
-		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setTextAlign(Align.CENTER);
-		paint.setTextSize(scale * 14);
-		paint.setAntiAlias(true);
-		paint.setARGB(255, 255, 255, 255);
-
-		Canvas canvas = new Canvas(bitmap);
-		Rect bounds = new Rect();
-		paint.getTextBounds(text, 0, text.length(), bounds);
-		float x = bitmap.getWidth() / 2;
-		float y = bitmap.getHeight() / 2 - ((paint.descent() + paint.ascent()) / 2);
-
-		canvas.drawText(text, x, y, paint);
-
-		return bitmap;
-	}
-
-	private static LatLng getLatLngFromBasicObject(BaseDTObject object) {
-		LatLng latLng = null;
-		latLng = new LatLng(object.getLocation()[0], object.getLocation()[1]);
+	private static GeoPoint getLatLngFromBasicObject(BaseDTObject object) {
+		GeoPoint latLng = null;
+		latLng = new GeoPoint(object.getLocation()[0], object.getLocation()[1]);
 		return latLng;
 	}
+	
+	public static void fitMapWithOverlays(
+			Collection<? extends BaseDTObject> objects) {
+		double[] ll = null, rr = null;
+		if (objects != null) {
+			for (BaseDTObject o : objects) {
+				double[] location = o.getLocation();
+				if (ll == null) {
+					ll = location.clone();
+					rr = ll.clone();
+				} else {
+					ll[0] = Math.min(ll[0], location[0]);
+					ll[1] = Math.max(ll[1], location[1]);
+
+					rr[0] = Math.max(rr[0], location[0]);
+					rr[1] = Math.min(rr[1], location[1]);
+				}
+			}
+		}
+		fit(ll, rr, objects != null && objects.size() > 1);
+	}
+	
+	public static void fitMapWithOverlay(
+			Collection<? extends OverlayObject> objects) {
+		double[] ll = null, rr = null;
+		if (objects != null) {
+			for (OverlayObject o : objects) {
+				double[] location = o.getData().getLocation();
+				if (ll == null) {
+					ll = location.clone();
+					rr = ll.clone();
+				} else {
+					ll[0] = Math.min(ll[0], location[0]);
+					ll[1] = Math.max(ll[1], location[1]);
+
+					rr[0] = Math.max(rr[0], location[0]);
+					rr[1] = Math.min(rr[1], location[1]);
+				}
+			}
+		}
+		fit(ll, rr, objects != null && objects.size() > 1);
+	}
+
+	private static void fit(double[] ll, double[] rr, boolean zoomIn) {
+		if (ll != null && rr != null) {
+			float[] dist = new float[3];
+			Location.distanceBetween(ll[0], ll[1], rr[0], rr[1], dist);
+			if (dist[0] > 15) {
+				LatLngBounds bounds = LatLngBounds.builder()
+						.include(new LatLng(rr[0], rr[1]))
+						.include(new LatLng(ll[0], ll[1])).build();
+				
+				Double lat = (double) ((ll[0]+rr[0])/2);
+				Double lon = (double) ((ll[1]+rr[1])/2 );
+				
+				GeoPoint point = new GeoPoint(lat,lon);
+				
+				HomeFragment.mapController.animateTo(point);
+				HomeFragment.mapController.zoomIn();
+				
+				// map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,64));
+			} else {
+				GeoPoint point = new GeoPoint(ll[0], ll[1]);
+				HomeFragment.mapController.setZoom(18);
+				HomeFragment.mapController.setCenter(point);
+
+				// map.animateCamera(CameraUpdateFactory.newLatLngZoom(new
+				// LatLng(
+				// ll[0], ll[1]), MAX_ZOOM));
+			}
+		}
+	}
+
 
 }

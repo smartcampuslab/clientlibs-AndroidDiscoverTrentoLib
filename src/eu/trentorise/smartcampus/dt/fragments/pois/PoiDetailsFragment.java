@@ -223,7 +223,7 @@ public class PoiDetailsFragment extends NotificationsSherlockFragmentDT {
 				public void onClick(View v) {
 					Address to = Utils.getPOIasGoogleAddress(mPoi);
 					Address from = null;
-					GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+					eu.trentorise.smartcampus.osm.android.util.GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 					if (mylocation != null) {
 						from = new Address(Locale.getDefault());
 						from.setLatitude(mylocation.getLatitudeE6() / 1E6);

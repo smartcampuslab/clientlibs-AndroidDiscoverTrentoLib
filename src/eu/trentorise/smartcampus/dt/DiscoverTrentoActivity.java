@@ -107,7 +107,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		DTHelper.destroy();
+		DTHelper.destroy();	
 		super.onDestroy();
 	}
 

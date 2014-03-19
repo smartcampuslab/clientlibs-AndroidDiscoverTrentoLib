@@ -19,18 +19,21 @@ import java.util.Collection;
 
 import android.app.Activity;
 
-import com.google.android.gms.maps.GoogleMap;
+//import com.google.android.gms.maps.GoogleMap;
 
+//importo la libreria osm map per creare l'oggetto MAPVIEW
+import eu.trentorise.smartcampus.osm.android.views.MapView;
+import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public abstract class MapLoadProcessor extends AbstractAsyncTaskProcessor<Void, Collection<? extends BaseDTObject>> {
 	
-	protected GoogleMap map = null;
+	protected MapView map = null;
 	private MapObjectContainer container;
 
-	public MapLoadProcessor(Activity activity, MapObjectContainer container, GoogleMap map) {
+	public MapLoadProcessor(Activity activity, MapObjectContainer container, MapView map) {
 		super(activity);
 		this.map = map;
 		this.container = container;

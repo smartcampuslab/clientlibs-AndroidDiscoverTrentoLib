@@ -24,6 +24,9 @@ public class EventsAdapter extends BaseAdapter {
 	public boolean[] checked;
 	boolean Dialogue;
 	AddToArray addtoarray;
+	
+
+	
 
 	public EventsAdapter(Context ctx, String[] itemsDescriptions, boolean[] checkedItems, AddToArray addtoarray,
 			boolean Dialogue) {
@@ -67,6 +70,9 @@ public class EventsAdapter extends BaseAdapter {
 		int pos = position;
 		ViewHolder holder;
 
+
+		
+		
 		holder = new ViewHolder();
 
 		convertView = inflater.inflate(R.layout.today_events_row, null);

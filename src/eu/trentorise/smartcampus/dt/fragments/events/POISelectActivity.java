@@ -52,6 +52,7 @@ import eu.trentorise.smartcampus.dt.custom.map.MapLoadProcessor;
 import eu.trentorise.smartcampus.dt.custom.map.MapManager;
 import eu.trentorise.smartcampus.dt.custom.map.MapObjectContainer;
 import eu.trentorise.smartcampus.dt.fragments.events.ConfirmPoiDialog.OnDetailsClick;
+import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 public class POISelectActivity extends FeedbackFragmentActivity implements MapItemsHandler, BaseDTObjectMapItemTapListener,
@@ -59,6 +60,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 
 	public final static int RESULT_SELECTED = 11;
 
+	//private GoogleMap mMap = null;
 	private GoogleMap mMap = null;
 	DTItemizedOverlay mItemizedoverlay = null;
 
@@ -95,24 +97,24 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 		actionBar.setDisplayShowHomeEnabled(false); // home icon bar
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD); // tabs
 																			// bar
-		if (((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap() != null) {
-
-			mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-			mMap.setOnMarkerClickListener(this);
-			mMap.setMyLocationEnabled(true);
-
-			mMap.getUiSettings().setRotateGesturesEnabled(false);
-			mMap.getUiSettings().setTiltGesturesEnabled(false);
-
-			LatLng me = null;
-			if (DTHelper.getLocationHelper().getLocation() != null) {
-				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
-						.getLocation().getLongitudeE6() / 1e6);
-			} else {
-				me = MapManager.DEFAULT_POINT;
-			}
-			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
-		}
+//		if (((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap() != null) {
+//
+//			mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+//			mMap.setOnMarkerClickListener(this);
+//			mMap.setMyLocationEnabled(true);
+//
+//			mMap.getUiSettings().setRotateGesturesEnabled(false);
+//			mMap.getUiSettings().setTiltGesturesEnabled(false);
+//
+//			LatLng me = null;
+//			if (DTHelper.getLocationHelper().getLocation() != null) {
+//				me = new LatLng(DTHelper.getLocationHelper().getLocation().getLatitudeE6() / 1e6, DTHelper.getLocationHelper()
+//						.getLocation().getLongitudeE6() / 1e6);
+//			} else {
+//				me = MapManager.DEFAULT_POINT;
+//			}
+//			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, DTParamsHelper.getZoomLevelMap()));
+//		}
 	}
 
 	@Override
@@ -163,21 +165,21 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	}
 
 	public void setPOICategoriesToLoad(final String... categories) {
-		if (mMap != null) {
-
-			mMap.clear();
-			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, this, mMap) {
-				@Override
-				protected Collection<? extends BaseDTObject> getObjects() {
-					try {
-						return DTHelper.getPOIByCategory(0, -1, categories); // TODO
-					} catch (Exception e) {
-						e.printStackTrace();
-						return Collections.emptyList();
-					}
-				}
-			}).execute();
-		}
+//		if (mMap != null) {
+//
+//			mMap.clear();
+//			new SCAsyncTask<Void, Void, Collection<? extends BaseDTObject>>(this, new MapLoadProcessor(this, this, mMap) {
+//				@Override
+//				protected Collection<? extends BaseDTObject> getObjects() {
+//					try {
+//						return DTHelper.getPOIByCategory(0, -1, categories); // TODO
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//						return Collections.emptyList();
+//					}
+//				}
+//			}).execute();
+//		}
 	}
 
 	@Override
@@ -222,17 +224,17 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		List<BaseDTObject> list = MapManager.ClusteringHelper.getFromGridId(marker.getTitle());
-		if (list == null || list.isEmpty())
-			return true;
-
-		if (list.size() == 1) {
-			onBaseDTObjectTap(list.get(0));
-		} else if (mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
-			onBaseDTObjectsTap(list);
-		} else {
-			MapManager.fitMapWithOverlays(list, mMap);
-		}
+//		List<BaseDTObject> list = MapManager.ClusteringHelper.getFromGridId(marker.getTitle());
+//		if (list == null || list.isEmpty())
+//			return true;
+//
+//		if (list.size() == 1) {
+//			onBaseDTObjectTap(list.get(0));
+//		} else if (mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
+//			onBaseDTObjectsTap(list);
+//		} else {
+//		//	MapManager.fitMapWithOverlays(list, mMap);
+//		}
 		return true;
 	}
 
@@ -245,7 +247,7 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 	public <T extends BaseDTObject> void addObjects(Collection<? extends BaseDTObject> objects) {
 		this.objects = objects;
 		render(objects);
-		MapManager.fitMapWithOverlays(objects, mMap);
+		//MapManager.fitMapWithOverlays(objects, mMap);
 	}
 
 	private void render(Collection<? extends BaseDTObject> objects) {
@@ -253,8 +255,8 @@ public class POISelectActivity extends FeedbackFragmentActivity implements MapIt
 
 			mMap.clear();
 			if (objects != null) {
-				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap, objects);
-				MapManager.ClusteringHelper.render(mMap, cluster);
+//				List<MarkerOptions> cluster = MapManager.ClusteringHelper.cluster(getApplicationContext(), mMap, objects);
+//				MapManager.ClusteringHelper.render(mMap, cluster);
 			}
 		}
 	}

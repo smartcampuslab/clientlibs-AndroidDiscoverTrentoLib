@@ -179,7 +179,7 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 	}
 
 	/**
-	 * 
+	 * Commentate le ultime 2 righe di codice rivedere come mai non va!!
 	 */
 	protected void initCamera() {
 		double[] coords = null;
@@ -192,8 +192,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				getSupportMap().moveCamera(
 						CameraUpdateFactory.newLatLngZoom(new LatLng(coords[0], coords[1]), MapManager.ZOOM_DEFAULT));
 			} else {
-				getSupportMap().moveCamera(
-						CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
+			//	getSupportMap().moveCamera(
+				//	CameraUpdateFactory.newLatLngZoom(MapManager.DEFAULT_POINT, MapManager.ZOOM_DEFAULT));
 			}
 		}
 	}
@@ -505,7 +505,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			if (actualStepPosition < 0) {
 				initCamera();
 			}
-			getSherlockActivity().invalidateOptionsMenu();
+			//sistamare questo errore commentato
+			//getSherlockActivity().invalidateOptionsMenu();
 		}
 	}
 
@@ -759,7 +760,8 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 			Address to = Utils.getPOIasGoogleAddress(Utils.getLocalStepFromStep(
 					getStory().getSteps().get(actualStepPosition)).assignedPoi());
 			Address from = null;
-			GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
+			//Sostituito il la classe Geo Point con quella di smartcampus
+			eu.trentorise.smartcampus.osm.android.util.GeoPoint mylocation = MapManager.requestMyLocation(getActivity());
 			if (mylocation != null) {
 				from = new Address(Locale.getDefault());
 				from.setLatitude(mylocation.getLatitudeE6() / 1E6);
@@ -1100,6 +1102,14 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 
 	}
 
+	
+	
+	
+	/*
+	 * Commentate 2 linee dato che devo sistemare i metodi nella MAPManager
+	 * */
+	
+	
 	private void renderSteps(Collection<LocalStepObject> objects, int selection) {
 		if (getSupportMap() != null) {
 			getSupportMap().clear();
@@ -1109,11 +1119,10 @@ public class StoryDetailsFragment extends NotificationsSherlockFragmentDT implem
 				for (LocalStepObject object : objects) {
 					to = object.assignedPoi();
 					if (to != null) {
-						getSupportMap().addMarker(
-								MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
+						//getSupportMap().addMarker(
+								//MapManager.createStoryStepMarker(getSherlockActivity(), to, i + 1, selection == i));
 						if (from != null) {
-							getSupportMap()
-									.addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
+							//getSupportMap().addPolyline(MapManager.createStoryStepLine(getSherlockActivity(), from, to));
 						}
 					}
 					from = to;

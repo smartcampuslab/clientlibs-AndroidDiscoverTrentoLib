@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.dt.custom.map;
 
 import java.util.Collection;
 
+import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
 
 /**

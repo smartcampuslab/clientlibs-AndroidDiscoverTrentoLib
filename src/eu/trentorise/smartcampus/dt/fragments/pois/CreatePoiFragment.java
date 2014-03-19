@@ -186,15 +186,20 @@ public class CreatePoiFragment extends NotificationsSherlockFragmentDT
 			location.setText(poiObject.getPoi().getStreet());
 		} else {
 			// try to get the current position
-			GeoPoint mypos = MapManager
+			eu.trentorise.smartcampus.osm.android.util.GeoPoint mypos = MapManager
 					.requestMyLocation(getSherlockActivity());
 			if (mypos != null) {
-				List<Address> addresses = new SCGeocoder(getSherlockActivity())
-						.findAddressesAsync(mypos);
-				if (addresses != null && !addresses.isEmpty()) {
-					location.setText(addresses.get(0).getAddressLine(0));
-					mAddress = addresses.get(0);
-				}
+				
+				
+				//sistemare errore con 
+				
+				
+//				List<Address> addresses = new SCGeocoder(getSherlockActivity())
+//						.findAddressesAsync(mypos);
+//				if (addresses != null && !addresses.isEmpty()) {
+//					location.setText(addresses.get(0).getAddressLine(0));
+//					mAddress = addresses.get(0);
+//				}
 			}
 
 		}
