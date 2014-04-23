@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="home_title">Home</string>
-	<string name="dt_home_tut">The map where you can find everything you are looking for</string>
+	<string name="dt_home_tut">See a map where you can view the places and events around the city</string>
     <string name="dt_first_launch">Welcome! Our app will guide you through the streets of Trento in search of places to explore and events to attend.</string>
-    <string name="dt_notif_tut">Read your latest announcements here</string>
-    <string name="dt_places_tut">This icon will let you see interesting places</string>
-    <string name="dt_events_tut">This other icon will let you see interesting events</string>
+    <string name="dt_notif_tut">Read the latest notifications you have received here</string>
+    <string name="dt_places_tut">Discover interesting places around the city</string>
+    <string name="dt_events_tut">See the events happening around the city</string>
     <string name="dt_ratings_tut">See what others thought of this place and vote for it yourself.</string>
-    <string name="dt_stories_tut">Create itineraries between places\'s interest and events, or visit other users\' suggestions</string>
-    <string name="dt_menu_tut">By clicking this symbol, you will be able to search for events or places or add new </string>
+    <string name="dt_stories_tut">Create tours of events or interesting places or see other users\' tours</string>
+    <string name="dt_menu_tut">Search for events or places or add new tours</string>
     <string name="dt_notif_tut_title">Tutorial</string>
     <string name="dt_notif_tut_tut">Try a guided tour of the application</string>
 </resources>
