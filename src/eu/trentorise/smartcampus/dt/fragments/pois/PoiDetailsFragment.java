@@ -26,9 +26,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,7 +41,6 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -63,7 +59,6 @@ import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
 import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.Utils;
@@ -107,8 +102,6 @@ public class PoiDetailsFragment extends FeedbackFragment {
 		// tmp_comments = new TmpComment[5];
 		for (int i = 0; i < tmp_comments.length; i++)
 			tmp_comments[i] = new TmpComment("This is a comment about the POI", "student", new Date());
-
-		setFollowByIntent();
 	}
 
 	private POIObject getPOI() {
@@ -158,13 +151,6 @@ public class PoiDetailsFragment extends FeedbackFragment {
 	public void onStart() {
 		super.onStart();
 		if (getPOI() != null) {
-			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
-			if (CategoryHelper.FAMILY_CATEGORY_POI.equals(mPoi.getType()) && isCertified(mPoi)) {
-				certifiedBanner.setVisibility(View.VISIBLE);
-			} else {
-				certifiedBanner.setVisibility(View.GONE);
-			}
-			
 			DiscoverTrentoActivity.mDrawerToggle.setDrawerIndicatorEnabled(false);
 	    	DiscoverTrentoActivity.drawerState = "off";
 	        getSherlockActivity().getSupportActionBar().setHomeButtonEnabled(true);
@@ -369,30 +355,6 @@ public class PoiDetailsFragment extends FeedbackFragment {
 			}
 
 		}
-	}
-
-	private boolean isCertified(POIObject poi) {
-		String status = (String) poi.getCustomData().get("status");
-		if (("Certificato finale").equals(status) || ("Certificato base").equals(status)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean hasMultimediaAttached() {
-		return true;
-	}
-
-	private void setFollowByIntent() {
-		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
-					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
-			Bundle aBundle = ai.metaData;
-		} catch (NameNotFoundException e) {
-			Log.e(PoiDetailsFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
-		}
-
 	}
 
 	@Override

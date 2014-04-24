@@ -3,9 +3,12 @@ package eu.trentorise.smartcampus.dt.model;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.Context;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.widget.TextView;
+import eu.trentorise.smartcampus.dt.custom.URLImageParser;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 
@@ -120,6 +123,17 @@ public class LocalEventObject extends eu.trentorise.smartcampus.territoryservice
 	public String getDescription() {
 		return description;
 	}
+
+	public Spanned getFormattedDescription(Context c, TextView v) {
+		if (description != null) {
+			if (description.indexOf('<')>=0) {
+				return Html.fromHtml(description,new URLImageParser(v,c), null);
+			} else {
+				return new SpannableString(description);
+			}
+		}
+		return null;
+	} 
 
 	public Spanned getFormattedDescription() {
 		if (description != null) {

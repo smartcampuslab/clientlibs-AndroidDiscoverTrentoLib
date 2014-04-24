@@ -26,9 +26,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,7 +40,6 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -62,7 +58,6 @@ import eu.trentorise.smartcampus.android.feedback.fragment.FeedbackFragment;
 import eu.trentorise.smartcampus.dt.DiscoverTrentoActivity;
 import eu.trentorise.smartcampus.dt.R;
 import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
-import eu.trentorise.smartcampus.dt.custom.CategoryHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper;
 import eu.trentorise.smartcampus.dt.custom.RatingHelper.RatingHandler;
 import eu.trentorise.smartcampus.dt.custom.Utils;
@@ -81,7 +76,6 @@ import eu.trentorise.smartcampus.territoryservice.model.POIObject;
 public class EventDetailsFragment extends FeedbackFragment {
 	public static final String ARG_EVENT_ID = "event_id";
 
-	private boolean mFollowByIntent;
 	private boolean mStart = true;
 	private boolean mCanceledFollow = false;
 
@@ -109,7 +103,6 @@ public class EventDetailsFragment extends FeedbackFragment {
 		for (int i = 0; i < tmp_comments.length; i++)
 			tmp_comments[i] = new TmpComment("This is a very nice, detailed and lengthy comment about the event",
 					"student", new Date());
-		setFollowByIntent();
 	}
 
 	@Override
@@ -150,12 +143,6 @@ public class EventDetailsFragment extends FeedbackFragment {
 		getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
 		mEvent = getEvent();
 		if (mEvent != null) {
-			ImageView certifiedBanner = (ImageView) this.getView().findViewById(R.id.banner_certified);
-			if (CategoryHelper.FAMILY_CATEGORY_EVENT.equals(mEvent.getType()) && isCertified(mEvent))
-				certifiedBanner.setVisibility(View.VISIBLE);
-			else
-				certifiedBanner.setVisibility(View.GONE);
-
 			// title
 			TextView tv = (TextView) this.getView().findViewById(R.id.event_details_title);
 			tv.setText(mEvent.getTitle());
@@ -281,7 +268,7 @@ public class EventDetailsFragment extends FeedbackFragment {
 			// description, optional
 			tv = (TextView) this.getView().findViewById(R.id.event_details_descr);
 			if (mEvent.getDescription() != null && mEvent.getDescription().length() > 0) {
-				tv.setText(mEvent.getFormattedDescription());
+				tv.setText(mEvent.getFormattedDescription(getActivity(), tv));
 			} else {
 				((LinearLayout) this.getView().findViewById(R.id.eventdetails)).removeView(tv);
 			}
@@ -404,14 +391,6 @@ public class EventDetailsFragment extends FeedbackFragment {
 						R.id.event_comments_separator));
 			}
 		}
-
-	}
-
-	private boolean isCertified(LocalEventObject event) {
-		if (event.getCustomData() != null && (Boolean) event.getCustomData().get("certified"))
-			return true;
-		else
-			return false;
 
 	}
 
@@ -650,56 +629,8 @@ public class EventDetailsFragment extends FeedbackFragment {
 	}
 
 	private void bringMeThere(LocalEventObject eventObject) {
-		AlertDialog.Builder builder;
-
-		builder = new AlertDialog.Builder(getSherlockActivity());
 		/* check event Object */
-		if (!CategoryHelper.FAMILY_CATEGORY_EVENT.equals(eventObject.getType())) {
-			/* if it's not a family event, no problem */
-			callBringMeThere();
-			return;
-		} else {
-			/* if it is, show the dialog box */
-			/* press true return true, press false return false */
-			DialogInterface.OnClickListener updateDialogClickListener;
-
-			updateDialogClickListener = new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-
-					switch (which) {
-					case DialogInterface.BUTTON_POSITIVE:
-						// upgrade the user
-						callBringMeThere();
-						break;
-
-					case DialogInterface.BUTTON_NEGATIVE:
-						// CLOSE
-
-						break;
-
-					}
-
-				}
-			};
-			builder.setCancelable(false).setMessage(getSherlockActivity().getString(R.string.warning_for_direction))
-					.setPositiveButton(android.R.string.yes, updateDialogClickListener)
-					.setNegativeButton(R.string.cancel, updateDialogClickListener).show();
-		}
-		return;
-	}
-
-	private void setFollowByIntent() {
-		try {
-			ApplicationInfo ai = getSherlockActivity().getPackageManager().getApplicationInfo(
-					getSherlockActivity().getPackageName(), PackageManager.GET_META_DATA);
-			Bundle aBundle = ai.metaData;
-			mFollowByIntent = aBundle.getBoolean("follow-by-intent");
-		} catch (NameNotFoundException e) {
-			mFollowByIntent = false;
-			Log.e(EventDetailsFragment.class.getName(), "you should set the follow-by-intent metadata in app manifest");
-		}
-
+		callBringMeThere();
 	}
 
 	private void ratingDialog() {
@@ -813,7 +744,6 @@ public class EventDetailsFragment extends FeedbackFragment {
 
 		@Override
 		protected Void doInBackground(String... params) {
-			String topicId = params[0];
 			try {
 				DTHelper.follow(mEvent);
 			} catch (Exception e) {

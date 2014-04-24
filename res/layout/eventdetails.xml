@@ -31,17 +31,6 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp" >
 
-            <ImageView
-                android:id="@+id/banner_certified"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:background="@drawable/banner_repeat"
-                android:contentDescription="@string/empty"
-                android:padding="0dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/banner_certified"
-                android:visibility="gone" />
-
             <TextView
                 android:id="@+id/event_details_title"
                 android:layout_width="match_parent"

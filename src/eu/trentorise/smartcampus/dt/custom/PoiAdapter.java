@@ -60,22 +60,10 @@ public class PoiAdapter extends ArrayAdapter<POIObject> {
 		p.poi = getItem(position);// data[position];
 		p.title.setText(p.poi.getTitle());
 		Drawable drawable = context.getResources().getDrawable(CategoryHelper.getIconByType(p.poi.getType()));
-		if (CategoryHelper.FAMILY_CATEGORY_POI.equals(p.poi.getType()))
-			drawable = poiCertified(p.poi);
 		p.icon.setImageDrawable(drawable);
 		p.location.setText(DTHelper.poiGetShortAddress(p.poi));
 
 		return row;
-	}
-
-	private Drawable poiCertified(POIObject poi) {
-		String status = (String) poi.getCustomData().get("status");
-		if (("Certificato finale").equals(status) || ("Certificato base").equals(status)) {
-			/* se ceretificato e evento */
-			return context.getResources().getDrawable(R.drawable.ic_e_family_certified);
-		}
-
-		return context.getResources().getDrawable(CategoryHelper.getIconByType(poi.getType()));
 	}
 
 	public int getElementSelected() {

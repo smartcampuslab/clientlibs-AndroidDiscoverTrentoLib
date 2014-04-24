@@ -34,8 +34,6 @@ public class CategoryHelper {
 	public static final String CATEGORY_TYPE_POIS = "pois";
 	public static final String CATEGORY_TYPE_EVENTS = "events";
 	public static final String CATEGORY_TYPE_STORIES = "stories";
-	public static final String FAMILY_CATEGORY_POI = "Family - Organizations";
-	public static final String FAMILY_CATEGORY_EVENT = "Family";
 
 	public static final String CATEGORY_TODAY = "Today";
 	public static final String CATEGORY_MY = "My";
