@@ -32,7 +32,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -51,19 +50,12 @@ import eu.trentorise.smartcampus.dt.custom.AbstractAsyncTaskProcessor;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper;
 import eu.trentorise.smartcampus.dt.custom.data.DTHelper.Tutorial;
 import eu.trentorise.smartcampus.dt.fragments.events.AllEventsFragment;
-import eu.trentorise.smartcampus.dt.fragments.events.EventDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.home.HomeFragment;
 import eu.trentorise.smartcampus.dt.fragments.pois.AllPoisFragment;
-import eu.trentorise.smartcampus.dt.fragments.pois.PoiDetailsFragment;
 import eu.trentorise.smartcampus.dt.fragments.stories.AllStoriesFragment;
-import eu.trentorise.smartcampus.dt.fragments.stories.StoryDetailsFragment;
 import eu.trentorise.smartcampus.dt.notifications.NotificationsFragmentListDT;
-import eu.trentorise.smartcampus.notifications.NotificationsHelper;
 import eu.trentorise.smartcampus.protocolcarrier.exceptions.SecurityException;
 import eu.trentorise.smartcampus.territoryservice.model.BaseDTObject;
-import eu.trentorise.smartcampus.territoryservice.model.EventObject;
-import eu.trentorise.smartcampus.territoryservice.model.POIObject;
-import eu.trentorise.smartcampus.territoryservice.model.StoryObject;
 
 public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
@@ -102,9 +94,32 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		
 
 		if (LauncherHelper.isLauncherInstalled(this, true) && DTHelper.isFirstLaunch(this)) {
-			openNavDrawerIfNeeded();
-			showTourDialog();
-			DTHelper.disableFirstLaunch(this);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.welcome_title)
+					.setMessage(R.string.welcome_msg)
+					.setOnCancelListener(
+							new DialogInterface.OnCancelListener() {
+
+								@Override
+								public void onCancel(DialogInterface arg0) {
+									openNavDrawerIfNeeded();
+									showTourDialog();
+									DTHelper.disableFirstLaunch(DiscoverTrentoActivity.this);
+								}
+							})
+					.setPositiveButton(getString(R.string.ok),
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									openNavDrawerIfNeeded();
+									showTourDialog();
+									DTHelper.disableFirstLaunch(DiscoverTrentoActivity.this);
+								}
+							});
+			builder.create().show();
+			
 		}
 	}
 

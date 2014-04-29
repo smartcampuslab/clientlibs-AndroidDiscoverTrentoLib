@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	<string name="welcome_title">Benvenuto in ViviTrento!</string>
+    <string name="welcome_msg">Quest’app ti permetterà di vedere cosa succede in città e nei dintorni ogni giorno della settimana. Trova luoghi interessanti ed eventi, controlla gli itinerari cittadini che gli altri utenti suggeriscono o aggiungono.</string>
     <string name="home_title">Home</string>
     <string name="dt_home_tut">Esplora la mappa per avere una visione d\'insieme sui luoghi e gli eventi della citt\à</string>
     <string name="dt_first_launch">Benvenuto! La nostra app ti accompagnerà per le vie di Trento alla scoperta di luoghi da esplorare ed eventi da non perdere.</string>
