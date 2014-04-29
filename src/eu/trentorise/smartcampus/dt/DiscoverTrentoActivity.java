@@ -103,7 +103,6 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 
 		if (LauncherHelper.isLauncherInstalled(this, true) && DTHelper.isFirstLaunch(this)) {
 			openNavDrawerIfNeeded();
-			
 			showTourDialog();
 			DTHelper.disableFirstLaunch(this);
 		}
