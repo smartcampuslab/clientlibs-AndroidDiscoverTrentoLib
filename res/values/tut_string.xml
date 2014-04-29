@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="welcome_title">Welcome to Vivitrento!</string>
+    <string name="welcome_msg">This app lets you see what is going on around the city any day of the week. Find the various interesting places and events, check city tours that other users are suggesting or add your own.</string>
 	<string name="home_title">Home</string>
 	<string name="dt_home_tut">See a map where you can view the places and events around the city</string>
     <string name="dt_first_launch">Welcome! Our app will guide you through the streets of Trento in search of places to explore and events to attend.</string>
