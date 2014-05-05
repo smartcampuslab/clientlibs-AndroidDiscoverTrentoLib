@@ -94,7 +94,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 		
 
 		if (LauncherHelper.isLauncherInstalled(this, true) && DTHelper.isFirstLaunch(this)) {
-			openNavDrawerIfNeeded();
+//			openNavDrawerIfNeeded();
 			showTourDialog();
 			DTHelper.disableFirstLaunch(DiscoverTrentoActivity.this);
 			
@@ -499,8 +499,9 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 	}
 
 	private void showTourDialog() {
+		openNavDrawerIfNeeded();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this).setMessage(getString(R.string.dt_first_launch))
-				.setPositiveButton(getString(R.string.begin_tut), new DialogInterface.OnClickListener() {
+				.setNeutralButton(getString(R.string.begin_tut), new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -508,7 +509,7 @@ public class DiscoverTrentoActivity extends FeedbackFragmentActivity {
 						mTutorialHelper.showTutorials();
 //						showTutorial();
 					}
-				}).setNeutralButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+				}).setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
